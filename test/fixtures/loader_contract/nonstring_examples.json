@@ -1,0 +1,257 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "metadata_contract",
+  "description": "模型说明",
+  "ai_context": {
+    "examples": [
+      "合法",
+      true
+    ]
+  },
+  "custom_extensions": [
+    {
+      "vendor_name": "business",
+      "data": "{\"review\":\"pending\"}"
+    }
+  ],
+  "datasets": [
+    {
+      "name": "facts",
+      "source": "memory.main.facts",
+      "description": "事实说明",
+      "ai_context": {
+        "examples": [
+          "按日期查询"
+        ]
+      },
+      "fields": [
+        {
+          "name": "day",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "day"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "day"
+              }
+            ]
+          },
+          "datatype": "Date"
+        },
+        {
+          "name": "clock",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "clock"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "clock"
+              }
+            ]
+          },
+          "datatype": "Time"
+        },
+        {
+          "name": "local_ts",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "local_ts"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "local_ts"
+              }
+            ]
+          },
+          "datatype": "DateTime"
+        },
+        {
+          "name": "instant",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "instant"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "instant"
+              }
+            ]
+          },
+          "datatype": "DateTimeTz"
+        },
+        {
+          "name": "audit",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "audit"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "audit"
+              }
+            ]
+          },
+          "datatype": "DateTime",
+          "dimension": {
+            "is_time": false
+          }
+        },
+        {
+          "name": "year",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "year"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "year"
+              }
+            ]
+          },
+          "datatype": "Integer",
+          "dimension": {
+            "is_time": true
+          }
+        },
+        {
+          "name": "unknown",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "unknown"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "unknown"
+              }
+            ]
+          }
+        },
+        {
+          "name": "amount",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "amount"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "amount"
+              }
+            ]
+          },
+          "datatype": "Decimal",
+          "label": "收入（元）",
+          "description": "金额说明",
+          "ai_context": {
+            "synonyms": [
+              "收入"
+            ],
+            "instructions": "保留 NULL",
+            "examples": [
+              "每日收入是多少？"
+            ],
+            "vendor_hint": {
+              "keep": true
+            }
+          },
+          "custom_extensions": [
+            {
+              "vendor_name": "business",
+              "data": "{\"unit\":\"CNY\"}"
+            }
+          ]
+        },
+        {
+          "name": "category",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "category"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "category"
+              }
+            ]
+          },
+          "datatype": "String"
+        },
+        {
+          "name": "flag",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "flag"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "flag"
+              }
+            ]
+          },
+          "datatype": "Boolean"
+        },
+        {
+          "name": "opaque",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "opaque"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "opaque"
+              }
+            ]
+          },
+          "datatype": "Opaque"
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "mean_amount",
+      "datatype": "Float",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "AVG(facts.amount)"
+          },
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "AVG(facts.amount)"
+          }
+        ]
+      },
+      "description": "平均金额",
+      "ai_context": {
+        "instructions": "忽略 NULL",
+        "examples": [
+          "平均金额？"
+        ]
+      }
+    }
+  ]
+}

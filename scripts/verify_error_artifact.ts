@@ -223,6 +223,38 @@ export async function verify(artifact: string) {
       await refuse("hash failure stage", "CALL ossie_bundle_load(?)", [
         invalid,
       ]);
+      // Rehash the deliberately malformed core: the refusal must come from the
+      // loader, rather than failing the manifest integrity gate first.
+      const core = json<any>(manifest.core.path);
+      core.ai_context = { examples: ["valid", true] };
+      const invalidCore = join(directory, "nonstring-core.json");
+      writeFileSync(invalidCore, JSON.stringify(core));
+      writeFileSync(
+        invalid,
+        JSON.stringify({
+          ...manifest,
+          core: {
+            ...manifest.core,
+            path: invalidCore,
+            sha256: digest(invalidCore),
+          },
+        }),
+      );
+      const before = await db.rows("SELECT * FROM ossie_concepts()");
+      const badString = await refuse(
+        "core string array load refusal",
+        "CALL ossie_bundle_load(?)",
+        [invalid],
+        "load",
+      );
+      assert.equal(badString.code, "LOAD_FAILED");
+      assert(
+        badString.reason.includes(
+          "field 'examples' member at index 1 must be a string",
+        ),
+      );
+      assert.deepEqual(await db.rows("SELECT * FROM ossie_concepts()"), before);
+      checks.push("hash-valid malformed core retains frozen bundle");
       writeFileSync(invalid, "{invalid");
       await refuse(
         "document parse stage retained",
@@ -295,9 +327,11 @@ export async function verify(artifact: string) {
       artifact_sha256: digest(artifact),
       verifier_sha256: digest(import.meta.path),
       source_sha256: Object.fromEntries(
-        ["src/population/population.cpp", "scripts/population_error.ts"].map(
-          (p) => [p, digest(join(ROOT, p))],
-        ),
+        [
+          "src/population/population.cpp",
+          "src/model/parser.cpp",
+          "scripts/population_error.ts",
+        ].map((p) => [p, digest(join(ROOT, p))]),
       ),
       engine,
       checks,

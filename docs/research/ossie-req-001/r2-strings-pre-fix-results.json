@@ -1,0 +1,100 @@
+{
+  "scope": "real pre-fix loader scalar array acceptance; not validation success",
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "e95dd3606913d5485e5fc983e2fff18751a7da0a8f2926882dba00e217541d5d",
+  "parser_sha256": "4d407b80a9cb6195a6f665463dff8c67513111b2635fe93ef40aafb5d11f558d",
+  "observations": [
+    {
+      "key": "synonyms",
+      "input": [
+        "合法",
+        123
+      ],
+      "observed": {
+        "synonyms": [
+          "合法",
+          "123"
+        ],
+        "examples": []
+      },
+      "document_sha256": "af4c3c241879ee5a4193ee7d122a5d22c01428fbf2dee279614e8c20dfae56da",
+      "input_document": {
+        "version": "0.2.0.dev0",
+        "name": "scalar_array_probe",
+        "ai_context": {
+          "synonyms": [
+            "合法",
+            123
+          ]
+        },
+        "datasets": [
+          {
+            "name": "facts",
+            "source": "memory.main.facts",
+            "fields": [
+              {
+                "name": "amount",
+                "expression": {
+                  "dialects": [
+                    {
+                      "dialect": "ANSI_SQL",
+                      "expression": "amount"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "examples",
+      "input": [
+        "合法",
+        true
+      ],
+      "observed": {
+        "synonyms": [],
+        "examples": [
+          "合法",
+          "true"
+        ]
+      },
+      "document_sha256": "9f9c183551ab065b54d845a68d3535256d2fc1eb1cc4ac5a63a2ab923bb214f8",
+      "input_document": {
+        "version": "0.2.0.dev0",
+        "name": "scalar_array_probe",
+        "ai_context": {
+          "examples": [
+            "合法",
+            true
+          ]
+        },
+        "datasets": [
+          {
+            "name": "facts",
+            "source": "memory.main.facts",
+            "fields": [
+              {
+                "name": "amount",
+                "expression": {
+                  "dialects": [
+                    {
+                      "dialect": "ANSI_SQL",
+                      "expression": "amount"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

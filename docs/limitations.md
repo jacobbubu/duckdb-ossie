@@ -17,6 +17,19 @@ execution, arbitrary joins, mixed-grain aggregates and calendar completion remai
 outside these profiles. The live core join/filter behavior below is a separate
 contract; it does not describe the stricter population path.
 
+## Loader string arrays
+
+AI `synonyms`/`examples`, dataset `primary_key` and relationship
+`from_columns`/`to_columns` accept string members only in JSON and YAML.
+Numbers, Booleans, null and containers are refused, with a zero-based member
+index; a failed load preserves the previous model or frozen bundle. Quote
+numeric or Boolean-looking text when it is intended as a string. `unique_keys`
+already rejects non-string column members. AI strings preserve their bytes,
+including control characters; this does not grant those characters permission
+in executable expressions or identifiers. The loader is not a full JSON Schema
+validator: single-value `RequiredString`/`OptionalString` paths retain their
+existing scalar conversion and other field-specific checks still apply.
+
 ## Grain
 
 **Metrics that aggregate at more than one grain.** `store_productivity` is

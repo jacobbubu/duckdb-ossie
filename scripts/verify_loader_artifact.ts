@@ -91,7 +91,209 @@ export async function verify(artifact: string) {
         ["metadata_contract"],
       );
     }
-    assert.equal(rejected.length, 17);
+    assert.equal(rejected.length, 19);
+    // Quoted numeric/Boolean-looking field names make key coercion observable:
+    // a malformed [123]/[true] would otherwise resolve to valid declared columns.
+    const strings = ["123", "true", '中文\\引号"\n\t', "before\0after", ""];
+    const field = (name: string) => ({
+      name,
+      expression: {
+        dialects: [{ dialect: "ANSI_SQL", expression: `"${name}"` }],
+      },
+    });
+    const stringModel = () => ({
+      version: "0.2.0.dev0",
+      name: "string_arrays",
+      ai_context: { synonyms: strings, examples: strings },
+      datasets: ["facts", "dim"].map((name) => ({
+        name,
+        source: `memory.main.${name}`,
+        primary_key: ["123"],
+        unique_keys: [["true"]],
+        ai_context: { synonyms: strings, examples: strings },
+        fields: [field("123"), field("true")].map((f) => ({
+          ...f,
+          ai_context: { synonyms: strings, examples: strings },
+        })),
+      })),
+      relationships: [
+        {
+          name: "link",
+          from: "facts",
+          to: "dim",
+          from_columns: ["123"],
+          to_columns: ["123"],
+          ai_context: { synonyms: strings, examples: strings },
+        },
+      ],
+      metrics: [
+        {
+          name: "total",
+          expression: {
+            dialects: [{ dialect: "ANSI_SQL", expression: 'SUM(facts."123")' }],
+          },
+          ai_context: { synonyms: strings, examples: strings },
+        },
+      ],
+    });
+    const strictCases: {
+      name: string;
+      diagnostic: string;
+      document_sha256: string;
+    }[] = [];
+    await temporary("ossie-loader-strings-", async (directory) => {
+      const path = join(directory, "model.json");
+      writeFileSync(path, JSON.stringify(stringModel()));
+      await con.run("CALL ossie_load(?)", [path]);
+      const preserved = await con.records("SELECT * FROM ossie_metadata()");
+      for (const row of preserved) {
+        assert.deepEqual(row.synonyms, strings);
+        assert.deepEqual(row.examples, strings);
+        const ai = JSON.parse(String(row.ai_context));
+        assert.deepEqual(ai.synonyms, strings);
+        assert.deepEqual(ai.examples, strings);
+      }
+      const [dataset] = await con.records(
+        "SELECT * FROM ossie_datasets() WHERE name='facts'",
+      );
+      assert.deepEqual(dataset!.primary_key, ["123"]);
+      assert.deepEqual(dataset!.unique_keys, [["true"]]);
+      const [relationship] = await con.records(
+        "SELECT * FROM ossie_relationships()",
+      );
+      assert.deepEqual(relationship!.from_columns, ["123"]);
+      assert.deepEqual(relationship!.to_columns, ["123"]);
+      async function refuse(name: string, model: unknown, diagnostic: string) {
+        writeFileSync(path, JSON.stringify(model));
+        await assert.rejects(
+          con.run("CALL ossie_load(?)", [path]),
+          (error: unknown) => {
+            assert(String(error).includes(diagnostic), String(error));
+            return true;
+          },
+        );
+        assert.deepEqual(
+          await con.records("SELECT * FROM ossie_metadata()"),
+          preserved,
+        );
+        strictCases.push({ name, diagnostic, document_sha256: digest(path) });
+      }
+      for (const scope of [
+        "model",
+        "dataset",
+        "field",
+        "metric",
+        "relationship",
+      ]) {
+        for (const key of ["synonyms", "examples"] as const) {
+          for (const value of [123, true]) {
+            const model = stringModel();
+            const target =
+              scope === "model"
+                ? model
+                : scope === "dataset"
+                  ? model.datasets[0]!
+                  : scope === "field"
+                    ? model.datasets[0]!.fields[0]!
+                    : scope === "metric"
+                      ? model.metrics[0]!
+                      : model.relationships[0]!;
+            target.ai_context[key] = ["valid", value] as unknown as string[];
+            await refuse(
+              `${scope}.${key}.${typeof value}`,
+              model,
+              `field '${key}' member at index 1 must be a string`,
+            );
+          }
+        }
+      }
+      for (const key of [
+        "primary_key",
+        "from_columns",
+        "to_columns",
+      ] as const) {
+        for (const value of [123, true]) {
+          const model = stringModel();
+          if (key === "primary_key")
+            model.datasets[0]![key] = [value] as unknown as string[];
+          else model.relationships[0]![key] = [value] as unknown as string[];
+          await refuse(
+            `${key}.${typeof value}`,
+            model,
+            `field '${key}' member at index 0 must be a string`,
+          );
+        }
+      }
+      for (const value of [null, {}, []]) {
+        const model = stringModel();
+        model.ai_context.synonyms = ["valid", value] as unknown as string[];
+        await refuse(
+          `synonyms.member.${JSON.stringify(value)}`,
+          model,
+          "field 'synonyms' member at index 1 must be a string",
+        );
+      }
+      for (const value of [null, "text"]) {
+        const model = stringModel();
+        model.ai_context.examples = value as unknown as string[];
+        await refuse(
+          `examples.array.${JSON.stringify(value)}`,
+          model,
+          "field 'examples' must be an array of strings",
+        );
+      }
+      for (const value of [123, true]) {
+        const model = stringModel();
+        model.datasets[0]!.unique_keys = [[value]] as unknown as string[][];
+        await refuse(
+          `unique_keys.${typeof value}`,
+          model,
+          "non-string column in 'unique_keys'",
+        );
+      }
+      const yaml = join(directory, "model.yaml");
+      const yamlBase =
+        'version: "0.2.0.dev0"\nname: yaml_string_arrays\ndatasets:\n  - name: facts\n    source: memory.main.facts\n    fields:\n      - name: amount\n        expression:\n          dialects:\n            - dialect: ANSI_SQL\n              expression: amount\n';
+      writeFileSync(
+        yaml,
+        yamlBase +
+          'ai_context:\n  synonyms: ["123", "true", "中文"]\n  examples: []\n',
+      );
+      await con.run("CALL ossie_load(?)", [yaml]);
+      const yamlPreserved = await con.records("SELECT * FROM ossie_metadata()");
+      const yamlModel = yamlPreserved.find((row) => row.kind === "model")!;
+      assert.deepEqual(yamlModel.synonyms, ["123", "true", "中文"]);
+      assert.deepEqual(yamlModel.examples, []);
+      for (const value of ["123", "true"]) {
+        writeFileSync(
+          yaml,
+          yamlBase + `ai_context:\n  synonyms: ["合法", ${value}]\n`,
+        );
+        await assert.rejects(
+          con.run("CALL ossie_load(?)", [yaml]),
+          /field 'synonyms' member at index 1 must be a string/,
+        );
+        assert.deepEqual(
+          await con.records("SELECT * FROM ossie_metadata()"),
+          yamlPreserved,
+        );
+        strictCases.push({
+          name: `yaml.synonyms.${value}`,
+          diagnostic: "field 'synonyms' member at index 1 must be a string",
+          document_sha256: digest(yaml),
+        });
+      }
+      const empty = stringModel();
+      empty.ai_context = { synonyms: [], examples: [] };
+      delete (empty.datasets[0] as Partial<(typeof empty.datasets)[0]>)!
+        .ai_context;
+      writeFileSync(path, JSON.stringify(empty));
+      await con.run("CALL ossie_load(?)", [path]);
+      const [modelRow] = await con.records(
+        "SELECT synonyms, examples FROM ossie_metadata() WHERE kind='model'",
+      );
+      assert.deepEqual(modelRow, { synonyms: [], examples: [] });
+    });
     const reference = join(ROOT, "test/fixtures/tpcds_semantic_model.json"),
       document = json<ModelSource>(reference);
     await con.run("CALL ossie_load(?)", [reference]);
@@ -171,6 +373,11 @@ export async function verify(artifact: string) {
       registered_public_functions: registered,
       rejected_documents: rejected,
       failed_load_preserves_model: true,
+      strict_string_array_cases: strictCases,
+      string_array_bytes_preserved: true,
+      strict_string_array_scope:
+        "AI five scopes, primary_key and relationship columns; existing unique_keys rejection; empty/absent arrays",
+
       reference_metadata_scopes_checked: expected.length,
       multi_chunk_field_rows_checked: count,
       verification_script_sha256: digest(import.meta.path),

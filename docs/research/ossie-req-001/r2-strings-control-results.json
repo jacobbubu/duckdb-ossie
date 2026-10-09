@@ -1,0 +1,80 @@
+{
+  "scope": "R2 strict string-array members; no full JSON Schema validator or scalar-string conversion rewrite",
+  "base_commit": "45afa83",
+  "artifact_sha256": "c15ace232f406e319bd27ec01254359171ba786e7765d3f48b4f21002879e49e",
+  "source_sha256": {
+    "src/model/parser.cpp": "e5199c0accb1f0e2d3cfd5301a5581eee3db3238c0cd3d91ba741a2f65882051",
+    "scripts/verify_loader_artifact.ts": "60f0f266ce31b337eb61d6c702759e013e4a4d06e5ee492deca5e0ff2ab49d0d",
+    "scripts/verify_error_artifact.ts": "2d3848622da60ddab10e621b973b13a994e90b7ca11debd94fe3a71c0dde6c70",
+    "test/sql/ossie_loader_contract.test": "adea48dffeef528a2194ce648527603be2125823a3acd5169528178d7ab3c9ad",
+    "test/fixtures/loader_contract/nonstring_synonyms.json": "a879eb6b851092b39555f742ed4cc0f3fea2acdfe14298484fd953ae4c6b626a",
+    "test/fixtures/loader_contract/nonstring_examples.json": "2faf98d3ac9b1e07e67ebd1ee08dfe096625496e250de854900a347e08b25479"
+  },
+  "documentation_sha256": {
+    "docs/limitations.md": "e25ff89a54166802158ac8b579dd00f6e0bb482e52a63a4c48025ab488570509",
+    "docs/ossie-execution-research.md": "297c2ea70dacfebbe9760de7c81cb97519a4efa46beb3c50739c06b8f0c4bcc8",
+    "ossie-duckdb-plan.md": "8299dbe42fbee4bf3271de6628ac40f46d91a1fc0f6fdb342de15db0b07688aa"
+  },
+  "reports": {
+    "docs/research/ossie-req-001/r2-strings-loader-artifact-results.json": "5463f86fb25bbbfe5f02ebf19cbb0397c4d503cbb58d229df63e3769af3d6898",
+    "docs/research/ossie-req-001/r2-strings-population-artifact-results.json": "7b00ebf8d7b30344c8f4a5b1d3259efd09a7e2af7fbf833fa7dcd3c0ab653e2c",
+    "docs/research/ossie-req-001/r2-strings-expression-artifact-results.json": "860ee5a0b57d68f2c92a128bddb1feee0436e5d054b55198ac7f3bc10bec1082",
+    "docs/research/ossie-req-001/r2-strings-date-artifact-results.json": "e8d51d15ce7f8fd49d544c14536403738cd5e5945e2b28664bf6622dd3c75c94",
+    "docs/research/ossie-req-001/r2-strings-join_research-artifact-results.json": "3416401c0c184609e2dfd9b2883e2981e8671c0c4cfef1bce1ed722c57cbfda0",
+    "docs/research/ossie-req-001/r2-strings-joined_population-artifact-results.json": "bcf53d59325d499ea4b7fdab74eaa40a22af6500546fb7c33848b99b9cf8086c",
+    "docs/research/ossie-req-001/r2-strings-plan-artifact-results.json": "bc81b5358737c1ea0d999ec04907f725036869d4509981e01c698feb37bca811",
+    "docs/research/ossie-req-001/r2-strings-discovery-artifact-results.json": "b2edbcc684bea8dcd99fb782a080970dd081964feb57a050eed5997c0979e1af",
+    "docs/research/ossie-req-001/r2-strings-error-artifact-results.json": "04d1acce9c9c62e1722cc3d97fb80de9b584a0d4ef20c313cf6c3ec451345c34",
+    "docs/research/ossie-req-001/r2-strings-typed_population-artifact-results.json": "c2ae2f18c5484afa0d31b837535a4b273a964b1326d07e56d19a9eba12dbcafd",
+    "docs/research/ossie-req-001/r2-strings-mcp-results.json": "d66cac58a85c5256b005aef9d169040e4cf5295a545708404ba2f171b9397a66",
+    "docs/research/ossie-req-001/r2-strings-pre-fix-results.json": "a36969390b26e0f261a415bc5cecace3847fea11b389d9d62b757a9065b40a14"
+  },
+  "evidence_source_hash_assertions": 150,
+  "verification": {
+    "release": true,
+    "quality_local": true,
+    "state": 19,
+    "grain": 42,
+    "capture": 158,
+    "sql_assertions": 817,
+    "sql_cases": 23,
+    "sql_skips": 0,
+    "bun_tests": 38,
+    "bun_expects": 124,
+    "stock_artifact_verifiers": 10,
+    "strict_array_refusals": 35,
+    "static_invalid_loader_documents": 19,
+    "loader_reference_objects": 46,
+    "loader_multi_chunk_fields": 2500,
+    "population_mcp_checks": 330,
+    "population_mcp_refusals": 106,
+    "stock_cli_pass": 40,
+    "stock_cli_fail": 0,
+    "stock_cli_skip": 0,
+    "stock_cli_faithful": true,
+    "core_mcp_actual_resources": true,
+    "remote_ci": false,
+    "ubuntu_tidy": false
+  },
+  "local_log_sha256": {
+    "/tmp/ossie-r2-build.log": "c6889da5f6f6a565188013ca47f40ed4b8a4672778c4f2ba9c8c753c9a8ad3e4",
+    "/tmp/ossie-r2-gates.log": "3c988f8696681a7c73b59e59996f4d38095c3927cf3d2b651a6448fa32fecd3b",
+    "/tmp/ossie-r2-quality-final.log": "d8c22a83c0dbe8f58584d9e537338578801b07fc9b590d552432e9c6ee51be41",
+    "/tmp/ossie-r2-cli.log": "292689c49c1ecf919351381b62736842f844126d23eeb6513b6f5eb45c211510",
+    "/tmp/ossie-r2-core-mcp-final.log": "d2432264f935c32cc555a71999dd97f9dad6647fb4fa3615441a560ffd9fd591"
+  },
+  "retained_failures": [
+    "Pre-fix probe initially used an empty datasets array and hit existing required-dataset validation; supplied valid dataset before observing scalar coercion.",
+    "Bundle verifier initially assumed parse/DEFINITION_INVALID; actual core loader contract is load/LOAD_FAILED, corrected test expectation without modifying production envelope.",
+    "Typed verifier first lacked stock CLI PATH; reran with correct explicit prerequisite.",
+    "Core MCP first lacked OSSIE_EXTENSION and attempted registry install (404); reran with explicit local artifact, no fallback."
+  ],
+  "compatibility": "Valid JSON/YAML string arrays retain values; numeric/Boolean array members now rejected instead of coerced; API2.0.0/resultv1 unchanged. Other scalar string coercion remains a documented deviation for field correspondence review.",
+  "remaining": [
+    "R2 final per-field correspondence and deviation conclusion",
+    "final rule-driven P0 acceptance archive",
+    "pagination future research only",
+    "existing P1/non-goals, remote CI/Ubuntu tidy unrun"
+  ],
+  "delivery": "local commit only; no push/merge/publication"
+}

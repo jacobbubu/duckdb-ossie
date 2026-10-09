@@ -590,3 +590,21 @@ Advisor：按 advisor-escalation 复用只读 Astra/high 一轮取舍、无 chil
 保留失败/纠正：一次多文件 SQL/workflow patch 的 errors.json 名称不匹配，整次未写入；按实际文件名拆分后成功。两次 C++ format gate 失败，因为 Lead 误用默认 check-only 的 format.py，没有 --fix；检查固定脚本后使用 --fix --noconfirm，重建并重跑最终证据，先前报告不作为最终源码证据。Advisor 首轮指出 duplicate output bypass，已在 actual prepared names 层拒绝；限定澄清指出 decoder 的 Unicode toLowerCase 与 DuckDB ASCII-only 不同，已修正并用真实 native/MCP Ä/ä 控制验证。没有改变 fixture 数值以迎合预期。Advisor requested Astra/high，一轮架构与一轮限定澄清，无 children/写入；effective backend/effort/usage/billing unknown。
 
 本地 typed numeric 工作包完成，当前动作提交保留、不推送。R3.3/R7.4 在当前 typed adapter 范围的数字/空集关联缺口已补，有界大结果仅已有测例证据；整体 P0 尚需 R2 字符串数组 scalar 容错收紧、最终逐字段偏离结论和规则驱动验收归档。下一已授权本地包为 R2 loader 字符串数组类型收口，不扩大为全 JSON Schema validator。compile 最终绑定/catalogue 改进、分页调研及更广 P1/非目标、remote CI 仍保留既有边界。
+
+## R2 字符串数组 checkpoint（2026-10-09，恢复）
+
+本包沿 OSSIE-REQ-001 修复已确认的 StringArray scalar 容错：固定 schema 的 AI synonyms/examples、dataset primary_key、relationship from_columns/to_columns 均为字符串数组。unique_keys 已逐元素拒绝非字符串，不扩大为全 schema validator，也不修改 RequiredString/OptionalString 的既有 scalar 容错。合法字符串（含数字外观、Boolean 外观、中文及转义字符）保留原值；非字符串成员明确报出字段和零基索引，失败加载保持旧模型。先记录旧产物真实接受反例，再验证拒绝、合法元数据、关联列/主键及 bundle parse 失败保持。重建同产物执行原生/SQL/工具门禁与 stock artifact/MCP 回归；结果与必要剩余维护此 issue/现计划，本轮只本地提交、不推送。R2 逐字段偏离结论与最终 P0 规则驱动验收仍需收口，分页保持后续调研。
+
+## R2 字符串数组结果（2026-10-09）
+
+本包完成 StringArray 的严格 JSON 字符串成员检查，JSON/YAML 共用此路径。覆盖五种 AI scope 的 synonyms/examples、dataset primary_key 和 relationship from_columns/to_columns；非字符串成员报字段/零基索引，不再 stringify。unique_keys 既有严格检查保持。合法数字/Boolean 外观字符串、空串/空数组、缺省数组、中文/引号/反斜线/换行/tab 与嵌入 NUL 的 AI 数组按长度完整保留；metadata 字节保留不授权执行 NUL 表达式或 identifier。单值 RequiredString/OptionalString scalar 容错没有修改，不称全 schema validator；这些剩余偏离必须纳入下一轮逐字段结论。
+
+[旧产物真实接受证据](research/ossie-req-001/r2-strings-pre-fix-results.json) 绑定旧 artifact/parser 和完整反例输入，观察数字/Boolean 被转成字符串。[新 loader 证据](research/ossie-req-001/r2-strings-loader-artifact-results.json) 新增 35 个具名严格类型拒绝，逐次比较完整旧 metadata 保持；19 个静态坏文档、46 个 TPC-DS metadata 对照及 2,500 字段跨 chunk 控制仍通过。quoted "123"/"true" 真正声明为字段，所以主键/关系拒绝控制不能靠未知字段拒绝蒙混通过。YAML 引号内文本接受、未引用数值/Boolean 拒绝。
+
+[实际 bundle 错误控制](research/ossie-req-001/r2-strings-error-artifact-results.json) 将 bad core 重新绑定正确哈希再加载，得到 LOAD_FAILED/load/source Invalid Input，并验证旧概念及后续实际查询恢复；错误发生在 loader，不把它冒充 hash gate 或 manifest JSON parse。项目 API 仍 2.0.0，本包收紧无效文档接受行为，合法 schema 字符串数组兼容，typed result/MCP 成功格式不变。
+
+最终 artifact SHA256 `c15ace232f406e319bd27ec01254359171ba786e7765d3f48b4f21002879e49e`，release、quality-local、19 state/42 grain/158 capture、817 SQL assertions/23 cases/0 skips、38 Bun tests/124 expects 通过；十个 stock artifact verifiers、真实 population MCP 330 检查/106 拒绝、core MCP 实际资源和 stock CLI 40 PASS/0 FAIL/0 SKIP FAITHFUL 同产物通过。源码/输入/报告哈希绑定于 [控制记录](research/ossie-req-001/r2-strings-control-results.json)，历史报告不覆盖，远程 CI/Ubuntu tidy 未运行。
+
+保留失败/纠正：pre-fix 探针初版 datasets=[] 被既有 nonempty 检查拒绝，改成有效单数据集后才观察 scalar coercion；没有把最初拒绝当缺陷证据。新增 bundle 控制最初错误假设 parse/DEFINITION_INVALID，真实输出为 load/LOAD_FAILED；按现合同纠正期望，不改生产错误 stage。typed verifier 首次漏 stock CLI PATH 而拒绝，core MCP 首次漏 OSSIE_EXTENSION 而尝试 registry（404）；补齐明确本地产物环境后重跑成功，没有 registry fallback。
+
+本地 R2 数组工作包完成，提交保留、不推送。R2.2 的 StringArray 成员类型缺口已补；R2.5 逐字段支持/转换/拒绝及单值容错、quoted case 等偏离最终结论仍必要，之后串起规则驱动 A1–A8 验收归档，整体 P0 尚未完成。下一已授权本地动作是逐字段结论收口；分页后续调研、P1/非目标、remote CI 和交付权限沿原边界。

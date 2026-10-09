@@ -60,6 +60,21 @@ SELECT count(*) FROM ossie_metadata();
 14
 
 statement error
+CALL ossie_load('test/fixtures/loader_contract/nonstring_synonyms.json');
+----
+field 'synonyms' member at index 1 must be a string
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/nonstring_examples.json');
+----
+field 'examples' member at index 1 must be a string
+
+query T
+SELECT name FROM ossie_metadata() WHERE kind='model';
+----
+metadata_contract
+
+statement error
 CALL ossie_load('test/fixtures/loader_contract/missing_version.json');
 ----
 version must be

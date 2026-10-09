@@ -47,19 +47,8 @@ yyjson_val *Member(yyjson_val *obj, const char *key) {
 	return yyjson_obj_get(obj, key);
 }
 
-//! Renders a scalar as text. Every value the Ossie schema calls a string is read through here.
-//!
-//! Numbers and booleans are accepted rather than rejected because a model can easily arrive with
-//! them by accident, and the author's intent is unambiguous. `version: 1.5` in YAML is a float --
-//! quoting is what makes it a string, and nothing prompts you to quote it. The same is true of
-//! `"version": 1.5` in JSON. Before this, both silently produced an empty string: the value was
-//! neither used nor reported, which is the worst of the three options.
-//!
-//! Null and containers return false; the caller decides whether that is an error or an absent
-//! optional field.
-//!
-//! One caveat: a float's text is normalised by the round trip, so `1.50` reads back as `1.5`. The
-//! original spelling is gone by the time yyjson sees it. Quote the value to preserve it exactly.
+//! Legacy single-value string conversion for RequiredString/OptionalString.
+//! String arrays use strict JSON string members instead. This helper is not a schema validator.
 bool ScalarText(yyjson_val *val, string &out) {
 	if (!val) {
 		return false;
@@ -127,11 +116,11 @@ vector<string> StringArray(yyjson_val *obj, const char *key, const string &conte
 	size_t idx, max;
 	yyjson_val *item;
 	yyjson_arr_foreach(arr, idx, max, item) {
-		string text;
-		if (!ScalarText(item, text)) {
-			throw InvalidInputException("ossie_load: %s field '%s' must contain only strings", context, key);
+		if (!yyjson_is_str(item)) {
+			throw InvalidInputException("ossie_load: %s field '%s' member at index %s must be a string", context, key,
+			                            to_string(idx));
 		}
-		result.emplace_back(std::move(text));
+		result.emplace_back(yyjson_get_str(item), yyjson_get_len(item));
 	}
 	return result;
 }
