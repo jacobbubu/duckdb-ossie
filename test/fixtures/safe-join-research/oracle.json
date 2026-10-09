@@ -1,0 +1,63 @@
+{
+  "description": "Hand-defined independent row associations and integer cents; not generated from SQL result or model compiler",
+  "facts": [
+    {
+      "id": "f1",
+      "dimension": 1,
+      "cents": 1001,
+      "active": true
+    },
+    {
+      "id": "f2",
+      "dimension": 1,
+      "cents": 2002,
+      "active": true
+    },
+    {
+      "id": "f3",
+      "dimension": 2,
+      "cents": 3003,
+      "active": false
+    },
+    {
+      "id": "f4",
+      "dimension": 2,
+      "cents": null,
+      "active": true
+    },
+    {
+      "id": "f5",
+      "dimension": 3,
+      "cents": -505,
+      "active": true
+    },
+    {
+      "id": "f6",
+      "dimension": 3,
+      "cents": 0,
+      "active": true
+    }
+  ],
+  "dimensions": [
+    {
+      "id": 1,
+      "label": "North",
+      "eligible": true
+    },
+    {
+      "id": 2,
+      "label": "South",
+      "eligible": false
+    },
+    {
+      "id": 3,
+      "label": "North",
+      "eligible": true
+    },
+    {
+      "id": 4,
+      "label": "Unused",
+      "eligible": true
+    }
+  ]
+}

@@ -122,6 +122,8 @@ jobs:
           bun scripts/verify_population_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/population.json
           bun scripts/verify_expression_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/expression.json
           bun scripts/verify_date_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/date.json
+          # Existing core behavior and research preflight; joined population is not implemented.
+          bun scripts/verify_join_research_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/join_research.json
 
       - uses: actions/upload-artifact@v4
         if: always()

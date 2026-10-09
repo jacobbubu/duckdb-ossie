@@ -2,10 +2,12 @@
 
 ## Current research checkpoint — 2026-10-09
 
-Latest local milestone: NULLIF/guarded division and existing DATE boundaries verified.
-The DATE package passes 610 SQL assertions, 19 C++ checks and 31 Bun controls,
-with four same-artifact verifiers. Next authorized research is R6 safe-join
-contracts and independent controls; P0 remains incomplete. Detailed current
+Latest local milestone: R6 safe-join research controls completed after NULLIF/guarded
+division and DATE boundaries. Local gates pass 661 SQL assertions, 19 C++ checks
+and 31 Bun controls. Actual core behavior and research preflight remain distinct;
+production joined population is not implemented. Next authorized implementation
+is designated fact-grain validation and a separate frozen two-table profile; P0
+remains incomplete. Detailed current
 decisions and failures are in the checkpoints below and the existing research record.
 The earlier package counts in this introduction remain historical evidence.
 
@@ -559,3 +561,13 @@ f1e523b本地交付完成；下一已授权动作是DATE边界独立控制与类
 结果：现有DATE执行契约已补齐11行手算、两时区、21具名拒绝及失败快照保持；修正artifact helper非有限DATE表示。31 Bun、19 C++、17 SQL用例610断言与四个同产物verifier通过。C++未改，使用f1e523b产物；历史报告保留，现local issue记录CAST宽松前缀/interval先AST拒绝及harness失败。
 
 本包本地完成，下一动作本地提交，不推送。下一已授权研究R6安全事实/维度连接的前提/正负控制；剩余R3时间类型/函数与一般表达式、calendar、多期身份/ontology、population MCP完整验收继续在现计划/issue维护。远程CI/Ubuntu tidy未验证，全P0未完成。
+
+### R6研究 checkpoint（2026-10-09，恢复）
+
+DATE包fccce8d本地完成。下一已授权动作：人工事实/唯一维度连接oracle及实际core正负控制；核实整批键/匹配/类型与单事务双表观察，确定共享冻结连接人口的最小集成方式。先保持现单表v1拒绝多表，不把研究SQL预检或core live查询当生产安全连接。结果/证据/必要剩余沿现local issue维护；后续R3/calendar/多期身份/ontology/MCP与远端验证仍待完成。
+
+### R6研究本地交付 checkpoint（2026-10-09）
+
+结果：6fact/4dimension独立oracle与core真实产物正例、11数据反例、4规划拒绝和双连接同事务实验通过。坏声明键确实重复/丢弃事实，维度COUNT4不能在事实展平上变成6。v1多表拒绝保留；生产双表人口未实现。31 Bun/100断言、19 C++、18 SQL用例661断言通过，新证据与集成约束在现issue及docs/safe-join-research.md，失败也保留。
+
+本包本地研究完成，下一动作本地提交，不推送。下一已授权实施从共享原模型指定fact grain校验和独立冻结双表profile开始；实际键/完整匹配检查、来源AST重写与同冻结数据对象/指标、失败保持/取消/重载/lifetime都仍须落地证明。其余R3/calendar/多期身份/ontology/MCP和远端CI/tidy仍未完成。

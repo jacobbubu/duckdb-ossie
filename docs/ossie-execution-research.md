@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-09。状态：首轮研究、core loader/元数据与单表人口执行工作包已完成并本地验证；R3 NULLIF/受保护除法及DATE边界控制已本地完成；当前610条SQL断言、19项C++与31项Bun控制通过。下一步研究R6安全连接；P0 尚未完成。
+日期：2026-10-09。状态：首轮研究、core loader/元数据与单表人口执行工作包已完成并本地验证；R3 NULLIF/受保护除法及DATE边界控制已本地完成；R6连接研究控制也已本地完成；当前661条SQL断言、19项C++与31项Bun控制通过。下一步实施指定fact粒度验证与独立冻结双表profile；P0 尚未完成。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -299,3 +299,21 @@ DATE切片结果：11行人工Gregorian日历（各行不同身份）覆盖年/�
 验证：31 Bun控制/99断言、19 C++状态检查、17个SQL用例610断言通过。共享helper修改后原loader17拒绝/46metadata/2500字段、population46拒绝/475行+11边界、expression27拒绝重新对同一f1e523b实际产物通过；本轮没有C++修改所以无需重建。CI第四DATE验证器已接同download，YAML/diff检查通过；远程CI/Ubuntu tidy未运行。新证据：[DATE控制汇总](research/ossie-req-001/r3-date-control-results.json)、[DATE原生产物](research/ossie-req-001/r3-date-artifact-results.json)。历史来源/475CSV/proposed definitions/子模块与旧报告保持原样。
 
 本包本地完成，下一动作本地提交；本轮不推送。整体R3/P0未完成：TIME/DateTime/DateTimeTz、更多日期函数/一般转换及表达式边界仍有限，R6安全连接、calendar、多期身份/更广ontology与population MCP仍必要。下一已授权工作沿原计划研究R6安全连接前提及独立正负控制；日期扩展不能悄悄改变人口身份/时间基础。首段旧阶段计数是历史记录，本节是当前结果。
+
+### R6 安全连接研究与控制（2026-10-09，继续）
+
+恢复：fccce8d已本地提交且工作区干净，未推送。沿本local issue研究既有INNER fact→unique dimension契约，不先解除单表profile限制。固定core规范relationships不定义INNER/LEFT；当前core按声明键推导cardinality，Compile按所需投影/过滤拉入关系，但不验证真实数据唯一/外键完整。现population单表限制仍是保护，不能以core能查询来声称共享多表人口已实现。
+
+本包范围：人工单事实/单维度fixture，独立TypeScript手算ID/分值oracle与真实stock产物core查询核对；完整匹配正例、重复维度键（含未用键）、NULL维度/事实键、缺失匹配、同名物理列与类型不等负例，证明缺少预检如何重复/丢失记录。继续验证既有fan-out、歧义、多粒度拒绝。研究原生单事务捕获两表及并发修改边界；SQL研究预检与生产扩展能力分开记录。不引入自动LEFT或distinct修复、聚合拆分、role-playing、多事实/复合键。一个限定Advisor审查集成约束；下一执行实现范围以证据确定。本轮研究/控制本地提交，不推送/合并/发布。
+
+R6研究结果：6行fact/4行dimension（含无引用行），独立手工关系与bigint分值oracle核对SUM55.01、非NULL金额5、AVG11.002，North4/SUM24.98、South2/SUM30.03，active+eligible成员f1/f2/f5/f6与金额24.98。共享物理id列均限定来源，core以fact.id分组取得成员下钻并和native SQL比对；不能称双表ossie_objects已实现。11类研究SQL预检反例与实际core结果分开记录：引用/无引用重复维度（引用重复使实际8行/SUM85.04）、NULL维度键、缺失目标（4行/SUM60.06）、NULL外键、过滤外未匹配事实、重复/NULL事实ID、INTEGER→VARCHAR强转导致重复匹配、空事实仍有坏维度、空维度且有事实。实际COUNT(*)/ID multiplicity与COUNT(id)分别核对，避免NULL身份被COUNT隐藏。两表全空可接受，NULL非键属性允许。
+
+原compiler的many-to-many/reverse fan-out/歧义/多粒度4拒绝仍有效，primary_key与unique_keys声明路径核对。维度COUNT可独立core编译得到4，展平到fact行会得到6；不能将Compile成功当指定fact粒度证明。实际两连接同一instance中，fact第一次读取后另一连接更新dimension，当前事务的dimension/join仍读取旧版本；commit后core看到新值。仅证明同库native事务实验，未证明生产bundle捕获/发布后冻结。v1多表拒绝实际仍有效。
+
+限定Advisor一轮建议加一次澄清：独立新profile、全批次键/匹配检查、unused坏键拒绝但unused有效行允许、same underlying native DB、展平前原模型指定fact grain检查、最终AST不能保留live dimension BindTable。Lead采纳并由实际core/源码/事务实证核对；不复制第二套grain算法，下一步拟提取共享RequireMetricGrain式小接口。有效backend/effort/usage/billing unknown。集成契约见[安全连接研究结论](safe-join-research.md)，该文是技术边界，不是另建backlog或宣告生产能力。
+
+保留失败：首轮harness把core dimensions-first结果顺序写反；第二轮误以为ORDER BY默认NULL在前，实测为后；均修正oracle展示顺序，分值/成员数据未改。检查中删除了一段无关的模糊id SQL及catch空数组代码，最终每个验证失败必须传播，未把捕获异常当正例。最终verifier单独退出0。原C++/source/submodules/proposed definitions/历史报告未改，不需要重建扩展。
+
+本地验证：31 Bun控制/100断言、19 C++状态检查、18个SQL用例661断言通过；新R6真实产物verifier核对11数据反例/4规划拒绝/单事务及v1多表拒绝。CI追加research verifier到同download产物，明确其是core研究控制不是生产安全连接；当前其他四verifier输入/helper/artifact未改变，沿前轮同哈希证据复用，没有假称本轮重新运行。新报告[研究产物证据](research/ossie-req-001/r6-join-research-artifact-results.json)、[门禁汇总](research/ossie-req-001/r6-join-control-results.json)。远程CI/Ubuntu tidy未运行。
+
+本研究包本地完成，下一动作本地提交，不推送。整体R6/P0未完成；下一已授权实施按上述边界先共享指定fact粒度验证，再独立双表profile冻结/预检/映射及对象指标共同人口，禁止关闭现有保护。R3其余语言/时间类型、calendar、多期身份/更广ontology、population MCP与完整验收仍是既有必要剩余。

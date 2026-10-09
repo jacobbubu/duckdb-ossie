@@ -144,7 +144,7 @@ The expression verifier uses hand-derived ratios and native type/NULL controls,
 30 Bun controls, 19 C++ checks and 566 SQL assertions in 16 cases; this does not
 establish full R3 or safe-join support.
 
-Current DATE-boundary controls are in
+Historical DATE-boundary controls are in
 [r3-date-control-results.json](research/ossie-req-001/r3-date-control-results.json),
 with same-artifact [DATE](research/ossie-req-001/r3-date-artifact-results.json),
 [loader](research/ossie-req-001/r3-date-loader-artifact-results.json),
@@ -154,6 +154,15 @@ Native DATE sentinel handling preserves infinity rather than formatting it as a
 finite date. Local verification passes 31 Bun controls, 19 C++ checks and 610 SQL
 assertions in 17 cases; CI wiring schedules all four verifiers against one download.
 No C++ execution change or new artifact build was necessary in this slice.
+
+Current R6 research controls are in
+[r6-join-control-results.json](research/ossie-req-001/r6-join-control-results.json) and
+[r6-join-research-artifact-results.json](research/ossie-req-001/r6-join-research-artifact-results.json).
+The fifth same-download verifier distinguishes actual live core behavior from a
+fixed-fixture research SQL safety oracle; it does not add joined population support.
+Local gates pass 31 Bun controls, 19 C++ checks and 661 SQL assertions in 18 cases.
+The previous four actual-artifact reports remain applicable to unchanged sources,
+helper and artifact; they were not rerun in this research package.
 
 Previous Bun migration results and source hashes are in
 [bun-toolchain-results.json](research/ossie-req-001/bun-toolchain-results.json),
