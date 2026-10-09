@@ -1,0 +1,67 @@
+{
+  "scope": "Locally verified bounded semantic AST explanation; not full R7/P0, physical plans or remote CI",
+  "base_commit": "e26f2df",
+  "artifact_sha256": "4fd024239e9c09ea1838efc4f4aab4f65f026c3b2735879480cf1954cf775e15",
+  "source_sha256": {
+    "src/population/population.cpp": "ae45324a83e913372a71bfff4e06b4c970852e140fce5fd79a2adc936ac65fb3",
+    "scripts/verify_plan_artifact.ts": "7abe2bd8a37897cc53b74a18465570d6d770b9b772420eb909d275b8d49aecc5",
+    "scripts/verify_joined_population_artifact.ts": "3b3c3bfadd9ce8d365a8a665a119e400b8295acf413f7e7424a42213f59c8358",
+    "scripts/verify_population_mcp.ts": "890a79687aef4b4a26a0c1a351d61db27e2ef53716f77a476515ee2f79740259",
+    "examples/population_server.sql": "7a2e72ec77659af4cdf3aef4f18847480a34f62624479bf3b473ab456f23b2a6",
+    "test/sql/ossie_population_plan.test": "079b44703b9733b83293e23d18c28787ac96fa11132c6463e51e4a98f22c2870",
+    ".github/workflows/MainDistributionPipeline.yml": "5ba7aa0c68d38ea8504dc9193201f4c42581ade4b3e4bee3a784776e30734d50"
+  },
+  "verification": {
+    "state": 19,
+    "grain": 42,
+    "capture": 138,
+    "sql_assertions": 741,
+    "sql_cases": 20,
+    "sql_skips": 0,
+    "bun_tests": 31,
+    "bun_expects": 107,
+    "stock_artifact_verifiers": 7,
+    "plan_checks": 36,
+    "population_mcp_checks": 189,
+    "core_mcp_actual_resource_reads": true,
+    "stock_cli_pass": 40,
+    "stock_cli_fail": 0,
+    "stock_cli_skip": 0
+  },
+  "reports": [
+    "r7-plan-loader-artifact-results.json",
+    "r7-plan-population-artifact-results.json",
+    "r7-plan-expression-artifact-results.json",
+    "r7-plan-date-artifact-results.json",
+    "r7-plan-join-research-artifact-results.json",
+    "r7-plan-joined-population-artifact-results.json",
+    "r7-plan-artifact-results.json",
+    "r7-plan-mcp-results.json"
+  ],
+  "retained_failures": [
+    "relative LOAD hardened CLI refusal",
+    "formatter-context patch mismatch and temporary editing script SyntaxError; no successful write",
+    "SQL missing separator and later require json skip, replaced by text envelope tests with stock full JSON parser",
+    "test comment formatting missing separator",
+    "duplicate metric table binding refusal vs diagnostic AST",
+    "OR oracle initially omitted April1 e11; corrected against immutable CSV and independent Advisor review"
+  ],
+  "advisor": {
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "scope": "one bounded architecture round and one focused semantic evidence clarification; readonly, no children"
+  },
+  "compatibility": "compile gains plan_json before executed, eleven total columns; read by name; include_trace supported",
+  "remaining": [
+    "uniform errors and full population metric/field discovery plus interface versioning",
+    "compile does not guarantee final table schema binding",
+    "lossless MCP decimal/bigint transport and size/truncation beyond fixtures",
+    "wider time/calendar/multiperiod identity/ontology",
+    "remote CI/Ubuntu tidy"
+  ],
+  "delivery": "local commit only; no push/merge/service publication"
+}

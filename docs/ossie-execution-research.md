@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-09。状态：新格式core、bounded单表/双表人口及并发取消控制已本地完成；本轮population MCP契约与实际传输验证已通过。现有P0/R7整体未完成，当前剩余和下一授权动作见文末checkpoint；历史计数按当时包保留。
+日期：2026-10-09。状态：新格式core、bounded单表/双表人口及并发取消控制已本地完成；population MCP契约及本轮实际AST编译说明/来源验证已通过。现有P0/R7整体未完成，当前剩余和下一授权动作见文末checkpoint；历史计数按当时包保留。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -396,3 +396,17 @@ R7验收差距回顾（沿现issue/计划，不另建backlog）：
 | R7.5不同结果/错误契约 | 3tool+conceptresource；population AST错误含object/stage/reason/capability | reused core name-resolution及JSON参数错误尚非统一结构；population完整指标/字段发现仍缺 |
 
 本工作包本地完成，下一动作提交保留、不推送。整体P0和完整A1–A8尚未完成。下一授权本地工作优先R7.2实际机器可读compile说明与同快照证明，继续复用shared生产AST；先核对既有模型方言/原表达式/展平provenance，再确定最小字段契约。后续时间/calendar/多期身份/更广ontology与remoteCI仍是显式剩余，不因本轮MCP通过扩大语义/发布范围。
+
+## R7 实际编译说明 checkpoint（2026-10-09，恢复）
+
+e26f2df已本地提交，当前工作区干净。用户确认MCP业务接口为本项目契约后授权继续下一步。当前包补ossie_concept_compile机器可读plan_json，项目schema独立版本，非Ossie/MCP标准字段。须分原始definition provenance和最终production QueryAST；保留原模型方言/字段/时间角色/metric定义及经检查的join策略，final WHERE/projections/GROUP BY/from均取同一statement。阈值/root-无派生规则、大小写canonical名称、NULL/空集、single/joined、旧prepared跨reload、实际MCP输出验证。时间仅公布实际谓词和声明时间角色，不从OR等复杂表达式虚构单一区间；不宣称physical optimizer plan或compile已执行。原SQL/版本hash/目标字段及最终executed=false保持可识别；新增列为接口schema变化，消费者应按列名而非固定列数。范围为本地生产metadata及必要测试，不改业务公式、query semantics、core API、vendor或服务发布/推送授权。Advisor限定review粒度/方言/原始与展平来源准确性；requested Astra/high，有效backend/effort/usage/billing unknown。当前R7.5错误统一、完整population词汇发现及JSON精确数值/超fixture截断仍保留，不悄悄混入本包。
+
+结果：新增ossie-population-plan-v1项目plan_json，来自同一个最终生成statement（EngineFunctions之后），包含phase/requestkind/profile/actual engine version、三定义名称/version/hash、manifest/snapshot/content hash、整批捕获行数、concept/root/formal_rule是否应用、原身份/声明key/已验证输入grain、结构化source capture与INNER/reject load-time join、canonical有序metric所选/可用dialects/声明及lowered表达式、原声明字段及effective/explicit时间角色、requested filters与actual WHERE、actual FROM/ordinal+alias+expression/GROUP BY、结果行为和限制。definitions model在load的ParseModel之后/source改写之前保存，保留已parse/lower的声明来源，不冒充raw document AST。CaptureEvidence/已检查join字段在load保存，未从拼接source字符串反推。Plan存于PopulationBind，prepared跨reload保持旧definition/snapshot；file改动与失败load不替换已加载plan。对象root applied=false，无WHERE为JSON null；完整捕获rows不等于过滤人口/分组/AVG分母，filtered_rows_computed=false；复杂OR日期谓词不推断单一区间。双表query执行扫描冻结数据，无liveJOIN，原fact粒度与输出分组分别说明。
+
+兼容及边界：compile新增plan_json位于executed前，前9列位置保留但总列数11、executed位置改变，固定10列SELECT*/解包受影响，应按列名读取。compile新支持include_trace，MCP compile模板开启该参数，使实际追溯投影可检查。对象/metric结果schema及其执行语义不变。compile没有最终engine Prepare/表输出绑定，不声称physical/optimizer plan、执行已发生或SQL可重放；重复metric可生成各自ordinal/alias，但实际table query随后拒绝duplicate column name。这是现有compile与执行绑定阶段边界，不记作计算错误，本包不额外设计重复名处理。R7.2当前生成语义AST及不可变来源说明已落地；R7整体/P0仍不等于完成。
+
+证据：同产物SHA4fd024239e9c09ea1838efc4f4aab4f65f026c3b2735879480cf1954cf775e15。完整make quality-local test最终19state/42grain/138capture、741SQL断言/20用例无skip、31Bun/107expect通过；7个stock artifact verifiers通过（新plan36具名检查/10个实际观察，joined新增quoted names/CASE/ratio plan检查）。actual population MCP189检查、原core MCP真实资源内容、stock CLI40PASS0FAIL0SKIP通过。native runner仍明确执行同production source，其controlled evidence不冒充loadable注入并发。结果与hash归[r7-plan-control-results.json](research/ossie-req-001/r7-plan-control-results.json)，完整JSON由stock Node/Bun独立解析；SQL只检查text envelope/prepared快照，并明确不是JSON parser验证。现artifact-load Linux/macOS same-download matrix新增plan verifier；远程CI/Ubuntu tidy未执行，未修改远程设置。
+
+保留失败：首次手动stockprobe用relative LOAD被macOS hardened CLI拒绝，已用绝对path和-bail纠正；一次patch位置受formatter变动未命中，一次临时Python编辑脚本引号语法错误均未成功写入，之后按实际源码patch。首次新增SQL require命令未空行，测试parser报错；补空行后发现require json会使该用例skip（build tree不含json），移除依赖并以text envelope控制+stock完整JSON检查替代；新增comment空行formatter要求随后修正，最终20用例均实际执行。新verifier先误认为重复输出可直接执行，真实binder拒绝后改成“诊断ordinal保留+真实执行拒绝+正常执行对照”，不放宽生产binder。初次OR手算漏4月1日，核对原不可变CSV e11 productX/ytd20/gaap100后，正确三组为03-01 count2/sum10（e04 NULL仍计身份）、03-31 count1/sum50、04-01 count1/sum100；未更改query/fixture以迎合预期。Advisor一次架构建议+一次针对这两处语义失败的限定澄清，独立复核三组及physical_plan/range_inferred边界；Lead按源CSV检查并由真实运行通过。requested Astra/high，有效backend/effort/usage/billing unknown。
+
+当前本地编译说明工作包完成，下一动作提交保留、不推送。对比此前R7差距，下一授权本地工作优先完整population指标/字段词汇发现及接口版本，随后统一错误结构/剩余验收；编译不能保证最终绑定、MCP精确Decimal/大整数和超fixture size/truncation仍需明确处理。更广时间/calendar/多期身份/ontology和remoteCI为既有剩余，未因新说明扩大实现或发布权限。

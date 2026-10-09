@@ -131,7 +131,9 @@ returns NULL. Full ontology and calendar completion remain later work. A bounded
 fact-dimension profile and a separate population MCP example are now available;
 see [the profile contract](docs/population-profile.md) for the manifest, limits
 and SQL examples. `ossie_concept_compile` SQL is diagnostic and
-requires an internal frozen-data dependency; it cannot be replayed as ordinary SQL.
+requires an internal frozen-data dependency; it cannot be replayed as ordinary SQL. Its
+[versioned plan_json](docs/population-plan.md) describes the generated AST and
+immutable definition/capture provenance; it is not a physical plan.
 
 ## Serving a model to an AI agent
 

@@ -54,7 +54,7 @@ is a **JSON-encoded string array**. Send the string `"[]"` for an empty list. Ex
 |---|---|---|
 | `population_objects` | concept, filters | Entity/record IDs, declared logical fields and row trace |
 | `population_query` | concept, metrics, dimensions, filters | Named aggregates/group keys and row trace |
-| `population_compile` | concept, metrics, dimensions, filters | Diagnostic SQL, profile, definition/snapshot hashes, execution target, `executed=false` |
+| `population_compile` | concept, metrics, dimensions, filters | Diagnostic SQL, versioned plan_json, definition/snapshot hashes, execution target, `executed=false` |
 
 Empty metrics select the object path only for compile and require empty dimensions.
 All filters retain the [profile AST restrictions](population-profile.md) and can
@@ -76,8 +76,9 @@ empty ungrouped aggregate has COUNT zero and SUM/AVG NULL. Nonempty rows carry
 `_ossie_snapshot_id`, `_ossie_content_sha256`, `_ossie_ontology_sha256`. Empty row
 sets cannot carry row trace: retain compile metadata and the fixed operator bundle.
 Separate compile/query calls are not an atomic operation across an operator reload.
+The compile tool enables `include_trace` to show the same trace projections as query/object tools.
 Compile SQL requires an internal AST dependency and cannot be replayed as ordinary
-SQL. Full machine-readable predicate/dialect/grain plan explanation remains open.
+SQL. The [machine-readable plan](population-plan.md) describes the generated semantic AST and its definition/capture provenance; it is not a physical plan.
 
 Duckdb_mcp JSON numeric serialization is **not a lossless DECIMAL wire contract**.
 Fixture totals are checked at cents precision and AVG with 1e-10 tolerance; that

@@ -258,6 +258,35 @@ export async function verify(artifact: string) {
             ),
           );
         });
+        const plan = JSON.parse(String(compiled.plan_json));
+        check(`gaap-${threshold}: actual versioned compile explanation`, () => {
+          assert.equal(plan.schema_version, "ossie-population-plan-v1");
+          assert.equal(plan.physical_plan, false);
+          assert.equal(plan.executed, false);
+          assert.equal(plan.snapshot.id, compiled.snapshot_id);
+          assert.equal(
+            plan.definitions.ontology.sha256,
+            compiled.ontology_sha256,
+          );
+          assert.equal(plan.concept.formal_rule.applied, true);
+          assert.equal(
+            plan.concept.formal_rule.declared_sql,
+            `User.ytd_gaap >= ${threshold}`,
+          );
+          assert(
+            String(compiled.sql).includes(plan.filters.effective_where_sql),
+          );
+          assert.deepEqual(
+            plan.generated_ast.projections
+              .slice(-3)
+              .map((projection: { alias: string }) => projection.alias),
+            [
+              "_ossie_snapshot_id",
+              "_ossie_content_sha256",
+              "_ossie_ontology_sha256",
+            ],
+          );
+        });
         const total = (await rows("population_query", args))[0];
         const expected = baseline.cases[String(threshold)];
         check(`gaap-${threshold}: independent totals and trace`, () => {

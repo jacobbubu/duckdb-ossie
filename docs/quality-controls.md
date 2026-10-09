@@ -194,3 +194,16 @@ in the old example and CLI smoke registration are corrected. See
 [the calling contract](population-mcp.md) and
 [local evidence](research/ossie-req-001/r7-population-mcp-results.json).
 This is a local transport package and CI wiring, not remote CI or full R7/P0.
+
+## Population plan checkpoint
+
+The same-download `artifact-load` matrix now runs `verify_plan_artifact.ts` in
+addition to the six existing stock verifiers. It parses versioned `plan_json`,
+checks original-vs-generated expression provenance, actual output ordinals and
+trace, disjoint DATE population, empty capture, dialect choice, immutable prepared
+reload/failed loads and changed definition files. Joined controls also inspect
+quoted-name and computed CASE/ratio plans. The MCP probe checks the plan returned
+by the actual server; its compile template enables trace projections. New SQL
+envelope/prepared controls avoid a JSON-extension dependency; full JSON parsing
+is performed in the stock Bun verifier. See [the plan contract](population-plan.md).
+This is generated-AST evidence, not a physical plan or remote CI result.

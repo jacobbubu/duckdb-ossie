@@ -134,6 +134,7 @@ jobs:
           # Existing core behavior and research preflight, separate from production controls.
           bun scripts/verify_join_research_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/join_research.json
           bun scripts/verify_joined_population_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/joined_population.json
+          bun scripts/verify_plan_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/plan.json
 
       - uses: actions/upload-artifact@v4
         if: always()

@@ -2,21 +2,23 @@
 
 ## Current research checkpoint — 2026-10-09
 
-Current local milestone: population MCP tools now expose separate object, metric
-and compile contracts plus a readable concept resource. Actual stock CLI stdio
-controls compare both original 475-row rule versions and the bounded joined profile
-with independent IDs/numbers, preserve punctuation in filters, reject hostile
-inputs and keep the fixed snapshot after failures. An existing core discovery
-resource argument-order bug is repaired and verified by reading its content.
-The transport uses explicit validated JSON string lists; it does not guarantee
-lossless DECIMAL serialization or strict MCP schema enforcement.
-This package changes no C++ execution semantics; the previous 138 native capture
-and cancellation controls remain evidence for unchanged production source.
-P0 and wider R7 remain incomplete. Next authorized local work is the actual
-machine-readable population compile explanation and remaining acceptance gaps,
-before broader ontology/calendar/time scope. Remote CI/Ubuntu tidy are unverified;
-no new push, merge or external service publication is authorized.
-Detailed evidence/remaining needs stay in OSSIE-REQ-001.
+Current local milestone: compile now exposes project-versioned plan_json from the
+actual generated semantic SELECT AST, with immutable definition/dialect and input
+capture provenance, applied formal rule, final WHERE, ordered projections/groups,
+validated input grain/join policy, snapshot hashes and explicit stage limits.
+It is not a physical/binding plan; captured rows are not filtered counts and no
+time interval is inferred from arbitrary predicates. Compile supports trace
+projections and now returns eleven columns; consumers must read columns by name.
+Prepared and failed-load/file-change controls retain their old explanation.
+Final local gates pass 741 SQL assertions in 20 cases without skips, 19 state/42
+grain/138 capture native checks, 31 Bun controls, seven same-artifact stock
+verifiers, 189 population MCP checks and CLI/core MCP. Retained failures and
+source-bound evidence stay in OSSIE-REQ-001; remote CI/Ubuntu tidy are unverified.
+This explanation package is locally complete; R7/P0 and the wider goal remain
+incomplete. Next authorized local work returns to population metric/field
+discovery and interface versioning, then uniform errors and remaining acceptance,
+before broader ontology/calendar/time scope. No new push, merge or external
+service publication is authorized.
 The earlier package counts in this introduction remain historical evidence.
 
 The first research package is complete: pinned source evidence, an independent

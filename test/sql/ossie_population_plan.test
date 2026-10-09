@@ -1,0 +1,62 @@
+# name: test/sql/ossie_population_plan.test
+# description: compiled explanation envelope and immutable prepared snapshot
+# group: [sql]
+
+# These are text envelope controls; stock verify_plan_artifact.ts parses the complete JSON.
+
+require ossie
+
+statement ok
+CREATE TABLE dws_gaap_di(ds DATE, product VARCHAR, region VARCHAR, user_type VARCHAR, user_id VARCHAR, gaap_val DECIMAL(18,2), ytd_gaap DECIMAL(18,2));
+
+statement ok
+COPY dws_gaap_di FROM 'docs/research/ossie-req-001/gaap-boundary.csv' (HEADER);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population/bundle-10.json');
+
+query IIII
+SELECT contains(plan_json,'"schema_version":"ossie-population-plan-v1"')::INTEGER, contains(plan_json,'"request_kind":"objects"')::INTEGER, contains(plan_json,'"applied":false')::INTEGER, contains(plan_json,'"effective_where_sql":null')::INTEGER FROM ossie_concept_compile('User',[],[],[]);
+----
+1	1	1	1
+
+query IIIII
+SELECT contains(plan_json,'"version":"0.2.0.dev0"')::INTEGER, contains(plan_json,'"name":"gaap_population"')::INTEGER, contains(plan_json,'"name":"gaap_binding"')::INTEGER, contains(plan_json,'"physical_plan":false')::INTEGER, contains(plan_json,'"sql_replayable":false')::INTEGER FROM ossie_concept_compile('ValidUser',['gaap_sum'],[],[]);
+----
+1	1	1	1	1
+
+query III
+SELECT contains(plan_json,'"declared_sql":"User.ytd_gaap >= 10"')::INTEGER, contains(plan_json,'"ordinal":5')::INTEGER, contains(plan_json,'"alias":"_ossie_ontology_sha256"')::INTEGER FROM ossie_concept_compile('ValidUser',['gaap_sum'],['dws_gaap_di.ds'],[],include_trace=>true);
+----
+1	1	1
+
+query III
+SELECT contains(plan_json,'"captured_population_rows":11')::INTEGER, (SELECT count(*) FROM ossie_objects('ValidUser',[])), contains(plan_json,'"filtered_rows_computed":false')::INTEGER FROM ossie_concept_compile('ValidUser',['record_count'],[],[]);
+----
+1	7	1
+
+query III
+SELECT contains(plan_json,'"is_time":true')::INTEGER, contains(plan_json,'"is_time_explicit":false')::INTEGER, contains(plan_json,'"selected_dialect":"OSSIE_SQL_2026"')::INTEGER FROM ossie_concept_compile('ValidUser',['gaap_sum'],[],[]);
+----
+1	1	1
+
+query III
+SELECT contains(plan_json,'"range_inferred":false')::INTEGER, contains(sql,' OR ')::INTEGER, contains(sql,'User.date')::INTEGER FROM ossie_concept_compile('ValidUser',['record_count'],[],['User.date < DATE ''2026-03-02'' OR User.date >= DATE ''2026-03-31''']);
+----
+1	1	0
+
+statement ok
+PREPARE saved_explanation AS SELECT contains(plan_json,'"declared_sql":"User.ytd_gaap >= 10"')::INTEGER FROM ossie_concept_compile('ValidUser',['gaap_sum'],[],[]);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population/bundle-20.json');
+
+query I
+EXECUTE saved_explanation;
+----
+1
+
+query I
+SELECT contains(plan_json,'"declared_sql":"User.ytd_gaap >= 20"')::INTEGER FROM ossie_concept_compile('ValidUser',['gaap_sum'],[],[]);
+----
+1

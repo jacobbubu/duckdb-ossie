@@ -233,8 +233,18 @@ struct Attribute {
 	bool unique;
 };
 
+struct CaptureEvidence {
+	string dataset, source, sha256;
+	idx_t rows;
+};
+
 struct Bundle {
 	Model model;
+	// Parsed/lowered definition model, before replacing source names and flattening fields.
+	Model definition_model;
+	string ontology_name, ontology_version, mapping_name, mapping_version;
+	vector<CaptureEvidence> inputs;
+	string capture_join = "null";
 	string profile = PROFILE;
 	// Original logical names survive flattening; generated fields are never a public namespace.
 	vector<pair<vector<string>, string>> provenance;
@@ -955,7 +965,7 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 	Keys(policy, {"fact", "dimension", "relationship", "type", "missing"}, "join policy");
 	if (Text(policy, "type") != "INNER" || Text(policy, "missing") != "reject")
 		Fail("join", "capability", "explicit INNER/reject complete-match policy required");
-	Model original = bundle.model;
+	const auto &original = bundle.definition_model;
 	if (original.datasets.size() != 2 || original.relationships.size() != 1)
 		Fail("join", "capability", "exactly two datasets and one relationship required");
 	auto fact = original.FindDataset(Text(policy, "fact"));
@@ -1155,6 +1165,18 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 		}
 	}
 	bundle.execution_target += "]}";
+	bundle.capture_join =
+	    "{\"relationship\":" + JSONString(relation.name) + ",\"from_dataset\":" + JSONString(fact->name) +
+	    ",\"to_dataset\":" + JSONString(dimension->name) + ",\"from_column\":" + JSONString(relation.from_columns[0]) +
+	    ",\"to_column\":" + JSONString(relation.to_columns[0]) +
+	    ",\"type\":\"INNER\",\"missing\":\"reject\","
+	    "\"validation_scope\":\"entire captured inputs before request filters\","
+	    "\"execution_stage\":\"load-time frozen lookup; no live query join\"}";
+	for (auto dataset : {fact, dimension}) {
+		auto &capture = dataset == fact ? facts : dims;
+		bundle.inputs.push_back(
+		    {dataset->name, dataset->source_bound, Hash(engine, capture.canonical), capture.rows.size()});
+	}
 }
 
 shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_path) {
@@ -1204,6 +1226,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	auto ontology_bytes = read_definition("ontology", bundle->ontology_hash);
 	auto mapping_bytes = read_definition("mapping", bundle->mapping_hash);
 	bundle->model = ParseModel(LooksLikeYaml(core_bytes) ? YamlToJson(core_bytes, "core") : core_bytes, RebindMap());
+	bundle->definition_model = bundle->model;
 	if (bundle->profile == JOIN_PROFILE)
 		FreezeJoin(context, *bundle, Member(root, "join"), *engine);
 	if (bundle->model.datasets.size() != 1 || !bundle->model.relationships.empty()) {
@@ -1233,6 +1256,10 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	}
 	Document ontology(ontology_bytes), mapping(mapping_bytes);
 	Definitions(*bundle, ontology.Root(), mapping.Root());
+	bundle->ontology_name = Text(ontology.Root(), "name");
+	bundle->ontology_version = Text(ontology.Root(), "version");
+	bundle->mapping_name = Text(mapping.Root(), "name");
+	bundle->mapping_version = Text(mapping.Root(), "version");
 	for (auto &entry : bundle->provenance) {
 		if (StringUtil::CIEquals(entry.first[0], bundle->root) || StringUtil::CIEquals(entry.first[0], bundle->derived))
 			Fail(entry.first[0], "bind", "dataset and concept namespaces must be distinct");
@@ -1299,6 +1326,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		bundle->collection = materialized.TakeCollection();
 		bundle->content_hash = Hash(*engine, content);
 		bundle->snapshot_id = bundle->content_hash + ":" + to_string(++batch_sequence);
+		bundle->inputs.push_back({dataset.name, bundle->original_source, bundle->content_hash, bundle->rows});
 	}
 	dataset.source_bound = "memory.main.ossie_snapshot";
 	string projection = "SELECT ";
@@ -1420,9 +1448,137 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 	return statement;
 }
 
+string JSONStrings(const vector<string> &values) {
+	string result = "[";
+	for (idx_t i = 0; i < values.size(); i++) {
+		if (i)
+			result += ",";
+		result += JSONString(values[i]);
+	}
+	return result + "]";
+}
+
+string DefinitionExpression(const ModelExpression &expression) {
+	return "{\"selected_dialect\":" + JSONString(expression.dialect) +
+	       ",\"available_dialects\":" + JSONStrings(expression.available_dialects) +
+	       ",\"declared_sql\":" + JSONString(expression.sql) +
+	       ",\"parsed_lowered_sql\":" + JSONString(expression.tree->ToString()) + "}";
+}
+
+// Explain the exact generated statement, not a separately compiled request or physical plan.
+string PlanJSON(const Bundle &bundle, const SelectStatement &statement, const string &concept,
+                const vector<string> &metrics, const vector<string> &filters, bool objects) {
+	auto &select = statement.node->Cast<SelectNode>();
+	auto definition = [](const string &name, const string &version, const string &hash) {
+		return "{\"name\":" + JSONString(name) + ",\"version\":" + JSONString(version) +
+		       ",\"sha256\":" + JSONString(hash) + "}";
+	};
+	auto derived = concept == bundle.derived;
+	string identity_dataset = bundle.model.datasets[0].name, identity_field = bundle.identity;
+	for (auto &entry : bundle.provenance) {
+		if (entry.second == bundle.identity) {
+			identity_dataset = entry.first[0];
+			identity_field = entry.first[1];
+		}
+	}
+	auto input_dataset = bundle.definition_model.FindDataset(bundle.model.datasets[0].name);
+	if (!input_dataset)
+		Fail("grain", "explain", "population input lacks definition provenance");
+	auto rule = bundle.rule->Copy();
+	EngineFunctions(*rule);
+	string result =
+	    "{\"schema_version\":\"ossie-population-plan-v1\","
+	    "\"phase\":\"generated semantic SELECT AST\",\"executed\":false,\"physical_plan\":false,"
+	    "\"sql_replayable\":false,\"request_kind\":" +
+	    JSONString(objects ? "objects" : "metrics") + ",\"profile\":" + JSONString(bundle.profile) +
+	    ",\"engine\":{\"dialect\":\"DUCKDB\",\"version\":" + JSONString(DuckDB::LibraryVersion()) +
+	    ",\"source_id\":" + JSONString(DuckDB::SourceID()) + "},\"definitions\":{\"core\":" +
+	    definition(bundle.definition_model.name, bundle.definition_model.spec_version, bundle.core_hash) +
+	    ",\"ontology\":" + definition(bundle.ontology_name, bundle.ontology_version, bundle.ontology_hash) +
+	    ",\"mapping\":" + definition(bundle.mapping_name, bundle.mapping_version, bundle.mapping_hash) +
+	    ",\"manifest_sha256\":" + JSONString(bundle.manifest_hash) +
+	    "},\"snapshot\":{\"id\":" + JSONString(bundle.snapshot_id) +
+	    ",\"content_sha256\":" + JSONString(bundle.content_hash) +
+	    ",\"captured_population_rows\":" + to_string(bundle.rows) +
+	    ",\"row_order_sensitive\":true,\"filtered_rows_computed\":false},\"concept\":{\"name\":" + JSONString(concept) +
+	    ",\"root\":" + JSONString(bundle.root) + ",\"formal_rule\":{\"owner\":" + JSONString(bundle.derived) +
+	    ",\"applied\":" + (derived ? "true" : "false") +
+	    ",\"input_language\":\"profile scalar SQL subset (no core dialect lowering)\","
+	    "\"declared_sql\":" +
+	    JSONString(bundle.original_rule) + ",\"resolved_definition_sql\":" + JSONString(rule->ToString()) +
+	    "}},\"identity\":{\"field\":" + JSONString(OriginalName(bundle, bundle.identity)) +
+	    ",\"dataset\":" + JSONString(identity_dataset) + ",\"logical_field\":" + JSONString(identity_field) +
+	    ",\"entity_equals_record\":true,\"scope\":\"one observation per identity in captured batch\"},"
+	    "\"grain\":{\"population_input_dataset\":" +
+	    JSONString(bundle.model.datasets[0].name) +
+	    ",\"declared_primary_key\":" + JSONStrings(input_dataset->primary_key) +
+	    ",\"aggregation_scope\":\"effective WHERE before GROUP BY\",\"basis\":" +
+	    JSONString(bundle.profile == JOIN_PROFILE ? "validated fact grain before flattening"
+	                                              : "validated sole source dataset") +
+	    "},\"capture_join\":" + bundle.capture_join + ",\"inputs\":[";
+	for (idx_t i = 0; i < bundle.inputs.size(); i++) {
+		auto &input = bundle.inputs[i];
+		if (i)
+			result += ",";
+		result += "{\"dataset\":" + JSONString(input.dataset) + ",\"source\":" + JSONString(input.source) +
+		          ",\"captured_rows\":" + to_string(input.rows) + ",\"sha256\":" + JSONString(input.sha256) + "}";
+	}
+	result += "],\"metrics\":[";
+	for (idx_t i = 0; i < metrics.size(); i++) {
+		auto metric = bundle.definition_model.FindMetric(metrics[i]);
+		if (!metric)
+			Fail(metrics[i], "explain", "compiled metric lacks definition provenance");
+		if (i)
+			result += ",";
+		result += "{\"name\":" + JSONString(metric->name) + ",\"declared_datatype\":" + JSONString(metric->datatype) +
+		          ",\"expression\":" + DefinitionExpression(metric->expression) + "}";
+	}
+	result += "],\"declared_fields\":[";
+	idx_t field_index = 0;
+	for (auto &dataset : bundle.definition_model.datasets) {
+		for (auto &field : dataset.fields) {
+			if (field_index++)
+				result += ",";
+			result += "{\"dataset\":" + JSONString(dataset.name) + ",\"name\":" + JSONString(field.name) +
+			          ",\"declared_datatype\":" + JSONString(field.datatype) +
+			          ",\"is_time\":" + (field.is_time ? "true" : "false") +
+			          ",\"is_time_explicit\":" + (field.is_time_explicit ? "true" : "false") +
+			          ",\"expression\":" + DefinitionExpression(field.expression) + "}";
+		}
+	}
+	result += "],\"filters\":{\"input_language\":\"profile scalar SQL subset (no core dialect lowering)\","
+	          "\"requested_sql\":" +
+	          JSONStrings(filters) + ",\"effective_where_sql\":" +
+	          (select.where_clause ? JSONString(select.where_clause->ToString()) : "null") +
+	          "},\"time\":{\"range_inferred\":false,\"basis\":\"effective WHERE and declared time roles only\"},"
+	          "\"generated_ast\":{\"from_sql\":" +
+	          JSONString(select.from_table->ToString()) + ",\"projections\":[";
+	for (idx_t i = 0; i < select.select_list.size(); i++) {
+		auto &expression = select.select_list[i];
+		if (i)
+			result += ",";
+		result += "{\"ordinal\":" + to_string(i + 1) + ",\"alias\":" + JSONString(expression->GetAlias()) +
+		          ",\"sql\":" + JSONString(expression->ToString()) + "}";
+	}
+	vector<string> groups;
+	for (auto &expression : select.groups.group_expressions)
+		groups.push_back(expression->ToString());
+	result += "],\"group_by_sql\":" + JSONStrings(groups) +
+	          "},\"result_contract\":{\"ordering\":\"unspecified\",\"groups\":\"sparse\","
+	          "\"query_paging\":false,\"query_truncation\":false,\"calendar_completion\":false,"
+	          "\"empty_ungrouped_count\":0,\"empty_ungrouped_sum_avg\":null},\"limitations\":["
+	          "\"Parser AST explanation, not a bound physical or optimizer plan\","
+	          "\"Captured row counts do not measure filtered population, groups or aggregate denominators\","
+	          "\"Frozen scan requires its internal AST dependency; SQL text cannot be replayed\","
+	          "\"Separate compile/query calls may bind different snapshots after reload\","
+	          "\"No guarantee of exact JSON numeric transport or external renderer truncation behavior\"]}";
+	return result;
+}
+
 struct PopulationBind : TableFunctionData {
 	shared_ptr<Bundle> bundle;
 	string sql;
+	string plan_json;
 	unique_ptr<SelectStatement> statement;
 	string path;
 	bool load = false;
@@ -1509,6 +1665,7 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
 		EngineFunctions(*query.where_clause);
 	result->sql = result->statement->ToString();
 	if (result->compile) {
+		result->plan_json = PlanJSON(*result->bundle, *result->statement, concept, metrics, filters, objects);
 		names = {"sql",
 		         "profile",
 		         "snapshot_id",
@@ -1518,8 +1675,9 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
 		         "mapping_sha256",
 		         "manifest_sha256",
 		         "execution_target",
+		         "plan_json",
 		         "executed"};
-		types = vector<LogicalType>(9, LogicalType::VARCHAR);
+		types = vector<LogicalType>(10, LogicalType::VARCHAR);
 		types.push_back(LogicalType::BOOLEAN);
 	} else {
 		auto engine = Engine(*result->bundle);
@@ -1565,7 +1723,8 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 		auto &b = *data.bundle;
 		result->rows.push_back({Value(data.sql), Value(b.profile), Value(b.snapshot_id), Value(b.content_hash),
 		                        Value(b.core_hash), Value(b.ontology_hash), Value(b.mapping_hash),
-		                        Value(b.manifest_hash), Value(b.execution_target), Value::BOOLEAN(false)});
+		                        Value(b.manifest_hash), Value(b.execution_target), Value(data.plan_json),
+		                        Value::BOOLEAN(false)});
 	} else {
 		lock_guard<mutex> guard(data.bundle->query_lock);
 		auto engine = Engine(*data.bundle);
@@ -1628,9 +1787,11 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	    "SELECT * FROM ossie_concept_query('ValidUser', ['mean_gaap'], ['dws_gaap_di.ds'], [])");
 	RegisterDescribe(
 	    loader,
-	    TableFunction("ossie_concept_compile", {LogicalType::VARCHAR, list, list, list}, Scan, RequestBind, Init),
+	    traced(
+	        TableFunction("ossie_concept_compile", {LogicalType::VARCHAR, list, list, list}, Scan, RequestBind, Init)),
 	    "Compile a concept request without executing it, with diagnostic SQL targeting a frozen batch and pinned "
-	    "definition/snapshot hashes; executed is false. Empty metrics select the object query path. "
+	    "definition/snapshot hashes and project-versioned plan_json from the generated AST; executed is false. "
+	    "Empty metrics select the object query path. include_trace adds the execution trace projections. "
 	    "A separate query after reload may bind a different snapshot.",
 	    "SELECT * FROM ossie_concept_compile('ValidUser', ['mean_gaap'], [], [])");
 }

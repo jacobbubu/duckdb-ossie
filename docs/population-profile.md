@@ -133,6 +133,17 @@ reader whose AST dependency cannot be expressed as SQL text. Replaying the text
 is refused. A separate query after reload may bind a different snapshot; use
 execution trace to associate actual results with their batch.
 
+## Machine-readable compile explanation
+
+`ossie_concept_compile` adds project-versioned `plan_json` before `executed` and
+accepts `include_trace => true`. It separates saved definition/dialect provenance
+from the final generated WHERE, FROM, ordered projections and groups. It also
+records validated input grain/join captures and definition/data hashes. Full capture
+row counts are not filtered counts; time ranges are not inferred from predicates.
+This is a parser AST explanation, not a physical/optimizer plan or proof of execution.
+Read compile columns by name: its schema now has eleven columns. See
+[the plan contract](population-plan.md) for compatibility, lifecycle and evidence.
+
 ## DATE boundaries and conversion
 
 The executable physical temporal type and declared temporal field/metric result

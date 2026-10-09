@@ -45,7 +45,7 @@ PRAGMA mcp_publish_tool(
 PRAGMA mcp_publish_tool(
     'population_compile',
     'Inspect diagnostic SQL and the bound definition/snapshot hashes without executing. Same list encoding as population_query; empty metrics selects objects and requires empty dimensions. Diagnostic SQL needs an internal AST dependency and cannot be replayed as ordinary SQL. A separate call after operator reload may bind a different snapshot; check execution trace. Empty query results carry no row trace.',
-    'SELECT * FROM ossie_concept_compile($concept, ossie_mcp_strings($metrics), ossie_mcp_strings($dimensions), ossie_mcp_strings($filters))',
+    'SELECT * FROM ossie_concept_compile($concept, ossie_mcp_strings($metrics), ossie_mcp_strings($dimensions), ossie_mcp_strings($filters), include_trace => true)',
     '{"concept":{"type":"string"},"metrics":{"type":"string"},"dimensions":{"type":"string"},"filters":{"type":"string"}}',
     '["concept","metrics","dimensions","filters"]',
     'json'

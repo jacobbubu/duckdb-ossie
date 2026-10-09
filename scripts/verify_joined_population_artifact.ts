@@ -523,6 +523,20 @@ await temporary("ossie-frozen-join-", async (directory) => {
     );
     assert.equal(quoteMeta.metric_grain, 'Fact "Sales');
     assert(quoteMeta.physical_columns.some((x: any) => x.column === 'key"a'));
+    const quotedPlan = JSON.parse(
+      String(
+        (
+          await db.one(
+            "SELECT plan_json FROM ossie_concept_compile('User',['amount_sum'],[],[])",
+          )
+        )[0],
+      ),
+    );
+    assert.equal(quotedPlan.grain.population_input_dataset, 'Fact "Sales');
+    assert.equal(quotedPlan.identity.dataset, 'Fact "Sales');
+    assert.equal(quotedPlan.capture_join.from_column, 'key"a');
+    assert.equal(quotedPlan.inputs[0].dataset, 'Fact "Sales');
+    assert.equal(quotedPlan.inputs[1].dataset, 'Dim"Region');
     await reset();
     await load();
     const computed = bundle(([core]) => {
@@ -544,6 +558,27 @@ await temporary("ossie-frozen-join-", async (directory) => {
     )[0];
     assert(typeof ratio === "number");
     assert(Math.abs(ratio - 55.01 / 6) < 1e-12);
+    const computedPlan = JSON.parse(
+      String(
+        (
+          await db.one(
+            "SELECT plan_json FROM ossie_concept_compile('User',['ratio'],['dimension.label'],[])",
+          )
+        )[0],
+      ),
+    );
+    assert(
+      computedPlan.declared_fields.some((field: any) =>
+        field.expression.declared_sql.includes("CASE"),
+      ),
+    );
+    assert(computedPlan.generated_ast.projections[0].sql.includes("CASE"));
+    assert(computedPlan.generated_ast.projections[1].sql.includes("nullif"));
+    assert(
+      computedPlan.metrics[0].expression.declared_sql.includes(
+        "SUM(fact.amount)",
+      ),
+    );
     assert.deepEqual(
       await db.rows(
         "SELECT * FROM ossie_concept_query('User',['record_count'],['dimension.label'],[]) ORDER BY 1",
@@ -592,6 +627,7 @@ await temporary("ossie-frozen-join-", async (directory) => {
       cancellation_preserves_bundle: true,
       quoted_sources_and_columns: true,
       computed_fields_and_ratio: true,
+      plan_provenance_controls: { quoted: quotedPlan, computed: computedPlan },
       limits: "canonical input/result; not peak memory",
       concurrent_capture: "not deterministically injected by this verifier",
     });
