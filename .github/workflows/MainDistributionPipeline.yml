@@ -66,6 +66,15 @@ jobs:
           OSSIE_EXTENSION: downloaded/ossie.duckdb_extension
         run: bun scripts/mcp_check.ts
 
+      - name: Verify population tools and actual resource contents
+        run: bun scripts/verify_population_mcp.ts downloaded/ossie.duckdb_extension --output population-mcp-results.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: population-mcp-controls-linux-amd64
+          path: population-mcp-results.json
+          if-no-files-found: error
+
   # Load the file we actually ship.
   #
   # Every other test runs inside a build tree, where the extension is statically linked into the

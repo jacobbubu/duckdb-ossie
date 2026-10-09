@@ -181,3 +181,16 @@ Remote CI execution and branch protection are unverified; no protection or upstr
 setting was changed. See the [existing work record](ossie-execution-research.md)
 for authorization and remaining ontology work. Sanitizer/coverage expansion remains
 outside this bounded package.
+
+## Population MCP checkpoint
+
+The existing `mcp-round-trip` job now also runs `verify_population_mcp.ts` against
+the same downloaded extension and uploads its result. It uses the stock CLI and
+real JSON-RPC, reads concept resource content, validates three exclusive tools,
+independent original GAAP threshold-10/20 and joined fixture results, list failures,
+formal rule protection, recovery and fail-fast setup. The original core MCP probe
+now reads its metric/field resources as well; reversed PRAGMA query/URI arguments
+in the old example and CLI smoke registration are corrected. See
+[the calling contract](population-mcp.md) and
+[local evidence](research/ossie-req-001/r7-population-mcp-results.json).
+This is a local transport package and CI wiring, not remote CI or full R7/P0.

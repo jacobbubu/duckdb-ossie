@@ -2,20 +2,21 @@
 
 ## Current research checkpoint — 2026-10-09
 
-Current local milestone: explicit fact-dimension-population-v1 now has controlled
-production-source evidence for a writer commit between captures. The static native
-runner verifies old-version consistency, later reload, prepared readers and cancellation
-at capture/publication boundaries in threads=4/1 (138 checks). That control exposed
-and now verifies the fix for nested pending-query tasks outliving their context during
-cancellation. Actual crash frames and the failed debugger attempt are retained; the
-first original mutex throw was not captured, so the repair is not a claim about every
-possible mutex error. Final local gates pass 19 state/42 grain/138 capture C++ checks,
-713 SQL assertions in 19 cases, 31 Bun controls and six same-artifact stock verifiers,
-plus CLI/MCP. Native controlled-source evidence and stock artifact evidence are separate.
-P0 and the wider requirement remain incomplete; remote CI/Ubuntu tidy are unverified.
-After retaining this local milestone, next work returns to R7/P0 acceptance gaps and
-the population MCP calling contract, before adding broader ontology/calendar/time scope.
-No new push is authorized. Detailed evidence/remaining needs stay in OSSIE-REQ-001.
+Current local milestone: population MCP tools now expose separate object, metric
+and compile contracts plus a readable concept resource. Actual stock CLI stdio
+controls compare both original 475-row rule versions and the bounded joined profile
+with independent IDs/numbers, preserve punctuation in filters, reject hostile
+inputs and keep the fixed snapshot after failures. An existing core discovery
+resource argument-order bug is repaired and verified by reading its content.
+The transport uses explicit validated JSON string lists; it does not guarantee
+lossless DECIMAL serialization or strict MCP schema enforcement.
+This package changes no C++ execution semantics; the previous 138 native capture
+and cancellation controls remain evidence for unchanged production source.
+P0 and wider R7 remain incomplete. Next authorized local work is the actual
+machine-readable population compile explanation and remaining acceptance gaps,
+before broader ontology/calendar/time scope. Remote CI/Ubuntu tidy are unverified;
+no new push, merge or external service publication is authorized.
+Detailed evidence/remaining needs stay in OSSIE-REQ-001.
 The earlier package counts in this introduction remain historical evidence.
 
 The first research package is complete: pinned source evidence, an independent

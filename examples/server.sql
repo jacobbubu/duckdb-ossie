@@ -26,8 +26,8 @@ CALL dsdgen(sf = 0.01);
 CALL ossie_load('test/fixtures/tpcds_semantic_model.json',
                 rebind => MAP{'tpcds.public': 'memory.main'});
 
-PRAGMA mcp_publish_query('metrics', 'SELECT name, description, synonyms FROM ossie_metrics()');
-PRAGMA mcp_publish_query('dimensions', 'SELECT dataset, name, datatype, synonyms FROM ossie_fields()');
+PRAGMA mcp_publish_query('SELECT name, description, synonyms FROM ossie_metrics()', 'ossie://model/metrics');
+PRAGMA mcp_publish_query('SELECT dataset, name, datatype, synonyms FROM ossie_fields()', 'ossie://model/dimensions');
 
 PRAGMA mcp_publish_tool(
     'semantic_query',

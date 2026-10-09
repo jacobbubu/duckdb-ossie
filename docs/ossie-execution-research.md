@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-09。状态：首轮研究、core loader/元数据与单表人口执行工作包已完成并本地验证；R3 NULLIF/受保护除法及DATE边界控制已本地完成；R6连接研究控制也已本地完成；当前661条SQL断言、19项C++与31项Bun控制通过。指定fact粒度前置检查已实现并通过42项独立C++控制，下一步实施独立冻结双表profile；P0 尚未完成。
+日期：2026-10-09。状态：新格式core、bounded单表/双表人口及并发取消控制已本地完成；本轮population MCP契约与实际传输验证已通过。现有P0/R7整体未完成，当前剩余和下一授权动作见文末checkpoint；历史计数按当时包保留。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -370,3 +370,29 @@ R6研究结果：6行fact/4行dimension（含无引用行），独立手工关�
 保留其他失败：一次make质量调用缺venv PATH导致black not found，修正调用后通过，非product回归；LLDB被OS拒绝attach，以实际crash report符号栈补充，未声称成功debugger抓栈。Advisor架构一建议+一代码澄清，复现故障另一次限定root-cause只读建议；有效backend/effort/usage/billing unknown。Lead核对API只清理内部query且确实drain，以及实际TaskNotifier crash/前后结果。
 
 本地并发/取消证据工作包及确认的任务寿命修复完成，下一动作本地提交保留，不推送。整体需求未完成。对比既有剩余，先回到R7/P0完整验收差距与population MCP调用契约，再决定是否需要拓宽时间/calendar/ontology/多期身份；不把这些长期范围悄悄混入本包。远程CI/跨平台与峰值内存限制仍未证明。如果修复后native锁异常再出现，需首错native栈而非继续假定同一原因。发布check→Set之间的取消竞态不在两处受控屏障通过的保证内。
+
+## R7 population MCP 调用契约 checkpoint（2026-10-09，恢复）
+
+117aa1c已本地提交、工作区干净。下一本地工作包为独立population server示例和stock CLI JSON-RPC验证，复用已有bundle/冻结query/compile，不改C++语义或loader授权。受信operator先导入native数据并加载manifest，再开放概念发现resource、对象/指标/编译三个可区分tool；请求无SQL/load/reload/规则覆盖入口，五个generic工具关闭。检查原始475行阈值10/20、对象/计数/金额一致、真实trace/definition hashes、分隔符保持、坏参数/未声明字段/概念/函数拒绝及同会话失败后可恢复。先实测duckdb_mcp数组绑定，避免旧semicolon/comma分割约定损坏表达式；新增schema契约不能当作执行输入已验证。Advisor仅限定参数表示与绑定风险，只读无子代理；请求Astra/high，有效backend/effort/usage/billing若无工具证据记unknown。首次probe误用CALL而非PRAGMA导致发布函数不存在，已纠正，非产品失败。
+
+此包不宣称完整R7计划说明（尚缺实际predicate/dialect/grain等机器可读说明）、P0、Agent自主回答、跨平台或远程CI。沿原计划保持calendar/时间/多期身份/更广ontology及完整验收剩余；本地提交不推送、不发布外部服务。
+
+同范围发现：旧examples/server.sql用PRAGMA mcp_publish_query(name,SQL)，实际PRAGMA契约为(SQL,URI[,format,refresh])；其资源URI变成SQL文本，探针只检查资源数量，不能证明内容能读。官方server reference（https://duckdb-mcp.readthedocs.io/en/latest/reference/server/）与本机stdlib stdio实测一致；scalar的catalog参数名不同不能替代PRAGMA验证。新server初次四参数probe仍按scalar顺序且format非法，resources为空；已改正。必要修复纳入本轮发现契约：旧server改正确SQL/明确URI，旧probe真实resources/read并核对指标/字段，而非仅计数。此为已存在MCP示例错误修复，不扩普通query AST或交付权限。
+
+本轮结果：examples/population_server.sql在受信operator导入/加载成功后，提供ossie://population/concepts真实resource与population_objects/query/compile三个tool，使用绑定参数和严格逐元素JSON字符串数组检查；all lists必填，无invalid→[] fallback。对象/指标固定include_trace=true，compile保持executed=false及原生产AST。六个generic工具（含execute）明确关闭；load/reload/unknown调用拒绝。原475行阈值10/20独立objects/totals/15days/all date-region-type groups及继承过滤drill、6fact双表4成员/24.98均通过真实stock stdio；逗号/分号/转义quote表达式完整，106具名坏参数/概念/名称/函数/SQL构造拒绝，恢复后结果/trace保持。加extra threshold/sql不能改变规则。错误检查JSON-RPC error及result.isError，不把有响应当成功。
+
+固定transport限制：duckdb_mcp6f9c4ba（serverInfo2.0.0），artifact SHA 4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e；registry依赖未由repo锁定。声明type:string不能使该transport执行strict schema；native数组会序列化为相同JSON bytes并在元素类型有效时接受，额外未绑定参数被忽略。JSON数值不是任意Decimal/bigint无损协议；仅本fixture cents/AVG容差证实，native执行类型未改。空object/group结果无row trace，须保留compile及固定operator定义；跨reload两次请求不具原子性。概念resource取真实bundle，指标/字段仍由operator提供词汇，不错误发布独立core state的ossie_metrics。完整调用/数值/排序/空集/错误契约见[population MCP说明](population-mcp.md)。
+
+本轮验证：187项实际MCP具名检查通过、保留106个实际拒绝响应与实际compile SQL/结果/metadata。原core MCP两份资源现在真实读取且核对total_sales/i_brand；40PASS0FAIL0SKIP stock CLI、make quality-local（format/strict TS/architecture/31Bun107expect）通过。本轮不改C++/SQL执行代码，因此沿用117aa1c同产物SHA2b906ca54582c8a1e15fd69b0cc51b520d95f951a5bbf42efe729f9efe1abc87及19state/42grain/138capture/713SQL的此前证据，未虚称重跑。结果/source/fixture/CLI/MCP hash归[r7-population-mcp-results.json](research/ossie-req-001/r7-population-mcp-results.json)。既有mcp-round-trip CI接新verifier并上传结果；未执行remote CI。Advisor一次只读建议和Lead实测确定逐元素检查/必填数组、trace空集及有效版本记录；requested Astra/high，有效backend/effort/usage/billing unknown。初始CALL/PRAGMA probe错误与resource参数顺序/非法format失败已保留，未更改旧证据或vendor。
+
+R7验收差距回顾（沿现issue/计划，不另建backlog）：
+
+| 条款 | 当前证据 | 必要剩余 |
+|---|---|---|
+| R7.1 compile/query同源 | 生产共用QueryAST，compile diagnostic SQL/hash经native/stock/MCP验证 | SQL AST依赖不可文本重放；不能声称可外部执行 |
+| R7.2机器可读计划 | profile/definitions/snapshot，双表execution_target包含grain/input/来源mapping | 统一实际concept/rule/metric/expanded filters/time/dialect/粒度与连接说明仍缺 |
+| R7.3来自实际状态 | 非空执行row trace、bundle discovery、compile均取bound state | 空集无行trace；完整执行说明须补实际plan字段 |
+| R7.4结果关联与行为 | snapshot/content/definition hashes；unsorted/sparse/unpaged/no-template-truncation已公布 | JSON精确数值传输及超出fixture的transport大小/截断行为未验证；无外部execution record服务、不可冒充跨reload原子请求 |
+| R7.5不同结果/错误契约 | 3tool+conceptresource；population AST错误含object/stage/reason/capability | reused core name-resolution及JSON参数错误尚非统一结构；population完整指标/字段发现仍缺 |
+
+本工作包本地完成，下一动作提交保留、不推送。整体P0和完整A1–A8尚未完成。下一授权本地工作优先R7.2实际机器可读compile说明与同快照证明，继续复用shared生产AST；先核对既有模型方言/原表达式/展平provenance，再确定最小字段契约。后续时间/calendar/多期身份/更广ontology与remoteCI仍是显式剩余，不因本轮MCP通过扩大语义/发布范围。

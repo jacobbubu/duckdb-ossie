@@ -127,9 +127,10 @@ scalar derived entity, on a single committed native table. Loading checks identi
 across the entire captured batch. Source updates require explicit reload; prepared
 requests retain their original bundle. Objects and metrics use the same population
 predicate. Default groups are sparse, AVG counts non-NULL inputs, and empty SUM/AVG
-returns NULL. Full ontology, joins, calendar completion and population MCP tools
-remain later work. See [the profile contract](docs/population-profile.md) for the
-manifest, limits and SQL examples. `ossie_concept_compile` SQL is diagnostic and
+returns NULL. Full ontology and calendar completion remain later work. A bounded frozen
+fact-dimension profile and a separate population MCP example are now available;
+see [the profile contract](docs/population-profile.md) for the manifest, limits
+and SQL examples. `ossie_concept_compile` SQL is diagnostic and
 requires an internal frozen-data dependency; it cannot be replayed as ordinary SQL.
 
 ## Serving a model to an AI agent
@@ -159,6 +160,10 @@ refused with *Tool not found*. `scripts/mcp_check.ts` asserts this on every push
 > **Writing your own server?** Disabling `query` is not sufficient on its own — `export` also takes
 > an arbitrary SQL argument and reaches the same data. Disable all five, or point the server only at
 > a database you are willing to expose in full.
+
+The frozen population APIs have a separate [MCP server example](examples/population_server.sql)
+with concept discovery and object/query/compile tools. See [its calling contract](docs/population-mcp.md)
+for explicit JSON list encoding, trusted operator setup, trace, refusals and numeric transport limits.
 
 ## Building & Contributing
 

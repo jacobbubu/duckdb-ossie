@@ -182,7 +182,7 @@ else
   MI="$TMP/mcp_init.sql"
   { [ -n "$PREAMBLE" ] && printf '%s\n' "$PREAMBLE"; printf "LOAD duckdb_mcp;\n"; } > "$MI"
   MRES="$("$DUCKDB" $EXTRA -noheader -list -init "$MI" "$DB" -c \
-    "$LOAD_T PRAGMA mcp_publish_query('metrics','SELECT name FROM ossie_metrics()');
+    "$LOAD_T PRAGMA mcp_publish_query('SELECT name FROM ossie_metrics()','ossie://model/metrics');
      SELECT * FROM mcp_resources();" 2>&1 | tr '\n' ' ')"
   case "$MRES" in
     *metrics*) ok "model published as an MCP resource (server.sql path)";;

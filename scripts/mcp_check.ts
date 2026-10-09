@@ -179,7 +179,30 @@ export async function verify() {
       }
       const resources =
         (await server.request(3, "resources/list")).result?.resources || [];
-      check("resources vocabulary", resources.length > 0);
+      check("resources vocabulary", resources.length === 2);
+      for (const [index, [uri, expected]] of [
+        ["ossie://model/metrics", "total_sales"],
+        ["ossie://model/dimensions", "i_brand"],
+      ].entries()) {
+        check(
+          "resource URI " + uri,
+          resources.some((resource) => resource.uri === uri),
+        );
+        const reply = await server.request(30 + index, "resources/read", {
+          uri,
+        });
+        const contents = reply.result?.contents as
+          | { text?: string }[]
+          | undefined;
+        check(
+          "actual vocabulary resource " + uri,
+          !reply.error &&
+            !reply.result?.isError &&
+            Boolean(
+              contents?.some((content) => content.text?.includes(expected)),
+            ),
+        );
+      }
       const body = JSON.stringify(
         (
           await server.request(4, "tools/call", {
