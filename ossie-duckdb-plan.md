@@ -687,3 +687,13 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 仅接受 actual string 的 RequiredString/OptionalString 已落实；optional 缺省保留空值，显式 NULL/数字/Boolean/容器拒绝，合法长度保真/quoted text 保持。154 字段控制中120具名拒绝逐次完整旧 metadata 保持，hash-valid bad core 旧 bundle 保持与恢复；旧 YAML 裸1.5原样负例保留，正例quoted与JSON一致，首轮 SQL失败及纠正归现 issue。最终同产物19/42/158 native、834 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP与CLI40/0/0通过，证据 r2-scalars-* 绑定最终文件。
 
 本包完成，本地提交、不推送。整体 R2/P0 仍需 minLength/unknown properties/extension/dialect 校验边界收口、最终A1–A8归档；下一已授权动作优先名称非空/未知core属性检查。分页/P1/非目标、remote CI/Ubuntu tidy 与发布权限维持原范围。
+
+### R2 名称/未知属性 checkpoint（2026-10-09，恢复）
+
+本轮实施 name/source/from/to 的 schema 非空约束及八种 core object 的已知属性检查，AI/vendor 自定义内容按原 schema 保留，extension 成员/dialect enum 不提前扩入。沿 OSSIE-REQ-001 记录 JSON/YAML、合法空描述与 AI 扩展、失败旧状态和同产物门禁；只本地提交。整体剩余 extension/dialect 偏离和最终规则驱动验收，分页/P1/远端发布边界不变。
+
+### R2 名称/未知属性本地交付 checkpoint（2026-10-09）
+
+八个 required nonempty 位置与八种 closed core objects 已按固定 schema 校验；unknown/case/NUL 属性键拒绝且旧 metadata 保持，五种 AI context 自定义内容/empty optional/whitespace name 合法保留。193 字段控制、50 错误控制、最终同产物19/42/158 native、837 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP/CLI40/0/0通过。一次 quoted C++ context 编辑构建失败及修复、全部 hashes 归现 issue/r2-fields-*；API2.0.0不变。
+
+本包完成，本地提交、不推送。必要剩余 extension 成员结构/字段和 dialect enum/大小写，再最终 A1–A8 归档；整体R2/P0未完成。下一已授权优先这两项schema检查，不额外限制vendor自由字符串/AI追加属性或extension.data内容格式；分页/P1/远端验证及发布边界不变。

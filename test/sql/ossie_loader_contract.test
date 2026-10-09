@@ -299,3 +299,18 @@ query T
 SELECT name FROM ossie_metadata() WHERE kind='model';
 ----
 nul_metadata
+
+statement error
+CALL ossie_load('test/fixtures/conformance/unknown_core_property.json');
+----
+unknown field "isTime"
+
+statement error
+CALL ossie_load('test/fixtures/conformance/empty_dataset_name.json');
+----
+field 'name' must be a nonempty string
+
+query T
+SELECT name FROM ossie_metadata() WHERE kind='model';
+----
+nul_metadata

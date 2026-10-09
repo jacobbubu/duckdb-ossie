@@ -17,6 +17,8 @@
 
 #include "yyjson.hpp"
 
+#include <initializer_list>
+
 // Local adapter for DuckDB's vendored C API names; no project-wide naming/check exemption.
 using namespace duckdb_yyjson; // NOLINT
 
@@ -56,6 +58,14 @@ string RequiredString(yyjson_val *obj, const char *key, const string &context) {
 		throw InvalidInputException("ossie_load: %s field '%s' must be a string", context, key);
 	}
 	return string(yyjson_get_str(val), yyjson_get_len(val));
+}
+
+string RequiredNonEmptyString(yyjson_val *obj, const char *key, const string &context) {
+	auto value = RequiredString(obj, key, context);
+	if (value.empty()) {
+		throw InvalidInputException("ossie_load: %s field '%s' must be a nonempty string", context, key);
+	}
+	return value;
 }
 
 string OptionalString(yyjson_val *obj, const char *key, const string &context) {
@@ -105,6 +115,27 @@ string JSONText(yyjson_val *value) {
 		throw InvalidInputException("ossie_load: could not preserve metadata JSON");
 	}
 	return string(serialized.get());
+}
+
+void ValidateKnownFields(yyjson_val *obj, std::initializer_list<const char *> allowed, const string &context) {
+	if (!yyjson_is_obj(obj)) {
+		throw InvalidInputException("ossie_load: %s must be an object", context);
+	}
+	size_t idx, max;
+	yyjson_val *key, *value;
+	yyjson_obj_foreach(obj, idx, max, key, value) {
+		string name(yyjson_get_str(key), yyjson_get_len(key));
+		bool known = false;
+		for (auto field : allowed) {
+			if (name == field) {
+				known = true;
+				break;
+			}
+		}
+		if (!known) {
+			throw InvalidInputException("ossie_load: %s has unknown field %s", context, JSONText(key));
+		}
+	}
 }
 
 string ParseDatatype(yyjson_val *parent, const string &context) {
@@ -159,6 +190,7 @@ ModelExpression ParseModelExpression(yyjson_val *parent, const string &context) 
 	if (!expression_obj) {
 		throw InvalidInputException("ossie_load: %s is missing required field 'expression'", context);
 	}
+	ValidateKnownFields(expression_obj, {"dialects"}, context + " expression");
 	auto dialects = Member(expression_obj, "dialects");
 	if (!dialects || !yyjson_is_arr(dialects)) {
 		throw InvalidInputException("ossie_load: %s has an 'expression' with no 'dialects' array", context);
@@ -169,6 +201,7 @@ ModelExpression ParseModelExpression(yyjson_val *parent, const string &context) 
 	size_t idx, max;
 	yyjson_val *item;
 	yyjson_arr_foreach(dialects, idx, max, item) {
+		ValidateKnownFields(item, {"dialect", "expression"}, context + " dialect variant");
 		auto dialect = RequiredString(item, "dialect", context);
 		auto sql = RequiredString(item, "expression", context);
 		// DuckDB's text parser stops at NUL; accepting a prefix would change the model formula.
@@ -225,8 +258,12 @@ bool IsPlainReferenceTo(const ParsedExpression &expr, const string &field_name) 
 }
 
 Field ParseField(yyjson_val *field_obj, const string &dataset_name) {
+	ValidateKnownFields(
+	    field_obj,
+	    {"name", "expression", "dimension", "label", "description", "datatype", "ai_context", "custom_extensions"},
+	    StringUtil::Format("dataset \"%s\" field", dataset_name));
 	Field result;
-	result.name = RequiredString(field_obj, "name", StringUtil::Format("dataset \"%s\" field", dataset_name));
+	result.name = RequiredNonEmptyString(field_obj, "name", StringUtil::Format("dataset \"%s\" field", dataset_name));
 	auto context = StringUtil::Format("field \"%s.%s\"", dataset_name, result.name);
 
 	result.expression = ParseModelExpression(field_obj, context);
@@ -244,6 +281,7 @@ Field ParseField(yyjson_val *field_obj, const string &dataset_name) {
 		if (!yyjson_is_obj(dimension) || (is_time && !yyjson_is_bool(is_time))) {
 			throw InvalidInputException("ossie_load: %s dimension must be an object with a boolean is_time", context);
 		}
+		ValidateKnownFields(dimension, {"is_time"}, context + " dimension");
 		if (is_time) {
 			result.is_time = yyjson_get_bool(is_time);
 			result.is_time_explicit = true;
@@ -365,11 +403,15 @@ void ExpandFieldReferences(Dataset &dataset, const string &context) {
 }
 
 Dataset ParseDataset(yyjson_val *dataset_obj, const RebindMap &rebind) {
+	ValidateKnownFields(
+	    dataset_obj,
+	    {"name", "source", "primary_key", "unique_keys", "description", "ai_context", "fields", "custom_extensions"},
+	    "dataset");
 	Dataset result;
-	result.name = RequiredString(dataset_obj, "name", "dataset");
+	result.name = RequiredNonEmptyString(dataset_obj, "name", "dataset");
 	auto context = StringUtil::Format("dataset \"%s\"", result.name);
 
-	result.source_raw = RequiredString(dataset_obj, "source", context);
+	result.source_raw = RequiredNonEmptyString(dataset_obj, "source", context);
 	ValidateSourceShape(result.source_raw, context);
 	result.source_bound = rebind.Apply(result.source_raw);
 
@@ -401,12 +443,14 @@ Dataset ParseDataset(yyjson_val *dataset_obj, const RebindMap &rebind) {
 }
 
 Relationship ParseRelationship(yyjson_val *obj) {
+	ValidateKnownFields(obj, {"name", "from", "to", "from_columns", "to_columns", "ai_context", "custom_extensions"},
+	                    "relationship");
 	Relationship result;
-	result.name = RequiredString(obj, "name", "relationship");
+	result.name = RequiredNonEmptyString(obj, "name", "relationship");
 	auto context = StringUtil::Format("relationship \"%s\"", result.name);
 
-	result.from_dataset = RequiredString(obj, "from", context);
-	result.to_dataset = RequiredString(obj, "to", context);
+	result.from_dataset = RequiredNonEmptyString(obj, "from", context);
+	result.to_dataset = RequiredNonEmptyString(obj, "to", context);
 	result.from_columns = StringArray(obj, "from_columns", context);
 	result.to_columns = StringArray(obj, "to_columns", context);
 	result.ai_context = ParseAIContext(obj, context);
@@ -481,10 +525,14 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 			throw InvalidInputException("ossie_load: core model cannot contain ontology/mapping field '%s'", key);
 		}
 	}
+	ValidateKnownFields(
+	    root,
+	    {"version", "name", "description", "ai_context", "datasets", "relationships", "metrics", "custom_extensions"},
+	    "semantic model");
 	result.spec_version = yyjson_get_str(version);
 
 	auto model_obj = root;
-	result.name = RequiredString(model_obj, "name", "the semantic model");
+	result.name = RequiredNonEmptyString(model_obj, "name", "the semantic model");
 	auto context = StringUtil::Format("semantic model \"%s\"", result.name);
 	result.description = OptionalString(model_obj, "description", context);
 	result.ai_context = ParseAIContext(model_obj, context);
@@ -521,8 +569,10 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 			throw InvalidInputException("ossie_load: %s field 'metrics' must be an array", context);
 		}
 		yyjson_arr_foreach(metrics, idx, max, item) {
+			ValidateKnownFields(
+			    item, {"name", "expression", "description", "datatype", "ai_context", "custom_extensions"}, "metric");
 			Metric metric;
-			metric.name = RequiredString(item, "name", "metric");
+			metric.name = RequiredNonEmptyString(item, "name", "metric");
 			auto metric_context = StringUtil::Format("metric \"%s\"", metric.name);
 			metric.expression = ParseModelExpression(item, metric_context);
 			metric.datatype = ParseDatatype(item, metric_context);

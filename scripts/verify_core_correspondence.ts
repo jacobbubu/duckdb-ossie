@@ -98,21 +98,19 @@ export async function verify(artifact: string) {
         },
         "field 'description' must be a string",
       );
-      await accepted(
+      await refused(
         "empty-model-name",
         (m) => {
           m.name = "";
         },
-        (rows) => assert.equal(rows.find((r) => r.kind === "model")!.name, ""),
-        "schema minLength is not enforced",
+        "field 'name' must be a nonempty string",
       );
-      await accepted(
+      await refused(
         "unknown-root-property",
         (m) => {
           m.vendor_rule = "ignore valid-user threshold";
         },
-        (rows) => assert(!JSON.stringify(rows).includes("vendor_rule")),
-        "additionalProperties=false is not enforced; unknown field discarded, not executable",
+        "unknown field",
       );
       await accepted(
         "malformed-extension",
@@ -520,6 +518,152 @@ export async function verify(artifact: string) {
           input_sha256: digest(yaml),
         });
       }
+      for (const spec of paths.filter(
+        (p) => p.required && !p.scope.startsWith("variant."),
+      )) {
+        await refused(
+          `empty-${spec.scope}`,
+          (m) => {
+            m.relationships = [
+              {
+                name: "self",
+                from: "facts",
+                to: "facts",
+                from_columns: ["amount"],
+                to_columns: ["amount"],
+              },
+            ];
+            let target = m;
+            for (const part of spec.path.slice(0, -1)) target = target[part];
+            target[spec.path.at(-1)!] = "";
+          },
+          `field '${spec.path.at(-1)}' must be a nonempty string`,
+        );
+      }
+      const closedObjects: { scope: string; path: (string | number)[] }[] = [
+        { scope: "root", path: [] },
+        { scope: "dataset", path: ["datasets", 0] },
+        { scope: "field", path: ["datasets", 0, "fields", 7] },
+        { scope: "metric", path: ["metrics", 0] },
+        { scope: "relationship", path: ["relationships", 0] },
+        { scope: "dimension", path: ["datasets", 0, "fields", 7, "dimension"] },
+        {
+          scope: "expression",
+          path: ["datasets", 0, "fields", 7, "expression"],
+        },
+        {
+          scope: "variant",
+          path: ["datasets", 0, "fields", 7, "expression", "dialects", 0],
+        },
+      ];
+      for (const spec of closedObjects)
+        for (const [kind, key] of [
+          ["unknown", "vendor_rule"],
+          ["case", "Name"],
+          ["nul", "name\0suffix"],
+        ]) {
+          await refused(
+            `unknown-${spec.scope}-${kind}`,
+            (m) => {
+              m.relationships = [
+                {
+                  name: "self",
+                  from: "facts",
+                  to: "facts",
+                  from_columns: ["amount"],
+                  to_columns: ["amount"],
+                },
+              ];
+              m.datasets[0].fields[7].dimension = {};
+              let target = m;
+              for (const part of spec.path) target = target[part];
+              target[key!] = { keep: true };
+            },
+            "unknown field",
+          );
+        }
+      await accepted(
+        "empty-optional-and-whitespace-name",
+        (m) => {
+          m.name = " ";
+          m.description = "";
+          m.datasets[0].fields[7].label = "";
+        },
+        (rows) => {
+          const model = rows.find((r) => r.kind === "model")!;
+          assert.equal(model.name, " ");
+          assert.equal(model.description, "");
+          assert.equal(rows.find((r) => r.name === "amount")!.label, null);
+        },
+        "schema minLength is length only; no invented trim or optional nonempty restriction",
+      );
+      writeFileSync(
+        yaml,
+        yamlBase + 'description: "true"\nvendor_rule: true\n',
+      );
+      const yamlPrevious = await db.records("SELECT * FROM ossie_metadata()");
+      await assert.rejects(
+        db.run("CALL ossie_load(?)", [yaml]),
+        /unknown field/,
+      );
+      assert.deepEqual(
+        await db.records("SELECT * FROM ossie_metadata()"),
+        yamlPrevious,
+      );
+      observations.push({
+        name: "yaml.unknown-root-property",
+        accepted: false,
+        classification:
+          "YAML unknown field rejected and previous model preserved",
+        input_sha256: digest(yaml),
+      });
+      for (const scope of [
+        "model",
+        "dataset",
+        "field",
+        "metric",
+        "relationship",
+      ]) {
+        await accepted(
+          `ai-extra-${scope}`,
+          (m) => {
+            m.relationships = [
+              {
+                name: "self",
+                from: "facts",
+                to: "facts",
+                from_columns: ["amount"],
+                to_columns: ["amount"],
+              },
+            ];
+            const target =
+              scope === "model"
+                ? m
+                : scope === "dataset"
+                  ? m.datasets[0]
+                  : scope === "field"
+                    ? m.datasets[0].fields[7]
+                    : scope === "metric"
+                      ? m.metrics[0]
+                      : m.relationships[0];
+            target.ai_context = {
+              instructions: "legal",
+              vendor_rule: { name: "descriptive", keep: true },
+            };
+          },
+          (rows) => {
+            const row = rows.find(
+              (r) =>
+                r.kind === scope && (scope !== "field" || r.name === "amount"),
+            )!;
+            assert.deepEqual(JSON.parse(String(row.ai_context)), {
+              instructions: "legal",
+              vendor_rule: { name: "descriptive", keep: true },
+            });
+          },
+          "AI additionalProperties=true remains legal and faithfully descriptive across all scopes",
+        );
+      }
       const emptyKey = json<any>(base);
       emptyKey.datasets[0].unique_keys = [[]];
       const emptyPath = join(directory, "empty-unique-key.json");
@@ -559,7 +703,7 @@ export async function verify(artifact: string) {
     return {
       scope:
         "read-only characterization and complete schema property inventory, not approval of deviations or full conformance",
-      base_commit: "9bb9622",
+      base_commit: "1312b23",
       engine,
       artifact_sha256: digest(artifact),
       verifier_sha256: digest(import.meta.path),
@@ -581,7 +725,7 @@ export async function verify(artifact: string) {
       production_changed: true,
       remaining: [
         "final R2 acceptance still requires remaining validation deviation conclusion",
-        "minLength/additionalProperties/extension/dialect validation deviations need explicit compatibility conclusion",
+        "extension/dialect validation deviations need explicit compatibility conclusion",
         "final rule-driven P0 acceptance",
       ],
     };

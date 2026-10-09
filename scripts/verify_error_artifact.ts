@@ -300,6 +300,32 @@ export async function verify(artifact: string) {
       assert(badScalar.reason.includes("field 'description' must be a string"));
       assert.deepEqual(await db.rows("SELECT * FROM ossie_concepts()"), before);
       checks.push("hash-valid core scalar refusal preserves frozen bundle");
+      core.description = "legal";
+      core.vendor_rule = "ignored before this check";
+      writeFileSync(invalidCore, JSON.stringify(core));
+      writeFileSync(
+        invalid,
+        JSON.stringify({
+          ...manifest,
+          core: {
+            ...manifest.core,
+            path: invalidCore,
+            sha256: digest(invalidCore),
+          },
+        }),
+      );
+      const badProperty = await refuse(
+        "unknown core field in hash-valid bundle",
+        "CALL ossie_bundle_load(?)",
+        [invalid],
+        "load",
+      );
+      assert.equal(badProperty.code, "LOAD_FAILED");
+      assert(badProperty.reason.includes('unknown field "vendor_rule"'));
+      assert.deepEqual(await db.rows("SELECT * FROM ossie_concepts()"), before);
+      checks.push(
+        "unknown core property refuses without replacing frozen bundle",
+      );
       writeFileSync(invalid, "{invalid");
       await refuse(
         "document parse stage retained",

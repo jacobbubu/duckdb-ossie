@@ -39,6 +39,14 @@ NUL are refused before SQL parsing because DuckDB otherwise parses only the
 prefix. The bounded population profiles continue to reject NUL in their
 complete definition documents.
 
+Core model, dataset, field, metric and relationship names, dataset source and
+relationship endpoints must be nonempty strings. Whitespace is not trimmed.
+Unknown properties in the core model, datasets, fields, metrics, relationships,
+dimension objects, expressions and dialect variants are refused. Property keys
+are case-sensitive and matched in full. AI context objects still permit and
+preserve additional descriptive properties. Custom-extension members and the
+complete dialect enum remain separate validation limitations.
+
 ## Grain
 
 **Metrics that aggregate at more than one grain.** `store_productivity` is

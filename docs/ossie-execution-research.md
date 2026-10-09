@@ -660,3 +660,21 @@ R2 单值包回归发现：既有 YAML differential fixture 的 numeric_desc 在
 保留失败：首轮 SQL gate 的 YAML differential fixture 裸 1.5 触发严格 description 拒绝（811 assertions/1 failure，不能作为最终通过），已如上保留原文负例、仅给正例加引号，与既有 JSON 对照类型/值一致；重跑所有 SQL/native 门禁后 834 断言通过。其他功能/工具门禁没有失败，原始业务来源/固定规范不改。
 
 本地单值字符串工作包完成，提交保留、不推送。R2 字符串 scalar 偏离已补；仍有 minLength、unknown properties、custom extension 成员结构和 dialect 大小写/enum 的明确校验偏离，未作为用户批准的兼容例外。下一已授权收口优先名称 minLength 与未知 core 属性检查，再处理 extension/dialect 并归档最终 A1–A8；整体 R2/P0 未完成。分页/P1/非目标/remote CI 与发布边界保持原范围。
+
+## R2 名称/未知属性 checkpoint（2026-10-09，恢复）
+
+1312b23 后本轮按固定 core schema 实施 minLength=1 的五类 name、dataset source、relationship from/to 非空检查，以及 root/dataset/field/metric/relationship/dimension/expression/dialect-variant 的 additionalProperties=false。按完整、大小写敏感、length-aware property key 校验，拒绝未知属性，不 trim 空白或拒绝 schema 合法空 description/label；AIContext additionalProperties=true 的 vendor keys/raw JSON 保留不变。custom_extensions 成员结构/未知键与 dialect enum 后续单独收口，不称全 schema。先更新旧接受 characterization，验证每个 scope 的未知属性（含 case typo/NUL key）、空 required name/source/endpoints、合法 empty optional/AI 扩展、JSON/YAML、失败完整 metadata/bundle 保持。保留 legacy/版本/格式特定诊断优先，重建最终同产物门禁/stock/MCP 后本地提交不推送；其余两类偏离与最终 A1–A8 仍必要。
+
+本包构建失败保留：首轮编辑新 field context 的 C++ 字符串时错误转义双引号，formatter 将错误 token 格式化但编译器拒绝。已按真实 compiler error 修正该一行 quoted context，重新格式化/构建；没有把失败构建或旧 artifact 当最终验证。
+
+## R2 名称/未知属性结果（2026-10-09）
+
+RequiredNonEmptyString 在五类 name、dataset source、relationship from/to 上落实 schema minLength=1，保留 string 类型/实际长度检查，不 trim 或增加 schema 之外的空白限制。ValidateKnownFields 对 root/dataset/field/metric/relationship/dimension/expression/dialect variant 实施 additionalProperties=false，完整长度、大小写敏感比较属性名；未知键拒绝，JSON 编码诊断保留 NUL 后缀。AIContext 仍按 additionalProperties=true 保存 vendor 自定义键，不执行其规则；empty description/label 仍合法，custom_extensions 成员/enum 后续处理。legacy wrapper、未知版本/混合 ontology-mapping 特定诊断保持优先。
+
+[193 个真实字段控制](research/ossie-req-001/r2-fields-correspondence-artifact-results.json) 包含 26 接受/167 拒绝，新增八个空 required 位置、八种 scope × unknown/case/NUL 三类未知键、YAML 未知 root 属性拒绝，以及五种 scope 的合法 AI vendor-property/raw JSON 保留和 whitespace name/empty optional 接受。每次新增拒绝比较完整旧 metadata；旧 empty-name/unknown-root 接受控制已更新为拒绝，历史报告不覆盖。[50 个实际错误控制](research/ossie-req-001/r2-fields-error-artifact-results.json) 验证 hash-valid bad core vendor_rule 的 LOAD_FAILED/load 和旧 frozen bundle 保持，后续原生查询恢复；不是 hash gate 替代本次拒绝。
+
+最终 artifact SHA256 `b90af60183045005b92321517baac51654c1177e8adfed531bf408c7798458d5`。release、quality-local、19 state/42 grain/158 capture、837 SQL assertions/23 cases/0 skips、38 Bun tests/124 expects、11 stock artifact verifiers、population MCP330/106 refusals、core MCP 实际资源与 stock CLI40 PASS/0 FAIL/0 SKIP FAITHFUL 同产物通过。[控制汇总](research/ossie-req-001/r2-fields-control-results.json) 绑定最终源码/输入/报告/50 项对应表 hashes，remote CI/Ubuntu tidy 未运行。既有 CI same-download verifier 覆盖新增控制，API 仍 2.0.0。
+
+失败保留：首轮新增 field context 的 C++ quoted string 转义写错，formatter 接受并格式化错误 token，编译器拒绝；按 compiler diagnostic 修正一行后重新格式化/重建成功，最终全部功能门禁通过。没有修改 fixture 或规则以隐藏此构建错误，也未使用旧 artifact 冒充修复产物。
+
+本地工作包完成，只提交保留、不推送。R2 name minLength/closed core properties 偏离已补，尚待 custom_extensions 成员结构/字段检查与全部 dialect enum/大小写边界，再归档最终规则驱动 A1–A8；整体 R2/P0 未完成。下一已授权收口这两项规范检查，不改变 vendor 字符串自由取值或 AI 扩展许可，也不自行增加 extension.data JSON 内容验证（当前 schema 仅要求 string）。分页/P1/非目标与 remote CI/发布权限保持原范围。
