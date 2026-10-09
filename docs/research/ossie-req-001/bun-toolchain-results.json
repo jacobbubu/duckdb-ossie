@@ -1,0 +1,167 @@
+{
+  "scope": "Bun + TypeScript project toolchain migration; bounded quality package, not full ontology acceptance",
+  "date": "2026-10-09",
+  "platform": "darwin",
+  "arch": "arm64",
+  "versions": {
+    "bun": "1.3.11",
+    "typescript": "5.9.3",
+    "prettier": "3.6.2",
+    "duckdb_node_api": "1.5.6-r.1",
+    "engine": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "upstream_format": {
+      "python": "3.14.7",
+      "black": "24.10.0",
+      "clang_format": "11.0.1",
+      "cmake_format": "0.6.13"
+    }
+  },
+  "checks": [
+    {
+      "command": "bun install --frozen-lockfile",
+      "exit_code": 0
+    },
+    {
+      "command": "PATH=/tmp/duckdb-ossie-quality-venv/bin:$PATH make quality-local formatter-versions",
+      "exit_code": 0,
+      "bun_tests": 25,
+      "failures": 0,
+      "scope": "original 19 controls, current inventory, 3 MCP transport controls, strict typecheck rejection/recovery, CI migration wiring"
+    },
+    {
+      "command": "PATH=/tmp/duckdb-ossie-quality-venv/bin:$PATH make quality-local test",
+      "exit_code": 0,
+      "cpp_checks": 19,
+      "sql_cases": 15,
+      "sql_assertions": 503
+    },
+    {
+      "command": "bun scripts/verify_loader_artifact.ts build/release/extension/ossie/ossie.duckdb_extension --output docs/research/ossie-req-001/bun-loader-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "command": "bun scripts/verify_population_artifact.ts build/release/extension/ossie/ossie.duckdb_extension --output docs/research/ossie-req-001/bun-population-artifact-results.json",
+      "exit_code": 0,
+      "native_interrupt_calls": 1
+    },
+    {
+      "command": "PATH=/tmp/duckdb-ossie-bun-stock-cli:$PATH OSSIE_EXTENSION=build/release/extension/ossie/ossie.duckdb_extension bun scripts/mcp_check.ts",
+      "exit_code": 0,
+      "stdout": "testing built extension: /Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release/extension/ossie/ossie.duckdb_extension\nPASS initialize handshake\nPASS only semantic_query exposed\nPASS query refused\nPASS export refused\nPASS resources vocabulary\nPASS requested columns and data rows\nPASS grain refusal delivered\nPASS control handshake\nPASS without disabling flags query/export exposed\nall MCP checks passed\n"
+    },
+    {
+      "command": "PATH=/tmp/duckdb-ossie-bun-stock-cli:$PATH ./scripts/full_functionality_check.sh",
+      "exit_code": 0,
+      "passed": 40,
+      "failed": 0,
+      "xfailed": 0,
+      "skipped": 0,
+      "mode": "FAITHFUL stock CLI 1.5.6 + same loadable artifact"
+    },
+    {
+      "command": "Bun.YAML.parse both workflows; git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "architecture": {
+    "scope": "all project src C++ files; project include reachability and header cycles; direct runtime includes; no vendor expansion",
+    "source_files": 25,
+    "project_edges": 42,
+    "external_edges_unexpanded": 120,
+    "adapter_exceptions": {
+      "src/model/parser.cpp": [
+        "duckdb/common/file_system.hpp",
+        "duckdb/main/client_context.hpp"
+      ],
+      "src/model/catalog.cpp": [
+        "duckdb/catalog/catalog.hpp",
+        "duckdb/catalog/entry_lookup_info.hpp",
+        "duckdb/main/client_context.hpp"
+      ]
+    }
+  },
+  "artifact_sha256": "ebb61f91ac2cd5cdf80081fb955ea27ea2f88f46168f29ee2a87700e7b7447e9",
+  "stock_cli": {
+    "source": "https://github.com/duckdb/duckdb/releases/download/v1.5.6/duckdb_cli-osx-universal.zip",
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "archive_sha256": "80a80c68736bd7dea53e8b02447e9759db0c8596ea156476ba396c44f54c5810",
+    "binary_sha256": "2c75d4758c9d74cb0f4642f4e8d3c1a13e8a888a1e475fffd90934ad5ae3dd17"
+  },
+  "source_sha256": {
+    "package.json": "7beebb0c0e63d9e6cf861564878da5a3f5e60cb3dc0c90d4d45c00a82767b34f",
+    "bun.lock": "b9990a6c38d00ae769b79e52939acd1ebfbb3068debec7b684fa803b022323ee",
+    "tsconfig.json": "5b6d90262fc50410819873ba5694b117f00638f7ad6547ca8ad21b041453deec",
+    "Makefile": "d0e6e9c767e48c26d0f803e6381754f0f85beda024d857bbed6e1db0ae01591a",
+    ".clang-format": "6f867aa9f43ada180f3fb4b53dab4219121b2dd378ebb9253eeed8fc02bf15e2",
+    "CMakeLists.txt": "0be7b6be55775818782445ea540f1d178b1421f711908311b22f0c735750c8cd",
+    "scripts/artifact_helpers.ts": "cd6b220fd9ac2b7328dacba351ff357a537db214030e75791897e8f5cf2d3612",
+    "scripts/check_architecture.ts": "05c10964d8852f9d39e34516df0c5549b0c73ad1f6849dc9290666309d9f0df4",
+    "scripts/mcp_check.ts": "ad5ac716107c4a760918849261703db620249da31dd1b6b808ed1515e5603e57",
+    "scripts/verify_loader_artifact.ts": "8d434f5d1ff97736ef1e2b7222202710b068483e79e3e0b3aa288360eba34011",
+    "scripts/verify_population_artifact.ts": "49ce8ed9fec1573a9ff1a8099a5c116376a7165101158c5c26e4908e32e49e66",
+    "test/tooling/mcp_transport.test.ts": "973d69d7b66712126824a4cfd6a8d7251be2c5a920b7426c9a0980a85e5645b6",
+    "test/tooling/quality_controls.test.ts": "5e6d3dffff5b087d89c19b55b66d155ebe89a6a7cedc2154bd845bcc5183d25e",
+    ".github/workflows/MainDistributionPipeline.yml": "61c72b57ee867f25ab264680bf100b0fe1ffaef1b6c899ded182d5a3381a72e7",
+    ".github/workflows/RegistryCheck.yml": "17d7e51569207c065ac0c3a08dec4d47c6750539d167037b5ee1a327d3123cc7",
+    "src/compile/compile.cpp": "e5448fa6396cc2cea2cebbdac3b1b050dab30c72a327f875557cf2a907b755f7",
+    "src/functions/compile.cpp": "0ced88a9668b3334bd241aaade5a17995869f01f69c5ff219caa86aed9eff419",
+    "src/functions/describe.cpp": "beca66aba1855721ab72ae06ecafff7f46a1a3cb9f148b3e18d4245b64b5c5c3",
+    "src/functions/load.cpp": "940ea630f93f4b6ebe45b9a49879416f7ffba6c693557f9211d4f968ceb219ba",
+    "src/functions/query.cpp": "a4e9721e1723d03b4dedd79ef67db675ca7d4ce0fd01025450975fcfb8390488",
+    "src/include/ossie/catalog.hpp": "31a14b4b8680e9303902508ffd2975a426894df96a2cf212468483a552a38d51",
+    "src/include/ossie/compile.hpp": "831248acd478a5bfde0fa8d5ffda4ab5e283d9d0f45b7520fed8160ced64636c",
+    "src/include/ossie/describe_functions.hpp": "bb7417d8892a606a23f5862dd146dcf0dafd9666ea7005c0b3eb483c1e25414c",
+    "src/include/ossie/dialect.hpp": "3bff6bde0ece193c5ec6bdf51f6470e5eafabb88cf0aff101caf7d0579603dac",
+    "src/include/ossie/functions.hpp": "21e4cae9e69b336add2cb33be9829167353f03e699ff040e398a5ce2a3b0cae1",
+    "src/include/ossie/graph.hpp": "620a388ad927e71534f83d29daf19ea07e1b52d6c05239197a89e510c6293ac5",
+    "src/include/ossie/model.hpp": "0f51d181d2e2a7b280639133f86274a9e9b50542ae5f545103ecf2d86c05d4cd",
+    "src/include/ossie/parser.hpp": "8e339cb4addb44d37873b820d3ddee0bc1d974e1d1c61dbb535850b709009df5",
+    "src/include/ossie/state.hpp": "ed1d0e9966aca2a949072afea36ad7b1f9150b349691cc5eaffca26811b12f25",
+    "src/include/ossie/validate.hpp": "b460c6e776d9c9c2d5aa579b54a2808cff7bec1a98e81e108717c5bd898e40bc",
+    "src/include/ossie/yaml.hpp": "7409822d510d4d09a12a699c7ad95d7e869d5cafcb05c0ddafe29ca95eb88351",
+    "src/include/ossie_extension.hpp": "382f683e705384688bb6928a9b3dae0a359923f4257d8f75835c6d052f366f12",
+    "src/model/catalog.cpp": "095735539374ed0a04a071f7b2d4af0eb137ffeb4bf94f1c2df42a619344612a",
+    "src/model/dialect.cpp": "cba1454964c879092926fb8ff2920a4fcb4c46dd04f82acbbcc5e162906aaaf7",
+    "src/model/graph.cpp": "da654783f170010c6ada5a0c538053104ae9bbbb00c6aa647050fd4a65fe5292",
+    "src/model/parser.cpp": "4d407b80a9cb6195a6f665463dff8c67513111b2635fe93ef40aafb5d11f558d",
+    "src/model/validate.cpp": "557ce77b1c86ab7bb6070e840ea232c014524b59b91047d3b1542816181b5d22",
+    "src/model/yaml.cpp": "a0418e52478e8ea608dff4d42fa61f4b44895c0958a4272283e3d8339374df0d",
+    "src/ossie_extension.cpp": "62b6b2022ab4a721dc7316cf3d9e8d35e0889bce6b2d7092822fbcf716bb797e",
+    "src/population/population.cpp": "61d216032b7fb0c4bcb4d7e88ba44d53d86861747511a4185513438e1bf4674f"
+  },
+  "evidence_sha256": {
+    "bun-loader-artifact-results.json": "b2dccfbae0d1bcd5d577b9a57f8219206c367b571b7f9e09b00e38e40c73ea2c",
+    "bun-population-artifact-results.json": "a33a4dc26b84b84aaddd9b544065111c0b0415d25a5b40e19ecc665d92bb5ca1"
+  },
+  "logs_sha256": {
+    "bun-quality.log": "560f8953788726160d3a27d64e2e0206af292dc270efd2e72395bbab83fcfac2",
+    "bun-quality-controls-final.log": "c10745e8bbaafc881bfd0b50698b2c50bd6b0854a46ca45b9c13315623d04a80",
+    "bun-mcp.log": "aa00466ff2038d6fc3e6bbb4b36ded4f2d3c30ff738472539c20e1ca7054c0a2",
+    "bun-full-functionality.log": "82ca61ca05e9596f8f17874b18355e34b4b1b80f47b24e0facfadbaeb5e0a3bb"
+  },
+  "immutable_sources_and_submodules_no_diff": true,
+  "exceptions": "C++/CMake/Make, shell stock CLI smoke and pinned upstream Python formatter/tidy remain engine tooling; raw historical research preserved",
+  "retained_failures": [
+    "Initial native LIST type helper assumed VARCHAR.list(); strict tsc rejected it; corrected to official LIST(VARCHAR). No product change required."
+  ],
+  "advisor": {
+    "scope": "native verifier migration; one bounded read-only review",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown"
+  },
+  "limitations": [
+    "Local macOS arm64 only; remote Linux/macOS CI has not run.",
+    "Authoritative Ubuntu clang-tidy unavailable locally.",
+    "Existing sanitizer/coverage and remote branch protection remain outside scope.",
+    "R3 expression and R6 safe joins remain original product work."
+  ],
+  "remote_actions": {
+    "new_push": false,
+    "merge": false,
+    "settings_changed": false
+  }
+}

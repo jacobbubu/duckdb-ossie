@@ -92,6 +92,11 @@ PATH="$PWD/build/fmtvenv/bin:$PATH" make format-check   # what CI runs; non-muta
 PATH="$PWD/build/fmtvenv/bin:$PATH" make format         # rewrites in place
 ```
 
+Project tooling uses Bun 1.3.11 and strict TypeScript. Run
+`bun install --frozen-lockfile`, then `make quality-local` for both engine formatting
+and TypeScript formatting, type checking, graph rules and isolated controls.
+The pinned upstream engine formatter still requires the Python tools above.
+
 New `.cpp` files must be added to `EXTENSION_SOURCES` in `CMakeLists.txt`.
 
 ## Pull requests
@@ -104,9 +109,9 @@ Before pushing, the same gate locally:
 
 ```sh
 make && make test
-PATH="$PWD/build/fmtvenv/bin:$PATH" make format-check
+PATH="$PWD/build/fmtvenv/bin:$PATH" make quality-local
 ./scripts/full_functionality_check.sh
-python3 scripts/mcp_check.py
+bun scripts/mcp_check.ts
 ```
 
 Keep the commit message explaining *why*, not what — the diff already says what.

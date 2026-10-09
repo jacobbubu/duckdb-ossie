@@ -231,3 +231,19 @@ Advisor 一轮有条件建议已采纳并核实：scalar 原默认 CONSISTENT �
 仅配置/待验证：fork Actions permissions 只读返回 enabled=true，但 workflows API 返回 total_count=0、该分支没有运行记录；没有推断原因，没有改 GitHub settings/规则或手动派发。新增质量修改尚未推送，远端 Linux/macOS CI/tidy 未运行；本地 clang-tidy 不可用，不能称其通过。受保护的 main 合并硬门禁仍是待用户独立授权的仓库动作，不借本包实现。Sanitizer、全局 coverage/复杂度/命名治理因缺成本与基线证据暂缓，不是门禁漏检的替代品。
 
 本地质量工作包完成，P0 未完成；功能扩展在这轮暂停推进。下一步先审阅本包及确认其远端交付方式，再延续前节 R3/R6 的独立控制与研究。质量包提交保留在当前本地分支；此前成果已明确授权推送。不会把“先推送当前成果”扩展为后续质量修改、main 合并、远程规则或上游发布的无限授权。
+
+### Bun + TypeScript 工具链迁移（2026-10-09，用户追加范围）
+
+问题与授权：用户明确要求工具链改为 Bun + TypeScript。沿用本 local issue 和计划；迁移项目维护的架构门禁、门禁自测、MCP probe 和两个真实产物验证器，保留既有数值、取消、生命周期与失败控制。C++ 扩展、CMake/Make 和固定 DuckDB 上游 formatter 属于引擎工具，不改为 TypeScript；原样研究脚本及历史报告保留。当前质量提交 9fbb5b0 已本地保存，此前推送保留的功能提交为 2b1e8b5；本轮没有新增推送/合并/远程设置授权。
+
+验证计划：固定 Bun/依赖和 lockfile，独立严格类型检查、TS 格式违规控制及 Bun tests，继续 C++/SQL 与 stock 1.5.6 真实扩展验证。先验证官方 Node Neo binding 在 Bun 下的产物加载、类型、interrupt 和 close API，再迁移 oracle；不以 Python 包装脚本宣称迁移完成。新的证据另存，历史报告不覆盖。当前 Bun 1.3.11 可用，尚未验证 binding；下一动作是最小 native smoke 与迁移门禁。
+
+迁移结果：四个项目 Python 脚本及 unittest 已由 TypeScript/Bun 替代；固定 Bun 1.3.11、TypeScript 5.9.3、Prettier 3.6.2、官方 @duckdb/node-api 1.5.6-r.1 与 bun.lock。官方客户端来源见 [Node Neo 文档](https://duckdb.org/docs/current/clients/node_neo/overview)，具体类型/关闭/interrupt API 以已安装固定版本源码复核，并以真实产物验证。严格类型检查独立于运行；没有通过包装 Python 执行来冒充迁移。首次写错 LIST helper 被 tsc 拒绝，修正为 LIST(VARCHAR)，空列表类型明确绑定。
+
+最终本地证据：`make quality-local` 的 25 个 Bun 控制通过（保留原19项，新增实际非零图、3项MCP传输控制、类型错误拒绝/恢复和CI迁移接线）；19项C++状态检查、15个SQL用例503条断言通过。架构图仍为25文件/42项目边/120未展开外部边。两验证器针对同一真实产物，在独立 stock Node binding 下确认 v1.5.6/source 069cc9f9b5；loader17拒绝例/46元数据范围/2500字段、population46拒绝控制与475行/11行边界、全部对象ID/金额/下钻/描述不变性通过。金额SUM以独立CSV bigint分值精确比对，AVG沿用DOUBLE容差；typed DATE/DECIMAL不经浮点或JSON转换。取消控制定时器在native load运行时实际触发interrupt、旧快照保持；明确关闭connection和instance后，父进程仍存活时子Bun进程重开同文件读取11行。并发来自同一instance的两个连接，不以顺序查询替代。
+
+MCP迁移后的probe用独立下载stock CLI v1.5.6实际加载同一扩展，握手、唯一semantic_query、query/export拒绝、数据/词汇/粒度拒绝及不设置禁用flags的正向控制全通过；读超时/子进程清理另有控制。既有shell功能检查本轮为40 PASS、0 FAIL/XFAIL/SKIP，模式FAITHFUL，已不依赖静态fallback。Make质量聚合和CI接线已改为Bun frozen install/TS检查；上游复用format job没有Bun安装入口，所以C++格式在原job、TS格式/类型在required project-controls，不静默跳过。两workflow使用Bun YAML解析通过，diff检查通过。
+
+新报告：[Bun工具链与门禁证据](research/ossie-req-001/bun-toolchain-results.json)、[Bun loader证据](research/ossie-req-001/bun-loader-artifact-results.json)、[Bun population证据](research/ossie-req-001/bun-population-artifact-results.json)。原样来源、子模块、历史Python研究脚本和历史报告未改；新报告绑定本轮源码/依赖/产物哈希。C++/CMake/Make、shell CLI smoke以及固定上游Python formatter/tidy作为引擎工具保留。限定Advisor只读审查提醒精确分值、空列表类型、真实interrupt、双层close、父进程存活文件锁和同产物加载；Lead逐项实测。有效backend/effort/usage/billing依然unknown。
+
+当前结果与必要剩余：质量工作包及追加Bun工具链迁移本地完成，不等于P0。远程CI与Ubuntu clang-tidy仍未运行，无新增push/merge/settings动作。本轮仅macOS arm64，不能称跨平台已验收。原产品R3表达式/除法时间边界与R6安全连接研究，以及calendar/更广ontology/MCP完整验收仍待后续；当前不借工具迁移扩实现范围。下一动作是交付本包，再继续已有功能研究范围。

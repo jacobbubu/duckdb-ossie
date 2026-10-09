@@ -51,7 +51,7 @@ PRAGMA mcp_publish_tool(
 -- arbitrary SQL argument and is a second route to the same place. With all five off, tools/list
 -- returns only semantic_query and tools/call on the others is refused with "Tool not found".
 --
--- Remove a flag and you reopen the connection. scripts/mcp_check.py asserts both directions of this
+-- Remove a flag and you reopen the connection. scripts/mcp_check.ts asserts both directions of this
 -- on every push, so CI fails if it stops being true.
 PRAGMA mcp_server_start('stdio', 'localhost', 0, '{
     "enable_query_tool": false,

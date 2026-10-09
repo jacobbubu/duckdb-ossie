@@ -24,9 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: oven-sh/setup-bun@v2
         with:
-          python-version: '3.12'
+          bun-version: '1.3.11'
+      - name: Install locked tooling dependencies
+        run: bun install --frozen-lockfile
 
       - name: Install the latest DuckDB CLI
         run: |
@@ -34,4 +36,4 @@ jobs:
           echo "$HOME/.duckdb/cli/latest" >> "$GITHUB_PATH"
 
       - name: Speak MCP to the server, installing ossie from the registry
-        run: python3 scripts/mcp_check.py
+        run: bun scripts/mcp_check.ts

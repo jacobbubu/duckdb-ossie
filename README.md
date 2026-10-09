@@ -154,7 +154,7 @@ subqueries are refused outright, and no argument lets a caller widen that.
 That holds for the connection as a whole, not just the tool, because `server.sql` disables every
 built-in `duckdb_mcp` tool when it starts the server — `query`, `export`, `list_tables`, `describe`
 and `database_info`. `tools/list` returns only `semantic_query`, and calling any of the others is
-refused with *Tool not found*. `scripts/mcp_check.py` asserts this on every push.
+refused with *Tool not found*. `scripts/mcp_check.ts` asserts this on every push.
 
 > **Writing your own server?** Disabling `query` is not sufficient on its own — `export` also takes
 > an arbitrary SQL argument and reaches the same data. Disable all five, or point the server only at

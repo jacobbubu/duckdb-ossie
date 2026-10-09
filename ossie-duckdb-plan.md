@@ -59,6 +59,18 @@ boundary before resuming the existing R3/R6 work; keep evidence and remaining ne
 in [the same work record](docs/ossie-execution-research.md), with the implementation
 contract in [quality-controls.md](docs/quality-controls.md).
 
+## Current toolchain checkpoint — 2026-10-09
+
+Project-maintained gates, probes and two stock artifact verifiers now use Bun 1.3.11
+and strict TypeScript with a frozen lockfile. Existing C++/CMake/Make, shell CLI smoke
+and pinned upstream formatter remain. Historical research sources and reports are
+preserved. Native Bun binding load, exact-money oracle, running interrupt and
+parent-alive cross-process close controls have passed. Make/CI wiring and final
+source-hash reports are complete: 25 Bun controls, 19 C++ checks, 503 SQL assertions,
+loader/population independent artifact controls, actual MCP and 40 FAITHFUL stock CLI
+checks passed. See docs/research/ossie-req-001/bun-toolchain-results.json. No remote CI or new push
+is claimed; remaining product R3/R6 work remains in the existing research record.
+
 ---
 
 ## 1. Context
@@ -508,3 +520,7 @@ complete.
 If time runs short, a narrow extension that refuses clearly beats a general one that
 guesses. Resist letting 3b's cases leak into 3a; the ambiguity work is open-ended and
 will absorb whatever time it is given.
+
+### Bun + TypeScript checkpoint（2026-10-09）
+
+用户新增工具链范围，详见现有 local issue `docs/ossie-execution-research.md` 的迁移节。迁移项目自维护的 Python gates/probes/artifact verifiers 到 TypeScript；固定 Bun、依赖与 lockfile，保持 C++/SQL、独立数值及取消/生命周期证明。引擎 C++/CMake/Make、固定上游 formatter 和历史来源保留。本包本地完成：四脚本及控制已迁移、Make/CI已接线；25个Bun控制、19项C++、503条SQL、两个真实产物验证器、MCP及40项stock CLI检查通过。远程CI/Ubuntu tidy未运行，不能称跨平台验收。功能 R3/R6 研究继续等待质量工作完成，不扩产品范围。

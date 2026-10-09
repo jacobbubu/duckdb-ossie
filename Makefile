@@ -35,25 +35,30 @@ tidy-check:
 	cp duckdb/.clang-tidy build/tidy/.clang-tidy
 	cd build/tidy && python3 ../../duckdb/scripts/run-clang-tidy.py '$(PROJ_DIR)src/' -header-filter '$(PROJ_DIR)src/' -quiet ${TIDY_THREAD_PARAMETER} ${TIDY_BINARY_PARAMETER} ${TIDY_PERFORM_CHECKS}
 
-# Keep the pinned DuckDB formatter and add project-maintained Python scripts.
-.PHONY: formatter-versions script-format-check script-format-fix architecture-check quality-control-tests quality-local
-format-check: script-format-check
+# Bun/TypeScript checks supplement the pinned upstream C++ formatter.
+# The upstream reusable format job has no Bun; project-controls gates TS separately.
+.PHONY: formatter-versions script-format-check script-format-fix architecture-check quality-control-tests quality-local tooling-typecheck
 format: script-format-fix
 format-fix: script-format-fix
-script-format-check: formatter-versions
-	python3 duckdb/scripts/format.py --all --check --directories scripts
+script-format-check:
+	bun run format:check
 formatter-versions:
+	bun --version
+	bun x --bun --no-install tsc --version
+	bun x --bun --no-install prettier --version
 	python3 --version
 	black --version
 	clang-format --version
 	cmake-format --version
 script-format-fix:
-	python3 duckdb/scripts/format.py --all --fix --noconfirm --directories scripts
+	bun run format
 architecture-check:
-	python3 scripts/check_architecture.py
+	bun run architecture
+tooling-typecheck:
+	bun run typecheck
 quality-control-tests:
-	python3 -m unittest discover -s test/python -p 'test_quality_controls.py' -v
-quality-local: format-check architecture-check quality-control-tests
+	bun test test/tooling
+quality-local: format-check script-format-check tooling-typecheck architecture-check quality-control-tests
 
 # Run explicitly: CTest and ENABLE_UNITTEST_CPP_TESTS do not discover this target.
 .PHONY: state-test-release state-test-debug state-test-reldebug

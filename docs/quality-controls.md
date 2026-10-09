@@ -45,27 +45,31 @@ make test                # dedicated state runner, then existing SQL tests
 make state-test-release  # run only the dedicated state contract
 ```
 
-`make format-check`, `format` and `format-fix` retain the pinned DuckDB formatter
-for `src test` and add a prerequisite for project `scripts`. The same formatter
-uses Black with `--skip-string-normalization --line-length 120`; C++ uses the
-unchanged root `.clang-format` (identical to the pinned DuckDB file). No vendor,
-submodule or immutable research-source tree is formatted. Script reformatting is
-style-only except the explicit verifier/architecture changes; executable modes
-are retained. Python source files under `scripts` are now covered; shell lint is
-not part of this package.
+Project-maintained tooling runs on **Bun 1.3.11 + TypeScript**. Install with
+`bun install --frozen-lockfile`; `package.json` and `bun.lock` pin the client and
+development tools. TypeScript 5.9.3 runs strict `tsc --noEmit`, independently of
+Bun execution. Prettier 3.6.2 checks project `scripts/*.ts`, `test/tooling/*.ts`
+and toolchain configuration; `bun test test/tooling` runs isolated controls.
 
-The formatter accepts Black >=24 and clang-format 11.x, while existing CI installs
-Black 24.x and clang-format 11.0.1. Local acceptance used Black 24.10.0,
-clang-format 11.0.1 and cmake-format 0.6.13 in a task venv. CI's new control job uses
-Python 3.12; the local venv used Python 3.14.7. Both use the same pinned formatter
-commands; actual versions are printed. Existing clang-tidy uses the Ubuntu system
-package and its current pinned configuration, including disabled identifier naming.
-No new global naming, coverage or complexity threshold is imposed. Local clang-tidy
-was unavailable; this package does not claim its authoritative CI job passed.
+`make format-check` retains the pinned DuckDB formatter for `src test`.
+`make script-format-check` checks TypeScript; `make quality-local` requires both,
+as well as type checking, the include graph and Bun tests. The upstream reusable
+format job has no Bun setup, so it gates C++ formatting while `project-controls`
+installs the fixed Bun runtime and gates TypeScript. Neither check silently skips.
+`make format` / `format-fix` also rewrite the project TypeScript files.
+No vendor, submodule or immutable research-source tree is formatted.
+
+The C++ extension, CMake/Make build, shell CLI smoke adapter and pinned upstream
+Python formatter/tidy scripts remain engine tooling. There are no active
+project-maintained Python gates or artifact verifiers. Historical Python research
+sources and reports remain immutable. Upstream format tools retain Black 24.x,
+clang-format 11.0.1 and cmake-format 0.6.13; the root `.clang-format` remains
+identical to the pinned DuckDB file. Local clang-tidy is unavailable; its authoritative
+Ubuntu job has not been run locally. No new global naming/coverage threshold is imposed.
 
 ## Bounded dependency rules
 
-`scripts/check_architecture.py` inventories all project C++ source/headers under
+`scripts/check_architecture.ts` inventories all project C++ source/headers under
 `src`, compares source files with `EXTENSION_SOURCES`, and resolves quoted/angle
 project includes and relative paths. It rejects unresolved project includes,
 nonliteral includes it cannot analyze, empty source inventories and zero inputs.
@@ -99,25 +103,34 @@ scheduled before the SQL runner. An actual missing-fixture state invocation was
 also confirmed to propagate failure through Make.
 
 The existing Linux/macOS `artifact-load` matrix now runs the loader and population
-verifiers against the same downloaded extension in stock DuckDB wheel 1.5.6,
+verifiers against the same downloaded extension in stock DuckDB Node bindings 1.5.6 (client 1.5.6-r.1),
 checking source ID `069cc9f9b5` and unsigned file loading without static fallback.
 Evidence is uploaded per architecture. The loader checks its required eight entry
 names and query overloads, tolerating unrelated additional functions; its metadata
 checks remain intact. The population verifier retains its independent numeric and
-object oracle and adds description/AI/unit-extension invariance.
+object oracle and description/AI/unit-extension invariance. CSV values are parsed
+independently as bigint cents; SUM and counts compare exactly, AVG uses the existing
+1e-10 DOUBLE tolerance. DATE and DECIMAL use native typed values, without JSON or
+floating-point conversion. Empty list parameters explicitly bind LIST(VARCHAR).
+Native interrupts run during the load, and close releases both connection and
+instance before another process reopens the file while the parent stays alive.
+
+The TypeScript MCP probe retains the exact server.sql install replacement, exclusive
+semantic tool listing, query/export refusal, rows, grain refusal and positive control
+without disabling flags. Reads have a real deadline; every exit path terminates the
+child and removes temporary files. Transport controls exercise silent and failed servers.
 
 JSON metadata serialization now owns yyjson's write buffer with a local custom
 RAII deleter, including exceptional string construction. Normal metadata controls
 passed; allocator failure was not injected. The single existing yyjson NOLINT is
 explained as a local C API adapter, with no wider exemption.
 
-Current local results and hashes are in
-[quality-control-results.json](research/ossie-req-001/quality-control-results.json),
-[quality-loader-artifact-results.json](research/ossie-req-001/quality-loader-artifact-results.json)
-and [quality-population-artifact-results.json](research/ossie-req-001/quality-population-artifact-results.json).
-Historical reports remain intact. On 2026-10-09, read-only GitHub API returned
-Actions enabled but zero registered workflows/runs for this fork. The new quality
-changes were not pushed during local acceptance. Remote CI execution and branch
-protection are unverified; no protection or upstream setting was changed. See the
-[existing work record](ossie-execution-research.md) for authorization and remaining
-ontology work. Sanitizer/coverage expansion remains outside this bounded package.
+Current Bun migration results and source hashes are in
+[bun-toolchain-results.json](research/ossie-req-001/bun-toolchain-results.json),
+[bun-loader-artifact-results.json](research/ossie-req-001/bun-loader-artifact-results.json)
+and [bun-population-artifact-results.json](research/ossie-req-001/bun-population-artifact-results.json).
+The previous quality/Python and earlier research reports remain historical evidence.
+Remote CI execution and branch protection are unverified; no protection or upstream
+setting was changed. See the [existing work record](ossie-execution-research.md)
+for authorization and remaining ontology work. Sanitizer/coverage expansion remains
+outside this bounded package.
