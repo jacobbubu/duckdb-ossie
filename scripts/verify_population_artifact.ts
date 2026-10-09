@@ -254,7 +254,7 @@ export async function verify(artifact: string) {
       [original],
     );
     const independent = sourceRows(original),
-      cases: Record<string, Record<string, Cell>> = {},
+      cases: Record<string, Record<string, unknown>> = {},
       contentHashes: Cell[] = [];
     for (const threshold of [10, 20]) {
       const snapshot = await load(
@@ -278,7 +278,8 @@ export async function verify(artifact: string) {
           join(EVIDENCE, `baseline-objects-threshold-${threshold}.json`),
         ),
       );
-      same((await metric(con))[0], aggregate(selected));
+      const totals = (await metric(con))[0]!;
+      same(totals, aggregate(selected));
       assert.equal(ids.length, baseline.cases[threshold].record_count);
       const grouped = groups(selected, ["ds"]),
         daily = await metric(con, FILTERS, ["dws_gaap_di.ds"]);
@@ -293,6 +294,11 @@ export async function verify(artifact: string) {
           "dws_gaap_di.user_type",
         ]);
       assert.equal(drill.length, groupedDrill.size);
+      const drilldownObjects: {
+        dimensions: Cell[];
+        filters: string[];
+        object_ids: string[];
+      }[] = [];
       for (const result of drill) {
         const key = result.slice(0, 3),
           selectedGroup = groupedDrill.get(JSON.stringify(key))!;
@@ -303,10 +309,16 @@ export async function verify(artifact: string) {
           `User.region = '${key[1]}'`,
           `User.user_type = '${key[2]}'`,
         ];
+        const childIds = await objects(con, narrowed);
         assert.deepEqual(
-          await objects(con, narrowed),
+          childIds,
           selectedGroup.map((row) => row.user_id).sort(),
         );
+        drilldownObjects.push({
+          dimensions: key,
+          filters: narrowed,
+          object_ids: childIds,
+        });
       }
       const compiled = await con.one(
         "SELECT * FROM ossie_concept_compile(?, ?, ?, ?)",
@@ -324,8 +336,26 @@ export async function verify(artifact: string) {
         compiled[5],
       ]);
       cases[threshold] = {
+        query: {
+          concept: "ValidUser",
+          metrics: METRICS,
+          filters: FILTERS,
+          daily_dimensions: ["dws_gaap_di.ds"],
+          drill_dimensions: [
+            "dws_gaap_di.ds",
+            "dws_gaap_di.region",
+            "dws_gaap_di.user_type",
+          ],
+        },
+        object_ids: ids,
+        aggregate: totals,
+        daily_results: daily,
+        grouped_results: drill,
+        drilldown_objects: drilldownObjects,
+        actual_plan: JSON.parse(String(compiled[9])),
+        traced_aggregate: traced,
         objects: ids.length,
-        sum: (await metric(con))[0][2],
+        sum: totals[2],
         daily_groups: daily.length,
         drill_groups: drill.length,
         snapshot_id: snapshot[1],
@@ -334,6 +364,27 @@ export async function verify(artifact: string) {
         ontology_sha256: compiled[5],
       };
     }
+    const manifests = [10, 20].map((threshold) =>
+      json<Manifest>(
+        join(ROOT, `test/fixtures/population/bundle-${threshold}.json`),
+      ),
+    );
+    assert.equal(manifests[0]!.core.sha256, manifests[1]!.core.sha256);
+    assert.equal(manifests[0]!.mapping.sha256, manifests[1]!.mapping.sha256);
+    const ontologies = [10, 20].map((threshold) =>
+      json<Ontology>(
+        join(DEFINITIONS, `gaap.ontology.threshold-${threshold}.json`),
+      ),
+    );
+    for (const [index, threshold] of [10, 20].entries()) {
+      const child = ontologies[index]!.ontology.find(
+        (c) => c.concept === "ValidUser",
+      )!;
+      assert.deepEqual(child.derived_by, [`User.ytd_gaap >= ${threshold}`]);
+      delete child.derived_by;
+    }
+    assert.deepEqual(ontologies[0], ontologies[1]);
+    assert.deepEqual(cases["10"]!.query, cases["20"]!.query);
     assert.equal(contentHashes[0], contentHashes[1]);
     assert.notEqual(cases["10"].ontology_sha256, cases["20"].ontology_sha256);
     const boundary = join(EVIDENCE, "gaap-boundary.csv"),
@@ -879,6 +930,20 @@ export async function verify(artifact: string) {
         inputPaths.map((path) => [relative(ROOT, path), digest(path)]),
       ),
       cases,
+      acceptance_evidence: {
+        cases: ["A1", "A2", "A3", "A4"],
+        full_object_and_group_results_saved: true,
+        only_formal_derived_rule_changes: true,
+        metric_mapping_and_request_template_unchanged: true,
+        unit: "USD",
+        unit_source: "original workbook metric!E2; correspondence review",
+        decimal_sum_oracle: "independent bigint cents from immutable CSV",
+        average_absolute_tolerance: 1e-10,
+        query_order:
+          "unspecified; object IDs sorted in verifier for comparison only",
+        grouped_means_are_not_additive: true,
+        autonomous_agent_verified: false,
+      },
       numeric_oracle:
         "CSV parsed independently into bigint cents; exact SUM and count; DOUBLE AVG tolerance 1e-10",
       same_capture_content_for_thresholds: true,

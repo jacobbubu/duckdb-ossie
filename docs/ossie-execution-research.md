@@ -705,3 +705,11 @@ RequiredNonEmptyString 在五类 name、dataset source、relationship from/to �
 ### 自动第1轮结果：当前证据与范围（2026-10-10）
 
 38项需求和8项验收索引已更新到3ca59c6同产物证据，R2.2/R2.5/R3.3/R7.4的旧待补状态已被后续真实校验/typed控制取代；保留quoted case、DOUBLE近似、规模/内存和跨reload边界。[证据审计](research/ossie-req-001/p0-round1-evidence-results.json)核对20份固定来源、12份同产物报告的源码/fixture/helper绑定、38/8索引和50字段清单。哈希核对不是计算正确性测试；本轮没有重跑原生功能门禁。新Bun审计脚本format/typecheck通过。本轮本地提交；必要剩余是第2轮完整查询证据、第3/4轮边界和追溯、第5轮最终结论。
+
+### 自动第2轮 checkpoint：A1–A4完整查询证据
+
+沿现issue扩展既有独立bigint-cents verifier的结果记录，保存完整对象/逐日/三维分组/子组对象与实际compile plan、trace。校验10/20只有derived_by变化、core/mapping/请求模板一致；原CSV/正式资产不改。实际重跑该stock verifier，声明均值容差、无序和单位来源。边界/追溯最后结论仍在后续轮次，不扩大生产范围。
+
+### 自动第2轮结果：A1–A4完整查询证据
+
+既有独立stock verifier已实际重跑，保存阈值10/20完整166/63对象、15/15逐日、101/45三维分组和全部下钻对象、实际SQL/plan/trace；同core/mapping/请求模板且ontology仅derived_by变化，完整结果对照独立bigint cents及AVG容差通过。3月10日37/1697.80/45.88648648648649与21/1277.54/60.8352380952381可直接复核。新记录[完整报告](research/ossie-req-001/p0-final-population-artifact-results.json)与[验收入口](p0-acceptance.md)在research record中链接；plan内链接以docs为准。本轮只增强证据输出，不改生产C++/原始输入；format/typecheck通过。本地提交后进入第3轮A5–A6；第4轮追溯及第5轮整体结论仍必要。

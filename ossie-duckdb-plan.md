@@ -739,3 +739,11 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 ### 自动第1轮完成
 
 当前38项矩阵已更新，20来源与12同产物报告绑定、50字段、8验收索引核对通过（文档审计，不是功能重跑）。本地提交后进入第2轮完整GAAP查询证据；第3/4轮边界追溯及第5轮最终验收尚待完成。
+
+### 自动第2轮 checkpoint：A1–A4完整查询证据
+
+沿现issue扩展既有独立bigint-cents verifier的结果记录，保存完整对象/逐日/三维分组/子组对象与实际compile plan、trace。校验10/20只有derived_by变化、core/mapping/请求模板一致；原CSV/正式资产不改。实际重跑该stock verifier，声明均值容差、无序和单位来源。边界/追溯最后结论仍在后续轮次，不扩大生产范围。
+
+### 自动第2轮结果：A1–A4完整查询证据
+
+既有独立stock verifier已实际重跑，保存阈值10/20完整166/63对象、15/15逐日、101/45三维分组和全部下钻对象、实际SQL/plan/trace；同core/mapping/请求模板且ontology仅derived_by变化，完整结果对照独立bigint cents及AVG容差通过。3月10日37/1697.80/45.88648648648649与21/1277.54/60.8352380952381可直接复核。新记录[完整报告](docs/research/ossie-req-001/p0-final-population-artifact-results.json)与[验收入口](docs/p0-acceptance.md)在research record中链接；plan内链接以docs为准。本轮只增强证据输出，不改生产C++/原始输入；format/typecheck通过。本地提交后进入第3轮A5–A6；第4轮追溯及第5轮整体结论仍必要。
