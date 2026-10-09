@@ -268,3 +268,18 @@ test("CI uses frozen Bun tooling and the same artifact for both verifiers", () =
   expect(controls).toContain("bun install --frozen-lockfile");
   expect(workflow).not.toContain("python3 scripts/");
 });
+
+test("stock artifact CLI and both verifiers consume the downloaded artifact", () => {
+  const workflow = readFileSync(
+    join(ROOT, ".github/workflows/MainDistributionPipeline.yml"),
+    "utf8",
+  );
+  const artifact = workflow.split("  artifact-load:")[1].split("  ci-gate:")[0];
+  expect(artifact).toContain("uses: actions/download-artifact@v4");
+  expect(artifact).toContain("name: ossie-v1.5.6-extension-${{ matrix.arch }}");
+  expect(artifact).toContain("path: downloaded");
+  expect(artifact).toContain(
+    "OSSIE_EXTENSION: downloaded/ossie.duckdb_extension",
+  );
+  expect(artifact).toContain("run: ./scripts/full_functionality_check.sh");
+});

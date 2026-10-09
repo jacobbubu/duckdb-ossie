@@ -247,3 +247,17 @@ MCP迁移后的probe用独立下载stock CLI v1.5.6实际加载同一扩展，�
 新报告：[Bun工具链与门禁证据](research/ossie-req-001/bun-toolchain-results.json)、[Bun loader证据](research/ossie-req-001/bun-loader-artifact-results.json)、[Bun population证据](research/ossie-req-001/bun-population-artifact-results.json)。原样来源、子模块、历史Python研究脚本和历史报告未改；新报告绑定本轮源码/依赖/产物哈希。C++/CMake/Make、shell CLI smoke以及固定上游Python formatter/tidy作为引擎工具保留。限定Advisor只读审查提醒精确分值、空列表类型、真实interrupt、双层close、父进程存活文件锁和同产物加载；Lead逐项实测。有效backend/effort/usage/billing依然unknown。
 
 当前结果与必要剩余：质量工作包及追加Bun工具链迁移本地完成，不等于P0。远程CI与Ubuntu clang-tidy仍未运行，无新增push/merge/settings动作。本轮仅macOS arm64，不能称跨平台已验收。原产品R3表达式/除法时间边界与R6安全连接研究，以及calendar/更广ontology/MCP完整验收仍待后续；当前不借工具迁移扩实现范围。下一动作是交付本包，再继续已有功能研究范围。
+
+### 推送前遗留实现清理（2026-10-09，用户要求）
+
+范围与授权：用户要求推送前清理遗留不用的老实现。本轮沿用 local issue，先清理再验证，交付当前 fork 分支；不合并 main、不改远程规则。复核发现：shell 功能检查仍内嵌 Python 生成与现有 nested_field_model.json 重复的模型，静态 fallback 可掩盖真实加载失败，已修复的嵌套字段路径仍记为非门禁 XFAIL；AIContext.instructions 独立成员只写不读，原始 ai_context 已在 raw_json 完整保存。还有 population-profile 的旧 Python verifier 链接和迁移后 Python cache 目录/ignore 项。原新旧格式拒绝控制和 core API 有实际使用，不能按“旧”字样误删；历史来源/报告/研究脚本保留。
+
+计划与验证：复用已有 fixture，移除重复 Python、静态 fallback 和过期 XFAIL 分支；清除只写不读成员而保留 metadata 原样与 instructions 类型验证。脚本用同一真实产物，缺CLI/缺产物/加载失败必须非零并有隔离负例；继续 format/typecheck/Bun、真实 C++/SQL 与两个 artifact/MCP 验证。新的清理证据另存；成功后提交推送 origin/codex/ossie-execution，不扩大到合并/发布/远程设置。
+
+清理发现与范围修正：首次引用搜索只查 `ai_context.instructions`，漏掉 MetadataRow 的 `ai.instructions` 别名访问。移除后实际编译明确报错，证明该成员仍使用；已完整恢复成员及 parser 两处赋值，不改变 metadata schema 或语义。这是本轮检查失误，保留失败证据，不把未实施的 C++ 删除计为清理成果。下一动作改为仅完成实际确认的 shell/cache/旧链接清理，并重建验证。同一轮 workflow diff 复核发现删除旧复制步骤时连带包含下载步骤，已保留下载、仅删复制/回退检查，并给接线控制补充下载必需断言。
+
+本轮最终成果：删除 shell 内嵌 Python 重复模型生成，改用已有 nested_field_model.json；去掉静态build-tree fallback和已修复嵌套字段的非门禁XFAIL，真实加载失败与回归均非零。统一 OSSIE_EXTENSION 为绝对路径（macOS hardened CLI真实拒绝相对路径，首次失败日志保留）；CI直接使用下载产物，去掉复制和旧fallback包装，保留download步骤并新增接线控制。清掉旧缓存目录/ignore和population-profile旧verifier链接。所有C++实现最终无diff；metadata instructions、活跃core API和旧格式拒绝均保留。补充控制时曾有TS fixture引号错误，formatter/Bun明确拒绝，修正后最终类型/格式检查通过。
+
+最终验证：重建通过；30个Bun控制（含缺CLI/缺artifact/加载失败/相对路径和同下载产物接线）、19项C++状态检查、15个SQL用例503条断言通过。loader17非法文档/46元数据范围/2500字段，population46拒绝控制/475行与11行边界/取消生命周期等控制再次针对同一最终产物通过。真实stock CLI检查40 PASS、0 FAIL/SKIP，MCP完整probe通过，shell语法/workflow YAML/diff检查通过。新证据：[清理报告](research/ossie-req-001/cleanup-results.json)、[清理后loader](research/ossie-req-001/cleanup-loader-artifact-results.json)、[清理后population](research/ossie-req-001/cleanup-population-artifact-results.json)，原报告不覆盖。原样输入/子模块/历史研究不变。
+
+清理工作包本地完成，当前下一动作是提交并推送到fork的codex/ossie-execution。远端CI尚未验证，Ubuntu tidy没有本机证据；不称跨平台完成，不合并main/改设置。原功能R3/R6等必要研究仍在前节，清理不等于整个P0完成。

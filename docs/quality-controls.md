@@ -125,7 +125,16 @@ RAII deleter, including exceptional string construction. Normal metadata control
 passed; allocator failure was not injected. The single existing yyjson NOLINT is
 explained as a local C API adapter, with no wider exemption.
 
-Current Bun migration results and source hashes are in
+Current cleanup results are in
+[cleanup-results.json](research/ossie-req-001/cleanup-results.json), with same-artifact
+[loader](research/ossie-req-001/cleanup-loader-artifact-results.json) and
+[population](research/ossie-req-001/cleanup-population-artifact-results.json) controls.
+The CLI smoke script now requires a stock CLI and real artifact, rejects load failures,
+and reuses the existing nested-field fixture as a normal gating assertion.
+Missing CLI/artifact, loading failure and relative-path normalization have isolated controls.
+There is no project Python fixture generator or static build-tree fallback.
+
+Previous Bun migration results and source hashes are in
 [bun-toolchain-results.json](research/ossie-req-001/bun-toolchain-results.json),
 [bun-loader-artifact-results.json](research/ossie-req-001/bun-loader-artifact-results.json)
 and [bun-population-artifact-results.json](research/ossie-req-001/bun-population-artifact-results.json).

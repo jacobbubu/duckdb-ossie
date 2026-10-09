@@ -45,10 +45,16 @@ from `make test` before the bump and compare it after.
 
 # After rebuilding
 
-`scripts/full_functionality_check.sh` prefers the stock `duckdb` on `PATH` and silently falls back to
-the build-tree binary when the artifact will not load in it. After a bump, upgrade the stock CLI
-first (`brew upgrade duckdb`), or the check reports the fallback mode instead of loading the
-artifact.
+`scripts/full_functionality_check.sh` requires a stock `duckdb` CLI on `PATH` and
+loads the actual extension artifact. Missing prerequisites or failed loading stop
+the check; there is no static build-tree fallback. After a version bump, install
+the matching stock CLI before running it. Set `OSSIE_EXTENSION` to test a downloaded
+artifact directly; otherwise it uses the release artifact path.
+
+Update the pinned `@duckdb/node-api` dependency and `bun.lock`, as well as the
+version/source-ID expectations in the two TypeScript artifact verifiers. Verify the
+same artifact with both stock Node bindings and the stock CLI; a static SQL test
+alone does not prove loadable artifact compatibility.
 
 # API changes
 DuckDB extensions built with this extension template are built against the internal C++ API of DuckDB. This API is not guaranteed to be stable.

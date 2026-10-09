@@ -116,12 +116,12 @@ and DATE. These are acceptance limits; initial source materialization and query
 execution use the host DuckDB memory budget. Overflow is an error, never truncation.
 Queries serialize per bundle and forward caller cancellation during execution.
 
-The [independent artifact verifier](../scripts/verify_population_artifact.py)
-loads the real extension into an independently installed DuckDB wheel. It compares
+The [independent artifact verifier](../scripts/verify_population_artifact.ts)
+loads the real extension into an independently installed stock DuckDB Node binding under Bun. It compares
 full object sets, totals, every daily and region/type group, and group drill-down
-against an independent CSV/Decimal oracle at thresholds 10 and 20, plus hand-derived
+against an independent CSV/bigint-cents oracle at thresholds 10 and 20, plus hand-derived
 NULL/identity boundary controls. It also exercises rejection, atomic reload,
 prepared snapshot retention, cancellation and concurrent callers. Reproducible
-hashes and results are in [population-artifact-results.json](research/ossie-req-001/population-artifact-results.json).
+hashes and results are in [cleanup-population-artifact-results.json](research/ossie-req-001/cleanup-population-artifact-results.json).
 The current [research record](ossie-execution-research.md) tracks remaining work;
 this slice does not complete P0, multi-table safe joins, calendar or A1–A8 acceptance.

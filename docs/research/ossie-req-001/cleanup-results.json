@@ -1,0 +1,136 @@
+{
+  "scope": "pre-push cleanup of obsolete CLI paths, duplicate Python fixture generation, stale links and caches; active core implementation retained",
+  "date": "2026-10-09",
+  "base_commit": "62ad78d",
+  "runtime": "Bun 1.3.11",
+  "platform": "darwin",
+  "arch": "arm64",
+  "removed": [
+    "embedded Python generator duplicated by nested_field_model.json",
+    "static build-tree fallback from artifact smoke test",
+    "obsolete non-gating XFAIL path for fixed nested fields",
+    "CI artifact copy and fallback-mode wrapper",
+    "old active Python verifier link and obsolete cache/ignore paths"
+  ],
+  "retained": [
+    "active instructions metadata field, parser validation and output",
+    "core APIs shared by compiler and population",
+    "legacy-format rejection controls",
+    "upstream tools, submodules, immutable research inputs and historical evidence"
+  ],
+  "checks": [
+    {
+      "command": "make release",
+      "exit_code": 0
+    },
+    {
+      "command": "PATH=/tmp/duckdb-ossie-quality-venv/bin:$PATH make quality-local",
+      "exit_code": 0,
+      "bun_controls": 30,
+      "failed": 0
+    },
+    {
+      "command": "make test",
+      "exit_code": 0,
+      "cpp_checks": 19,
+      "sql_cases": 15,
+      "sql_assertions": 503
+    },
+    {
+      "command": "bun scripts/verify_loader_artifact.ts ARTIFACT --output cleanup-loader-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "command": "bun scripts/verify_population_artifact.ts ARTIFACT --output cleanup-population-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "command": "OSSIE_EXTENSION=build/release/extension/ossie/ossie.duckdb_extension scripts/full_functionality_check.sh (stock CLI PATH)",
+      "exit_code": 0,
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0,
+      "mode": "FAITHFUL"
+    },
+    {
+      "command": "OSSIE_EXTENSION=build/release/extension/ossie/ossie.duckdb_extension bun scripts/mcp_check.ts (stock CLI PATH)",
+      "exit_code": 0,
+      "stdout": "testing built extension: /Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release/extension/ossie/ossie.duckdb_extension\nPASS initialize handshake\nPASS only semantic_query exposed\nPASS query refused\nPASS export refused\nPASS resources vocabulary\nPASS requested columns and data rows\nPASS grain refusal delivered\nPASS control handshake\nPASS without disabling flags query/export exposed\nall MCP checks passed\n"
+    },
+    {
+      "command": "bash -n scripts/full_functionality_check.sh; Bun.YAML.parse workflow; git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "failure_controls": [
+    "missing stock CLI exits 2 without static fallback",
+    "missing artifact exits 2 before invoking CLI",
+    "load failure exits 1 with original diagnostic",
+    "relative artifact path normalized before LOAD",
+    "CI requires download and shares neutral artifact path"
+  ],
+  "artifact_sha256": "bb74ccec3d573e5105f0553f916ad9cda423b644eeb441144ec47412344e6f0a",
+  "source_sha256": {
+    "scripts/full_functionality_check.sh": "9b11624b98a6ef122536e5a1802dc413c668f1a69204233f6ce72e89de6dfb90",
+    ".github/workflows/MainDistributionPipeline.yml": "dc438856f3216cfa772f732ed4b020f28aed2db35feaa3aef978c0f164c0d533",
+    ".github/workflows/RegistryCheck.yml": "17d7e51569207c065ac0c3a08dec4d47c6750539d167037b5ee1a327d3123cc7",
+    ".gitignore": "981c369b15cca4e5223c29eb1a28f31d1357fec304c3cf7f2e72822832115e96",
+    "Makefile": "d0e6e9c767e48c26d0f803e6381754f0f85beda024d857bbed6e1db0ae01591a",
+    "package.json": "7beebb0c0e63d9e6cf861564878da5a3f5e60cb3dc0c90d4d45c00a82767b34f",
+    "bun.lock": "b9990a6c38d00ae769b79e52939acd1ebfbb3068debec7b684fa803b022323ee",
+    "tsconfig.json": "5b6d90262fc50410819873ba5694b117f00638f7ad6547ca8ad21b041453deec",
+    "scripts/artifact_helpers.ts": "cd6b220fd9ac2b7328dacba351ff357a537db214030e75791897e8f5cf2d3612",
+    "scripts/check_architecture.ts": "05c10964d8852f9d39e34516df0c5549b0c73ad1f6849dc9290666309d9f0df4",
+    "scripts/mcp_check.ts": "ad5ac716107c4a760918849261703db620249da31dd1b6b808ed1515e5603e57",
+    "scripts/verify_loader_artifact.ts": "8d434f5d1ff97736ef1e2b7222202710b068483e79e3e0b3aa288360eba34011",
+    "scripts/verify_population_artifact.ts": "49ce8ed9fec1573a9ff1a8099a5c116376a7165101158c5c26e4908e32e49e66",
+    "test/tooling/artifact_cli.test.ts": "1feeb3b46867f1f398ba29b01895ce6f10462a2e61961e54ce71fa3c986090cd",
+    "test/tooling/mcp_transport.test.ts": "973d69d7b66712126824a4cfd6a8d7251be2c5a920b7426c9a0980a85e5645b6",
+    "test/tooling/quality_controls.test.ts": "97edf040f56788394d99bd553150af1003cf8c29456389c61847d6e888ba85c2",
+    "test/fixtures/nested_field_model.json": "56f92bfed761edd09dc70588ad599ab7e8a7fe1ee7a1e05cc2a82565f331556b",
+    "test/fixtures/tpcds_semantic_model.json": "7f8fa7a861b4a9a637fb579020e7d448e8d6a4afbbcaf82e4d2a3a3ec141244c"
+  },
+  "evidence_sha256": {
+    "cleanup-loader-artifact-results.json": "ee07c0c9cd7c69eed5511c5dc64a9a1c50ed72b0d8b716fe1ea600571d04b539",
+    "cleanup-population-artifact-results.json": "ebaef333951203810eea0448796c72b0d40af92a4d3bda6359677ecfd74d897d"
+  },
+  "logs_sha256": {
+    "cleanup-quality-delivery.log": "85d016627f39b5151a343a7f56814514b6ce7b5b05f6c80d3eaf27b0abbe51ed",
+    "cleanup-sql-state.log": "9a562186a96bb1a73eae46e2878a8d262eec9c72a0f1471471f79f06d876a72e",
+    "cleanup-build.log": "eec096fdd728a3c2f147d106245a4adb29d922c25b1de98b467a1d11a775d8d8",
+    "cleanup-build-final.log": "6e3b75e7dd936b35fef121f985ad991d087ab099d649abec9a5e454c9d712a5b",
+    "cleanup-cli.log": "fb9c9e88334e0fb4775796693f1d38b229f0d861c07dfbe98652c5ce8fff8ff9",
+    "cleanup-cli-final.log": "364b9bfc98543cfb0f1d0b91f62995a3f2b28bab46ac457479f753b42fdba92c",
+    "cleanup-mcp.log": "aa00466ff2038d6fc3e6bbb4b36ded4f2d3c30ff738472539c20e1ca7054c0a2"
+  },
+  "retained_failures": [
+    {
+      "problem": "AIContext.instructions was wrongly considered write-only because reference search missed ai.instructions alias",
+      "evidence": "Actual C++ compile failed at describe.cpp:186; restored member and both assignments. No C++ cleanup landed."
+    },
+    {
+      "problem": "macOS hardened CLI rejected a relative artifact LOAD path",
+      "evidence": "Actual stock CLI failure retained in cleanup-cli.log; canonicalized absolute path and both isolated/real controls passed."
+    },
+    {
+      "problem": "fixture argument diagnostic initially used an unescaped quote in the TypeScript string",
+      "evidence": "Prettier/Bun syntax check rejected it; fixed quoting and 30 final controls passed."
+    },
+    {
+      "problem": "workflow cleanup selection included download together with copy",
+      "evidence": "Local diff caught omission before delivery; retained download and added wiring control."
+    }
+  ],
+  "cpp_sources_and_immutable_inputs_no_diff": true,
+  "limitations": [
+    "local macOS arm64 only; remote CI not yet verified",
+    "authoritative Ubuntu clang-tidy unavailable locally",
+    "remaining ontology R3/R6 work remains outside this cleanup"
+  ],
+  "delivery": {
+    "target": "origin/codex/ossie-execution",
+    "push": "pending after commit and local checks",
+    "main_merge": false,
+    "settings_changes": false
+  }
+}

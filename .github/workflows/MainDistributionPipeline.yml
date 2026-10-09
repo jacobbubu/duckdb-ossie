@@ -89,19 +89,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # upload-artifact@v4 collapses to the least common ancestor of the paths it was given, so the
-      # artifact holds a bare ossie.duckdb_extension, not the build/release/... tree it came from.
-      # Download it somewhere neutral and put it where the check script reads $EXT.
       - uses: actions/download-artifact@v4
         with:
           name: ossie-v1.5.6-extension-${{ matrix.arch }}
           path: downloaded
-
-      - name: Place the artifact where the check script reads it
-        run: |
-          find downloaded -type f
-          mkdir -p build/release/extension/ossie
-          cp downloaded/ossie.duckdb_extension build/release/extension/ossie/
 
       # Same pin as mcp-round-trip, for the same reason: the artifact under test was built for
       # exactly this version and loads in no other.
@@ -114,22 +105,9 @@ jobs:
           echo "$HOME/.duckdb/cli/$DUCKDB_VERSION" >> "$GITHUB_PATH"
 
       - name: Run the functionality check against the artifact
-        run: |
-          set -uo pipefail
-          EXT=build/release/extension/ossie/ossie.duckdb_extension
-          test -f "$EXT" || { echo "::error::artifact missing at $EXT"; exit 1; }
-
-          out=$(./scripts/full_functionality_check.sh); status=$?
-          echo "$out"
-
-          # The script falls back to the build-tree binary when the artifact will not load. That
-          # binary does not exist on a runner, so the fallback fails unreadably -- assert the mode
-          # explicitly so "the artifact did not load" is what gets reported.
-          case "$out" in
-            *FAITHFUL*) ;;
-            *) echo "::error::fell back to the build tree -- the artifact did not load"; exit 1 ;;
-          esac
-          exit $status
+        env:
+          OSSIE_EXTENSION: downloaded/ossie.duckdb_extension
+        run: ./scripts/full_functionality_check.sh
 
       - uses: oven-sh/setup-bun@v2
         with:

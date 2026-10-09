@@ -3,44 +3,41 @@
 # a real duckdb CLI, a real database file, real semantic queries, and asserted NUMBERS.
 #
 # Deliberately not the sqllogictest suite. `make test` runs inside a build tree with the extension
-# statically linked. This drives the CLI and, when the ABI matches, the loadable
-# .duckdb_extension artifact -- which is what a user actually installs.
+# statically linked. This requires a stock CLI and loads the actual
+# .duckdb_extension artifact -- which is what a user installs.
 #
-# Usage:  scripts/full_functionality_check.sh
-# Exit:   0 = all assertions passed (known defects are reported loudly but do not gate)
-#         1 = at least one assertion failed
+# Usage:  [OSSIE_EXTENSION=ARTIFACT] scripts/full_functionality_check.sh
+# Exit:   0 = all assertions passed; 1 = failed assertion/load; 2 = missing prerequisite
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FIX="$REPO/test/fixtures"
-EXT="$REPO/build/release/extension/ossie/ossie.duckdb_extension"
-BUILT="$REPO/build/release/duckdb"
+EXT="${OSSIE_EXTENSION:-$REPO/build/release/extension/ossie/ossie.duckdb_extension}"
 TMP="$(mktemp -d)"; DB="$TMP/tpcds.db"      # file stem becomes the catalog name -> tpcds.main.*
 trap 'rm -rf "$TMP"' EXIT
 
-PASS=0; FAIL=0; XFAIL=0; SKIP=0
+PASS=0; FAIL=0; SKIP=0
 g(){  printf '\n\033[1m== %s\033[0m\n' "$1"; }
 ok(){ PASS=$((PASS+1)); printf '  \033[32mPASS \033[0m %s\n' "$1"; }
 bad(){ FAIL=$((FAIL+1)); printf '  \033[31mFAIL \033[0m %s\n         want: %s\n         got:  %s\n' "$1" "$2" "$3"; }
-xf(){ XFAIL=$((XFAIL+1)); printf '  \033[33mXFAIL\033[0m %s\n         %s\n' "$1" "$2"; }
 sk(){ SKIP=$((SKIP+1)); printf '  \033[36mSKIP \033[0m %s (%s)\n' "$1" "$2"; }
 
-# --------------------------------------------------------------- choose the CLI
-STOCK="$(command -v duckdb || true)"; WHY=""
-if [ -n "$STOCK" ] && [ -f "$EXT" ] && \
-   "$STOCK" -unsigned -noheader -list -c "LOAD '$EXT'; SELECT 1;" >/dev/null 2>&1; then
-  DUCKDB="$STOCK"; EXTRA="-unsigned"
-  PREAMBLE="LOAD '$EXT'; INSTALL tpcds; LOAD tpcds;"
-  MODE="stock CLI $("$STOCK" --version | awk '{print $1}') + loadable artifact   [FAITHFUL]"
-else
-  DUCKDB="$BUILT"; EXTRA=""; PREAMBLE=""
-  MODE="build-tree shell $("$BUILT" --version 2>/dev/null | awk '{print $1}'), statically linked   [FALLBACK]"
-  [ -n "$STOCK" ] && WHY="$("$STOCK" -unsigned -noheader -list -c "LOAD '$EXT'; SELECT 1;" 2>&1 | head -1)" \
-                  || WHY="no duckdb on PATH"
+# --------------------------------------------------------------- require the stock CLI/artifact
+STOCK="$(command -v duckdb || true)"
+[ -n "$STOCK" ] || { printf 'ERROR: stock duckdb CLI is required on PATH\n' >&2; exit 2; }
+[ -f "$EXT" ] || { printf 'ERROR: extension artifact missing: %s\n' "$EXT" >&2; exit 2; }
+# macOS's hardened stock CLI requires an absolute path for dlopen.
+EXT="$(cd "$(dirname "$EXT")" && pwd)/$(basename "$EXT")"
+# Escape a caller-supplied path before placing it in a SQL string literal.
+EXT_SQL="$(printf '%s' "$EXT" | sed "s/'/''/g")"
+if ! "$STOCK" -unsigned -noheader -list -c "LOAD '$EXT_SQL'; SELECT 1;"; then
+  printf 'ERROR: stock CLI failed to load extension artifact: %s\n' "$EXT" >&2
+  exit 1
 fi
-
+DUCKDB="$STOCK"; EXTRA="-unsigned"
+PREAMBLE="LOAD '$EXT_SQL'; INSTALL tpcds; LOAD tpcds;"
+MODE="stock CLI $("$STOCK" --version | awk '{print $1}') + loadable artifact   [FAITHFUL]"
 printf '\033[1mossie end-to-end functionality check\033[0m\nmode: %s\n' "$MODE"
-[ -n "$WHY" ] && printf '\033[33mloadable path unavailable:\033[0m %s\n' "$WHY"
 
 q(){ "$DUCKDB" $EXTRA -noheader -list "$DB" -c "$PREAMBLE $1" 2>&1; }
 eq(){  local n="$1" w="$2" got; got="$(q "$3" | tail -1)"; [ "$got" = "$w" ] && ok "$n" || bad "$n" "$w" "$got"; }
@@ -163,31 +160,15 @@ eq "same filter permitted when the flag is on" "true" \
 has "LIKE is an operator, so it passes with the flag off" "SELECT" \
    "$LOAD_T SELECT ossie_compile(['total_sales'],[],['item.i_brand LIKE item.i_brand']);"
 
-# --------------------------------------------------------------- known defects
-g "KNOWN DEFECTS  (reported, do not gate exit code)"
-NEST="$TMP/nested.json"
-python3 - "$NEST" <<'PY'
-import json,sys
-def f(n,e=None): return {"name":n,"datatype":"String",
-  "expression":{"dialects":[{"dialect":"ANSI_SQL","expression":e or n}]}}
-json.dump({"version":"0.2.0.dev0","name":"nested","datasets":[
- {"name":"nf","source":"tpcds.main.nf","fields":[f("k1"),f("amt")]},
- {"name":"nd","source":"tpcds.main.nd","primary_key":["k1"],
-  "fields":[f("k1"),f("label"),f("mid","label || 'M'"),f("outer_f","mid || 'O'")]}],
- "relationships":[{"name":"r","from":"nf","to":"nd","from_columns":["k1"],"to_columns":["k1"]}],
- "metrics":[{"name":"total","expression":{"dialects":[{"dialect":"ANSI_SQL","expression":"SUM(nf.amt)"}]}}]},
- open(sys.argv[1],"w"))
-PY
-NOUT="$(q "CREATE OR REPLACE TABLE tpcds.main.nf(k1 INT, amt DECIMAL(10,2));
-           CREATE OR REPLACE TABLE tpcds.main.nd(k1 INT, label VARCHAR, mid VARCHAR);
-           INSERT INTO tpcds.main.nf VALUES (1,10.00);
-           INSERT INTO tpcds.main.nd VALUES (1,'REAL','DECOY');
-           CALL ossie_load('$NEST');
-           SELECT * FROM ossie_query(['total'],['nd.outer_f']);" | tail -1)"
-[ "$NOUT" = "REALMO|10.00" ] \
-  && ok "nested computed field resolves transitively" \
-  || xf "nested computed field shadowed by a physical column" \
-        "model defines outer_f=(label||'M')||'O' -> want REALMO|10.00, got '$NOUT'. InlineFields does not recurse."
+# --------------------------------------------------------------- computed-field regression
+g "Nested computed fields"
+eq "nested computed field resolves transitively" "REALMO|10.00" \
+  "CREATE OR REPLACE TABLE tpcds.main.sales(k INT, amt DECIMAL(10,2));
+   CREATE OR REPLACE TABLE tpcds.main.dim(k INT, label VARCHAR, mid VARCHAR);
+   INSERT INTO tpcds.main.sales VALUES (1,10.00);
+   INSERT INTO tpcds.main.dim VALUES (1,'REAL','DECOY');
+   CALL ossie_load('$FIX/nested_field_model.json', rebind => MAP{'tpcds.public':'tpcds.main'});
+   SELECT * FROM ossie_query(['total'],['dim.outer_f']);"
 
 # --------------------------------------------------------------- optional MCP
 g "MCP publication (optional)"
@@ -211,6 +192,6 @@ fi
 
 # --------------------------------------------------------------- summary
 printf '\n\033[1m--------------------------------------------------\033[0m\n'
-printf 'PASS %d   FAIL %d   XFAIL %d   SKIP %d\n%s\n' "$PASS" "$FAIL" "$XFAIL" "$SKIP" "$MODE"
+printf 'PASS %d   FAIL %d   SKIP %d\n%s\n' "$PASS" "$FAIL" "$SKIP" "$MODE"
 [ "$FAIL" -eq 0 ] && printf '\033[32mFUNCTIONALITY CHECK GREEN\033[0m\n' || printf '\033[31mFUNCTIONALITY CHECK RED\033[0m\n'
 [ "$FAIL" -eq 0 ]
