@@ -608,3 +608,19 @@ Advisor：按 advisor-escalation 复用只读 Astra/high 一轮取舍、无 chil
 保留失败/纠正：pre-fix 探针初版 datasets=[] 被既有 nonempty 检查拒绝，改成有效单数据集后才观察 scalar coercion；没有把最初拒绝当缺陷证据。新增 bundle 控制最初错误假设 parse/DEFINITION_INVALID，真实输出为 load/LOAD_FAILED；按现合同纠正期望，不改生产错误 stage。typed verifier 首次漏 stock CLI PATH 而拒绝，core MCP 首次漏 OSSIE_EXTENSION 而尝试 registry（404）；补齐明确本地产物环境后重跑成功，没有 registry fallback。
 
 本地 R2 数组工作包完成，提交保留、不推送。R2.2 的 StringArray 成员类型缺口已补；R2.5 逐字段支持/转换/拒绝及单值容错、quoted case 等偏离最终结论仍必要，之后串起规则驱动 A1–A8 验收归档，整体 P0 尚未完成。下一已授权本地动作是逐字段结论收口；分页后续调研、P1/非目标、remote CI 和交付权限沿原边界。
+
+## R2 逐字段核对 checkpoint（2026-10-09，恢复）
+
+c25d118 数组修复已本地交付；本包核对固定 core schema 的全部 properties 到 parser/model/describe 路径，区分合法字段映射、描述保留、lowering、执行限制及 validation 偏离。沿现 issue 建立字段对应表和真实 stock characterization（单值 scalar 转换、缺省/非法 optional 值、未知属性/custom extension、字符串长度、名称/键边界），不把接受非法文档测试作为符合规范的证明。先记录事实再决定必要修复；本包不扩 full JSON Schema validator、ontology general execution、分页或推送。原 R2 支持证据复用 c25d118 同产物，新增控制绑定源码/输入/报告哈希；最后规则驱动 A1–A8 验收仍必要。
+
+## R2 逐字段核对结果（2026-10-09）
+
+[Core 字段对应表](core-field-correspondence.md) 已逐项覆盖固定 schema 的 50 个 properties 声明，包括 root 引用和 SemanticModel 定义；无 properties 的 Dialect/DataType/Vendor 定义另有结论。每行记录 parser/model 路径、发现/执行用途及验证/转换/拒绝边界，区分选中原文与 lowered AST、声明键推导与 population 真实数据预检。ontology/mapping 的支持子集仍归既有 profile，不扩一般 ontology 执行或 full schema。
+
+[十四个真实 characterization](research/ossie-req-001/r2-correspondence-artifact-results.json) 复用 c25d118 的 stock 产物 `c15ace232f406e319bd27ec01254359171ba786e7765d3f48b4f21002879e49e`，接受 13 个变体并拒绝一个 schema 允许的 empty inner unique key；此接受计数只是观测，不是符合规范或批准偏离。确认单值 name/description/label/expression scalar 转文本、optional 容器为空、空 name、未知 root 属性丢弃、非法 extension 结构原 JSON 保留、lowercase dialect 接受；合法 extra AI 属性按规范保留。保存完整输入/哈希和 metadata，源码读取与真实观测分别表述。
+
+新发现必要缺口：合法含 NUL 的 AI string/object instructions raw JSON 完整，flattened instructions 截为前缀；unique_keys 同样截短。RequiredString/OptionalString 及 unique_keys 的非 length-aware string 构造可定位根因，description/label 等共享 helper 有潜在同类问题，本包不把源代码推断称所有字段均已实测。这是合法内容保真问题，应修复后才做 R2 最终验收。其余 scalar/minLength/additionalProperties/custom extension/dialect 大小写偏离已列明，但未得到用户作为兼容例外的接受；不能以“不做 full schema”自动批准。
+
+本包仅新增对应文档与 characterization verifier；生产 C++ 未变，未重建或重跑已通过的功能门禁。quality-local 格式/类型/架构和 38 Bun tests/124 expects 通过，[审阅控制记录](research/ossie-req-001/r2-correspondence-control-results.json) 检查来源 manifest、50 项 schema inventory/table 对齐与源码/报告/产物 hashes。工具验证失败保留：numeric expression 控制初版错误读取 metadata.expression（此列不存在），改为实际 ossie_fields.expression 后成功，不改生产行为。证据审计初版假定全部 manifest 项使用 saved_path，业务原件实际使用 source_path；按记录路径校验后重跑成功，首次未生成报告/未提交。
+
+逐字段审阅包本地完成，R2.5 对应表缺口已补，但 R2/P0 仍未最终验收。下一已授权必要动作是 length-aware 字符串保真修复及 raw/flattened/list 对照，再处理剩余校验偏离收口、最终 A1–A8 规则驱动归档。只本地提交，不推送；分页、P1/非目标和 remote CI/Ubuntu tidy 保留原边界，无新 backlog。

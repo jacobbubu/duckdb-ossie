@@ -657,3 +657,13 @@ e2468ca 后数值修复包完成，细节/失败/兼容与报告归现 [issue](d
 StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名严格拒绝、19 静态 bad models 与每次完整旧 metadata 保持通过；hash-valid bad core 实际 LOAD_FAILED/load 保留 bundle。最终同产物 19/42/158 原生控制、817 SQL/23 cases/0 skips、38 Bun/124 expects、十个 stock verifiers、population MCP 330/106、core MCP 与 stock CLI 40/0/0 通过，证据/失败见 OSSIE-REQ-001 的 R2 数组结果及 r2-strings-control-results.json。
 
 当前工作包完成，本地提交、不推送。必要剩余：R2 逐字段偏离结论（单值 scalar 容错未改，非 full schema）、最终规则驱动 A1–A8 验收归档；整体 P0 未完成。下一已授权动作是逐字段结论收口，分页仍未来调研，remote CI/Ubuntu tidy 未跑，既有 P1/非目标及发布边界保留。
+
+### R2 逐字段核对 checkpoint（2026-10-09，恢复）
+
+当前包完成固定 core schema 全字段到内部结构/发现接口的对应审阅，实际探测剩余单值转换、未知字段/扩展和字符串长度边界。结果与必要修复归现 OSSIE-REQ-001，接受行为不等于 schema 合法。仅审阅/characterization 与本地提交，复用已验证 artifact；最终 A1–A8 归档及新发现必要修复按证据收口，不添加第二 backlog 或发布权限。
+
+### R2 逐字段审阅本地交付 checkpoint（2026-10-09）
+
+50 个固定 schema properties 已逐行映射到内部/发现/执行边界，14 个真实 characterization 保存 13 接受/1 拒绝（不等于符合 schema）。发现合法 NUL 在 AI instructions/unique_keys 展开出口截短，raw AI 完整；单值 scalar、minLength、未知属性/扩展和方言容错也已单列，未自动接受为例外。生产 C++/artifact 未改，复用 c25d118 同产物，新增工具 quality-local/38 Bun/124 expects 通过，证据与失败归现 issue/对应表/r2-correspondence 报告。
+
+审阅包本地完成，提交保留、不推送；整体 R2/P0 未完成。下一已授权必要修复为 length-aware string fidelity，再收紧或明确处理剩余校验偏离并归档 A1–A8。分页仅未来调研、P1/非目标、remote CI/Ubuntu tidy 和发布权限保持既有范围。

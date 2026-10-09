@@ -1,0 +1,44 @@
+{
+  "scope": "core field correspondence review and remaining deviation characterization, not full schema conformance",
+  "base_commit": "c25d118",
+  "artifact_sha256": "c15ace232f406e319bd27ec01254359171ba786e7765d3f48b4f21002879e49e",
+  "source_sha256": {
+    "src/model/parser.cpp": "e5199c0accb1f0e2d3cfd5301a5581eee3db3238c0cd3d91ba741a2f65882051",
+    "src/model/validate.cpp": "557ce77b1c86ab7bb6070e840ea232c014524b59b91047d3b1542816181b5d22",
+    "src/functions/describe.cpp": "beca66aba1855721ab72ae06ecafff7f46a1a3cb9f148b3e18d4245b64b5c5c3",
+    "src/include/ossie/model.hpp": "0f51d181d2e2a7b280639133f86274a9e9b50542ae5f545103ecf2d86c05d4cd",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "test/fixtures/loader_contract/valid.json": "293ec968269bb69b6f01136cda96e4bd48494eff901e231a65c962b29af0998f",
+    "docs/research/ossie-req-001/sources/apache-ossie/core-spec/ossie-schema.json": "5b9cf15d31057e2b7363194b1c254a6b669fc412b3f8f402d4efbdcfa25fcc87"
+  },
+  "verifier_sha256": "5e9df087deb25d1089cef4e0771056306b6cb0dc46347ee788dd5c413055bc49",
+  "reports": {
+    "docs/research/ossie-req-001/r2-correspondence-artifact-results.json": "e66f286d0b6fff89d2644d43f365c92ca45560b678932bc01cdc0a686094c2e0"
+  },
+  "documentation_sha256": {
+    "docs/core-field-correspondence.md": "c6e872f8fa144896984f7ff4a81fab4088411ef3cac0ca4b4f1a5e47ade32a6c",
+    "docs/ossie-execution-research.md": "e009e6648c74554cbd10c5d894e52936f8a5ce383a642357517da77cac217df0",
+    "ossie-duckdb-plan.md": "c93c02cc03f87b00642292818fa973ffa69aa062a1a64552cebf97ca2d3f8ada"
+  },
+  "source_and_generated_input_hash_checks": 41,
+  "matrix_property_rows": 50,
+  "characterization_controls": 14,
+  "verification": {
+    "quality_local": true,
+    "bun_tests": 38,
+    "bun_expects": 124,
+    "production_cpp_changed": false,
+    "reused_artifact": true,
+    "release_rebuilt": false,
+    "sql_native_mcp_rerun": false,
+    "remote_ci": false,
+    "ubuntu_tidy": false
+  },
+  "retained_failure": "Initial expression characterization read a nonexistent metadata.expression column; corrected to actual ossie_fields.expression and reran. Production behavior unchanged. Initial evidence audit assumed all manifest entries used saved_path; business originals use source_path, resolved the recorded path and reran before committing.",
+  "necessary_remaining": [
+    "length-aware legal string fidelity repair, including raw versus flattened AI and unique key lists",
+    "tighten or explicitly resolve remaining scalar/minLength/additionalProperties/extension/dialect validation deviations; not silently accepted",
+    "final rule-driven A1-A8 acceptance archive"
+  ],
+  "delivery": "local commit only; no push/merge/publication"
+}
