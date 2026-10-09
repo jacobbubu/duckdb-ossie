@@ -788,3 +788,9 @@ Ubuntu18.1.3 clang-tidy已在population.cpp发现137处大括号、4处range-cop
 ### 跨环境复现/Linux质量本地交付 checkpoint（2026-10-10）
 
 两端同最终源码独立产物通过19/42/158 native、840 SQL/23 cases/0 skips、43 Bun/136 expects、11 stock verifiers、真实MCP330/106、独立进程replay、core资源与CLI40/0/0。LinuxARM64全量clang-tidy18.1.3通过，13独立TU/26compdb项含root注册；成功调用在上游runner中静默，inventory并非运行trace。固定11.0.1格式门禁在Mac及独立UbuntuAMD64通过，ARM64不称完整quality-local。20项跨环境完整GAAP结果对照通过；20+1原始来源哈希核对和严格locator负例通过，历史20文件审计不追溯补称原需求已查。修复实际tidy诊断与prepare/cancel测试竞态，保留各次失败，取消具体阶段仍由native屏障证明。证据与复现指向上方current checkpoint。本包完成、本地提交，不推送；remote AMD64/MacCI及Agent仍未跑，P1/分页不启动，下一交付核验只核对最终文档/报告hash和本地提交。
+
+### 恢复与远端CI交付预检（2026-10-10）
+
+用户在跨环境包0d79c73完成后要求继续。本地已授权验收/跨环境工作包完成，不自行启动P1或分页；比较剩余后，下一必要交付证据是远端Linux AMD64/macOS CI。只读预检确认push目标为jacobbubu/duckdb-ossie的codex/ossie-execution；远端tip为08c06e6668b7c033ea774ce2170526f22ea5db23，预检时本地0d79c73领先26提交。GitHub Actions enabled=true、allowed_actions=all，分支run list为空、workflow list为空；不把启用状态当成跑过。仓库Issues已关闭，使用现OSSIE-REQ-001记录，不声称读取远端issue。
+
+本次没有重跑功能、推送、dispatch或修改远端设置；上一包源码/报告hash保留0d79c73时点，不重写历史控制。用户AGENTS.md规定“A pilot does not authorize push, main merge or deployment”及“Continue continues authorized work; proposals are not approval”；此前本轮只本地提交，因此推送这个具体fork/分支须明确授权。已完成reviewable工作并核实目标，下一待授权动作是普通fast-forward push（禁止force）触发现有CI，再检查实际jobs/失败并按本地范围修复；不合并main、不发布、不改远端规则。此预检说明本地提交后，push范围会再包含这一文档提交；实际推送前须重新核对remote tip与ahead/divergence，不能依赖本节旧快照。

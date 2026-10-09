@@ -767,3 +767,9 @@ UbuntuARM64 clang-tidy18.1.3全门禁退出0，13独立TU/26compdb项含root注�
 Advisor沿原只读身份补一次限定取消反证：Node参数化执行异步prepare及执行时清interrupt有源码依据，原失败具体时点没有采样；建议只修harness，不接受成功/隐式retry/跳过，必须settle后销毁prepared。Lead采纳并在两端实际核验；requested Astra/high，effective backend/effort/usage/billing未知。来源反证和取消反证均不替代实测。
 
 本包本地完成，最终文档/报告核对后提交保留，不推送/合并/发布。远端LinuxAMD64/macOS CI、真实自主Agent仍未验证；P1/calendar/一般ontology/多期身份/窗口/混合grain与分页调研仍为独立后续范围，本包不启动。历史p0-final/r2证据不覆盖；新归档保留运行时路径标签并在control中列明副本映射。
+
+### 恢复与远端CI交付预检（2026-10-10）
+
+用户在跨环境包0d79c73完成后要求继续。本地已授权验收/跨环境工作包完成，不自行启动P1或分页；比较剩余后，下一必要交付证据是远端Linux AMD64/macOS CI。只读预检确认push目标为jacobbubu/duckdb-ossie的codex/ossie-execution；远端tip为08c06e6668b7c033ea774ce2170526f22ea5db23，预检时本地0d79c73领先26提交。GitHub Actions enabled=true、allowed_actions=all，分支run list为空、workflow list为空；不把启用状态当成跑过。仓库Issues已关闭，使用现OSSIE-REQ-001记录，不声称读取远端issue。
+
+本次没有重跑功能、推送、dispatch或修改远端设置；上一包源码/报告hash保留0d79c73时点，不重写历史控制。用户AGENTS.md规定“A pilot does not authorize push, main merge or deployment”及“Continue continues authorized work; proposals are not approval”；此前本轮只本地提交，因此推送这个具体fork/分支须明确授权。已完成reviewable工作并核实目标，下一待授权动作是普通fast-forward push（禁止force）触发现有CI，再检查实际jobs/失败并按本地范围修复；不合并main、不发布、不改远端规则。此预检说明本地提交后，push范围会再包含这一文档提交；实际推送前须重新核对remote tip与ahead/divergence，不能依赖本节旧快照。
