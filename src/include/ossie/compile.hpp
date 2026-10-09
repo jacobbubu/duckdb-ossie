@@ -4,12 +4,17 @@
 
 namespace duckdb {
 class SelectStatement;
+class TableRef;
 
 namespace ossie {
 
 struct CompileOptions {
 	//! Whether filters may call named functions. Operators are always allowed, subqueries never.
 	bool allow_filter_functions = false;
+	//! Internal, already resolved row predicate. Never reparsed or field-expanded.
+	const ParsedExpression *population_predicate = nullptr;
+	//! Internal typed batch source carrying its lifetime dependency.
+	TableRef *population_source = nullptr;
 };
 
 //! Compiles a semantic request, throwing when it cannot answer.

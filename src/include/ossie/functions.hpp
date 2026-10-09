@@ -22,5 +22,8 @@ void RegisterCompileFunction(ExtensionLoader &loader);
 //! Registers ossie_query(metrics, dimensions, filters).
 void RegisterQueryFunction(ExtensionLoader &loader);
 
+//! Fixed single-table ontology population profile and private observation batches.
+void RegisterPopulationFunctions(ExtensionLoader &loader);
+
 } // namespace ossie
 } // namespace duckdb

@@ -5,7 +5,8 @@
 The first research package is complete: pinned source evidence, an independent
 475-row GAAP oracle, hand-derived boundary controls, schema-checked definition
 drafts and an independently reviewed minimal execution contract. This does not
-complete P0; no ontology execution has been implemented or locally tested.
+complete P0; the initial research did not prove ontology execution. The subsequent
+bounded single-table implementation is now independently tested, as described below.
 The user subsequently authorized local implementation and tests in this repository,
 starting with an isolated build of the pinned feature branch. Only the pinned new
 document shape is required; legacy wrapper compatibility is not required. Push,
@@ -18,10 +19,16 @@ still excluded. The user accepted the YTD-only initial population rule (active/p
 unverified), SQL grouping and NULL defaults, and explicit calendar completion as
 a separate capability. The first local implementation package is complete: exact core version checks,
 logical datatypes/time defaults and metadata discovery, verified by 437 assertions in
-14 SQL cases plus a real artifact loaded in an independent DuckDB wheel. The next
-authorized milestone is the strict single-table User→ValidUser profile and identity
-preflight, sharing population scope between objects and metrics. Ontology execution
-and A1–A8 remain incomplete.
+14 SQL cases plus a real artifact loaded in an independent DuckDB wheel. The second
+package now implements the strict single-table User→ValidUser profile, whole-batch
+identity/type/AST preflight, shared frozen object/metric population and execution
+trace. Fifteen SQL cases/503 assertions, independent real-artifact Decimal and
+boundary controls, cancellation and cross-process database-close checks passed.
+This completes that package; P0 and full A1–A8 remain incomplete. The next authorized
+step is independent controls/research for remaining NULLIF/division/time semantics
+and safe multi-table planning, before widening execution. General ontology, calendar
+completion and population MCP integration remain later necessities. Current evidence,
+retained failures and action scope stay in the same linked research record.
 
 A DuckDB extension that reads Apache Ossie semantic model files and answers
 semantic queries against the tables they describe, exposed to AI agents over MCP.

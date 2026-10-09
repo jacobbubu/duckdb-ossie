@@ -506,6 +506,9 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 	}
 
 	auto select = make_uniq<SelectNode>();
+	if (options.population_predicate) {
+		select->where_clause = options.population_predicate->Copy();
+	}
 	case_insensitive_set_t grains;
 	case_insensitive_set_t metric_datasets;
 	bool has_grainless = false;
@@ -620,7 +623,7 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 		}
 	}
 
-	unique_ptr<TableRef> from = BindTable(root);
+	unique_ptr<TableRef> from = options.population_source ? options.population_source->Copy() : BindTable(root);
 	for (auto &planned : planned_joins) {
 		auto join = make_uniq<JoinRef>(JoinRefType::REGULAR);
 		// Ossie does not declare a join type. INNER matches hand-written SQL, but drops fact rows

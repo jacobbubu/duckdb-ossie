@@ -1,0 +1,158 @@
+# name: test/sql/ossie_population.test
+# description: frozen single-table ontology population, NULL boundaries and identity preflight
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE dws_gaap_di(ds DATE, product VARCHAR, region VARCHAR, user_type VARCHAR, user_id VARCHAR, gaap_val DECIMAL(18,2), ytd_gaap DECIMAL(18,2));
+
+statement ok
+INSERT INTO dws_gaap_di SELECT * FROM read_csv('docs/research/ossie-req-001/gaap-boundary.csv', header=true);
+
+statement ok
+EXPLAIN CALL ossie_bundle_load('test/fixtures/population/bundle-10.json');
+
+statement error
+SELECT * FROM ossie_concepts();
+----
+no bundle loaded
+
+query TI
+SELECT profile, records FROM ossie_bundle_load('test/fixtures/population/bundle-10.json');
+----
+gaap-scalar-population-v1	11
+
+query TTT rowsort
+SELECT concept, parent, derived_by FROM ossie_concepts();
+----
+User	NULL	NULL
+ValidUser	User	User.ytd_gaap >= 10
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('ValidUser', ['dws_gaap_di.product = ''X''', 'dws_gaap_di.ds >= DATE ''2026-03-01'' AND dws_gaap_di.ds < DATE ''2026-04-01''']);
+----
+e01
+e04
+e07
+e08
+e10
+
+query IIRR
+SELECT * FROM ossie_concept_query('ValidUser', ['record_count','gaap_value_count','gaap_sum','mean_gaap'], [], ['User.product = ''X''','User.date >= DATE ''2026-03-01'' AND User.date < DATE ''2026-04-01''']);
+----
+5	4	80.00	20.00
+
+query TIIRR rowsort
+SELECT * FROM ossie_concept_query('ValidUser', ['record_count','gaap_value_count','gaap_sum','mean_gaap'], ['dws_gaap_di.ds'], ['User.product = ''X''','User.date < DATE ''2026-04-01''']);
+----
+2026-03-01	2	1	10.00	10.00
+2026-03-03	2	2	20.00	10.00
+2026-03-31	1	1	50.00	50.00
+
+query IIRR
+SELECT * FROM ossie_concept_query('ValidUser', ['record_count','gaap_value_count','gaap_sum','mean_gaap'], [], ['User.product = ''absent''']);
+----
+0	0	NULL	NULL
+
+query I
+SELECT count(*) FROM ossie_concept_query('ValidUser', ['record_count'], ['dws_gaap_di.ds'], ['User.product = ''absent''']);
+----
+0
+
+statement error
+SELECT * FROM ossie_objects('ValidUser', ['SUM(dws_gaap_di.ytd_gaap) > 0']);
+----
+unsupported function
+
+statement error
+SELECT * FROM ossie_objects('ValidUser', ['random() > 0']);
+----
+unsupported function
+
+statement error
+SELECT * FROM ossie_objects('ValidUser', ['EXISTS(SELECT 1)']);
+----
+unsupported AST
+
+statement error
+SELECT * FROM ossie_objects('ValidUser', ['dws_gaap_di.ytd_gaap']);
+----
+must have BOOLEAN type
+
+query TI
+SELECT execution_target, executed FROM ossie_concept_compile('ValidUser', ['mean_gaap'], [], []);
+----
+frozen typed observation batch (AST dependency required)	false
+
+statement ok
+PREPARE frozen_population AS SELECT count(*) FROM ossie_objects('ValidUser', []);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population/bundle-20.json');
+
+query I
+EXECUTE frozen_population;
+----
+7
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('ValidUser', ['User.product = ''X''','User.date < DATE ''2026-04-01''']);
+----
+e04
+e07
+
+statement ok
+INSERT INTO dws_gaap_di VALUES (DATE '2026-03-01','X','North','student','new',30,30);
+
+query I
+SELECT count(*) FROM ossie_objects('User', []);
+----
+11
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population/bundle-20.json');
+
+query I
+SELECT count(*) FROM ossie_objects('User', []);
+----
+12
+
+# A duplicate in a row outside the selected product/date still invalidates the whole batch.
+statement ok
+INSERT INTO dws_gaap_di VALUES (DATE '2026-05-01','Y','North','student','new',30,0);
+
+statement error
+CALL ossie_bundle_load('test/fixtures/population/bundle-20.json');
+----
+entire batch violates
+
+query I
+SELECT count(*) FROM ossie_objects('User', []);
+----
+12
+
+statement ok
+DELETE FROM dws_gaap_di WHERE ds=DATE '2026-05-01';
+
+statement ok
+INSERT INTO dws_gaap_di VALUES (DATE '2026-05-01','Y','North','student',NULL,30,0);
+
+statement error
+CALL ossie_bundle_load('test/fixtures/population/bundle-10.json');
+----
+entire batch violates
+
+statement ok
+DELETE FROM dws_gaap_di WHERE user_id IS NULL;
+
+statement ok
+BEGIN TRANSACTION;
+
+statement error
+CALL ossie_bundle_load('test/fixtures/population/bundle-10.json');
+----
+outside an explicit transaction
+
+statement ok
+ROLLBACK;

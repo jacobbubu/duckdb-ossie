@@ -1,0 +1,18 @@
+{
+  "profile": "gaap-scalar-population-v1",
+  "core": {
+    "path": "../../../docs/research/ossie-req-001/proposed-definitions/gaap.core.json",
+    "name": "gaap_demo",
+    "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a"
+  },
+  "ontology": {
+    "path": "../../../docs/research/ossie-req-001/proposed-definitions/gaap.ontology.threshold-20.json",
+    "name": "gaap_population",
+    "sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf"
+  },
+  "mapping": {
+    "path": "../../../docs/research/ossie-req-001/proposed-definitions/gaap.mapping.json",
+    "name": "gaap_binding",
+    "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807"
+  }
+}

@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-09。状态：首轮研究和首个 core loader/元数据工作包已完成并本地验证；P0 尚未完成。
+日期：2026-10-09。状态：首轮研究、core loader/元数据与单表人口执行工作包已完成并本地验证；P0 尚未完成。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -14,7 +14,7 @@
 
 ## 结果与影响
 
-现有 feature 分支可以复用新格式加载、表达式 AST 转换及粒度保护，但尚无 ontology/mapping 执行层。首个实现切片应证明：同一指标和数据批次下，只改变 `ValidUser.derived_by` 的阈值，实际对象范围、SQL 和聚合结果同步变化。以下是已审阅的最小设计；实施授权见上节。
+固定 feature 原本具有新格式加载、表达式 AST 转换及粒度保护，没有 ontology/mapping 执行层。现已在本地分支实现有界单表人口入口（证据见下文）。首个切片需要证明：同一指标和数据批次下，只改变 `ValidUser.derived_by` 的阈值，实际对象范围、SQL 和聚合结果同步变化。以下是已审阅的最小设计；实施授权见上节。
 
 原始数据的独立 SQL 与 Python Decimal 计算逐日一致，复核了原示例全部 15 个日均值。3 月 10 日：
 
@@ -25,7 +25,7 @@
 
 这里的对象数等于记录数是本批数据实测事实，不是普遍规则。阈值 20 的结果是本次独立基准，不是原示例声明，也不是本体执行结果。两种阈值分别在完整期间选中 166 / 63 条产品 X 记录，总额为 2265.86 / 1472.73 USD。
 
-## 基线与来源
+## 研究开始时的基线与来源
 
 - 本地 main 为 `9d432f4`，工作区开始时干净。
 - 本地 remote feature 提交为 `c2947c7de8e583b70e3f8b859a94c0b9830a36a4`；上游 PR #12 同一提交。
@@ -72,7 +72,7 @@
 
 ### 定义、绑定与加载
 
-[研究定义目录](research/ossie-req-001/proposed-definitions/)含同一 core、同一 mapping，以及阈值 10/20 两个 ontology 版本。所有文件使用标准字段；四份文件通过固定 schema 的离线形状校验。两份 ontology 唯一差别是 `ValidUser.derived_by`，指标与 mapping 不变。它们尚未被扩展 parser 接受或执行。
+[研究定义目录](research/ossie-req-001/proposed-definitions/)含同一 core、同一 mapping，以及阈值 10/20 两个 ontology 版本。所有文件使用标准字段；四份文件通过固定 schema 的离线形状校验。两份 ontology 唯一差别是 `ValidUser.derived_by`，指标与 mapping 不变。研究时它们仅是经过 schema 检查的草案；本轮已由独立产物实际执行，结果见下文单表工作包。
 
 建议 profile 暂记为 `gaap-scalar-population-v1`，身份及元信息放在外部 definition bundle manifest，不冒充 Ossie 标准字段。bundle 显式指定 profile、文档名称、来源哈希及本地文件；name 必须一致，SHA-256 必须一致，无网络自动追随。仅接受新版本 core/ontology/standalone mapping，拒绝旧包装、旧 embedded mapping 与冲突格式。
 
@@ -141,7 +141,7 @@ User 使用 identify_by 的单一二元 id 关系，映射到 user_id。product/
 
 ## 剩余必要工作与下一步
 
-### 当前实施工作包
+### 已完成的 core loader/元数据工作包
 
 范围：固定 feature 的本地构建与原有测试；随后补 core 的固定版本检查、非空模型集合、ai_context 字符串/对象与 examples、datatype 枚举和时间角色默认值，并通过独立发现接口保留说明、标签与描述性扩展。它是 R1/R2 的一部分，不替代真实列/键预检、表达式白名单、本体执行或 A1—A8。
 
@@ -158,11 +158,35 @@ User 使用 identify_by 的单一二元 id 关系，映射到 user_id。product/
 
 保留的发现和修复：浅克隆缺少版本标签使首次配置使用 dummy v0.0.1；只获取固定提交对应的 v1.5.6 标签并设置 core.abbrev=10 后重新构建，实际版本与 artifact 已确认，未改变 DuckDB 源码提交。原 expression fixture 的 `Timestamp` 非固定 schema 的合法逻辑类型，现改为 `DateTime`，表达式和数值预期不变，并新增 `Timestamp` 拒绝控制。新增 SQL 测试初版使用未构建的 JSON 扩展函数，改为直接核对保留文本，JSON 内容另由 stock wheel/Python 解析核对。格式检查缺少工具，已在 task venv 安装规定版本后复核。独立加载 harness 初版用 LOAD 参数占位符被 SQL parser 拒绝，改用正确引号转义路径后通过；不得把该失败解释为二进制不兼容。
 
-本工作包完成，整体 P0 未完成。必要工作仍包括：其余 core 名称/键/真实列预检与表达式 allowlist、单表 profile 和接口契约落地、概念/mapping 编译、同快照人口双射预检、对象与指标共享人口、追溯产物、多表拒绝 fixture，以及 A1—A8 实际运行。现有 loader 不是完整 JSON Schema validator；AI 数组仍沿用既有 scalar 文本容错。可发现的自然语言和 descriptive extensions 不等于可执行规则。active/paid 仍缺数据，明确未验证。
+该工作包完成时，必要工作仍包括单表 profile、身份/列预检、严格 AST、对象/指标共享人口和追溯。这些已在下文单表工作包落地；整体 P0 仍未完成，当前剩余必要工作以单表工作包末尾为准。现有 loader 不是完整 JSON Schema validator；AI 数组仍沿用既有 scalar 文本容错。可发现的自然语言和 descriptive extensions 不等于可执行规则。active/paid 仍缺数据，明确未验证。
 
-下一已授权工作包：以独立 GAAP oracle 落地单表 User→ValidUser profile；先建立严格标量规则和引用/identity 预检，再让对象清单与指标查询共享人口计划。必要执行语义不能解释时明确拒绝。不能把“schema 接受研究样例”作为切片完成；业务阈值和默认空日期输出已确定，推送、上游 PR、合并与发布分别保留授权边界。
+随后已授权并完成的工作包：以独立 GAAP oracle 落地单表 User→ValidUser profile；先建立严格标量规则和引用/identity 预检，再让对象清单与指标查询共享人口计划。必要执行语义不能解释时明确拒绝。不能把“schema 接受研究样例”作为切片完成；业务阈值和默认空日期输出已确定，推送、上游 PR、合并与发布分别保留授权边界。
 
 本地实现：附加 worktree `/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie`，分支 `codex/ossie-execution` 从固定 feature `c2947c7` 开始，研究提交已 cherry-pick。三个子模块仍为记录提交：DuckDB `069cc9f9b5be802405797faecc284961b07c70ef`、ci-tools `3fd6109fc01555673b7c7123eba8d0d143fe8ce4`、fkYAML `1818a25156b9b1a65a9c9b6126631e2cd7cfa8f6`。仅本地变更与验证，未推送、改上游 PR、合并或发布。
+
+### 继续实施：单表人口执行工作包
+
+问题：已有 core query 无法执行 ontology 派生人口，整批身份预检与对象/指标共享数据范围尚未落地。用户“继续”延续本地实施授权。本包在同一记录下实现显式 definition bundle（固定 profile、文档 name/SHA-256）、严格标量规则/映射闭包、整批非空唯一 ID、对象与指标入口、编译说明及独立 GAAP/边界 oracle 验证。多表、安全连接、完整 calendar、MCP 集成及完整 P0 暂不声称完成。
+
+落实的数据契约：bundle load 捕获已提交根表的固定类型化观察批次；使用当前引擎和不可从 SQL 文本构造的 AST 依赖读取，整批预检后原子替换 bundle，失败保留上一有效 bundle。显式事务加载拒绝，避免独立读取连接看不到调用者的未提交写入。数据改变需重载，每次执行绑定同一 bundle/snapshot；此能力独立于原有 live core query。使用既有 Advisor 对此具体集成取舍做一轮只读复核，Lead 实现和实测。
+
+验证必需：只改变 derived_by 10→20，与原475行完整对象集合、逐日/所有地区类型分组和边界期望核对；NULL/重复ID在请求过滤前拒绝；NULL属性/NULLGAAP/空组符合契约；不支持requires、派生关系/独立子类mapping、身份覆盖、多表、聚合/窗口/子查询/未知函数在运行前拒绝；name/hash/version错和加载失败不替换旧bundle；源表更新不改变已冻结批次，重新加载后捕获新批次；EXPLAIN/编译不执行源读取或装载；真实产物独立加载验证。
+
+已完成行为：新增 `ossie_bundle_load`、`ossie_concepts`、`ossie_objects`、`ossie_concept_query`、`ossie_concept_compile`。manifest 按 profile/name/SHA-256 选择固定 core/ontology/mapping；仅新格式。单根/单继承、scalar mapping、整批非空唯一 ID/OneToOne、实际列和逻辑/聚合类型在发布前预检。未知规则函数、聚合规则、窗口/子查询、隐式数值布尔、NUL 字符串、requires 闭包、身份覆盖、多表等明确拒绝。字段展开后注入一次 AST 人口谓词，避免逻辑/物理同名重新展开。对象与指标绑定同一强引用批次，失败/取消加载保留旧批次，准备语句跨重载保留原批次；数据更新需显式重载。执行 trace 记录实际绑定的快照与定义哈希。完整契约与示例见 [population-profile.md](population-profile.md)。
+
+实测证据：
+
+- 最终 SQL 全量回归：15 个用例、503 条断言通过；新增人口用例 66 条断言。`make format-check` 通过；`git diff --check` 通过。
+- stock DuckDB wheel 1.5.6/source `069cc9f9b5` 加载实际 `.duckdb_extension`。完整 475 行产品 X 对象集合与独立 CSV/Decimal 及历史 SQL 基准一致：阈值 10/20 分别 166/63 条，金额 2265.86/1472.73；两种定义各 15 个日组，所有日期×地区×类型组分别 101/45 个及逐组对象下钻全部核对。指标公式、mapping 和输入 CSV 未变，只有 ontology 的 derived_by 阈值变更。人工 11 行边界核对阈值相等、NULL、NULL GAAP、空组/空标量结果及过滤前整批身份拒绝。
+- 实际产物同时核对定义冲突、类型/AST拒绝、失败原子性、准备语句快照保持、源更新显式重载、类型化 DATE/DECIMAL/NULL/引号字符串、计算字段只展开一次、单线程引擎并发调用、取消装载、宏不能覆盖实际 AVG、诊断 SQL 不能访问内部批次。关闭已装载快照的文件数据库后，另一 Python 进程重新打开成功，验证文件锁释放。共 46 个具名拒绝控制通过。
+- [population-artifact-results.json](research/ossie-req-001/population-artifact-results.json)绑定产物、完整 C++/头文件、构建源清单、标准定义/manifest、CSV/独立基准、SQL fixture 及验证脚本 SHA-256。它是有界单表证据，不是完整 P0/A1—A8 验收报告。
+- 原 loader 独立产物复核仍通过：17 类负例、46 个元数据对象、2,500 字段跨批次；新增 [loader-population-artifact-results.json](research/ossie-req-001/loader-population-artifact-results.json)，保留原先 loader 阶段的历史产物证据。原完整功能脚本 40 PASS，0 FAIL/0 XFAIL/0 SKIP；本机仍使用静态 build-tree shell fallback，真实可加载产物由 wheel 分别证明。该脚本的 MCP 检查仅覆盖既有 core resource，不证明新增 population MCP 接口。
+
+保留的失败与取舍：构建树的静态引擎掩盖了初始私有 DuckDB 实例缺少 SUM/AVG core_functions 的问题；独立 wheel 首次执行聚合实际失败。尝试显式加载静态 core_functions 时，真实扩展链接失败，`ExtensionHelper::LoadExtension` 不是 DUCKDB_API。Advisor 指出直接复制函数集也不能可靠证明 builtin 来源或跨平台 ABI。最终不依赖这些符号，改用 host 引擎、ColumnDataCollection 和 TableRef ExternalDependency，实际查询执行携带 AST，SQL 文本仅诊断。发现缓存 bundle 长期持有 host Connection 会形成 DB 引用环后，改用弱 DB 引用和短期连接，以跨进程文件锁控制验证。DATE cast 的 UNBOUND 类型、空列表的 INTEGER[] 推断及显式事务失败后 ROLLBACK 检查顺序也已修正；不能把这些 harness/绑定失败包装成原始数据不正确。
+
+Advisor 记录：当前集成取舍一轮只读建议加一次限定澄清；同一 Astra/high Advisor，无嵌套委派。有效 backend identity、effort、usage、billing 未由工具证实，仍记 unknown。Lead 核对 pinned 引擎头文件/实现，并用真实产物、类型/快照/生命周期控制验证采纳方案。Windows/Linux 本轮没有运行，不声称跨平台验证。
+
+当前必要剩余与下一已授权动作：本工作包完成，整体目标继续。A1—A5/A7 相关单表支持路径已有上述实证，A6 仅多表拒绝控制，尚无安全多表正例；A8 按用户仅新格式决定部分覆盖，未完整覆盖 R3 语言集合。下一阶段先对 R3 的 NULLIF/除法、除零/精度/时间边界及 R6 的安全事实/维度连接建立独立正负控制并研究确定语义，再扩展实现。完整 calendar、更多 ontology 结构/约束、多期实体身份、population MCP 暴露及完整验收归档仍未完成；active/paid 仍缺数据。推送、上游 PR 修改、合并和发布仍不在本地实施授权中。
 
 ### 用户决策的规范依据
 

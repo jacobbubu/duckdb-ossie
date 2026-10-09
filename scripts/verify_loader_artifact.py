@@ -26,7 +26,7 @@ def verify(artifact, root):
     assert con.execute("SELECT loaded FROM duckdb_extensions() WHERE extension_name='ossie'").fetchone() == (True,)
     assert con.execute(
         "SELECT count(DISTINCT function_name) FROM duckdb_functions() WHERE starts_with(function_name, 'ossie_')"
-    ).fetchone() == (8,)
+    ).fetchone() == (13,)
     fixtures = root / 'test/fixtures/loader_contract'
     con.execute('CALL ossie_load(?)', [str(fixtures / 'valid.json')])
     result = con.execute('SELECT * FROM ossie_metadata()')

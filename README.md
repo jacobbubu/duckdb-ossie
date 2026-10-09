@@ -15,8 +15,9 @@ This local implementation targets the root-level core model at Apache Ossie
 [`8dd6732`](https://github.com/apache/ossie/tree/8dd6732da354f22ca71f16d82626a46039ecdcd9),
 whose version is `0.2.0.dev0`. This is a pinned development snapshot. Other version
 strings, missing versions and legacy `semantic_model` wrappers are rejected.
-Ontology and mapping documents require a separate execution implementation; the core
-loader refuses their document markers. See the [bounded implementation record](docs/ossie-execution-research.md).
+The core loader refuses ontology and mapping document markers. The separate
+`ossie_bundle_load` path executes a bounded single-table population profile, described
+in [the profile contract](docs/population-profile.md). See the [bounded implementation record](docs/ossie-execution-research.md).
 
 Ossie is a vendor-neutral file format for semantic models: `datasets` bound to physical tables,
 `fields`, declared `relationships`, and `metrics` written as aggregate expressions. It describes
@@ -94,6 +95,11 @@ records every such refusal and why it exists.
 | `ossie_metadata()` | Descriptions, field labels, AI instructions/synonyms/examples, preserved JSON and expression dialects across all model scopes |
 | `ossie_query(metrics, dimensions, filters)` | Compile the request and execute it |
 | `ossie_compile(metrics, dimensions, filters)` | Return the SQL without running it |
+| `ossie_bundle_load(manifest_path)` | Validate a hash-bound core/ontology/mapping bundle and freeze a committed observation batch |
+| `ossie_concepts()` | Discover executable concepts, identity, rule and definition/snapshot hashes |
+| `ossie_objects(concept, filters)` | Enumerate the objects and logical fields in a frozen concept population |
+| `ossie_concept_query(concept, metrics, dimensions, filters)` | Calculate metrics over that same population |
+| `ossie_concept_compile(concept, metrics, dimensions, filters)` | Return diagnostic SQL and pinned hashes without executing the request |
 
 `rebind` remaps warehouse-qualified prefixes onto the local catalog: a model saying
 `tpcds.public.store_sales` needs `rebind => MAP{'tpcds.public': 'tpcds.main'}` to find local tables.
@@ -115,6 +121,16 @@ cast physical columns. Natural-language metadata never creates a calculation rul
 `ossie_compile` is a first-class output, not a debug aid — it is the useful surface wherever DuckDB
 is not the executor. It runs the identical compiler `ossie_query` does, so the SQL you inspect is
 the SQL that would run.
+
+The population APIs implement `gaap-scalar-population-v1`: one root entity and one
+scalar derived entity, on a single committed native table. Loading checks identity
+across the entire captured batch. Source updates require explicit reload; prepared
+requests retain their original bundle. Objects and metrics use the same population
+predicate. Default groups are sparse, AVG counts non-NULL inputs, and empty SUM/AVG
+returns NULL. Full ontology, joins, calendar completion and population MCP tools
+remain later work. See [the profile contract](docs/population-profile.md) for the
+manifest, limits and SQL examples. `ossie_concept_compile` SQL is diagnostic and
+requires an internal frozen-data dependency; it cannot be replayed as ordinary SQL.
 
 ## Serving a model to an AI agent
 

@@ -5,6 +5,14 @@ back, so a plausible wrong number is worse than an error. Everything below is a 
 model, the request, or the format underdetermines the query — and the extension declines rather
 than picking.
 
+## Bounded population profile
+
+The separate `ossie_bundle_load` path has a stricter expression and source contract
+than the live core APIs described below. Its single-table ontology/mapping support,
+whole-batch identity checks, frozen data lifetime and explicit refusals are listed
+in [population-profile.md](population-profile.md). General ontology execution,
+multiple datasets, joins and calendar completion are not implemented by this path.
+
 ## Grain
 
 **Metrics that aggregate at more than one grain.** `store_productivity` is
