@@ -249,13 +249,13 @@ test("strict typecheck rejects a runtime-valid type error and recovers", () => {
   }
 });
 
-test("CI uses frozen Bun tooling and the same artifact for both verifiers", () => {
+test("CI uses frozen Bun tooling and the same artifact for all three verifiers", () => {
   const workflow = readFileSync(
     join(ROOT, ".github/workflows/MainDistributionPipeline.yml"),
     "utf8",
   );
   const artifact = workflow.split("  artifact-load:")[1].split("  ci-gate:")[0];
-  for (const name of ["loader", "population"])
+  for (const name of ["loader", "population", "expression"])
     expect(artifact).toContain(
       `bun scripts/verify_${name}_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/${name}.json`,
     );
@@ -269,7 +269,7 @@ test("CI uses frozen Bun tooling and the same artifact for both verifiers", () =
   expect(workflow).not.toContain("python3 scripts/");
 });
 
-test("stock artifact CLI and both verifiers consume the downloaded artifact", () => {
+test("stock artifact CLI and all verifiers consume the downloaded artifact", () => {
   const workflow = readFileSync(
     join(ROOT, ".github/workflows/MainDistributionPipeline.yml"),
     "utf8",

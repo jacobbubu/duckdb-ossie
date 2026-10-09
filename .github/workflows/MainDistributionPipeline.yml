@@ -115,11 +115,12 @@ jobs:
       - name: Install locked tooling dependencies
         run: bun install --frozen-lockfile
 
-      - name: Verify loader and population against the same real artifact
+      - name: Verify loader, population and expressions against the same real artifact
         run: |
           mkdir -p quality-reports
           bun scripts/verify_loader_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/loader.json
           bun scripts/verify_population_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/population.json
+          bun scripts/verify_expression_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/expression.json
 
       - uses: actions/upload-artifact@v4
         if: always()

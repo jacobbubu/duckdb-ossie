@@ -261,3 +261,24 @@ MCP迁移后的probe用独立下载stock CLI v1.5.6实际加载同一扩展，�
 最终验证：重建通过；30个Bun控制（含缺CLI/缺artifact/加载失败/相对路径和同下载产物接线）、19项C++状态检查、15个SQL用例503条断言通过。loader17非法文档/46元数据范围/2500字段，population46拒绝控制/475行与11行边界/取消生命周期等控制再次针对同一最终产物通过。真实stock CLI检查40 PASS、0 FAIL/SKIP，MCP完整probe通过，shell语法/workflow YAML/diff检查通过。新证据：[清理报告](research/ossie-req-001/cleanup-results.json)、[清理后loader](research/ossie-req-001/cleanup-loader-artifact-results.json)、[清理后population](research/ossie-req-001/cleanup-population-artifact-results.json)，原报告不覆盖。原样输入/子模块/历史研究不变。
 
 清理工作包本地完成，当前下一动作是提交并推送到fork的codex/ossie-execution。远端CI尚未验证，Ubuntu tidy没有本机证据；不称跨平台完成，不合并main/改设置。原功能R3/R6等必要研究仍在前节，清理不等于整个P0完成。
+
+### R3 NULLIF 与受保护除法切片（2026-10-09，恢复功能开发）
+
+恢复与授权：08c06e6 清理已实际推送 origin/codex/ossie-execution，quality/Bun/清理工作本地完成；只读 runs 查询无运行记录，仍不称远程CI通过。用户确认继续此分支并要求继续功能开发。本轮本地研究/实施先覆盖NULLIF和受保护除法，不扩安全多表、时间/calendar或一般表达式语言；本轮新功能不自动推送。
+
+规范与缺口：固定expression_language.md列出算术/及NULLIF(a,b)相等返回NULL；core-spec/spec.md的Decimal未定precision/scale，没有明确除零契约。DuckDB官方numeric types与PostgreSQL compatibility说明Decimal除法采用近似浮点、/0遵循IEEE特殊值；以固定1.5.6实测为最终依据。现strict population只允许+,-,*及sum/count/avg等，NULLIF和/明确拒；core老API仍采用host行为，本轮不改其既有契约，也不称全部R3通过。
+
+拟实施：在现单表profile允许严格双参NULLIF；/暂限直接分母为NULLIF(expr,数值常量0)，让保护来自明确模型公式，不自动改写。不允许schema/catalog限定用户函数或任意函数、未保护/、%或//；CASE保护尚未证实则明确拒。沿用原/lowered/expanded AST检查及system.main engine qualification，独立验证scalar field、derived rule、请求filter和aggregate metric。COUNT DISTINCT已有strict aggregate路径，本轮给实际控制。固定标准与host差异通过文档公布，Decimal转Double除法不冒充精确金额。
+
+证据计划：先记录pre-fix拒绝及固定host边界，再以独立手算分子/分母数据验证零/负值/NULL/空集、精确SUM与近似比值、绑定types、未知/qualified/arity/未保护拒绝、失败保持和宏遮蔽；补真实SQL与stock Bun artifact verifier，并重跑原population/loader控制。使用一个限定只读Advisor评估语义/AST守卫；Lead实施验证。原不可变475行来源和旧报告不改，新报告另存，沿用本issue和计划追踪R3/R6剩余。
+
+
+R3切片结果：NULLIF双参及直接分母NULLIF(expr,数值常量0)的/已实现，原表达式与展开后均检查。实际数值0允许整数/Decimal，字符串、Boolean、NULL、非零（含1e-18/1e-38）、计算零、CAST/CASE包裹、未保护嵌套/明确拒绝。普通NULLIF、core NULLIFZERO lowering、派生规则/请求过滤/字段/聚合均有正例；rules/request不新增NULLIFZERO别名。system.main绑定阻止调用方宏覆盖。另修正既有聚合识别：pinned VisitExpressionClass遇根FUNCTION后不递归，导致SUM比值被误判无聚合；Strict检查之后显式遍历，不绕过聚合/绑定限制。
+
+实证：8行人工数据分别核对逐行比值与汇总比值，零/NULL/空集、正负分母抵消、COUNT DISTINCT排除NULL、精确Decimal SUM与DOUBLE类型、27具名拒绝及失败保持。明确0保护不能保证有限值，真实overflow为Infinity，报告用分类字符串保留该证据，不将JSON转换后的null冒充SQL NULL。比值容差1e-12，金额SUM不转浮点。30个Bun控制、19项C++状态检查、16个SQL用例566条断言通过；原475行/11行population及46拒绝、loader17拒绝/46metadata/2500字段、stock CLI40 PASS和完整MCP probe对同一实际产物全部通过。CI artifact-load已接第三表达式验证器，仍使用同一download产物。
+
+保留失败：旧产物不支持/与NULLIF；初版新产物聚合存在性检查错误见上；NULLIF错误arity由parser先拒，harness调整预期；字段Decimal负例先被mapping拒，改为metric声明Decimal才验证DOUBLE聚合类型不匹配。后两项是测试设计修正，没有伪称早期错误证明后续binder行为。报告绑定失败/最终日志哈希及源码/产物。一个限定Advisor建议加一次澄清已采纳并经Lead核对固定引擎源码及真实产物；有效backend/effort/usage/billing unknown。
+
+新证据：[R3控制报告](research/ossie-req-001/r3-control-results.json)、[表达式](research/ossie-req-001/r3-expression-artifact-results.json)、[同产物loader](research/ossie-req-001/r3-loader-artifact-results.json)、[同产物population](research/ossie-req-001/r3-population-artifact-results.json)。历史报告、不可变来源/原475行数据和proposed definitions、子模块没有修改。
+
+本工作包本地完成，下一动作本地提交保留，不自动推送。整体目标仍未完成：后续沿既有R3研究日期时间/其余表达式边界，再研究R6安全连接的正负控制；calendar、更广ontology/身份和population MCP完整验收仍必要。仅macOS arm64实测，远程CI/Ubuntu tidy未运行，不称全R3/P0或跨平台通过。

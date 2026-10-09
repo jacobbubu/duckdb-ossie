@@ -102,7 +102,7 @@ required job, and confirms nonzero status. Another checks Make's state runner is
 scheduled before the SQL runner. An actual missing-fixture state invocation was
 also confirmed to propagate failure through Make.
 
-The existing Linux/macOS `artifact-load` matrix now runs the loader and population
+The existing Linux/macOS `artifact-load` matrix now runs the loader, population and expression
 verifiers against the same downloaded extension in stock DuckDB Node bindings 1.5.6 (client 1.5.6-r.1),
 checking source ID `069cc9f9b5` and unsigned file loading without static fallback.
 Evidence is uploaded per architecture. The loader checks its required eight entry
@@ -125,7 +125,7 @@ RAII deleter, including exceptional string construction. Normal metadata control
 passed; allocator failure was not injected. The single existing yyjson NOLINT is
 explained as a local C API adapter, with no wider exemption.
 
-Current cleanup results are in
+Historical cleanup results are in
 [cleanup-results.json](research/ossie-req-001/cleanup-results.json), with same-artifact
 [loader](research/ossie-req-001/cleanup-loader-artifact-results.json) and
 [population](research/ossie-req-001/cleanup-population-artifact-results.json) controls.
@@ -133,6 +133,16 @@ The CLI smoke script now requires a stock CLI and real artifact, rejects load fa
 and reuses the existing nested-field fixture as a normal gating assertion.
 Missing CLI/artifact, loading failure and relative-path normalization have isolated controls.
 There is no project Python fixture generator or static build-tree fallback.
+
+Current expression-slice results are in
+[r3-control-results.json](research/ossie-req-001/r3-control-results.json), with same-artifact
+[expression](research/ossie-req-001/r3-expression-artifact-results.json),
+[loader](research/ossie-req-001/r3-loader-artifact-results.json) and
+[population](research/ossie-req-001/r3-population-artifact-results.json) reports.
+The expression verifier uses hand-derived ratios and native type/NULL controls,
+27 rejection cases, macro isolation and guarded-overflow evidence. Local checks pass
+30 Bun controls, 19 C++ checks and 566 SQL assertions in 16 cases; this does not
+establish full R3 or safe-join support.
 
 Previous Bun migration results and source hashes are in
 [bun-toolchain-results.json](research/ossie-req-001/bun-toolchain-results.json),

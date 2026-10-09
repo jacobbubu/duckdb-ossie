@@ -1,0 +1,219 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "gaap_demo",
+  "description": "Synthetic R3 numeric controls; explicit NULLIF-guarded division, not a GAAP business rule.",
+  "datasets": [
+    {
+      "name": "dws_gaap_di",
+      "source": "memory.main.dws_gaap_di",
+      "primary_key": [
+        "user_id"
+      ],
+      "fields": [
+        {
+          "name": "ds",
+          "datatype": "Date",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "ds"
+              }
+            ]
+          }
+        },
+        {
+          "name": "product",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "product"
+              }
+            ]
+          }
+        },
+        {
+          "name": "region",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "region"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_type",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "user_type"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "user_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "gaap_val",
+          "datatype": "Decimal",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "gaap_val"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ytd_gaap",
+          "datatype": "Decimal",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "ytd_gaap"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ratio",
+          "datatype": "Float",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "gaap_val / NULLIF(ytd_gaap, 0)"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "mean_gaap",
+      "datatype": "Float",
+      "description": "Arithmetic mean of non-null gaap_val over the requested scope; USD source is metric!E2 of the original workbook.",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "AVG(dws_gaap_di.gaap_val)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "gaap_sum",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "SUM(dws_gaap_di.gaap_val)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "gaap_value_count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "COUNT(dws_gaap_di.gaap_val)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "record_count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "COUNT(dws_gaap_di.user_id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ratio_of_sums",
+      "datatype": "Float",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "SUM(dws_gaap_di.gaap_val) / NULLIF(SUM(dws_gaap_di.ytd_gaap), 0)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "sum_ratio",
+      "datatype": "Float",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "SUM(dws_gaap_di.ratio)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "count_ratio",
+      "datatype": "Integer",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "COUNT(dws_gaap_di.ratio)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "distinct_region",
+      "datatype": "Integer",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "COUNT(DISTINCT dws_gaap_di.region)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "nullif_sums",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "NULLIF(SUM(dws_gaap_di.gaap_val), SUM(dws_gaap_di.ytd_gaap))"
+          }
+        ]
+      }
+    }
+  ]
+}

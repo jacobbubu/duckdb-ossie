@@ -1,0 +1,108 @@
+# name: test/sql/ossie_population_expressions.test
+# description: NULLIF and directly guarded division, typed ratios and aggregation phase
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE dws_gaap_di(ds DATE, product VARCHAR, region VARCHAR, user_type VARCHAR, user_id VARCHAR, gaap_val DECIMAL(18,2), ytd_gaap DECIMAL(18,2));
+
+statement ok
+INSERT INTO dws_gaap_di VALUES
+(DATE '2026-03-01','X','A','control','positive',10,2),
+(DATE '2026-03-01','X','A','control','negative',-6,3),
+(DATE '2026-03-01','X','B','control','fraction',1,3),
+(DATE '2026-03-01','X','B','control','negative_denominator',2,-2),
+(DATE '2026-03-01','X',NULL,'control','zero_denominator',2,0),
+(DATE '2026-03-01','X',NULL,'control','zero_zero',0,0),
+(DATE '2026-03-01','X','C','control','null_numerator',NULL,5),
+(DATE '2026-03-01','X','C','control','null_denominator',5,NULL);
+
+query I
+SELECT records FROM ossie_bundle_load('test/fixtures/population-expressions/bundle.json');
+----
+8
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('ValidUser',[]);
+----
+fraction
+positive
+
+query TR rowsort
+SELECT entity_id, "dws_gaap_di.ratio" FROM ossie_objects('User',[]);
+----
+fraction	0.3333333333333333
+negative	-2
+negative_denominator	-1
+null_denominator	NULL
+null_numerator	NULL
+positive	5
+zero_denominator	NULL
+zero_zero	NULL
+
+query TT
+SELECT typeof("dws_gaap_di.ratio"), typeof("dws_gaap_di.gaap_val") FROM ossie_objects('User',['User.id = ''positive''']);
+----
+DOUBLE	DECIMAL(18,2)
+
+query IIRRRIIR
+SELECT * FROM ossie_concept_query('User',['record_count','gaap_value_count','gaap_sum','ratio_of_sums','sum_ratio','count_ratio','distinct_region','nullif_sums'],[],[]);
+----
+8	7	14.00	1.2727272727272727	2.3333333333333333	4	3	14.00
+
+query IIRRRIIR
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','gaap_value_count','gaap_sum','ratio_of_sums','sum_ratio','count_ratio','distinct_region','nullif_sums'],[],[]);
+----
+2	2	11.00	2.2	5.333333333333333	2	2	11.00
+
+query RR
+SELECT * FROM ossie_concept_query('User',['ratio_of_sums','sum_ratio'],[],['User.id = ''positive'' OR User.id = ''negative_denominator''']);
+----
+NULL	4
+
+query IIRRRIIR
+SELECT * FROM ossie_concept_query('User',['record_count','gaap_value_count','gaap_sum','ratio_of_sums','sum_ratio','count_ratio','distinct_region','nullif_sums'],[],['User.id = ''absent''']);
+----
+0	0	NULL	NULL	NULL	0	0	NULL
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('User',['NULLIF(User.ratio,-2) IS NULL']);
+----
+negative
+null_denominator
+null_numerator
+zero_denominator
+zero_zero
+
+statement error
+SELECT * FROM ossie_objects('User',['User.ytd_gaap / 2 > 0']);
+----
+division requires a direct NULLIF
+
+statement error
+SELECT * FROM ossie_objects('User',['User.ytd_gaap / NULLIF(User.ytd_gaap, FALSE) > 0']);
+----
+division requires a direct NULLIF
+
+statement error
+SELECT * FROM ossie_objects('User',['NULLIFZERO(User.ytd_gaap) > 0']);
+----
+unsupported function
+
+statement ok
+CREATE MACRO nullif(a,b) AS 999;
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('ValidUser',[]);
+----
+fraction
+positive
+
+query RR
+SELECT * FROM ossie_concept_query('User',['ratio_of_sums','sum_ratio'],[],[]);
+----
+1.2727272727272727	2.3333333333333333
+
+statement ok
+DROP MACRO nullif;

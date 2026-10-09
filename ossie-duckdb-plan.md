@@ -530,3 +530,14 @@ will absorb whatever time it is given.
 用户要求清理后交付当前分支，范围与验证沿用 local issue 的清理节。必要剩余：shell 重复模型/Python、静态fallback、过期XFAIL及无用 instructions 成员/旧链接/cache清理；新增失败控制并复核 C++/SQL、同产物独立 verifier、CLI/MCP。原研究来源、旧格式拒绝及活跃core接口保留；不扩main合并/远程规则授权。
 
 清理checkpoint结果：实际删除shell重复Python、静态fallback、非门禁XFAIL、CI旧复制包装及旧链接/cache。instructions经真实编译证明仍用于metadata，已完整保留，C++最终无diff。30个Bun控制、19项C++、503条SQL、同产物loader/population、40项stock CLI及MCP通过，新证据见docs/research/ossie-req-001/cleanup-results.json。下一动作：提交推送当前fork分支；不扩main合并/远程规则，产品R3/R6仍待研究。
+
+### R3 checkpoint（2026-10-09，继续功能开发）
+
+清理08c06e6已推送当前fork分支；用户确认继续开发。当前切片为NULLIF及显式NULLIF分母保护的除法，语义/证据/限制维护于现local issue。下一动作：固定host边界/pre-fix证据、Advisor限定取舍、strict AST实现与独立比值/NULL/空集/拒绝控制；验证后本地交付。R6安全连接、日期时间更广边界、calendar及完整验收仍必要但本轮不扩；新功能不自动推送。
+
+
+### R3本地交付 checkpoint（2026-10-09）
+
+当前结果：本轮NULLIF/直接数值零保护除法切片完成，并修正根函数包裹聚合的存在性遍历。8行手算控制/27拒绝、30 Bun、19 C++、16 SQL用例566断言，原loader/population与真实stock CLI/MCP同产物通过。证据和失败保留于现local issue与r3-control-results.json；/产生DOUBLE且overflow仍可Infinity，不称精确Decimal除法。
+
+交付边界：此前清理08c06e6已推送；本轮只本地提交，远程CI/Ubuntu tidy未验证。上面历史checkpoint的计数/待推送状态按各包当时记录保留，本段为当前状态。下一已授权研究沿原需求推进R3日期时间/其余表达式边界及R6安全连接；calendar、更广ontology/身份、population MCP和完整P0仍未完成。不在此切片扩大实现或交付权限。

@@ -279,6 +279,21 @@ private:
 	shared_ptr<Bundle> bundle;
 };
 
+// A syntactic guard, not a guarantee of exact or finite floating-point results.
+bool ZeroProtectedDenominator(const ParsedExpression &expression) {
+	if (expression.GetExpressionClass() != ExpressionClass::FUNCTION)
+		return false;
+	auto &function = expression.Cast<FunctionExpression>();
+	if (function.is_operator || !function.catalog.empty() || !function.schema.empty() ||
+	    !StringUtil::CIEquals(function.function_name, "nullif") || function.children.size() != 2)
+		return false;
+	auto &zero = *function.children[1];
+	if (zero.GetExpressionClass() != ExpressionClass::CONSTANT)
+		return false;
+	auto &value = zero.Cast<ConstantExpression>().value;
+	return !value.IsNull() && value.type().IsNumeric() && value == Value::INTEGER(0);
+}
+
 // A separate strict profile checker never inherits the core filter-function flag.
 void Strict(const ParsedExpression &expression, bool aggregates = false, bool inside_aggregate = false, idx_t depth = 0,
             idx_t *visited = nullptr) {
@@ -324,13 +339,18 @@ void Strict(const ParsedExpression &expression, bool aggregates = false, bool in
 		auto &function = expression.Cast<FunctionExpression>();
 		auto name = StringUtil::Lower(function.function_name);
 		bool aggregate = name == "sum" || name == "count" || name == "avg";
-		bool arithmetic = function.is_operator && (name == "+" || name == "-" || name == "*");
+		bool division = function.is_operator && name == "/";
+		bool arithmetic = function.is_operator && (name == "+" || name == "-" || name == "*" || division);
+		bool nullif = !function.is_operator && name == "nullif" && function.children.size() == 2;
 		if (!function.catalog.empty() || !function.schema.empty() || function.filter ||
 		    (function.order_bys && !function.order_bys->orders.empty()) || function.export_state ||
-		    (!arithmetic && !aggregate) || (aggregate && (!aggregates || inside_aggregate)) ||
+		    (!arithmetic && !aggregate && !nullif) || (aggregate && (!aggregates || inside_aggregate)) ||
 		    (!aggregate && function.distinct) || (aggregate && function.children.size() != 1)) {
 			Fail(expression.ToString(), "rule", "unsupported function or aggregate in scalar population");
 		}
+		if (division && (function.children.size() != 2 || !ZeroProtectedDenominator(*function.children[1])))
+			Fail(expression.ToString(), "rule",
+			     "division requires a direct NULLIF(expr, numeric zero constant) denominator");
 		for (auto &child : function.children) {
 			Strict(*child, aggregates, inside_aggregate || aggregate, depth + 1, visited);
 		}
@@ -342,6 +362,18 @@ void Strict(const ParsedExpression &expression, bool aggregates = false, bool in
 	ParsedExpressionIterator::EnumerateChildren(expression, [&](const ParsedExpression &child) {
 		Strict(child, aggregates, inside_aggregate, depth + 1, visited);
 	});
+}
+
+bool HasAggregate(const ParsedExpression &expression) {
+	if (expression.GetExpressionClass() == ExpressionClass::FUNCTION) {
+		auto name = StringUtil::Lower(expression.Cast<FunctionExpression>().function_name);
+		if (name == "sum" || name == "count" || name == "avg")
+			return true;
+	}
+	bool found = false;
+	ParsedExpressionIterator::EnumerateChildren(
+	    expression, [&](const ParsedExpression &child) { found = found || HasAggregate(child); });
+	return found;
 }
 
 unique_ptr<ParsedExpression> Parse(const string &sql) {
@@ -810,13 +842,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		Strict(*expanded, true);
 		ExpandMetric(*bundle, expanded);
 		Strict(*expanded, true);
-		bool has_aggregate = false;
-		ParsedExpressionIterator::VisitExpressionClass(
-		    *expanded, ExpressionClass::FUNCTION, [&](const ParsedExpression &expression) {
-			    auto name = StringUtil::Lower(expression.Cast<FunctionExpression>().function_name);
-			    has_aggregate |= name == "sum" || name == "count" || name == "avg";
-		    });
-		if (!has_aggregate)
+		if (!HasAggregate(*expanded))
 			Fail(metric.name, "capability", "metric requires SUM, COUNT or AVG aggregation");
 		CompileToSQL(bundle->model, {metric.name}, {}, {}, CompileOptions());
 	}
