@@ -444,3 +444,94 @@ MCP 示例现在有四个可读资源（concepts/metrics/fields/capabilities）�
 保留失败：若干多 hunk/context patch 与格式化后源码不符，未写入，按实际内容拆分后成功。首次 Bun framing fixture 的 schema_version 推断为宽 string，使 strict literal check 失败；修正 fixture annotation。首次 stock missing-file error 没进入 DuckDB Exception 类 catch，裸 IO 被发现后改为 std::exception + 序列化类型白名单；native/stock 后续均通过。cross-DSO RTTI 是合理但未证实的假设，不声称定位了根因。曾在最终重建过程中启动 probe，未当作最终证据，完成后重新运行九个 stock verifier 和实际 MCP。Advisor 一个只读架构 round 加一次 IO/catch 澄清，无 children；requested Astra/high，有效 backend/effort/usage/billing unknown。
 
 本地统一错误工作包完成，当前动作提交保留、不推送。对比既有下一项 R7.5，受控 population 边界及 adapter list 错误已补，SQL signature/outer output binding、协议/unknown tool、取消/严重/未知 native 错误明确在契约外，并不冒充全引擎统一错误。整体 R7/P0/A1–A8 仍未完成。下一本地动作先核对 R1–R7/A1–A8 剩余证据，再选择精确 decimal/bigint MCP transport、超 fixture size/truncation 或其他必要验收包；compile 最终绑定、ontology attribute catalogue、自然语言语义对应、更广时间/calendar/多期身份/ontology 与 remote CI 继续保留，未扩大发布权限。
+
+## P0 逐项证据核对 checkpoint（2026-10-09，恢复）
+
+用户授权继续，4a9c01d 后工作区干净。本包在现有 OSSIE-REQ-001 内核对原需求 38 子项与 A1–A8；按用户决定更新 R1.3/A8 解释，逐项区分已验证的限定实现、尚缺证据、显式拒绝和 P1/非目标。读取原始需求、固定规范/来源审阅、各本地合同和最后同产物报告，并检查引用/哈希，不重复跑已通过门禁。原需求与历史结果保持不变；不创建第二 backlog、不实现新的接口/计算/transport、不将 remote CI 或真实自主 Agent 验证冒充已有证据。比较候选下一包的要求来源与影响，必要时用限定 Advisor 审阅 P0/P1 边界；本轮只交付核对和具体下一步，不扩展 push/merge/发布权限。
+
+## P0 当前证据矩阵（2026-10-09，基于 4a9c01d）
+
+本表是当前状态，前面的 checkpoint 和原始报告保留各包当时的状态。判定对象为固定 `0.2.0.dev0`、DuckDB 1.5.6 的两个受限 population profile；不把 live core 的宽松函数/列透传当作 population 白名单，也不宣称全量 Ossie 符合性。“已验证”指该限定范围有实际执行或拒绝证据；“有偏离”指支持路径有证据但与规范/需求仍存在明确差异；“待补证据”不等于已发现计算错误。用户已将 R1.3/A8 改为仅支持新格式，YTD 阈值分类已接受，active/paid 未验证。
+
+证据索引（均为本地证据，远程 CI 未运行）：
+
+- S：[固定来源清单](research/ossie-req-001/sources/manifest.json)、[固定表达式规范](research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md)、[原始提取](research/ossie-req-001/sources/business-source-extraction.json)、[对应关系审阅](research/ossie-req-001/source-correspondence-review.json)。后两者证明来源及人工对应，不证明视觉呈现或任意自然语言冲突自动检测；历史草案状态由本文后续用户决定与实际执行证据补充，原文件不改。
+- L：[当前 loader 验证](research/ossie-req-001/r7-errors-loader-artifact-results.json)，17 类拒绝、46 个元数据对象及 2,500 字段跨批次。实现映射见 [parser.cpp](../src/model/parser.cpp)、[model.hpp](../src/include/ossie/model.hpp) 和 [describe.cpp](../src/functions/describe.cpp)。它不是完整 JSON Schema validator。
+- P：[当前单表执行](research/ossie-req-001/r7-errors-population-artifact-results.json)、[独立原始基准](research/ossie-req-001/baseline-results.json)、[独立边界基准](research/ossie-req-001/boundary-results.json)，合同见 [population-profile.md](population-profile.md)。原 CSV、USD 来源与阈值 10/20 定义分别绑定哈希。
+- X：[表达式控制](research/ossie-req-001/r7-errors-expression-artifact-results.json)、[DATE 控制](research/ossie-req-001/r7-errors-date-artifact-results.json)，覆盖独立比值/空值/精度/日期 oracle 和具名拒绝，不声称支持全部语言。
+- J：[core 连接研究控制](research/ossie-req-001/r7-errors-join_research-artifact-results.json)、[生产双表 profile](research/ossie-req-001/r7-errors-joined_population-artifact-results.json)。前者报告中的“生产尚未实现”是研究脚本旧范围说明，不能覆盖后者生产正例；单表拒绝多表仍正确。[safe-join-research.md](safe-join-research.md) 保留独立粒度 oracle。
+- C：[实际生成 AST/plan](research/ossie-req-001/r7-errors-plan-artifact-results.json)，36 检查，合同见 [population-plan.md](population-plan.md)。不是物理计划或最终输出 binder 的保证。
+- D：[当前词汇/版本发现](research/ossie-req-001/r7-errors-discovery-artifact-results.json)，17 检查，合同见 [population-discovery.md](population-discovery.md)。单项 load preflight 类型验证不证明任意组合请求可执行。
+- E：[当前错误](research/ossie-req-001/r7-errors-error-artifact-results.json)，42 检查，合同见 [population-errors.md](population-errors.md)。取消/严重 native 错误和外部 SQL/MCP 边界明确排除。
+- M：[真实 MCP 调用](research/ossie-req-001/r7-errors-mcp-results.json)，301 检查/106 拒绝，合同见 [population-mcp.md](population-mcp.md)。实际资源、对象/聚合/compile 内容已验证；不证明自主 Agent，也不证明任意精确数值/大结果传输。
+- Q：[最后控制汇总](research/ossie-req-001/r7-errors-control-results.json)，19 state/42 grain/158 capture、788 SQL assertions/22 cases/0 skips、33 Bun tests/112 expects、9 stock artifact verifiers 和 40 stock CLI PASS。所有当前 artifact 报告绑定同一 SHA-256 `615af62accc92fd62f0936c71b8234822ffa1fceb3bb4e9f8775b4dd91777623`；本包只核对证据，不重跑这些门禁。
+
+### R1–R7：38 个子项
+
+| 子项 | 当前判定 | 对应行为、证据及边界 |
+|---|---|---|
+| R1.1 | 已验证 | S 固定 core/ontology/mapping/expression 到 `8dd6732…`，DuckDB gitlink `069cc9f9b5…`；Q 与各 artifact 报告保存实际 engine/source、源码/输入/产物哈希。当前扩展提交为本节基准。 |
+| R1.2 | 已验证 | L/D 精确 `0.2.0.dev0` 开发快照与项目 API 1.1.0 分开；没有“最新/完整 0.2”承诺。 |
+| R1.3 | 用户调整，已验证 | 仅新根级格式；L/P 验证新格式接受、legacy wrapper/embedded mapping 拒绝与迁移诊断。原需求不覆盖用户后续决定。 |
+| R1.4 | 已验证（限定范围） | L/P/E 拒绝版本/格式/绑定/规则冲突；描述性扩展保留但不执行。未知执行 AST 在 population 原始与展开阶段均拒绝。 |
+| R2.1 | 已验证（限定范围） | L/P/J：单模型、名字/引用检查；发布前核对真实字段/类型/全批键。未支持的 source、身份或关系形态拒绝；不是完整 schema 校验。 |
+| R2.2 | 支持路径已验证，有偏离 | L/D：十种逻辑类型元数据、时间默认/显式值、AI 字符串/对象及三个子字段有证据；parser 的 StringArray 仍将数字/Boolean scalar 转为文本，未严格实现 schema 的字符串成员类型。Time/DateTime metadata 不等于 population 执行支持。 |
+| R2.3 | 已验证 | L/D/S 保存说明、label、AI/custom extensions 和原来源；USD 来自 workbook `metric!E2`，不推断、不换算，描述变动不改变计算（P）。 |
+| R2.4 | 已验证（限定范围） | D/M 分别发现概念、指标、字段、能力/版本/方言和限制，词汇来自实际 bundle；自然语言不参与计算。 |
+| R2.5 | 部分，需完成偏离收口 | S 与 L/D/P/C 已分别核对根结构、类型/时间、AI、方言、键/关系及 provenance；不是仅换 wrapper。AI scalar 容错及 quoted case 语义偏离明确可见，尚无逐字段最终验收结论汇总。 |
+| R3.1 | 已验证（子集） | X/P/C：OSSIE_SQL_2026 确定 lowering 与 ANSI_SQL，支持/转换/拒绝合同；规则/filter 的更小语言不冒充完整 expression language。 |
+| R3.2 | 已验证（子集） | P/X/SQL：字段、算术/比较/Boolean/CASE、SUM/COUNT/DISTINCT/AVG、NULLIF/COALESCE、用例 DATE/显式 cast；除法必须直接 NULLIF 数值零 guard。 |
+| R3.3 | 已验证原生范围；传输待补证据 | X/DATE/P 检查作用域、NULL/空集/除零、DOUBLE 比值、精确 DECIMAL SUM 和日期边界；quoted names 沿 DuckDB 不区分大小写的偏离已说明。M 仅验证有限 fixture 数值，未证明大整数/高精度 Decimal wire。 |
+| R3.4 | 已验证 | L/C/D/X 保存声明与选中方言及实际 lowered expression，双方言优先 OSSIE_SQL_2026，不只改标签。 |
+| R3.5 | 已验证（population） | P/X/J 原始与展开 AST/函数/引用白名单、宏隔离、间接危险表达式拒绝；live core 保留较宽行为，不纳入此结论。 |
+| R3.6 | 显式拒绝符合边界 | P/X/J 拒绝窗口/嵌套聚合；未证明阶段语义前不启用，无完整语言符合性声明。 |
+| R4.1 | 已验证（profile） | P/J 使用固定标准 ontology 与 standalone mapping，将标量关系解析为 logical field AST/实体键；manifest 为本项目外部契约。 |
+| R4.2 | 已验证 | P/M：User/ValidUser、product/region/user_type/date/ytd_gaap 标准文件实际执行；J/D 非 GAAP 文件也运行，无工具模板硬编码依赖。 |
+| R4.3 | 已验证（单继承） | P/C：非递归 scalar derived_by、同一身份/属性继承，覆盖/独立 child mapping 拒绝；多继承/一般推理不支持。 |
+| R4.4 | 已验证边界 | P/J/C 区分 entity_id/record_id 与 fact grain；本 profile 限一批一实体一记录，不把原唯一 user_id 当多日期身份模型证明。 |
+| R4.5 | 已验证 | P/M：独立 objects/query API，同绑定人口、类型化冻结数据，范围/计数/SUM/AVG 对照。 |
+| R4.6 | 已验证 | P/J/E 缺失/重复/conflicting rule、identity、mapping 拒绝，失败不替换旧 bundle。 |
+| R5.1 | 已验证 | S/P/M：阈值只在 ontology 正式 derived_by，原始阈值 10；指标为独立 AVG，不再内嵌阈值。 |
+| R5.2 | 已验证 | P/C/M：共享生成 AST 将正式规则 AND 请求过滤在聚合前执行；实际 SQL/对象及数值都对照。 |
+| R5.3 | 已验证 | P/M：10→20 只改变 ontology/manifest hash，同 core/mapping/工具模板，完整逐日和对象结果改变；不需要 Agent prompt 干预，不证明自主 Agent。 |
+| R5.4 | 已验证边界 | C/P/S：规则 owner/applied、版本/hash、实际 WHERE、声明 DATE 角色与批次捕获说明；不从复杂 OR 推断时间区间，不声称跨日期实体状态。 |
+| R5.5 | 显式拒绝符合边界 | P/E：执行闭包 nonempty requires 拒绝，不将 constraint 偷换成人口 WHERE。 |
+| R5.6 | 人工对应已报告；自动检测未实现 | S 与本文用户决定明确原 active paying 描述缺数据，采用可证明的 YTD 分类。hash-bound review 是本例冲突报告证据；自然语言理解属服务/Agent，不能称插件任意 NL 冲突检测。 |
+| R5.7 | 已验证 | P/M/X：正式定义/hash 固定；请求仅 AND 缩小范围，不能覆盖规则/选方言，额外 threshold/sql 参数无执行绑定。加载是 operator 行为，不替代可信授权。 |
+| R6.1 | 已验证 | J/Q：保留 mixed grain、fan-out、ambiguous paths 拒绝及独立 grain runner；未放宽保护以迎合数据。 |
+| R6.2 | 已验证（fact grain） | J/C：指定原始 fact grain、checked capture join 与最终 frozen scan 分开；维度自身 aggregate 拒绝，独立 oracle 展示重复累计风险。 |
+| R6.3 | 已验证 | P/J：全批 non-NULL/unique 身份、维度键（包括未使用行）、INTEGER FK 类型实际预检，不只读声明。 |
+| R6.4 | 已验证（INNER/reject） | J/C：manifest 明确 INNER/missing=reject；NULL/缺失 FK、空维度/非法 unused key 控制，不能由基数自动选 LEFT。live core INNER 丢行风险仍独立说明。 |
+| R6.5 | 已验证（两表） | J：同一 DB 的两张 committed native tables、单 fact→dimension checked capture；独立 cents 正例及 24 拒绝，不承诺任意关系/多事实表。 |
+| R7.1 | 已验证生成语义 AST | P/C/M compile/query 共用编译及最终 EngineFunctions AST，可检查实际执行语义 SQL；文本依赖内部冻结扫描，不可普通 SQL replay。 |
+| R7.2 | 已验证（semantic plan） | C/D：机器 plan 含规则/正式来源/指标/方言/版本/hash/WHERE/time role/grain/capture join/限制；physical=false/range_inferred=false，不虚构未知值。 |
+| R7.3 | 已验证边界 | C/P/D：最终 AST 与实际 bundle/capture 状态，prepared/reload/失败验证；executed=false，load preflight 不是执行，compile 尚未保证最终 output binding。 |
+| R7.4 | 原生/fixture 已验证，传输待补证据 | P/C/M：实际行 trace、导入 content/snapshot 与定义哈希、unsorted/sparse/unpaged 声明；空集需要 compile/operator 记录。超 fixture 大小/截断及精确 numeric wire 没有实测合同，不能宣布无损完整传输。 |
+| R7.5 | 已验证（受控出口） | D/E/M：概念/对象/指标/compile 契约分开，recoverable callback/list 错误有对象/阶段/原因/nullable capability；native serious/cancel、SQL binder/协议错误明确在契约外。 |
+
+### A1–A8：支持路径与拒绝路径
+
+| 用例 | 当前证据 | 尚须保留的边界 |
+|---|---|---|
+| A1 | P/M：原始 475 行，完整逐日 count/SUM/AVG，3 月 10 日 45.89，原 CSV 与独立 baseline 哈希。 | USD 来自来源，AVG 用声明 DOUBLE 容差，不由均值相加校验总额。 |
+| A2 | P/M：同 content、同指标/工具模板，阈值 10/20 正式定义、实际 SQL 和独立结果同步变化。 | 两个 definition hashes 证明规则版本；没有自主 Agent 证据。 |
+| A3 | P/M：完整对象 ID、同范围 count/金额/mean、record/entity 边界与 trace。 | 仅一批一实体一记录 profile，不扩至跨日期身份。 |
+| A4 | P/M：全部 date/region/type 分组及 drilldown，父产品/日期/正式规则保留，SUM 与 COUNT 分别对照。 | sparse groups，无 calendar completion，不相加组均值。 |
+| A5 | P/X/DATE/J：等阈值、NULL/空集/日期边界、缺失/NULL FK 和无匹配拒绝。 | 无匹配 join 是 load 拒绝；空 grouped/object 无行 trace，需外部记录 compile/bundle。 |
+| A6 | J/M：双表 hand-derived cents 正例、duplicate/NULL key/FK/unused dimension 反例，core fan-out/歧义/mixed grain 控制。 | 只 checked 两表 fact grain，不能以 research SQL 冒充生产控制。 |
+| A7 | P/C/D/M：同 capture/定义可复核 SQL/rule/binding；prepared 保留旧批次、failed load 保持、source update 仅显式 reload。 | separate compile/query 跨 reload 不原子；大输出及数值传输须补证据，服务记录 execution reference。 |
+| A8 | L/P/X/J：按用户仅新格式接受；旧形态/未知版本拒绝，方言 selection/lowering 和非法展开 AST 验证。 | 两种已发布格式兼容不在当前要求；AI scalar 容错与 quoted case 偏离仍需收口。 |
+
+### 剩余必要工作与候选下一包
+
+当前不能宣布整体 P0 完成。首阶段原生计算和现有 fixture 的支持/拒绝路径已有证据；尚须收口 R2 字段对应/容错偏离、R3.3/R7.4 的 adapter 数值与大小证据，并将调整后的范围形成最终验收结论。完整 JSON Schema validator 不是隐含新增目标；发现的 scalar 容错应明确选择严格拒绝或声明偏离，并验证其兼容影响。Quoted case 已有明确 DuckDB 偏离，不为此承诺替换引擎 identifier semantics。
+
+候选包比较：parser 严格化直接处理 R2 的实际偏离；MCP 数值/大小研究处理当前结果可能失真的未验证边界；直接归档 A1–A8 会遗漏这些限制的实测或裁定。compile 最终绑定与 ontology attribute catalogue 可改善诊断/发现，但不是原文独立要求的必需新功能。更广时间/calendar、多期身份、requires/一般 ontology、混合粒度/窗口明确留在 P1 或非目标；remote CI/Ubuntu tidy 是未运行的质量证据，不能用本地接线代替，也不自动授权 push。
+
+取舍：下一本地包优先做 MCP 数值与有界大结果研究，不预设编码方案。按当前支持类型/公开输入限额构造大于 2^53 的整数、可区分相邻分的高精度 DECIMAL、聚合扩大精度、负值/NULL；先比较原生值、原始 MCP content token 和客户端解码，oracle 不先经过普通 JSON.parse。大结果核对完整 ID 多重集、字段/行数、消息字节及错误/截断；同时展示固定 operator 批次下空结果与 compile metadata 的关联。若失真，随后选择保真表示或明确限制传输支持范围，不能只加警告仍称该值正确。不在本审计包新增 adapter 接口。
+
+采用 advisor-escalation：复用现有只读 Advisor，一轮范围反证、无 children/写入。Advisor 同意 transport 证据优先，并指出 AI scalar 容错是具体尚未接受的偏差，不能用“不做完整 schema”消解。Lead 核对 StringArray/ScalarText 确认该行为，已单列 R2.2/R2.5；R5.6 后续用户决定与历史审阅分开，空结果在固定启动/no reload 示例中可关联，不能推广到任意可重载服务。requested `gpt-6-astra`/high，effective backend/effort/usage/billing unknown。未把 Advisor 意见当测试结果。
+
+核对结果与哈希引用记录见 [P0 审计记录](research/ossie-req-001/p0-evidence-audit-results.json)。本包只更新当前矩阵、计划和过期 limitations 描述；来源/业务定义/历史报告及实现未改，功能门禁没有重跑。此次审计工作包完成后本地提交保留，不推送；整体 P0 仍需 transport 证据、R2 偏离收口和最终规则驱动验收归档。
+
+保留审计脚本失败：首次链接检查先检查了尚未写出的审计记录自身，因文件不存在退出，未生成报告；修正顺序，仅该输出在写出后检查，其余引用仍在生成前检查。该失败不涉及功能实现或既有证据哈希。

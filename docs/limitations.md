@@ -8,10 +8,14 @@ than picking.
 ## Bounded population profile
 
 The separate `ossie_bundle_load` path has a stricter expression and source contract
-than the live core APIs described below. Its single-table ontology/mapping support,
-whole-batch identity checks, frozen data lifetime and explicit refusals are listed
-in [population-profile.md](population-profile.md). General ontology execution,
-multiple datasets, joins and calendar completion are not implemented by this path.
+than the live core APIs described below. Its single-table profile and bounded
+fact/dimension profile, whole-batch identity/key checks, frozen data lifetime and
+explicit refusals are listed in [population-profile.md](population-profile.md).
+The fact/dimension profile validates both captured inputs and an explicit
+`INNER`/`missing=reject` policy before publishing a frozen result. General ontology
+execution, arbitrary joins, mixed-grain aggregates and calendar completion remain
+outside these profiles. The live core join/filter behavior below is a separate
+contract; it does not describe the stricter population path.
 
 ## Grain
 

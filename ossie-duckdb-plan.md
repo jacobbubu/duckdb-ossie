@@ -625,3 +625,9 @@ DATE包fccce8d本地完成。下一已授权动作：人工事实/唯一维度�
 结果：内部RequireMetricGrain与Compile共享原模型识别分析，42独立grain控制+19 state、661 SQL/18用例、31 Bun/103断言与五个重建同产物verifier、stock CLI/MCP通过。已识别无来源聚合在新API保守拒绝，旧core行为不改；隐藏/嵌套与未识别聚合分层证据明确，不能把此API称完整安全证明。失败和哈希归现local issue/r6-grain-control-results.json。
 
 本包本地完成，下一动作本地提交，不推送。下一已授权实施是独立双表冻结profile及严格AST+指定grain+数据预检/来源重写/对象指标共同人口；完整R6/P0和前述R3/calendar/身份/ontology/MCP仍未完成，远程CI/Ubuntu tidy未验证。
+
+### P0 证据核对 checkpoint（2026-10-09，当前）
+
+基于本地提交 4a9c01d，现有 [OSSIE-REQ-001](docs/ossie-execution-research.md) 已逐条对齐 38 个 R 子项及 A1–A8，覆盖此前双表 profile、生命周期修复、真实 population MCP、机器 plan、词汇/API 版本与统一错误的后续交付。早期“未实现”记录是历史状态，不能代替当前矩阵。R1.3/A8 沿用户决定仅支持新格式，R5.6 沿已接受 YTD 分类、active/paid 未验证；未扩至自主 Agent 或完整语言符合性。
+
+本次审计包仅核对来源/同产物报告哈希、引用及范围，修正 limitations 的过期双表描述，没有重跑通过的功能门禁。整体 P0 尚须收口：MCP 精确整数/Decimal 与有界大结果及空结果关联证据，R2 字符串数组 scalar 容错/逐字段偏离结论，最后串起一次规则驱动的完整验收。下一已授权本地研究优先 MCP transport，先真实观测/独立 oracle，再决定编码修复或支持范围；本轮不先实现。compile 最终输出绑定、ontology 属性 catalogue 是改进；calendar、多期身份、更广 ontology/窗口/混合粒度为后续范围。remote CI/Ubuntu tidy 未运行，仍无新 push/merge/发布授权。本包本地提交保留，证据矩阵与审计记录维护在现 issue，未创建第二 backlog。
