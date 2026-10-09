@@ -34,3 +34,38 @@ tidy-check:
 	cmake $(GENERATOR) $(BUILD_FLAGS) $(EXT_DEBUG_FLAGS) -DDISABLE_UNITY=1 -DCLANG_TIDY=1 -S $(DUCKDB_SRCDIR) -B build/tidy
 	cp duckdb/.clang-tidy build/tidy/.clang-tidy
 	cd build/tidy && python3 ../../duckdb/scripts/run-clang-tidy.py '$(PROJ_DIR)src/' -header-filter '$(PROJ_DIR)src/' -quiet ${TIDY_THREAD_PARAMETER} ${TIDY_BINARY_PARAMETER} ${TIDY_PERFORM_CHECKS}
+
+# Keep the pinned DuckDB formatter and add project-maintained Python scripts.
+.PHONY: formatter-versions script-format-check script-format-fix architecture-check quality-control-tests quality-local
+format-check: script-format-check
+format: script-format-fix
+format-fix: script-format-fix
+script-format-check: formatter-versions
+	python3 duckdb/scripts/format.py --all --check --directories scripts
+formatter-versions:
+	python3 --version
+	black --version
+	clang-format --version
+	cmake-format --version
+script-format-fix:
+	python3 duckdb/scripts/format.py --all --fix --noconfirm --directories scripts
+architecture-check:
+	python3 scripts/check_architecture.py
+quality-control-tests:
+	python3 -m unittest discover -s test/python -p 'test_quality_controls.py' -v
+quality-local: format-check architecture-check quality-control-tests
+
+# Run explicitly: CTest and ENABLE_UNITTEST_CPP_TESTS do not discover this target.
+.PHONY: state-test-release state-test-debug state-test-reldebug
+state-test-release:
+	cmake --build build/release --target ossie_state_test
+	./build/release/extension/ossie/ossie_state_test "$(PROJ_DIR)"
+state-test-debug:
+	cmake --build build/debug --target ossie_state_test
+	./build/debug/extension/ossie/ossie_state_test "$(PROJ_DIR)"
+state-test-reldebug:
+	cmake --build build/reldebug --target ossie_state_test
+	./build/reldebug/extension/ossie/ossie_state_test "$(PROJ_DIR)"
+test_release_internal: state-test-release
+test_debug_internal: state-test-debug
+test_reldebug_internal: state-test-reldebug

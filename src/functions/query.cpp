@@ -18,13 +18,14 @@ namespace {
 // written by hand: join order, filter pushdown and projection pruning all come from the optimizer.
 unique_ptr<TableRef> QueryBindReplace(ClientContext &context, TableFunctionBindInput &input) {
 	auto &ossie_state = OssieState::Get(context);
-	auto model = ossie_state.GetModel();
+	auto snapshot = ossie_state.GetSnapshot();
+	auto &model = snapshot.model;
 	if (!model) {
 		throw InvalidInputException("ossie_query: no Ossie model is loaded -- call ossie_load('model.json') first");
 	}
 
 	CompileOptions options;
-	options.allow_filter_functions = ossie_state.AllowFilterFunctions();
+	options.allow_filter_functions = snapshot.allow_filter_functions;
 
 	auto argument = [&](idx_t index) {
 		return index < input.inputs.size() ? ToStringList(input.inputs[index], "ossie_query") : vector<string>();

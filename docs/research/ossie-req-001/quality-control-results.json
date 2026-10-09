@@ -1,0 +1,167 @@
+{
+  "scope": "local architecture/quality controls; not P0 completion or remote merge protection",
+  "functional_baseline_commit": "2b1e8b5",
+  "preserved_remote_branch": "origin/codex/ossie-execution",
+  "handoff_sha256": "46973abcbe7845a0e19f144abf02bb2869b0d09e36d9158471bcc984f7e1f5be",
+  "legacy_control": {
+    "contract_failure_exit_code": 1,
+    "observed_log": "captured=A, policy=1, sql=SELECT sum(facts.amount) AS total FROM memory.main.facts_a AS facts WHERE (abs(facts.amount) > 0)\nFAIL: controlled interleaving captured model A with policy B\n",
+    "scope": "controlled pre-fix model A read, B publication, then separate policy read; temporary reproducer source was not retained"
+  },
+  "state_test": {
+    "checks": 19,
+    "standalone_binary_sha256": "ab6a14b100ce16c862d967d56292d35fd941c1ed6608000497a513bdbc52d956",
+    "build_unittests": "ON",
+    "enable_unittest_cpp_tests": "FALSE",
+    "actual_cxx_standard": 11,
+    "make_missing_fixture_control_exit_code": 2
+  },
+  "sql_regression": {
+    "test_cases": 15,
+    "assertions": 503
+  },
+  "project_controls": {
+    "test_cases": 19,
+    "format_failure_recovery": "isolated fixture",
+    "gate_outcomes_tested": [
+      "success",
+      "failure",
+      "skipped",
+      "cancelled"
+    ],
+    "architecture_report": {
+      "scope": "all project src C++ files; project include reachability and header cycles; direct runtime includes; no vendor expansion",
+      "source_files": 25,
+      "project_edges": 42,
+      "external_edges_unexpanded": 120,
+      "adapter_exceptions": {
+        "src/model/parser.cpp": [
+          "duckdb/common/file_system.hpp",
+          "duckdb/main/client_context.hpp"
+        ],
+        "src/model/catalog.cpp": [
+          "duckdb/catalog/catalog.hpp",
+          "duckdb/catalog/entry_lookup_info.hpp",
+          "duckdb/main/client_context.hpp"
+        ]
+      }
+    }
+  },
+  "tools": {
+    "python": "3.14.7",
+    "black": "24.10.0",
+    "clang_format": "11.0.1",
+    "cmake_format": "0.6.13",
+    "compiler": "Apple clang 21.0.0",
+    "local_clang_tidy": "unavailable",
+    "ci_python_configured": "3.12",
+    "ci_black_configured": "24.*",
+    "ci_clang_tidy": "Ubuntu package; effective version not verified"
+  },
+  "stock_artifact": {
+    "duckdb_version": "1.5.6",
+    "source_id": "069cc9f9b5",
+    "same_artifact_sha256": "ebb61f91ac2cd5cdf80081fb955ea27ea2f88f46168f29ee2a87700e7b7447e9",
+    "loader_required_entry_contract_checked": [
+      "ossie_compile",
+      "ossie_datasets",
+      "ossie_fields",
+      "ossie_load",
+      "ossie_metadata",
+      "ossie_metrics",
+      "ossie_query",
+      "ossie_relationships"
+    ],
+    "loader_negative_controls": 17,
+    "population_negative_controls": 46,
+    "metadata_invariance_verified": true,
+    "static_fallback_used": false
+  },
+  "existing_functionality_check": {
+    "pass": 40,
+    "fail": 0,
+    "xfail": 0,
+    "skip": 0,
+    "mode": "static build-tree CLI fallback; separate evidence from stock wheel"
+  },
+  "exception_safety": {
+    "jsontext_buffer_owned_by_raii": true,
+    "allocator_fault_injection": false
+  },
+  "preservation": {
+    "root_clang_format_matches_pinned_duckdb": true,
+    "submodule_gitlinks": [
+      "069cc9f9b5be802405797faecc284961b07c70ef duckdb (v1.5.6)",
+      " 3fd6109fc01555673b7c7123eba8d0d143fe8ce4 extension-ci-tools (3fd6109)",
+      " 1818a25156b9b1a65a9c9b6126631e2cd7cfa8f6 third_party/fkYAML (1818a25)"
+    ],
+    "immutable_research_sources_diff": ""
+  },
+  "remote_ci": {
+    "read_only_observation": "2026-10-09",
+    "actions_enabled": true,
+    "registered_workflows": 0,
+    "branch_runs_observed": 0,
+    "new_quality_workflow_executed_remotely": false,
+    "branch_protection_changed": false
+  },
+  "advisor": {
+    "requested_role": "advisor (Astra/high)",
+    "effective_backend_identity": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "rounds": 1,
+    "nested_delegation": false
+  },
+  "commands": [
+    "CMAKE_BUILD_PARALLEL_LEVEL=4 make release",
+    "PATH=/tmp/duckdb-ossie-quality-venv/bin:$PATH make quality-local",
+    "CMAKE_BUILD_PARALLEL_LEVEL=4 make test",
+    "make state-test-release PROJ_DIR=/tmp/ossie-deliberately-missing-quality-fixtures (expected failure)",
+    "python scripts/verify_loader_artifact.py build/release/extension/ossie/ossie.duckdb_extension --output docs/research/ossie-req-001/quality-loader-artifact-results.json",
+    "python scripts/verify_population_artifact.py build/release/extension/ossie/ossie.duckdb_extension --output docs/research/ossie-req-001/quality-population-artifact-results.json",
+    "bash scripts/full_functionality_check.sh",
+    "ruby -ryaml -e YAML.load_file (workflow syntax read)",
+    "git diff --check"
+  ],
+  "inputs_sha256": {
+    "Makefile": "45e27cc90d98e0c9041e5eda18b14812d76c3d1c34e0593512a2a70e84b407d1",
+    "CMakeLists.txt": "0be7b6be55775818782445ea540f1d178b1421f711908311b22f0c735750c8cd",
+    ".clang-format": "6f867aa9f43ada180f3fb4b53dab4219121b2dd378ebb9253eeed8fc02bf15e2",
+    ".github/workflows/MainDistributionPipeline.yml": "b18d7bef03d704b2a45a606cc5591a2907272f011b4741f45d7deb73ab5795f7",
+    "test/cpp/state_snapshot_test.cpp": "019d98f8e3ca3f9a7f0f0a497c705df08e230d376b1555e46a5f2a12283cd269",
+    "test/python/test_quality_controls.py": "6f314ea81896b40bdfcc4e2f210809d34122d2e99fa5dce0213a0e15434de90a",
+    "test/fixtures/state_snapshot/a.json": "7cf72baf94dc3cc1fe6a1d13bd02da10c03e12db0f593f06d0365139ead655e2",
+    "test/fixtures/state_snapshot/b.json": "7231327d8f76131737e7e5a08d036440842e0f6e92da04df20a9f0f23ce0f48b",
+    "scripts/check_architecture.py": "0cd2952f010b2a40b299aa0526ba2695bba40787bda57775578bf2790a33b77d",
+    "scripts/mcp_check.py": "2076b7fb9cc63de115b8f01bc4defa41af73b227b0a5f3a578ddfdb2091c2f0d",
+    "scripts/verify_loader_artifact.py": "35a80f3b267fb61f7fad333eeecc8573c6085b5cdd6bd4c44166655538c71e62",
+    "scripts/verify_population_artifact.py": "898d49ba5a84510c0eccec686725159ebe237ad1fec2fddbf4b44bc73a536d91",
+    "src/compile/compile.cpp": "e5448fa6396cc2cea2cebbdac3b1b050dab30c72a327f875557cf2a907b755f7",
+    "src/functions/compile.cpp": "0ced88a9668b3334bd241aaade5a17995869f01f69c5ff219caa86aed9eff419",
+    "src/functions/describe.cpp": "beca66aba1855721ab72ae06ecafff7f46a1a3cb9f148b3e18d4245b64b5c5c3",
+    "src/functions/load.cpp": "940ea630f93f4b6ebe45b9a49879416f7ffba6c693557f9211d4f968ceb219ba",
+    "src/functions/query.cpp": "a4e9721e1723d03b4dedd79ef67db675ca7d4ce0fd01025450975fcfb8390488",
+    "src/model/catalog.cpp": "095735539374ed0a04a071f7b2d4af0eb137ffeb4bf94f1c2df42a619344612a",
+    "src/model/dialect.cpp": "cba1454964c879092926fb8ff2920a4fcb4c46dd04f82acbbcc5e162906aaaf7",
+    "src/model/graph.cpp": "da654783f170010c6ada5a0c538053104ae9bbbb00c6aa647050fd4a65fe5292",
+    "src/model/parser.cpp": "4d407b80a9cb6195a6f665463dff8c67513111b2635fe93ef40aafb5d11f558d",
+    "src/model/validate.cpp": "557ce77b1c86ab7bb6070e840ea232c014524b59b91047d3b1542816181b5d22",
+    "src/model/yaml.cpp": "a0418e52478e8ea608dff4d42fa61f4b44895c0958a4272283e3d8339374df0d",
+    "src/ossie_extension.cpp": "62b6b2022ab4a721dc7316cf3d9e8d35e0889bce6b2d7092822fbcf716bb797e",
+    "src/population/population.cpp": "61d216032b7fb0c4bcb4d7e88ba44d53d86861747511a4185513438e1bf4674f",
+    "src/include/ossie/catalog.hpp": "31a14b4b8680e9303902508ffd2975a426894df96a2cf212468483a552a38d51",
+    "src/include/ossie/compile.hpp": "831248acd478a5bfde0fa8d5ffda4ab5e283d9d0f45b7520fed8160ced64636c",
+    "src/include/ossie/describe_functions.hpp": "bb7417d8892a606a23f5862dd146dcf0dafd9666ea7005c0b3eb483c1e25414c",
+    "src/include/ossie/dialect.hpp": "3bff6bde0ece193c5ec6bdf51f6470e5eafabb88cf0aff101caf7d0579603dac",
+    "src/include/ossie/functions.hpp": "21e4cae9e69b336add2cb33be9829167353f03e699ff040e398a5ce2a3b0cae1",
+    "src/include/ossie/graph.hpp": "620a388ad927e71534f83d29daf19ea07e1b52d6c05239197a89e510c6293ac5",
+    "src/include/ossie/model.hpp": "0f51d181d2e2a7b280639133f86274a9e9b50542ae5f545103ecf2d86c05d4cd",
+    "src/include/ossie/parser.hpp": "8e339cb4addb44d37873b820d3ddee0bc1d974e1d1c61dbb535850b709009df5",
+    "src/include/ossie/state.hpp": "ed1d0e9966aca2a949072afea36ad7b1f9150b349691cc5eaffca26811b12f25",
+    "src/include/ossie/validate.hpp": "b460c6e776d9c9c2d5aa579b54a2808cff7bec1a98e81e108717c5bd898e40bc",
+    "src/include/ossie/yaml.hpp": "7409822d510d4d09a12a699c7ad95d7e869d5cafcb05c0ddafe29ca95eb88351",
+    "src/include/ossie_extension.hpp": "382f683e705384688bb6928a9b3dae0a359923f4257d8f75835c6d052f366f12"
+  }
+}

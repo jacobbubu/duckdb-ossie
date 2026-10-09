@@ -17,6 +17,7 @@
 
 #include "yyjson.hpp"
 
+// Local adapter for DuckDB's vendored C API names; no project-wide naming/check exemption.
 using namespace duckdb_yyjson; // NOLINT
 
 namespace duckdb {
@@ -135,17 +136,21 @@ vector<string> StringArray(yyjson_val *obj, const char *key, const string &conte
 	return result;
 }
 
+struct JSONTextDeleter {
+	void operator()(char *buffer) const {
+		free(buffer);
+	}
+};
+
 string JSONText(yyjson_val *value) {
 	if (!value) {
 		return string();
 	}
-	auto serialized = yyjson_val_write(value, 0, nullptr);
+	unique_ptr<char, JSONTextDeleter> serialized(yyjson_val_write(value, 0, nullptr));
 	if (!serialized) {
 		throw InvalidInputException("ossie_load: could not preserve metadata JSON");
 	}
-	string result(serialized);
-	free(serialized);
-	return result;
+	return string(serialized.get());
 }
 
 string ParseDatatype(yyjson_val *parent, const string &context) {

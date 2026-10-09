@@ -125,14 +125,16 @@ void OssieState::SetModel(shared_ptr<Model> new_model, bool allow_filter_functio
 	allow_filter_functions = allow_filter_functions_p;
 }
 
-bool OssieState::AllowFilterFunctions() {
+OssieSnapshot OssieState::GetSnapshot() {
 	lock_guard<mutex> guard(lock);
-	return allow_filter_functions;
+	OssieSnapshot snapshot;
+	snapshot.model = model;
+	snapshot.allow_filter_functions = allow_filter_functions;
+	return snapshot;
 }
 
-shared_ptr<Model> OssieState::GetModel() {
-	lock_guard<mutex> guard(lock);
-	return model;
+shared_ptr<const Model> OssieState::GetModel() {
+	return GetSnapshot().model;
 }
 
 void RegisterLoadFunction(ExtensionLoader &loader) {

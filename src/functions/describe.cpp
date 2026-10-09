@@ -14,7 +14,7 @@ namespace {
 
 //! Holds the model for the duration of the scan so a concurrent ossie_load cannot pull it away.
 struct DescribeGlobalState : public GlobalTableFunctionState {
-	shared_ptr<Model> model;
+	shared_ptr<const Model> model;
 	idx_t offset = 0;
 	//! Only ossie_fields uses this, to walk fields nested inside datasets.
 	idx_t dataset_offset = 0;
@@ -170,7 +170,7 @@ void MetricsFunction(ClientContext &context, TableFunctionInput &data_p, DataChu
 
 // Metadata has its own surface so existing discovery table schemas remain stable.
 struct MetadataGlobalState : public GlobalTableFunctionState {
-	shared_ptr<Model> model;
+	shared_ptr<const Model> model;
 	vector<vector<Value>> rows;
 	idx_t offset = 0;
 };

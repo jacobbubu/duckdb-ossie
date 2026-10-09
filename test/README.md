@@ -26,3 +26,16 @@ or
 ```bash
 make test_debug
 ```
+Project-specific quality checks:
+
+```sh
+make quality-local
+make state-test-release
+```
+
+The state runner is a dedicated C++ executable with controlled publication and
+cross-connection compiler checks. `make test` builds/runs it before SQLLogicTests,
+even with `ENABLE_UNITTEST_CPP_TESTS=FALSE`. Python controls use isolated temporary
+trees to prove the format/architecture gates reject violations and that the actual
+CI gate rejects failed, skipped or cancelled dependencies. See
+[quality-controls.md](../docs/quality-controls.md) for scope and timing contracts.

@@ -1,0 +1,1 @@
+{"version":"0.2.0.dev0","name":"B","datasets":[{"name":"facts","source":"memory.main.facts_b","fields":[{"name":"amount","expression":{"dialects":[{"dialect":"ANSI_SQL","expression":"amount"}]}}]}],"metrics":[{"name":"total","expression":{"dialects":[{"dialect":"ANSI_SQL","expression":"SUM(facts.amount) * 2"}]}}]}

@@ -20,6 +20,7 @@ registry exactly as a user's copy does. With OSSIE_EXTENSION set, that install i
 named file, so CI can test what it just built before the registry has it. Every other line of server.sql,
 including the security flags, runs unchanged.
 """
+
 import atexit, json, os, shutil, subprocess, sys, tempfile, time
 
 if shutil.which("duckdb") is None:
@@ -37,7 +38,8 @@ if extension:
         sys.exit(2)
     text = text.replace(REGISTRY_INSTALL, f"LOAD '{os.path.abspath(extension)}';\n")
     fd, server_path = tempfile.mkstemp(suffix=".sql", prefix="ossie_mcp_server_")
-    os.write(fd, text.encode()); os.close(fd)
+    os.write(fd, text.encode())
+    os.close(fd)
     atexit.register(os.unlink, server_path)  # every exit path, including a failed handshake
     # A file this CI run just built is genuinely unsigned; the registry's builds are signed and need no flag.
     cli = ["duckdb", "-unsigned"]
@@ -46,40 +48,64 @@ if extension:
 try:
     proc = subprocess.Popen(
         cli + ["-init", server_path],
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        text=True, bufsize=1)
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+    )
 except OSError as exc:
     print(f"could not start the MCP server: {exc}")
     sys.exit(2)
 
+
 def send(obj):
-    proc.stdin.write(json.dumps(obj) + "\n"); proc.stdin.flush()
+    proc.stdin.write(json.dumps(obj) + "\n")
+    proc.stdin.flush()
+
 
 def read(timeout=60):
     start = time.time()
     while time.time() - start < timeout:
         line = proc.stdout.readline()
         if not line:
-            time.sleep(0.05); continue
+            time.sleep(0.05)
+            continue
         line = line.strip()
         if not line.startswith("{"):
             continue
-        try: return json.loads(line)
-        except json.JSONDecodeError: continue
+        try:
+            return json.loads(line)
+        except json.JSONDecodeError:
+            continue
     return None
 
+
 ok = True
+
+
 def check(label, cond, detail=""):
     global ok
     print(f"  {'PASS' if cond else 'FAIL'}  {label}" + (f"   {detail}" if detail else ""))
     ok = ok and cond
 
-send({"jsonrpc":"2.0","id":1,"method":"initialize","params":{
-    "protocolVersion":"2024-11-05","capabilities":{},
-    "clientInfo":{"name":"ossie-probe","version":"1"}}})
+
+send(
+    {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {"name": "ossie-probe", "version": "1"},
+        },
+    }
+)
 r = read()
-check("initialize handshake", bool(r and "result" in r),
-      (r or {}).get("result",{}).get("serverInfo",{}).get("name",""))
+check(
+    "initialize handshake", bool(r and "result" in r), (r or {}).get("result", {}).get("serverInfo", {}).get("name", "")
+)
 if not (r and "result" in r):
     # The server never answered, usually because a line of the server script failed and DuckDB exited.
     # Without its stderr the only symptom is a broken pipe on the next write.
@@ -87,15 +113,16 @@ if not (r and "result" in r):
     try:
         _, err = proc.communicate(timeout=10)
     except subprocess.TimeoutExpired:
-        proc.kill(); _, err = proc.communicate()
+        proc.kill()
+        _, err = proc.communicate()
     print("server stderr:\n" + (err or "(empty)").strip()[-2000:])
     sys.exit(1)
 
-send({"jsonrpc":"2.0","method":"notifications/initialized"})
+send({"jsonrpc": "2.0", "method": "notifications/initialized"})
 
-send({"jsonrpc":"2.0","id":2,"method":"tools/list"})
+send({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
 r = read()
-tools = [t["name"] for t in (r or {}).get("result",{}).get("tools",[])]
+tools = [t["name"] for t in (r or {}).get("result", {}).get("tools", [])]
 # Exclusivity, not membership. "semantic_query in tools" was the original assertion and it passed
 # throughout v0.1.0 while query/export were also exposed -- it cannot fail when the hole is open.
 check("tools/list exposes semantic_query AND NOTHING ELSE", tools == ["semantic_query"], str(tools))
@@ -104,32 +131,47 @@ check("tools/list exposes semantic_query AND NOTHING ELSE", tools == ["semantic_
 # export is checked as well as query because it takes an arbitrary SQL argument: disabling query
 # alone leaves a second route to the same data (teaguesterling/duckdb_mcp#75).
 for builtin in ("query", "export"):
-    send({"jsonrpc":"2.0","id":20,"method":"tools/call",
-          "params":{"name":builtin,"arguments":{"sql":"SELECT 1"}}})
+    send(
+        {
+            "jsonrpc": "2.0",
+            "id": 20,
+            "method": "tools/call",
+            "params": {"name": builtin, "arguments": {"sql": "SELECT 1"}},
+        }
+    )
     r = read()
     err = json.dumps((r or {}).get("error", {}))
     check(f"tools/call {builtin} is refused", "Tool not found" in err, err[:90])
 
-send({"jsonrpc":"2.0","id":3,"method":"resources/list"})
+send({"jsonrpc": "2.0", "id": 3, "method": "resources/list"})
 r = read()
-res = [x.get("name") or x.get("uri") for x in (r or {}).get("result",{}).get("resources",[])]
+res = [x.get("name") or x.get("uri") for x in (r or {}).get("result", {}).get("resources", [])]
 check("resources/list exposes the vocabulary", len(res) > 0, str(res)[:90])
 
-send({"jsonrpc":"2.0","id":4,"method":"tools/call","params":{
-    "name":"semantic_query",
-    "arguments":{"metrics":"total_sales","dimensions":"item.i_brand"}}})
+send(
+    {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "method": "tools/call",
+        "params": {"name": "semantic_query", "arguments": {"metrics": "total_sales", "dimensions": "item.i_brand"}},
+    }
+)
 r = read()
 body = json.dumps((r or {}).get("result", {}))
 # Assert on the column names we asked for and on there being a data row beneath the header.
 # Asserting on brand names would couple this to whatever dsdgen happens to generate.
 returned_columns = "item.i_brand" in body and "total_sales" in body
 has_data_row = body.count("|") > 6
-check("semantic_query returns rows for the requested columns",
-      returned_columns and has_data_row, body[:110])
+check("semantic_query returns rows for the requested columns", returned_columns and has_data_row, body[:110])
 
-send({"jsonrpc":"2.0","id":5,"method":"tools/call","params":{
-    "name":"semantic_query",
-    "arguments":{"metrics":"store_productivity"}}})
+send(
+    {
+        "jsonrpc": "2.0",
+        "id": 5,
+        "method": "tools/call",
+        "params": {"name": "semantic_query", "arguments": {"metrics": "store_productivity"}},
+    }
+)
 r = read()
 body = json.dumps((r or {}).get("result", {})) + json.dumps((r or {}).get("error", {}))
 check("a refusal reaches the agent as a message", "grain" in body.lower(), body[:110])
@@ -153,21 +195,34 @@ PRAGMA mcp_publish_tool('probe_tool','control','SELECT 1 AS x','{}','[]','markdo
 PRAGMA mcp_server_start('stdio');
 """
 fd, control_path = tempfile.mkstemp(suffix=".sql", prefix="ossie_mcp_control_")
-os.write(fd, control_sql.encode()); os.close(fd)
+os.write(fd, control_sql.encode())
+os.close(fd)
 try:
     proc = subprocess.Popen(
         ["duckdb", "-init", control_path],
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        text=True, bufsize=1)
-    send({"jsonrpc":"2.0","id":1,"method":"initialize","params":{
-        "protocolVersion":"2024-11-05","capabilities":{},
-        "clientInfo":{"name":"ossie-probe-control","version":"1"}}})
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+    )
+    send(
+        {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {},
+                "clientInfo": {"name": "ossie-probe-control", "version": "1"},
+            },
+        }
+    )
     read()
-    send({"jsonrpc":"2.0","id":2,"method":"tools/list"})
+    send({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
     r = read()
-    ctl = [t["name"] for t in (r or {}).get("result",{}).get("tools",[])]
-    check("control: without the flags the built-ins ARE exposed",
-          "query" in ctl and "export" in ctl, str(ctl))
+    ctl = [t["name"] for t in (r or {}).get("result", {}).get("tools", [])]
+    check("control: without the flags the built-ins ARE exposed", "query" in ctl and "export" in ctl, str(ctl))
     proc.terminate()
     try:
         proc.wait(timeout=10)

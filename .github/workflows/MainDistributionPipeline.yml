@@ -129,6 +129,26 @@ jobs:
           esac
           exit $status
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the pinned stock DuckDB wheel
+        run: python3 -m pip install duckdb==1.5.6
+
+      - name: Verify loader and population against the same real artifact
+        run: |
+          mkdir -p quality-reports
+          python3 scripts/verify_loader_artifact.py downloaded/ossie.duckdb_extension --output quality-reports/loader.json
+          python3 scripts/verify_population_artifact.py downloaded/ossie.duckdb_extension --output quality-reports/population.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ossie-independent-evidence-${{ matrix.arch }}
+          path: quality-reports/
+          if-no-files-found: warn
+
   # One stable check name for branch protection to require.
   #
   # The build matrix cannot be required directly: its check names embed the full matrix tuple
@@ -141,7 +161,7 @@ jobs:
   ci-gate:
     name: CI gate
     if: always()
-    needs: [duckdb-stable-build, artifact-load, mcp-round-trip, code-quality-check]
+    needs: [duckdb-stable-build, artifact-load, mcp-round-trip, code-quality-check, project-controls]
     runs-on: ubuntu-latest
     steps:
       - name: Require every gating job to have succeeded
@@ -150,10 +170,12 @@ jobs:
           echo "artifact = ${{ needs.artifact-load.result }}"
           echo "mcp      = ${{ needs.mcp-round-trip.result }}"
           echo "quality  = ${{ needs.code-quality-check.result }}"
+          echo "project  = ${{ needs.project-controls.result }}"
           [ "${{ needs.duckdb-stable-build.result }}" = success ] \
           && [ "${{ needs.artifact-load.result }}" = success ] \
           && [ "${{ needs.mcp-round-trip.result }}" = success ] \
-          && [ "${{ needs.code-quality-check.result }}" = success ]
+          && [ "${{ needs.code-quality-check.result }}" = success ] \
+          && [ "${{ needs.project-controls.result }}" = success ]
 
   code-quality-check:
     name: Code Quality Check
@@ -163,3 +185,24 @@ jobs:
       ci_tools_version: v1.5.6
       extension_name: ossie
       format_checks: 'format;tidy'
+
+  # Cheap project graph/negative controls supplement the existing formatter/tidy jobs.
+  project-controls:
+    name: Project quality controls
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install formatter tools used by the pinned DuckDB checker
+        run: python3 -m pip install 'black==24.*' clang-format==11.0.1 cmake-format==0.6.13
+      - name: Record tool versions and exercise bounded controls
+        run: |
+          python3 --version
+          black --version
+          clang-format --version
+          cmake-format --version
+          make architecture-check quality-control-tests

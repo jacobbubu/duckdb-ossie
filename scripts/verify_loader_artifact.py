@@ -24,9 +24,24 @@ def verify(artifact, root):
     assert version[:2] == ('v1.5.6', '069cc9f9b5'), version
     con.execute("LOAD '" + str(artifact).replace("'", "''") + "'")
     assert con.execute("SELECT loaded FROM duckdb_extensions() WHERE extension_name='ossie'").fetchone() == (True,)
-    assert con.execute(
-        "SELECT count(DISTINCT function_name) FROM duckdb_functions() WHERE starts_with(function_name, 'ossie_')"
-    ).fetchone() == (13,)
+    required = {
+        'ossie_load',
+        'ossie_datasets',
+        'ossie_fields',
+        'ossie_metrics',
+        'ossie_relationships',
+        'ossie_metadata',
+        'ossie_compile',
+        'ossie_query',
+    }
+    registered = {
+        row[0]
+        for row in con.execute(
+            "SELECT DISTINCT function_name FROM duckdb_functions() WHERE starts_with(function_name, 'ossie_')"
+        ).fetchall()
+    }
+    assert not required - registered, sorted(required - registered)
+    assert con.execute("SELECT count(*) FROM duckdb_functions() WHERE function_name='ossie_query'").fetchone() == (3,)
     fixtures = root / 'test/fixtures/loader_contract'
     con.execute('CALL ossie_load(?)', [str(fixtures / 'valid.json')])
     result = con.execute('SELECT * FROM ossie_metadata()')
@@ -121,6 +136,8 @@ def verify(artifact, root):
             for path in [reference, root / 'test/sql/ossie_loader_contract.test', *sorted(fixtures.glob('*'))]
         },
         'artifact_loaded_in_stock_wheel': True,
+        'required_loader_functions': sorted(required),
+        'registered_public_functions': sorted(registered),
         'rejected_documents': rejected,
         'failed_load_preserves_model': True,
         'reference_metadata_scopes_checked': len(expected),

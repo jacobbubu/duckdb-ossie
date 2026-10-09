@@ -37,6 +37,28 @@ This document is the working spec. It is written to be handed to an agentic codi
 tool. Read the whole thing before writing code — the invariants and non-goals matter
 more than the file layout.
 
+
+## Quality checkpoint — 2026-10-09
+
+The user inserted the architecture/quality handoff before further feature work.
+The completed functional baseline 2b1e8b5 was pushed to the fork branch as explicitly
+requested. The bounded local quality package now fixes paired core model/policy
+capture and prepared scalar timing, extends the pinned formatter to scripts, checks
+project include reachability/cycles, and wires the independent artifact verifiers
+and isolated controls into the existing CI gate. `make test` executed the dedicated
+19-check state runner with DuckDB C++ tests disabled, then passed 15 SQL cases/503
+assertions. Nineteen gate controls passed; two stock-wheel verifiers tested the same
+final artifact, including descriptive metadata invariance. Root formatting, vendor
+source and gitlinks remain intact.
+
+This completes local acceptance of this quality package, not P0 or remote CI.
+The fork reports Actions enabled but no registered workflows/runs; quality changes
+have not been pushed, and authoritative Linux/macOS CI/tidy and remote merge rules
+remain unverified. No remote settings changed. Review the quality package/delivery
+boundary before resuming the existing R3/R6 work; keep evidence and remaining needs
+in [the same work record](docs/ossie-execution-research.md), with the implementation
+contract in [quality-controls.md](docs/quality-controls.md).
+
 ---
 
 ## 1. Context

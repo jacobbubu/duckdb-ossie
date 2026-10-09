@@ -198,3 +198,6 @@ test data.
 This project is an independent implementation that reads the Apache Ossie file format. It is not
 affiliated with, endorsed by, or an official product of the Apache Software Foundation. "Apache
 Ossie" and "Apache" are trademarks of the Apache Software Foundation.
+
+Project quality commands and the core model/policy capture contract are documented
+in [docs/quality-controls.md](docs/quality-controls.md).

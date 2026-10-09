@@ -198,3 +198,36 @@ Advisor 记录：当前集成取舍一轮只读建议加一次限定澄清；同
 
 - [上游 PR #12 新格式与表达式支持](https://github.com/iqea-ai/duckdb-ossie/pull/12)：已核对代码、PR 说明及当前 CI；尚未合并，叠加在其他升级 PR 上，不能将 CI 通过解释为本需求验收完成。
 - [上游 issue #6 分发产物加载验证](https://github.com/iqea-ai/duckdb-ossie/issues/6)：已关闭。说明构建树内测试与真实扩展产物加载是不同证据，应分别记录。
+
+## 质量控制工作包（2026-10-09，用户交接）
+
+问题与范围：用户要求在下一功能阶段前执行 `/tmp/duckdb-ossie-quality-controls.attso3di.md`，先提交推送保留当前成果。该文件审查时 HEAD 为 9062549；现已复核最新 2b1e8b5 和完整单表实测，不能沿用“未实现/未验收”的旧判断。当前成果已按本次明确授权推送至 fork `origin/codex/ossie-execution`，不包含 main 合并、上游 PR 或远程保护设置授权。后续质量修改先本地交付，不把保留旧成果的推送授权默认为未来所有改动可推送。
+
+沿用本文件的 local issue（fork issues 禁用）。目标是修复 core model/policy 组合读取、覆盖 scripts Python 格式、项目直接依赖边/头文件循环及真实产物验证 CI。复用现有 format/tidy、构建、SQL、MCP、独立 CLI 和 always CI gate；不重建 AST、不全量拆 parser/compiler、不改子模块/原样研究输入或历史 oracle。小范围 JSONText 异常安全与描述元数据不改变计算的控制在本包评估落地。Sanitizer/coverage 全局阈值和 GitHub 分支保护不自动扩大范围。
+
+计划与验证：先建立受控交错的 legacy model A/policy B 复现，再以单锁 Snapshot contract 和真实 Compile 控制修复；检查旧模型共享生命周期、失败保持与 scalar chunk/bind时机。C++ 控制明确作为独立测试 target，避免 ci-tools 默认关闭 C++ unit tests 而漏跑。脚本格式门禁用隔离副本注入违规，保持 src/test 与原样来源保护。direct-include门禁测试禁止边、循环、合法 AST、漏扫/零输入。两验证脚本针对同一最终 stock 产物运行并接入已有 CI gate，保留数值/NULL/身份控制与哈希证据。完成后更新本节与计划 checkpoint；质量包完成不等于 P0 完成。
+
+最新已知保护：Makefile tidy 已扫描整个 src；clang-format 与 pinned DuckDB 一致；现有编译器接收显式 model/options，无状态/文件执行依赖；直接项目头依赖尚无循环。loader verifier 的旧 8 名称断言已在 2b1e8b5 改为 13，本包应改成所需入口契约以免其他模块新增功能导致无关失败。现有 population oracle 已真实通过，但未接 CI；format-check 目前只扫描 src/test，scripts 未覆盖。源码及机制复核先于方案落地。
+
+### 质量包结果与交付边界
+
+已存在保护继续保留：固定 DuckDB AST/编译器显式输入、src/test formatter、整个 src 的 tidy 覆盖、原 build/SQL/CLI/MCP 和 always CI gate。没有改子模块、根格式配置、原样研究来源、业务规则或标准定义。本包没有全量拆文件或新增产品运行依赖。完整命令、工具/产物版本及输入哈希见 [quality-control-results.json](research/ossie-req-001/quality-control-results.json)，契约见 [quality-controls.md](quality-controls.md)。
+
+已修复缺口：
+
+- 单锁 `GetSnapshot()` 组合 model/policy；去掉独立 policy getter，读者持有 shared_ptr<const Model>。compile 每执行 chunk 读取一次并设 VOLATILE，query 在 bind_replace 捕获一次；描述/元数据 reader 同步 const。模型快照和 population 数据批次不混为一谈；跨 chunk 可读到后续发布，不宣称整条 scalar statement 冻结版本。
+- 受控 pre-fix 复现实际产生 A model/B policy，并生成带 ABS filter 的 A SQL（本应由 A policy 拒绝），退出 1。修复后的独立 C++ runner 在 ENABLE_UNITTEST_CPP_TESTS=FALSE、BUILD_UNITTESTS=ON 下实际执行，19 个检查通过，覆盖 A/B 编译行为、旧对象生命周期、两连接、失败保持及 prepared scalar/query 时机。Make test 内显式先运行此 target，再运行 SQL；缺失隔离 fixture 的实际 Make 控制退出 2，不会悄悄跳过。
+- scripts Python 纳入 pinned formatter，src/test 检查继续通过；使用 Black 24.10.0 与 CI 24.x 约定对齐，clang-format 11.0.1、cmake-format 0.6.13。局部 Python 3.14.7、CI 配置 3.12；实际 root CMake 标准为 C++11。脚本格式变更保留 mcp_check.py 可执行位；没有格式化第三方和研究来源。
+- 项目图检查 25 个 src 源/头文件、42 条项目边，查禁止节点可达路径和直接 header cycle；可控例外精确到 parser/catalog adapter 的 DuckDB 边，不豁免 state/functions。注释、相对/尖括号引用、未解析项目 include、零输入和源码清单检查有隔离负例。只是项目图/显式外部 include 的边界，不是完整预处理/运行 I/O 证明。
+- quality-local 的 19 个自测通过，包括脚本违规失败→恢复，以及实际 CI gate shell 对每个 required job 的 failure/skipped/cancelled 均非零。CI gate 新增 project-controls；同一 artifact-load Linux/macOS matrix 接两个 stock wheel 验证器，保留原 CLI/MCP、上传独立证据。loader verifier 从 13 名称总数改为八个必需入口及 query overload 契约，不因未来新增模块无理由失败。
+- JSONText 的 yyjson write buffer 改为局部 RAII custom deleter，字符串构造异常也释放；解释原有局部 NOLINT，不扩大豁免。普通元数据验证通过，没有做 allocator 故障注入。人口验证新增 description/AI context/vendor unit 与 scale 的人工变更，完整对象与金额/均值保持一致；未改真实业务来源。
+
+最终验证：`make test` 发现 15 个 SQL 用例/503 条断言及独立 19 项 C++ 检查，全通过；quality-local 19 个自测与格式/项目图通过；两个 verifier 针对同一最终产物、确认 stock 1.5.6/source 069cc9f9b5 并真实加载，loader 17 负例/46 元数据对象/2500 字段、population 46 拒绝控制及原475行/11行边界/元数据不变性通过。新增 [quality-loader-artifact-results.json](research/ossie-req-001/quality-loader-artifact-results.json) 和 [quality-population-artifact-results.json](research/ossie-req-001/quality-population-artifact-results.json)，保留旧报告。完整功能脚本另有 40 PASS 静态 fallback，不冒充真实产物证据。workflow YAML 本地解析通过；git diff --check 通过，原样来源和子模块无 diff。
+
+保留的失败：初版 Snapshot 用默认成员值加 aggregate return，与有效 C++11 不兼容；改为显式成员赋值后编译通过。首轮架构 checker 没把 duckdb.hpp 标为外部入口而误报；精确声明 vendor umbrella header 后合法依赖通过。后来追加 `<missing.hpp>` 负例确实发现 unresolved angle include 漏检，补分类后所有 19 个自测通过。引入 scripts formatter 自动处理了原 MCP 脚本既有分号/行布局，额外恢复其可执行位；不是 MCP 行为修改。临时 legacy 复现源码未保留，仅保留父提交代码、受控步骤与实际日志，不虚构源码哈希。
+
+Advisor 一轮有条件建议已采纳并核实：scalar 原默认 CONSISTENT 可在 PREPARE 被折叠，必须 VOLATILE 才满足执行 chunk 契约；shared const read 生命周期；独立 runner 真正接 Make/CI；项目 include 可达性而非只有第一条边。单一 Advisor、无嵌套委派，配置 Astra/high，有效 backend/effort/usage/billing 仍 unknown。
+
+仅配置/待验证：fork Actions permissions 只读返回 enabled=true，但 workflows API 返回 total_count=0、该分支没有运行记录；没有推断原因，没有改 GitHub settings/规则或手动派发。新增质量修改尚未推送，远端 Linux/macOS CI/tidy 未运行；本地 clang-tidy 不可用，不能称其通过。受保护的 main 合并硬门禁仍是待用户独立授权的仓库动作，不借本包实现。Sanitizer、全局 coverage/复杂度/命名治理因缺成本与基线证据暂缓，不是门禁漏检的替代品。
+
+本地质量工作包完成，P0 未完成；功能扩展在这轮暂停推进。下一步先审阅本包及确认其远端交付方式，再延续前节 R3/R6 的独立控制与研究。质量包提交保留在当前本地分支；此前成果已明确授权推送。不会把“先推送当前成果”扩展为后续质量修改、main 合并、远程规则或上游发布的无限授权。

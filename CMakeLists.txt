@@ -43,3 +43,11 @@ install(
   EXPORT "${DUCKDB_EXPORT_SET}"
   LIBRARY DESTINATION "${INSTALL_LIB_DIR}"
   ARCHIVE DESTINATION "${INSTALL_LIB_DIR}")
+
+# A controlled cross-connection/state contract test, independent of DuckDB's
+# ENABLE_UNITTEST_CPP_TESTS (extension-ci-tools defaults that option to FALSE).
+if(BUILD_UNITTESTS AND NOT EXTENSION_TESTS_ONLY)
+  add_executable(ossie_state_test EXCLUDE_FROM_ALL test/cpp/state_snapshot_test.cpp)
+  target_link_libraries(ossie_state_test duckdb_static)
+  link_extension_libraries(ossie_state_test "")
+endif()
