@@ -1,0 +1,183 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "gaap_demo",
+  "description": "Synthetic transport fixture; no business observation or unit claim.",
+  "datasets": [
+    {
+      "name": "dws_gaap_di",
+      "source": "memory.main.dws_gaap_di",
+      "primary_key": [
+        "user_id"
+      ],
+      "fields": [
+        {
+          "name": "ds",
+          "datatype": "Date",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "ds"
+              }
+            ]
+          }
+        },
+        {
+          "name": "product",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "product"
+              }
+            ]
+          }
+        },
+        {
+          "name": "region",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "region"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_type",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "user_type"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "user_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "gaap_val",
+          "datatype": "Decimal",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "gaap_val"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ytd_gaap",
+          "datatype": "Decimal",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "ytd_gaap"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ordinal",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "ordinal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payload",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "payload"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "mean_gaap",
+      "datatype": "Float",
+      "description": "Synthetic DOUBLE average control; no business unit claim.",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "AVG(dws_gaap_di.gaap_val)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "gaap_sum",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "SUM(dws_gaap_di.gaap_val)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "gaap_value_count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "COUNT(dws_gaap_di.gaap_val)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "record_count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "COUNT(dws_gaap_di.user_id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "integer_sum",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "SUM(dws_gaap_di.ordinal)"
+          }
+        ]
+      }
+    }
+  ]
+}

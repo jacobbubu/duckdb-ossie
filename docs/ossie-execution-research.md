@@ -535,3 +535,30 @@ MCP 示例现在有四个可读资源（concepts/metrics/fields/capabilities）�
 核对结果与哈希引用记录见 [P0 审计记录](research/ossie-req-001/p0-evidence-audit-results.json)。本包只更新当前矩阵、计划和过期 limitations 描述；来源/业务定义/历史报告及实现未改，功能门禁没有重跑。此次审计工作包完成后本地提交保留，不推送；整体 P0 仍需 transport 证据、R2 偏离收口和最终规则驱动验收归档。
 
 保留审计脚本失败：首次链接检查先检查了尚未写出的审计记录自身，因文件不存在退出，未生成报告；修正顺序，仅该输出在写出后检查，其余引用仍在生成前检查。该失败不涉及功能实现或既有证据哈希。
+
+## MCP transport 研究 checkpoint（2026-10-09，恢复）
+
+用户授权继续，基于 06b88c5，在本 issue 内验证当前三个工具模板与观察到的 duckdb_mcp 产物。新增独立 synthetic fixture 与 Bun/TypeScript verifier；原始 475 行/业务定义不改。数值 oracle 用整数/Decimal 文本与 BigInt，不先经 JSON number；同时记录原生类型/值、原始 content token 与普通客户端解码差异。大结果限制在 profile 的 10,000 行/16 MiB canonical 输入以内，核对全部 ID/字段/行数、实际 content 与外层 JSON-RPC 字节、空结果 compile/hash 关联以及超限拒绝不截断。先实际研究，不预设无损表示或修改生产接口；发现失真保留反例，由限定 Advisor 比较修复方案后进入后续包。测试研究脚本的真实执行、类型/格式检查；功能源码不改时复用既有 artifact，不重建/重跑无关门禁。无 push/merge/发布授权。
+
+## MCP transport 研究结果（2026-10-09）
+
+结果：原生冻结对象/聚合保持精确值，当前 MCP 原始数值 token 对这批输入也保持精确；普通 JSON.parse → JavaScript Number → 文本产生 18 处差异（对象、分组及汇总的观察次数，不是 18 个独立业务值）。因此问题位于普通客户端解码，不能归因于 MCP serializer。探针分别报告 raw_numeric_token_discrepancies=0 与 ordinary_json_decoding_discrepancies=18，明确不宣布当前 numeric client 合同无损。固定 same artifact SHA `615af62a…`、engine 1.5.6/source `069cc9f9b5`、MCP `6f9c4ba`/SHA `4b39fbcd…`；未追随 registry 更新。
+
+| 对照项 | 原生/原始 MCP token | 普通 JSON 解码后再输出 |
+|---|---|---|
+| 大整数对象 n01 | 9007199254740993 | 9007199254740992 |
+| 相邻分 n01/n02 | 9007199254740992.01 / 9007199254740992.02 | 都为 9007199254740992 |
+| DECIMAL(38,2) 总额 | 123456789012345678910241767144864448.79 | 1.2345678901234568e+35 |
+| 正整数 SUM（HUGEINT） | 9241386435364257792 | 9241386435364258000 |
+
+独立 [synthetic fixture](../test/fixtures/population-transport/README.md) 使用标准定义派生副本，不改原业务资产、不将这些数值声称为 USD；native 对照用 CAST VARCHAR，期望用 literal text/BigInt，原始 token 用有界数值词法与有理数比较，不先转 Number。NULL 与负值保留；SUM 的实际类型分别为 DECIMAL(38,2)/HUGEINT。普通 round-trip 相等只说明该文本未丢位，不证明二进制浮点能精确进行 Decimal 运算。
+
+大结果实测：10,000 对象的全部 14 字段和 ID 多重集通过，单行 payload 为 1,120 UTF-8 bytes，含中文/引号/反斜线/换行/tab；content 23,267,891 bytes，外层 JSON-RPC line（含换行）33,367,965 bytes。10,000 分组逐组 COUNT/SUM/integer SUM 与独立序号/cents oracle 通过，content 3,587,891 bytes、line 3,807,965 bytes；不假设顺序。输入 10,001 行及 over-16-MiB canonical value load 拒绝，旧批次未替换/截断。固定 operator 启动、无 reload tool 时，空 objects/groups `[]` 与 retained compile snapshot/content/ontology hashes 关联；空 ungrouped COUNT=0/SUM=NULL 有实际 trace。该证据不证明可重载服务跨调用原子性，不是最大 output/峰值内存上界，也不覆盖所有合法 computed projections/configurations。
+
+证据见 [18 项真实探针结果](research/ossie-req-001/r7-transport-artifact-results.json) 和 [研究控制记录](research/ossie-req-001/r7-transport-control-results.json)。新增 TypeScript verifier 真实运行成功，make quality-local 类型/格式/graph/33 Bun tests/112 expects 通过；功能 C++/SQL/生产 tool templates 未改，复用原产物，没有重建或重跑不相关 SQL/native/301 项 MCP 门禁。CI 尚未接新研究 probe，也未执行远端；不是已修复 adapter 的门禁。
+
+保留失败/纠正：首次 typecheck 在 assert.rejects 的 unknown error 参数处失败，改为显式 String(error) 解码已知失败载体。初版观察报告只检查 raw token，却使用含混 lossless_numeric_contract_verified 字段；发现普通 JSON.parse 失真后弃用该结论，最终报告分开 raw 与 decoded，不把研究成功称合同无损。初版 synthetic mean description 沿用原 workbook/USD 文案，经审阅改为无业务单位的合成描述并更新 manifest；大 fixture 导入也改用整数商/余数拼 Decimal 文本，避免 import oracle 先经过 DOUBLE。最终重新运行真实探针，源码/输入/产物哈希全部绑定最终文件。
+
+Advisor：按 advisor-escalation 复用只读 Astra/high 一轮取舍、无 children/写入；确认 serializer 与 client decode 的区分、已测成功点不等于 output 上界，提出原 synthetic unit 文案风险。Lead 检查实际 token/原生值后采纳。requested gpt-6-astra/high，effective backend/effort/usage/billing unknown。后续推荐 MCP adapter 的稳定十进制字符串表示和实际类型说明，而非仅要求未知客户端选用 lossless parser；整数/Decimal 同类型不能小值 number、大值 string 混用，AVG DOUBLE 仍近似。编码变化应独立版本并复测普通 JSON 客户端、对象/分组/空集和当前大 fixture；不改原生 SQL 类型/计算。
+
+本地研究工作包完成，当前动作提交保留、不推送。下一已授权本地包优先设计/实现受控 MCP typed numeric 表示，先明确实际绑定类型如何进入 adapter，再验证兼容；同时处理非有限 DOUBLE 的明确表示/拒绝边界。之后收紧 R2 字符串数组容错、完成字段对应偏离结论和最终规则驱动验收。整体 P0 仍未完成，calendar/多期身份/一般 ontology/混合粒度/窗口及 remote CI 保持既有边界。

@@ -1,0 +1,50 @@
+{
+  "scope": "Local MCP transport research; client numeric decoding remains unrepaired",
+  "base_commit": "06b88c5",
+  "implementation_commit": "4a9c01d",
+  "artifact_sha256": "615af62accc92fd62f0936c71b8234822ffa1fceb3bb4e9f8775b4dd91777623",
+  "report": {
+    "path": "docs/research/ossie-req-001/r7-transport-artifact-results.json",
+    "sha256": "7c5c634466abae87a6a13d9e0c35a72229b3ab5098a780b22e77c0508a53d7f6"
+  },
+  "documentation_sha256": {
+    "docs/population-mcp.md": "00aac733f679bbc89e23387f42f0aa4ee39c813145eed03215aaa82f032d2e60",
+    "docs/ossie-execution-research.md": "ead227e69c22e99b038ae6b3e9a3203b3c2c00c086658013b2ee47466ae2e1a8",
+    "ossie-duckdb-plan.md": "a6984b94776bf65179b30085d724fbc68bc417d0742b2d9f41f6a03e436335fc",
+    "test/fixtures/population-transport/README.md": "d3e9c3261fa5cb7ebbc431fcea7d2b8e5c3f7dcbb425e685c4d2d856cdefcf1e"
+  },
+  "verification": {
+    "real_probe_structural_checks": 18,
+    "raw_numeric_token_discrepancies": 0,
+    "ordinary_json_decoding_discrepancies": 18,
+    "quality_local": true,
+    "bun_tests": 33,
+    "bun_expects": 112,
+    "functional_source_changed": false,
+    "production_templates_changed": false,
+    "cpp_sql_gates_rerun": false,
+    "remote_ci_run": false,
+    "probe_ci_wired": false
+  },
+  "retained_failures": [
+    "First typecheck rejected unknown error passed to string decoder; explicit String(error) fixed.",
+    "First observation report used an ambiguous lossless flag for raw-only token checking; discarded conclusion and separated raw spelling from ordinary JSON Number decoding.",
+    "Synthetic average description initially retained original workbook/USD provenance; removed business-unit claim and rebound manifest. Large fixture import changed from DOUBLE division to exact integer quotient/remainder Decimal text; reran final probe."
+  ],
+  "advisor": {
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "scope": "one readonly tradeoff round, no children/writes"
+  },
+  "remaining": [
+    "MCP stable typed string numeric adapter and versioned compatibility; nonfinite DOUBLE boundary",
+    "R2 string-array scalar coercion and final field correspondence",
+    "final rule-driven acceptance archive",
+    "remote CI/Ubuntu tidy and explicitly bounded P1 work"
+  ],
+  "delivery": "local commit only, no push/merge/publication"
+}

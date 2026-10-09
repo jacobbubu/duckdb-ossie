@@ -1,0 +1,549 @@
+{
+  "scope": "Real MCP precise numeric and bounded large-output research; observed loss is a finding, not a passing lossless contract",
+  "artifact_sha256": "615af62accc92fd62f0936c71b8234822ffa1fceb3bb4e9f8775b4dd91777623",
+  "cli_sha256": "2c75d4758c9d74cb0f4642f4e8d3c1a13e8a888a1e475fffd90934ad5ae3dd17",
+  "mcp_runtime": {
+    "engine": "v1.5.6",
+    "source": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "artifact_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e"
+  },
+  "source_sha256": {
+    "scripts/verify_population_transport.ts": "2bc13bd72eb6ed1a375faebd006de1c2b5af30c0f564faccc9109c7812cbbf07",
+    "scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "scripts/population_error.ts": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff",
+    "examples/population_server.sql": "6230d2df7f6fc4341a9fb985864fc91cd05c641af747854e28a574386ecd5f46",
+    "src/population/population.cpp": "d0faf77b2d949f06038fc214934a2191c391ba60148e7c6b1d321e55725d38c0",
+    "test/fixtures/population-transport/core.json": "6b7ca2ceb7bd9694bb447cbf37e03b76d8b66b8322cfe623597390eb51c74e34",
+    "test/fixtures/population-transport/ontology.json": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+    "test/fixtures/population-transport/mapping.json": "6c52c3cbc9f7997d8e75d012ad9e0d9ed610455c457db97e1956329f835337c9",
+    "test/fixtures/population-transport/bundle.json": "871bdc218cd6fc797c00ec75b86cbd6ca504612e72051b1e326c0fb70930336f",
+    "test/fixtures/population-transport/numeric-rows.sql": "d39fa09ad7845610adc1e4d459caf48dd82247f5d80eccecbab34e28623ca9c5"
+  },
+  "checks": [
+    "independent exact token oracle",
+    "native source literals match independent text",
+    "native frozen objects preserve every numeric literal",
+    "native exact SUM and widened integer type",
+    "native SUM exceeds BIGINT without overflow",
+    "numeric: fixed tools, no reload",
+    "numeric objects complete and null retained",
+    "numeric query count and trace",
+    "numeric grouped rows complete",
+    "native bounded large capture and sum",
+    "large: fixed tools, no reload",
+    "10000 objects: complete IDs and every field",
+    "large query oracle and same batch",
+    "10000 aggregate groups complete, with per-group oracle",
+    "empty object/group associated with fixed startup capture",
+    "empty ungrouped COUNT zero, SUM null, trace retained",
+    "10001-row load refuses without replacing or truncating old batch",
+    "over-16MiB canonical load refuses and retains old batch"
+  ],
+  "observations": [
+    {
+      "native_totals": [
+        "123456789012345678910241767144864448.79",
+        "9007199254740992",
+        "DECIMAL(38,2)",
+        "HUGEINT"
+      ],
+      "expected_sum": "123456789012345678910241767144864448.79",
+      "expected_integer_sum": "9007199254740992"
+    },
+    {
+      "case": "numeric_objects",
+      "key": "dws_gaap_di.gaap_val",
+      "details": [
+        {
+          "entity_id": "n01",
+          "expected": "9007199254740992.01",
+          "raw_token": "9007199254740992.01",
+          "raw_exact": true,
+          "ordinary_json_value": 9007199254740992,
+          "ordinary_json_roundtrip_token": "9007199254740992",
+          "ordinary_json_exact": false
+        },
+        {
+          "entity_id": "n02",
+          "expected": "9007199254740992.02",
+          "raw_token": "9007199254740992.02",
+          "raw_exact": true,
+          "ordinary_json_value": 9007199254740992,
+          "ordinary_json_roundtrip_token": "9007199254740992",
+          "ordinary_json_exact": false
+        },
+        {
+          "entity_id": "n03",
+          "expected": "123456789012345678901234567890123456.78",
+          "raw_token": "123456789012345678901234567890123456.78",
+          "raw_exact": true,
+          "ordinary_json_value": 1.2345678901234568e+35,
+          "ordinary_json_roundtrip_token": "1.2345678901234568e+35",
+          "ordinary_json_exact": false
+        },
+        {
+          "entity_id": "n04",
+          "expected": "-9007199254740992.01",
+          "raw_token": "-9007199254740992.01",
+          "raw_exact": true,
+          "ordinary_json_value": -9007199254740992,
+          "ordinary_json_roundtrip_token": "-9007199254740992",
+          "ordinary_json_exact": false
+        },
+        {
+          "entity_id": "n05",
+          "expected": "-0.01",
+          "raw_token": "-0.01",
+          "raw_exact": true,
+          "ordinary_json_value": -0.01,
+          "ordinary_json_roundtrip_token": "-0.01",
+          "ordinary_json_exact": true
+        },
+        {
+          "entity_id": "n06",
+          "expected": null,
+          "raw_token": "null",
+          "raw_exact": true,
+          "ordinary_json_value": null,
+          "ordinary_json_roundtrip_token": "null",
+          "ordinary_json_exact": true
+        }
+      ],
+      "content_bytes": 3550,
+      "wire_bytes": 3926,
+      "wire_sha256": "3a3697eebfe8a22ab58cd4c0da396a12d6665be7e0d8e7c652fea19b806005e2"
+    },
+    {
+      "case": "numeric_objects",
+      "key": "dws_gaap_di.ordinal",
+      "details": [
+        {
+          "entity_id": "n01",
+          "expected": "9007199254740993",
+          "raw_token": "9007199254740993",
+          "raw_exact": true,
+          "ordinary_json_value": 9007199254740992,
+          "ordinary_json_roundtrip_token": "9007199254740992",
+          "ordinary_json_exact": false
+        },
+        {
+          "entity_id": "n02",
+          "expected": "9007199254740992",
+          "raw_token": "9007199254740992",
+          "raw_exact": true,
+          "ordinary_json_value": 9007199254740992,
+          "ordinary_json_roundtrip_token": "9007199254740992",
+          "ordinary_json_exact": true
+        },
+        {
+          "entity_id": "n03",
+          "expected": "9223372036854775807",
+          "raw_token": "9223372036854775807",
+          "raw_exact": true,
+          "ordinary_json_value": 9223372036854776000,
+          "ordinary_json_roundtrip_token": "9223372036854776000",
+          "ordinary_json_exact": false
+        },
+        {
+          "entity_id": "n04",
+          "expected": "-9007199254740993",
+          "raw_token": "-9007199254740993",
+          "raw_exact": true,
+          "ordinary_json_value": -9007199254740992,
+          "ordinary_json_roundtrip_token": "-9007199254740992",
+          "ordinary_json_exact": false
+        },
+        {
+          "entity_id": "n05",
+          "expected": "-9223372036854775807",
+          "raw_token": "-9223372036854775807",
+          "raw_exact": true,
+          "ordinary_json_value": -9223372036854776000,
+          "ordinary_json_roundtrip_token": "-9223372036854776000",
+          "ordinary_json_exact": false
+        },
+        {
+          "entity_id": "n06",
+          "expected": null,
+          "raw_token": "null",
+          "raw_exact": true,
+          "ordinary_json_value": null,
+          "ordinary_json_roundtrip_token": "null",
+          "ordinary_json_exact": true
+        }
+      ],
+      "content_bytes": 3550,
+      "wire_bytes": 3926,
+      "wire_sha256": "3a3697eebfe8a22ab58cd4c0da396a12d6665be7e0d8e7c652fea19b806005e2"
+    },
+    {
+      "case": "numeric_aggregate",
+      "key": "gaap_sum",
+      "expected": "123456789012345678910241767144864448.79",
+      "raw_token": "123456789012345678910241767144864448.79",
+      "raw_exact": true,
+      "ordinary_json_value": 1.2345678901234568e+35,
+      "ordinary_json_roundtrip_token": "1.2345678901234568e+35",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_aggregate",
+      "key": "integer_sum",
+      "expected": "9007199254740992",
+      "raw_token": "9007199254740992",
+      "raw_exact": true,
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": true
+    },
+    {
+      "case": "widened_integer_sum",
+      "expected": "9241386435364257792",
+      "raw_token": "9241386435364257792",
+      "raw_exact": true,
+      "ordinary_json_value": 9241386435364258000,
+      "ordinary_json_roundtrip_token": "9241386435364258000",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "id": "n03",
+      "key": "gaap_sum",
+      "expected": "123456789012345678901234567890123456.78",
+      "raw_token": "123456789012345678901234567890123456.78",
+      "raw_exact": true,
+      "ordinary_json_value": 1.2345678901234568e+35,
+      "ordinary_json_roundtrip_token": "1.2345678901234568e+35",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "id": "n01",
+      "key": "gaap_sum",
+      "expected": "9007199254740992.01",
+      "raw_token": "9007199254740992.01",
+      "raw_exact": true,
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "id": "n06",
+      "key": "gaap_sum",
+      "expected": null,
+      "raw_token": "null",
+      "raw_exact": true,
+      "ordinary_json_value": null,
+      "ordinary_json_roundtrip_token": "null",
+      "ordinary_json_exact": true
+    },
+    {
+      "case": "numeric_group",
+      "id": "n04",
+      "key": "gaap_sum",
+      "expected": "-9007199254740992.01",
+      "raw_token": "-9007199254740992.01",
+      "raw_exact": true,
+      "ordinary_json_value": -9007199254740992,
+      "ordinary_json_roundtrip_token": "-9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "id": "n02",
+      "key": "gaap_sum",
+      "expected": "9007199254740992.02",
+      "raw_token": "9007199254740992.02",
+      "raw_exact": true,
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "id": "n05",
+      "key": "gaap_sum",
+      "expected": "-0.01",
+      "raw_token": "-0.01",
+      "raw_exact": true,
+      "ordinary_json_value": -0.01,
+      "ordinary_json_roundtrip_token": "-0.01",
+      "ordinary_json_exact": true
+    },
+    {
+      "case": "numeric_group",
+      "id": "n03",
+      "key": "integer_sum",
+      "expected": "9223372036854775807",
+      "raw_token": "9223372036854775807",
+      "raw_exact": true,
+      "ordinary_json_value": 9223372036854776000,
+      "ordinary_json_roundtrip_token": "9223372036854776000",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "id": "n01",
+      "key": "integer_sum",
+      "expected": "9007199254740993",
+      "raw_token": "9007199254740993",
+      "raw_exact": true,
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "id": "n06",
+      "key": "integer_sum",
+      "expected": null,
+      "raw_token": "null",
+      "raw_exact": true,
+      "ordinary_json_value": null,
+      "ordinary_json_roundtrip_token": "null",
+      "ordinary_json_exact": true
+    },
+    {
+      "case": "numeric_group",
+      "id": "n04",
+      "key": "integer_sum",
+      "expected": "-9007199254740993",
+      "raw_token": "-9007199254740993",
+      "raw_exact": true,
+      "ordinary_json_value": -9007199254740992,
+      "ordinary_json_roundtrip_token": "-9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "id": "n02",
+      "key": "integer_sum",
+      "expected": "9007199254740992",
+      "raw_token": "9007199254740992",
+      "raw_exact": true,
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": true
+    },
+    {
+      "case": "numeric_group",
+      "id": "n05",
+      "key": "integer_sum",
+      "expected": "-9223372036854775807",
+      "raw_token": "-9223372036854775807",
+      "raw_exact": true,
+      "ordinary_json_value": -9223372036854776000,
+      "ordinary_json_roundtrip_token": "-9223372036854776000",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "large_objects",
+      "rows": 10000,
+      "payload_utf8_bytes": 1120,
+      "payload_sha256": "4576cc15d713768b1c3732582865867a4918340112ad1cc7692dafcb08cd8cf4",
+      "content_bytes": 23267891,
+      "wire_bytes": 33367965,
+      "content_sha256": "84b6939fa4f6d64a3504a593b39730aa612b1b4b8ec27ba347b282ac1e29def6",
+      "wire_sha256": "66c78814240015c9e54157aab1744f38c4be44816cb1b2a1c0b76f0437394142",
+      "snapshot_id": "8c47aee75fa9d21a630ec9d95f7d1b4cdd83b37a4cddc3637bdc94ea37b3e216:1"
+    },
+    {
+      "case": "large_grouped",
+      "rows": 10000,
+      "content_bytes": 3587891,
+      "wire_bytes": 3807965,
+      "wire_sha256": "8117c7bb3ca46f0ed40419a80d3538ad031752d0c9668dea74dbbc0d69e952a8"
+    },
+    {
+      "case": "empty_fixed_operator",
+      "object_content": "[]",
+      "grouped_content": "[]",
+      "compile_snapshot_id": "8c47aee75fa9d21a630ec9d95f7d1b4cdd83b37a4cddc3637bdc94ea37b3e216:1",
+      "compile_content_sha256": "8c47aee75fa9d21a630ec9d95f7d1b4cdd83b37a4cddc3637bdc94ea37b3e216",
+      "compile_ontology_sha256": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+      "execution_record_owner": "probe retained compile metadata; fixed startup/no reload tool"
+    }
+  ],
+  "raw_numeric_token_discrepancies": [],
+  "ordinary_json_decoding_discrepancies": [
+    {
+      "case": "numeric_objects",
+      "key": "dws_gaap_di.gaap_val",
+      "entity_id": "n01",
+      "expected": "9007199254740992.01",
+      "raw_token": "9007199254740992.01",
+      "raw_exact": true,
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_objects",
+      "key": "dws_gaap_di.gaap_val",
+      "entity_id": "n02",
+      "expected": "9007199254740992.02",
+      "raw_token": "9007199254740992.02",
+      "raw_exact": true,
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_objects",
+      "key": "dws_gaap_di.gaap_val",
+      "entity_id": "n03",
+      "expected": "123456789012345678901234567890123456.78",
+      "raw_token": "123456789012345678901234567890123456.78",
+      "raw_exact": true,
+      "ordinary_json_value": 1.2345678901234568e+35,
+      "ordinary_json_roundtrip_token": "1.2345678901234568e+35",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_objects",
+      "key": "dws_gaap_di.gaap_val",
+      "entity_id": "n04",
+      "expected": "-9007199254740992.01",
+      "raw_token": "-9007199254740992.01",
+      "raw_exact": true,
+      "ordinary_json_value": -9007199254740992,
+      "ordinary_json_roundtrip_token": "-9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_objects",
+      "key": "dws_gaap_di.ordinal",
+      "entity_id": "n01",
+      "expected": "9007199254740993",
+      "raw_token": "9007199254740993",
+      "raw_exact": true,
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_objects",
+      "key": "dws_gaap_di.ordinal",
+      "entity_id": "n03",
+      "expected": "9223372036854775807",
+      "raw_token": "9223372036854775807",
+      "raw_exact": true,
+      "ordinary_json_value": 9223372036854776000,
+      "ordinary_json_roundtrip_token": "9223372036854776000",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_objects",
+      "key": "dws_gaap_di.ordinal",
+      "entity_id": "n04",
+      "expected": "-9007199254740993",
+      "raw_token": "-9007199254740993",
+      "raw_exact": true,
+      "ordinary_json_value": -9007199254740992,
+      "ordinary_json_roundtrip_token": "-9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_objects",
+      "key": "dws_gaap_di.ordinal",
+      "entity_id": "n05",
+      "expected": "-9223372036854775807",
+      "raw_token": "-9223372036854775807",
+      "raw_exact": true,
+      "ordinary_json_value": -9223372036854776000,
+      "ordinary_json_roundtrip_token": "-9223372036854776000",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_aggregate",
+      "key": "gaap_sum",
+      "expected": "123456789012345678910241767144864448.79",
+      "ordinary_json_value": 1.2345678901234568e+35,
+      "ordinary_json_roundtrip_token": "1.2345678901234568e+35",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "widened_integer_sum",
+      "expected": "9241386435364257792",
+      "ordinary_json_value": 9241386435364258000,
+      "ordinary_json_roundtrip_token": "9241386435364258000",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "key": "gaap_sum",
+      "expected": "123456789012345678901234567890123456.78",
+      "ordinary_json_value": 1.2345678901234568e+35,
+      "ordinary_json_roundtrip_token": "1.2345678901234568e+35",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "key": "gaap_sum",
+      "expected": "9007199254740992.01",
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "key": "gaap_sum",
+      "expected": "-9007199254740992.01",
+      "ordinary_json_value": -9007199254740992,
+      "ordinary_json_roundtrip_token": "-9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "key": "gaap_sum",
+      "expected": "9007199254740992.02",
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "key": "integer_sum",
+      "expected": "9223372036854775807",
+      "ordinary_json_value": 9223372036854776000,
+      "ordinary_json_roundtrip_token": "9223372036854776000",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "key": "integer_sum",
+      "expected": "9007199254740993",
+      "ordinary_json_value": 9007199254740992,
+      "ordinary_json_roundtrip_token": "9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "key": "integer_sum",
+      "expected": "-9007199254740993",
+      "ordinary_json_value": -9007199254740992,
+      "ordinary_json_roundtrip_token": "-9007199254740992",
+      "ordinary_json_exact": false
+    },
+    {
+      "case": "numeric_group",
+      "key": "integer_sum",
+      "expected": "-9223372036854775807",
+      "ordinary_json_value": -9223372036854776000,
+      "ordinary_json_roundtrip_token": "-9223372036854776000",
+      "ordinary_json_exact": false
+    }
+  ],
+  "raw_numeric_tokens_exact_for_fixture": true,
+  "ordinary_json_roundtrip_exact_for_fixture": false,
+  "limitations": [
+    "Raw numeric spelling and ordinary JSON Number decoding are separate; token fidelity does not establish a lossless client contract",
+    "No production encoding change; decoded discrepancies block a lossless ordinary-JSON client claim",
+    "Large completeness only demonstrated for this fixture, not all payloads/configurations",
+    "Canonical input cap is not a JSON-RPC output or peak-memory bound",
+    "No remote CI, cross-platform or autonomous Agent evidence; observed MCP dependency not repo-pinned"
+  ]
+}

@@ -75,8 +75,13 @@ binding and cannot replace a rule or execute SQL. This is the observed transport
 behavior, not a strict JSON Schema validation guarantee.
 
 Results are JSON text inside MCP content. These templates add no sorting, paging
-or truncation; completeness is verified for the fixed fixtures. Transport size
-limits and truncation outside those fixtures have not been characterized. Groups are sparse. Empty grouped/object results are `[]`; an
+or truncation; completeness is verified for the fixed fixtures, including a
+synthetic 10,000-object response with 23,267,891 content bytes and 33,367,965
+JSON-RPC line bytes. Its escaped payloads and all fields/IDs were checked; a
+10,000-group aggregate response was also checked. These are successful observations
+of the recorded MCP build, not output maxima or guarantees for all legal models.
+The 16 MiB canonical input limit does not bound JSON output or peak memory.
+Groups are sparse. Empty grouped/object results are `[]`; an
 empty ungrouped aggregate has COUNT zero and SUM/AVG NULL. Nonempty rows carry
 `_ossie_snapshot_id`, `_ossie_content_sha256`, `_ossie_ontology_sha256`. Empty row
 sets cannot carry row trace: retain compile metadata and the fixed operator bundle.
@@ -85,10 +90,17 @@ The compile tool enables `include_trace` to show the same trace projections as q
 Compile SQL requires an internal AST dependency and cannot be replayed as ordinary
 SQL. The [machine-readable plan](population-plan.md) describes the generated semantic AST and its definition/capture provenance; it is not a physical plan.
 
-Duckdb_mcp JSON numeric serialization is **not a lossless DECIMAL wire contract**.
-Fixture totals are checked at cents precision and AVG with 1e-10 tolerance; that
-proves these finite fixture values, not arbitrary large/precise money or integer
-transport. Native extension arithmetic/types remain as documented in the profile.
+JSON numeric content is **not a lossless ordinary-JSON client contract**.
+For the recorded build, the precision probe found exact raw integer/DECIMAL(38,2)
+tokens, including BIGINT boundaries and widened HUGEINT SUM. Loss occurred when
+ordinary `JSON.parse` converted those tokens to JavaScript Number: for example,
+`9007199254740993` became `9007199254740992`, and adjacent cent amounts above 2^53
+became the same value. This evidence does not attribute loss to the MCP serializer.
+Consumers need decimal/integer-preserving parsing of the content text; parsing
+to Number and converting back to text cannot recover the lost digits. A proposed
+typed string encoding is not implemented by these templates yet. Fixture AVG
+uses DOUBLE with 1e-10 tolerance; string encoding would not make it exact Decimal.
+Native extension arithmetic/types remain as documented in the profile.
 
 Errors may be a JSON-RPC `error` or tool `result.isError`; inspect both. Recoverable
 population callback and JSON-list failures expose the versioned
@@ -118,3 +130,16 @@ by this repository. No evidence here proves autonomous Agent interpretation or
 complete P0/A1–A8. The PRAGMA resource argument order is documented by the
 [upstream server reference](https://duckdb-mcp.readthedocs.io/en/latest/reference/server/)
 and verified with actual `resources/read`, rather than only counting resources.
+
+[Transport research results](research/ossie-req-001/r7-transport-artifact-results.json)
+separate raw-token comparisons from ordinary JSON round-trip differences, and
+record large-response hashes/bytes, full object/group comparisons, fixed-startup
+empty-result association and input-limit refusals. Reproduce with:
+
+```sh
+bun scripts/verify_population_transport.ts /abs/path/ossie.duckdb_extension --output results.json
+```
+
+The research verifier records numeric decoding discrepancies as findings; a
+successful probe does not mean that the ordinary-JSON numeric contract passed.
+It does not yet gate a repaired adapter or characterize non-finite DOUBLE transport.
