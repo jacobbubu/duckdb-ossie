@@ -1,0 +1,81 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "gaap_binding",
+  "ontology_ref": {
+    "name": "gaap_population"
+  },
+  "semantic_model_ref": {
+    "name": "gaap_demo"
+  },
+  "concept_mappings": [
+    {
+      "concept": "User",
+      "object_mappings": [
+        {
+          "referent_mappings": [
+            {
+              "relationship": "id",
+              "expression": "dws_gaap_di.user_id"
+            }
+          ]
+        }
+      ],
+      "link_mappings": [
+        {
+          "object_mapping": {
+            "referent_mappings": [
+              {
+                "relationship": "id",
+                "expression": "dws_gaap_di.user_id"
+              }
+            ]
+          },
+          "children": [
+            {
+              "object_mapping": {
+                "concept": "String",
+                "expression": "dws_gaap_di.user_id"
+              },
+              "relationship": "id"
+            },
+            {
+              "object_mapping": {
+                "concept": "Date",
+                "expression": "dws_gaap_di.ds"
+              },
+              "relationship": "date"
+            },
+            {
+              "object_mapping": {
+                "concept": "String",
+                "expression": "dws_gaap_di.product"
+              },
+              "relationship": "product"
+            },
+            {
+              "object_mapping": {
+                "concept": "String",
+                "expression": "dws_gaap_di.region"
+              },
+              "relationship": "region"
+            },
+            {
+              "object_mapping": {
+                "concept": "String",
+                "expression": "dws_gaap_di.user_type"
+              },
+              "relationship": "user_type"
+            },
+            {
+              "object_mapping": {
+                "concept": "Decimal",
+                "expression": "dws_gaap_di.ytd_gaap"
+              },
+              "relationship": "ytd_gaap"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -102,7 +102,7 @@ required job, and confirms nonzero status. Another checks Make's state runner is
 scheduled before the SQL runner. An actual missing-fixture state invocation was
 also confirmed to propagate failure through Make.
 
-The existing Linux/macOS `artifact-load` matrix now runs the loader, population and expression
+The existing Linux/macOS `artifact-load` matrix now runs the loader, population, expression and DATE
 verifiers against the same downloaded extension in stock DuckDB Node bindings 1.5.6 (client 1.5.6-r.1),
 checking source ID `069cc9f9b5` and unsigned file loading without static fallback.
 Evidence is uploaded per architecture. The loader checks its required eight entry
@@ -134,7 +134,7 @@ and reuses the existing nested-field fixture as a normal gating assertion.
 Missing CLI/artifact, loading failure and relative-path normalization have isolated controls.
 There is no project Python fixture generator or static build-tree fallback.
 
-Current expression-slice results are in
+Historical expression-slice results are in
 [r3-control-results.json](research/ossie-req-001/r3-control-results.json), with same-artifact
 [expression](research/ossie-req-001/r3-expression-artifact-results.json),
 [loader](research/ossie-req-001/r3-loader-artifact-results.json) and
@@ -143,6 +143,17 @@ The expression verifier uses hand-derived ratios and native type/NULL controls,
 27 rejection cases, macro isolation and guarded-overflow evidence. Local checks pass
 30 Bun controls, 19 C++ checks and 566 SQL assertions in 16 cases; this does not
 establish full R3 or safe-join support.
+
+Current DATE-boundary controls are in
+[r3-date-control-results.json](research/ossie-req-001/r3-date-control-results.json),
+with same-artifact [DATE](research/ossie-req-001/r3-date-artifact-results.json),
+[loader](research/ossie-req-001/r3-date-loader-artifact-results.json),
+[population](research/ossie-req-001/r3-date-population-artifact-results.json), and
+[expression](research/ossie-req-001/r3-date-expression-artifact-results.json) reports.
+Native DATE sentinel handling preserves infinity rather than formatting it as a
+finite date. Local verification passes 31 Bun controls, 19 C++ checks and 610 SQL
+assertions in 17 cases; CI wiring schedules all four verifiers against one download.
+No C++ execution change or new artifact build was necessary in this slice.
 
 Previous Bun migration results and source hashes are in
 [bun-toolchain-results.json](research/ossie-req-001/bun-toolchain-results.json),

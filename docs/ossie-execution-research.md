@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-09。状态：首轮研究、core loader/元数据与单表人口执行工作包已完成并本地验证；P0 尚未完成。
+日期：2026-10-09。状态：首轮研究、core loader/元数据与单表人口执行工作包已完成并本地验证；R3 NULLIF/受保护除法及DATE边界控制已本地完成；当前610条SQL断言、19项C++与31项Bun控制通过。下一步研究R6安全连接；P0 尚未完成。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -282,3 +282,20 @@ R3切片结果：NULLIF双参及直接分母NULLIF(expr,数值常量0)的/已实
 新证据：[R3控制报告](research/ossie-req-001/r3-control-results.json)、[表达式](research/ossie-req-001/r3-expression-artifact-results.json)、[同产物loader](research/ossie-req-001/r3-loader-artifact-results.json)、[同产物population](research/ossie-req-001/r3-population-artifact-results.json)。历史报告、不可变来源/原475行数据和proposed definitions、子模块没有修改。
 
 本工作包本地完成，下一动作本地提交保留，不自动推送。整体目标仍未完成：后续沿既有R3研究日期时间/其余表达式边界，再研究R6安全连接的正负控制；calendar、更广ontology/身份和population MCP完整验收仍必要。仅macOS arm64实测，远程CI/Ubuntu tidy未运行，不称全R3/P0或跨平台通过。
+
+### R3 DATE 边界控制（2026-10-09，继续）
+
+恢复状态：f1e523b已本地提交且工作区干净；未推送。沿现local issue推进既有DATE与类型转换语义控制，先不扩Time/DateTime/DateTimeTz执行。规范原样来源已有Date/time construction、CAST/TRY_CAST；官方DATE/cast/comparison文档作为依据，行为最终由固定1.5.6真实产物证明。元数据接受时间类型不等于population能执行。
+
+范围与验证：独立人工日历数据覆盖月界/年界/闰日/NULL、半开区间与BETWEEN差异、对象与指标同人口、稀疏分组/空区间、CAST无效值失败与TRY_CAST NULL、日期运算返回类型与infinity边界。验证不通过JS Date/时区序列化；失败加载保留旧批次。未知日期函数/current_date、TIME/TIMESTAMP及不受支持类型应明确拒。复核是否存在字符串转DATE的host宽松行为/时区依赖，再确定支持文档的准确限制。使用现Advisor做一次限定取舍；不添加通用日期函数或多期身份能力。本轮验证/本地提交，不自动推送。
+
+
+DATE切片结果：11行人工Gregorian日历（各行不同身份）覆盖年/月界、闰日/非闰年、NULL与±infinity。2月半开区间User为3行/SUM12.00，带YTD条件ValidUser为2行/SUM8.00；BETWEEN包含3月1日，稀疏组/空区间、对象与指标均符合手算。DATE±INTEGER按天返回DATE，DATE−DATE按天返回BIGINT；CAST坏日历失败、TRY_CAST为NULL。引擎宽松解析允许斜线/垃圾后缀/带偏移时间后缀，取日期前缀而非时区换算；真实对象/指标在Honolulu与Shanghai两配置一致。21具名拒绝检查含时间typed literal/cast/physical、未知时钟/date_trunc、嵌套timestamp cast、interval构造、非法日期及失败原子性，保留snapshot_id/content_sha256。
+
+发现与修正：固定Node日期wrapper原toString把非有限日期输出为超大普通日期，native isFinite=false及±sentinel才是正确证据。已修正共享artifact helper、加独立适配控制，以真实native与SQL特殊值比对；不改C++/引擎。限定Advisor一建议加一澄清提醒字符串宽松解析/特殊值和中间类型边界。Lead实测进一步否定interval建议的接受推断：原生DATE+INTERVAL是TIMESTAMP，但当前INTERVAL 1 DAY被解析成to_days/trunc函数并由Strict先拒，quoted interval被cast检查拒。因此field interval负例证明AST拒绝，不能记为Matches类型检查；没有新增timestamp执行能力。工具确认有效backend/effort/usage/billing均unknown。
+
+保留harness失败：首次bundle结果records索引误用4（正确3）；CURRENT_DATE不带括号由qualified reference检查先拒，调整具体预期；sqllogictest首次写成statement error inline reason，固定parser要求----后错误文本，已修正；诊断字符串一次Perl插值被吃掉，改为结构化patch。新增interval正例推断被真实Strict拒，已改成明确负例，不以之后typecheck成功掩盖verifier失败。最终DATE脚本单独退出0并绑定最新SHA。
+
+验证：31 Bun控制/99断言、19 C++状态检查、17个SQL用例610断言通过。共享helper修改后原loader17拒绝/46metadata/2500字段、population46拒绝/475行+11边界、expression27拒绝重新对同一f1e523b实际产物通过；本轮没有C++修改所以无需重建。CI第四DATE验证器已接同download，YAML/diff检查通过；远程CI/Ubuntu tidy未运行。新证据：[DATE控制汇总](research/ossie-req-001/r3-date-control-results.json)、[DATE原生产物](research/ossie-req-001/r3-date-artifact-results.json)。历史来源/475CSV/proposed definitions/子模块与旧报告保持原样。
+
+本包本地完成，下一动作本地提交；本轮不推送。整体R3/P0未完成：TIME/DateTime/DateTimeTz、更多日期函数/一般转换及表达式边界仍有限，R6安全连接、calendar、多期身份/更广ontology与population MCP仍必要。下一已授权工作沿原计划研究R6安全连接前提及独立正负控制；日期扩展不能悄悄改变人口身份/时间基础。首段旧阶段计数是历史记录，本节是当前结果。

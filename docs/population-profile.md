@@ -133,6 +133,54 @@ reader whose AST dependency cannot be expressed as SQL text. Replaying the text
 is refused. A separate query after reload may bind a different snapshot; use
 execution trace to associate actual results with their batch.
 
+## DATE boundaries and conversion
+
+The executable physical temporal type and declared temporal field/metric result
+in this profile are limited to DATE. Loader metadata for Time, DateTime and
+DateTimeTz does not imply population execution support. Explicit TIME/TIMESTAMP/
+TIMESTAMPTZ casts, typed literals, nested timestamp-to-date casts, current-date
+functions and date_trunc are refused. These are profile restrictions, rather than
+claims that those constructs are absent from Ossie.
+
+DATE uses DuckDB's Gregorian calendar without a time-of-day or timezone. Write a
+half-open window explicitly as "User.date >= DATE '2024-02-01' AND User.date < DATE '2024-03-01'".
+The extension does not rewrite BETWEEN: BETWEEN includes both endpoints. NULL
+comparisons do not include records; IS NULL explicitly selects missing dates.
+Objects and metrics use the same filtered records. Date groups remain sparse.
+Each fixture row has a distinct identity; these controls do not add multi-period
+entity identity or history-window classification.
+
+DATE + INTEGER (or INTEGER + DATE) and DATE - INTEGER use calendar days and
+produce DATE; DATE - DATE produces a BIGINT count of days. Native DuckDB
+DATE + INTERVAL produces TIMESTAMP, but the tested population syntaxes
+"INTERVAL 1 DAY" and "INTERVAL '1 day'" are refused before binding, respectively
+as an unsupported generated function and an unsupported interval cast. A native
+engine result type does not establish acceptance by this profile.
+
+CAST invalid calendar values fails, while TRY_CAST invalid calendar values yields
+NULL. This does not impose strict ISO input validation: the pinned engine also
+accepts slash-separated dates and some trailing text. A timestamp-shaped string
+with a time/offset suffix is parsed from its date prefix, without converting the
+instant to another timezone. TRY_CAST accepts these engine-valid inputs too.
+Normalize input explicitly if a strict format is required. No SQL short-circuit
+or complete eager evaluation of every unused computed field is promised.
+
+The engine also accepts epoch, infinity and -infinity DATE values. Infinity
+orders beyond finite dates and is distinct from NULL. The independent native
+adapter checks isFinite and the date sentinel before formatting, because the
+fixed Node client's raw toString renders these sentinels as large ordinary dates.
+Finite dates remain native DATE strings, with no JS Date conversion. Controls
+compare actual extension objects and metrics under Honolulu and Shanghai timezone
+settings; this is evidence for the tested DATE formulas, not general timezone/DST
+or timestamp support.
+
+Primary references: [DuckDB DATE and special values](https://duckdb.org/docs/current/sql/data_types/date),
+[CAST and TRY_CAST](https://duckdb.org/docs/current/sql/expressions/cast), and
+[comparison/BETWEEN semantics](https://duckdb.org/docs/current/sql/expressions/comparison_operators).
+The [fixed Ossie expression source](research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md)
+defines broader temporal constructs. Our [DATE artifact evidence](research/ossie-req-001/r3-date-artifact-results.json)
+establishes this narrower behavior against pinned DuckDB 1.5.6.
+
 ## Limits and evidence
 
 Definitions are at most 1 MiB each. A captured batch is at most 10,000 rows and
@@ -151,7 +199,7 @@ full object sets, totals, every daily and region/type group, and group drill-dow
 against an independent CSV/bigint-cents oracle at thresholds 10 and 20, plus hand-derived
 NULL/identity boundary controls. It also exercises rejection, atomic reload,
 prepared snapshot retention, cancellation and concurrent callers. Reproducible
-hashes and results are in [r3-population-artifact-results.json](research/ossie-req-001/r3-population-artifact-results.json).
+hashes and results are in [r3-date-population-artifact-results.json](research/ossie-req-001/r3-date-population-artifact-results.json).
 The current [research record](ossie-execution-research.md) tracks remaining work;
 [Expression evidence](research/ossie-req-001/r3-expression-artifact-results.json) records
 this slice's actual arithmetic and rejection controls. This slice does not complete P0, multi-table safe joins, calendar or A1–A8 acceptance.

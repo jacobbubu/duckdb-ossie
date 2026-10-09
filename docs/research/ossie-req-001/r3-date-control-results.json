@@ -1,0 +1,146 @@
+{
+  "scope": "Existing DATE semantics, native artifact adapter fix and date boundary controls; no C++ execution change or full R3/P0 claim",
+  "date": "2026-10-09",
+  "base_commit": "f1e523b2dc39ee3a386834b80c24abacbbf2c484",
+  "runtime": "Bun 1.3.11",
+  "platform": "darwin",
+  "arch": "arm64",
+  "duckdb_version": "v1.5.6",
+  "duckdb_source_id": "069cc9f9b5",
+  "artifact_sha256": "c1cde8ee1ddcb5c80c30b0315893f57ad26599c2891ddb8a9e5c9d9dc6bbcd20",
+  "artifact_provenance": "Reused actual artifact from f1e523b; no C++ change/rebuild required",
+  "checks": [
+    {
+      "command": "make quality-local with pinned formatter venv",
+      "exit_code": 0,
+      "bun_controls": 31,
+      "expect_calls": 99,
+      "failed": 0
+    },
+    {
+      "command": "make format-check test",
+      "exit_code": 0,
+      "cpp_checks": 19,
+      "sql_cases": 17,
+      "sql_assertions": 610
+    },
+    {
+      "report": "docs/research/ossie-req-001/r3-date-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r3-date-loader-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r3-date-population-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r3-date-expression-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "command": "Bun.YAML.parse MainDistributionPipeline.yml",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "evidence": {
+    "date_rows": 11,
+    "date_rejections": 21,
+    "timezone_configurations": [
+      "Pacific/Honolulu",
+      "Asia/Shanghai"
+    ],
+    "loader_rejections": 17,
+    "population_rejections": 46,
+    "expression_rejections": 27,
+    "full_population_rows": 475,
+    "boundary_rows": 11,
+    "date_adapter_non_finite_control": true,
+    "failed_load_snapshot_id_content_hash_unchanged": true
+  },
+  "source_sha256": {
+    "scripts/artifact_helpers.ts": "23cb3ab917074825b03340f565396dd4d9d6193f89ab958dcd770e9d9ab710c7",
+    "scripts/verify_date_artifact.ts": "906751f19d4e8063afc7d26502246b3f13d60781c5c4290c63cf173f1884195d",
+    "test/tooling/artifact_values.test.ts": "881edf60d63d21eee88450743ffe4500e60a752d97e2a8fe33d06e3f3a304172",
+    "test/tooling/quality_controls.test.ts": "b904bb2092dadf9cdfce4bc1a7428e80d1eefe1ba519ca1e917c48eb92d33ff6",
+    "test/sql/ossie_population_dates.test": "9267bbc0dadb350695a155c8021d70597abd0e3c1316f55a4f0811407b0db2eb",
+    ".github/workflows/MainDistributionPipeline.yml": "48c77bd12b3901559c431c1f372f5084b9e72fac689f24bb355583d99f0f7525",
+    "package.json": "7beebb0c0e63d9e6cf861564878da5a3f5e60cb3dc0c90d4d45c00a82767b34f",
+    "bun.lock": "b9990a6c38d00ae769b79e52939acd1ebfbb3068debec7b684fa803b022323ee",
+    "test/fixtures/population-dates/bundle.json": "1df325a4c60ca0057fded759b159780981ea9eafda5fcaeaa41c37a243265113",
+    "test/fixtures/population-dates/core.json": "7f1777266e03628dd2e6db3f4b9952c341dd3ac3bff7d6fdcf034185dad620dd",
+    "test/fixtures/population-dates/ontology.json": "b7e1fe5e2c7bff95ef827d07d5ea64d855694453e89f73d67d9cffb8967aab13",
+    "test/fixtures/population-dates/mapping.json": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807",
+    "test/fixtures/population-dates/rows.sql": "c15c7910076c44501172745a74ed3e8a10eb66da32bd64c7252413a75480e053",
+    "docs/research/ossie-req-001/r3-date-artifact-results.json": "e9a043267195aa51fa6f7149075ba5ec3ed0316265e7a93e06172df0082a9b95",
+    "docs/research/ossie-req-001/r3-date-loader-artifact-results.json": "20ac5b1c05c7652579458cb5208459cd23a1ee9f7fc4bcc089db6a9858e1f0f7",
+    "docs/research/ossie-req-001/r3-date-population-artifact-results.json": "2a91d4d43a95232e2b96ed32dbc42c0563678dfcfc82d4053b63e025c1c5662d",
+    "docs/research/ossie-req-001/r3-date-expression-artifact-results.json": "aa34d2802477cb98dd67c1fed9a5c4e01ec0b07a940ed1c9b9be97bd698eb262"
+  },
+  "local_log_sha256": {
+    "build/r3-date-quality-final.log": "4b8a459ff3e7842e08011ee9f5d2726c7d87e1d245c5b488cc520494213e3878",
+    "build/r3-date-first.log": "4249839c8223fe73430e1660d8a6e87147cf17d2f806f358f836a40ccd75941a",
+    "build/r3-date-second.log": "91d055ee88e9d2f10f4cef5f2b274e443241a3327b243edb72fa370999c46349",
+    "build/r3-date-third.log": "46301cf58cf05c8b62fa0c0c98562756d7992b8498f3288f106e5d7067ec089f",
+    "build/r3-date-fourth.log": "a665e0e7c9c5976d23ad58b6465f4609b2e2e5b4bfad109e8ab02726dc797a35",
+    "build/r3-date-quality-sql.log": "4a7f94f8e50af40043e762ea62b039e8e5ad39eb303069b72795bfc504b87721",
+    "build/r3-date-sql-final.log": "f63523c57e188511515c2e33f290673eca82af4aaf28676fd80a91845d295c35",
+    "build/r3-date-final.log": "e9a043267195aa51fa6f7149075ba5ec3ed0316265e7a93e06172df0082a9b95",
+    "build/r3-date-loader.log": "20ac5b1c05c7652579458cb5208459cd23a1ee9f7fc4bcc089db6a9858e1f0f7",
+    "build/r3-date-population.log": "2a91d4d43a95232e2b96ed32dbc42c0563678dfcfc82d4053b63e025c1c5662d",
+    "build/r3-date-expression.log": "aa34d2802477cb98dd67c1fed9a5c4e01ec0b07a940ed1c9b9be97bd698eb262"
+  },
+  "retained_failures": [
+    {
+      "log": "build/r3-date-first.log",
+      "finding": "Harness used records index 4 rather than 3."
+    },
+    {
+      "log": "build/r3-date-second.log",
+      "finding": "CURRENT_DATE bare syntax rejected at qualified-reference stage; expected error stage corrected."
+    },
+    {
+      "log": "build/r3-date-third.log",
+      "finding": "Perl replacement ate diagnostic interpolation; corrected with structured patch."
+    },
+    {
+      "log": "build/r3-date-fourth.log",
+      "finding": "Detailed diagnostic established bare CURRENT_DATE qualified-reference rejection."
+    },
+    {
+      "log": "build/r3-date-quality-sql.log",
+      "finding": "SQL harness used inline statement error reason; pinned sqllogic parser needs expected reason after ----."
+    },
+    {
+      "finding": "Lead actual artifact rejected proposed interval-positive control as unsupported generated to_days/trunc function before binding; changed to explicit negative. Quoted interval refused by cast check. Native TIMESTAMP result type is not profile acceptance proof."
+    },
+    {
+      "finding": "Temporary documentation generator initially had unescaped inline backticks and failed before writing; corrected; not an implementation failure."
+    }
+  ],
+  "advisor": {
+    "rounds": 1,
+    "clarifications": 1,
+    "requested": "Astra/high read-only",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "lead_verification": "Pinned Date parser/native wrapper and actual artifact results, including correction of interval acceptance inference"
+  },
+  "protected_cpp_and_immutable_tracked_diff": "",
+  "limitations": [
+    "DATE conversion is engine-permissive, not strict ISO or instant/timezone conversion",
+    "infinity DATE is distinct from NULL and finite dates",
+    "Explicit time/timestamp casts/literals/physical types and tested interval constructions refused",
+    "No multi-period identity/calendar/general temporal language support",
+    "Remote CI and Ubuntu clang-tidy not run; local macOS arm64 only",
+    "No push/merge/publication; next authorized research R6 safe-join controls"
+  ]
+}

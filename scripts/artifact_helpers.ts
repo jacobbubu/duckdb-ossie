@@ -38,8 +38,18 @@ export async function temporary<T>(
 }
 export type Cell = string | number | boolean | null;
 export function cell(value: DuckDBValue): Cell {
-  if (value instanceof DuckDBDecimalValue || value instanceof DuckDBDateValue)
-    return value.toString();
+  if (value instanceof DuckDBDateValue) {
+    if (value.isFinite) return value.toString();
+    assert(
+      value.days === DuckDBDateValue.PosInf.days ||
+        value.days === DuckDBDateValue.NegInf.days,
+      "unknown non-finite DATE",
+    );
+    return value.days === DuckDBDateValue.PosInf.days
+      ? "infinity"
+      : "-infinity";
+  }
+  if (value instanceof DuckDBDecimalValue) return value.toString();
   if (typeof value === "bigint") {
     const result = Number(value);
     assert(Number.isSafeInteger(result), "unsafe integer");

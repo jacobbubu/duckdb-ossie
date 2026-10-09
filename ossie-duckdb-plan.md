@@ -2,6 +2,13 @@
 
 ## Current research checkpoint — 2026-10-09
 
+Latest local milestone: NULLIF/guarded division and existing DATE boundaries verified.
+The DATE package passes 610 SQL assertions, 19 C++ checks and 31 Bun controls,
+with four same-artifact verifiers. Next authorized research is R6 safe-join
+contracts and independent controls; P0 remains incomplete. Detailed current
+decisions and failures are in the checkpoints below and the existing research record.
+The earlier package counts in this introduction remain historical evidence.
+
 The first research package is complete: pinned source evidence, an independent
 475-row GAAP oracle, hand-derived boundary controls, schema-checked definition
 drafts and an independently reviewed minimal execution contract. This does not
@@ -541,3 +548,14 @@ will absorb whatever time it is given.
 当前结果：本轮NULLIF/直接数值零保护除法切片完成，并修正根函数包裹聚合的存在性遍历。8行手算控制/27拒绝、30 Bun、19 C++、16 SQL用例566断言，原loader/population与真实stock CLI/MCP同产物通过。证据和失败保留于现local issue与r3-control-results.json；/产生DOUBLE且overflow仍可Infinity，不称精确Decimal除法。
 
 交付边界：此前清理08c06e6已推送；本轮只本地提交，远程CI/Ubuntu tidy未验证。上面历史checkpoint的计数/待推送状态按各包当时记录保留，本段为当前状态。下一已授权研究沿原需求推进R3日期时间/其余表达式边界及R6安全连接；calendar、更广ontology/身份、population MCP和完整P0仍未完成。不在此切片扩大实现或交付权限。
+
+### R3 DATE checkpoint（2026-10-09，恢复）
+
+f1e523b本地交付完成；下一已授权动作是DATE边界独立控制与类型转换研究。复用现local issue，先固定1.5.6实测月界/闰日/NULL/半开区间/CAST与TRY_CAST/非有限日期及函数拒绝，不将loader时间metadata扩大为timestamp执行。发现语义缺口后再确定修复范围；后续R3其他表达式、R6安全连接/calendar/更广ontology/MCP仍必要，远程CI/Ubuntu tidy与新push未做。
+
+
+### R3 DATE本地交付 checkpoint（2026-10-09）
+
+结果：现有DATE执行契约已补齐11行手算、两时区、21具名拒绝及失败快照保持；修正artifact helper非有限DATE表示。31 Bun、19 C++、17 SQL用例610断言与四个同产物verifier通过。C++未改，使用f1e523b产物；历史报告保留，现local issue记录CAST宽松前缀/interval先AST拒绝及harness失败。
+
+本包本地完成，下一动作本地提交，不推送。下一已授权研究R6安全事实/维度连接的前提/正负控制；剩余R3时间类型/函数与一般表达式、calendar、多期身份/ontology、population MCP完整验收继续在现计划/issue维护。远程CI/Ubuntu tidy未验证，全P0未完成。
