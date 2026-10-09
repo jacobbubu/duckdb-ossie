@@ -57,8 +57,8 @@ is a **JSON-encoded string array**. Send the string `"[]"` for an empty list. Ex
 
 | Tool | Required arguments | Result |
 |---|---|---|
-| `population_objects` | concept, filters | Entity/record IDs, declared logical fields and row trace |
-| `population_query` | concept, metrics, dimensions, filters | Named aggregates/group keys and row trace |
+| `population_objects` | concept, filters | Typed result envelope: IDs, logical fields, actual types and snapshot hashes |
+| `population_query` | concept, metrics, dimensions, filters | Typed result envelope: aggregates/group keys, actual types and snapshot hashes |
 | `population_compile` | concept, metrics, dimensions, filters | Diagnostic SQL, versioned plan_json, definition/snapshot hashes, execution target, `executed=false` |
 
 Empty metrics select the object path only for compile and require empty dimensions.
@@ -74,32 +74,44 @@ unused extra arguments are ignored. An extra `threshold` or `sql` argument has n
 binding and cannot replace a rule or execute SQL. This is the observed transport
 behavior, not a strict JSON Schema validation guarantee.
 
-Results are JSON text inside MCP content. These templates add no sorting, paging
-or truncation; completeness is verified for the fixed fixtures, including a
+Object/query results use [ossie-population-result-v1](population-result.md).
+MCP content is JSON text containing one carrier row with a `result_json` string;
+parse that string to obtain ordered `columns` and cell-array `rows`. Numeric cells
+remain strings with actual bound types, SQL NULL stays JSON null, and Boolean
+stays true/false. This is a change from the earlier arrays of row objects; tool
+names and arguments remain the same. Discovery and compile formats are unchanged.
+
+These templates add no sorting, paging or truncation. Historical raw-format
+completeness was verified for fixed fixtures, including a
 synthetic 10,000-object response with 23,267,891 content bytes and 33,367,965
 JSON-RPC line bytes. Its escaped payloads and all fields/IDs were checked; a
 10,000-group aggregate response was also checked. These are successful observations
 of the recorded MCP build, not output maxima or guarantees for all legal models.
 The 16 MiB canonical input limit does not bound JSON output or peak memory.
-Groups are sparse. Empty grouped/object results are `[]`; an
+New encoded response sizes are recorded separately by the typed verifier and
+must not be inferred from those historical byte counts. Groups are sparse.
+Empty grouped/object envelopes have `rows=[]` and `row_count=0`; an
 empty ungrouped aggregate has COUNT zero and SUM/AVG NULL. Nonempty rows carry
-`_ossie_snapshot_id`, `_ossie_content_sha256`, `_ossie_ontology_sha256`. Empty row
-sets cannot carry row trace: retain compile metadata and the fixed operator bundle.
+`_ossie_snapshot_id`, `_ossie_content_sha256`, `_ossie_ontology_sha256`. Every
+successful execution envelope, including empty results, carries all definition
+and snapshot hashes from the actual bound query.
 Separate compile/query calls are not an atomic operation across an operator reload.
 The compile tool enables `include_trace` to show the same trace projections as query/object tools.
 Compile SQL requires an internal AST dependency and cannot be replayed as ordinary
 SQL. The [machine-readable plan](population-plan.md) describes the generated semantic AST and its definition/capture provenance; it is not a physical plan.
 
-JSON numeric content is **not a lossless ordinary-JSON client contract**.
-For the recorded build, the precision probe found exact raw integer/DECIMAL(38,2)
+The earlier raw JSON numeric format was **not a lossless ordinary-JSON client
+contract**. For the recorded build, the precision probe found exact raw integer/DECIMAL(38,2)
 tokens, including BIGINT boundaries and widened HUGEINT SUM. Loss occurred when
 ordinary `JSON.parse` converted those tokens to JavaScript Number: for example,
 `9007199254740993` became `9007199254740992`, and adjacent cent amounts above 2^53
 became the same value. This evidence does not attribute loss to the MCP serializer.
-Consumers need decimal/integer-preserving parsing of the content text; parsing
-to Number and converting back to text cannot recover the lost digits. A proposed
-typed string encoding is not implemented by these templates yet. Fixture AVG
-uses DOUBLE with 1e-10 tolerance; string encoding would not make it exact Decimal.
+The current typed adapter prevents that initial Number conversion by encoding
+integer/Decimal cells as strings consistently, with precision/scale in the actual
+bound type. Converting these strings to Number later can still lose precision.
+FLOAT/DOUBLE cells also use strings, with explicit NaN/infinity/signed-zero
+representation; they remain approximate. Fixture AVG uses DOUBLE with 1e-10
+tolerance, and string encoding does not make it exact Decimal.
 Native extension arithmetic/types remain as documented in the profile.
 
 Errors may be a JSON-RPC `error` or tool `result.isError`; inspect both. Recoverable
@@ -140,6 +152,10 @@ empty-result association and input-limit refusals. Reproduce with:
 bun scripts/verify_population_transport.ts /abs/path/ossie.duckdb_extension --output results.json
 ```
 
-The research verifier records numeric decoding discrepancies as findings; a
-successful probe does not mean that the ordinary-JSON numeric contract passed.
-It does not yet gate a repaired adapter or characterize non-finite DOUBLE transport.
+The raw research verifier deliberately selects the original native SQL functions
+to preserve that comparison. It records decoding discrepancies as findings;
+successful research does not mean the earlier numeric contract passed. The new
+`verify_typed_population_artifact.ts` instead validates the repaired adapter through
+ordinary JSON parsing, exact numeric strings, non-finite values and new large
+responses. See [the typed contract](population-result.md) for compatibility and
+the difference between exact Decimal and approximate floating-point text.

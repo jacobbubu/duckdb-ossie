@@ -1,0 +1,91 @@
+{
+  "scope": "Local typed MCP numeric repair, API2.0.0/resultv1; native SQL types/computation unchanged; pagination deferred",
+  "base_commit": "e2468ca",
+  "artifact_sha256": "e95dd3606913d5485e5fc983e2fff18751a7da0a8f2926882dba00e217541d5d",
+  "source_sha256": {
+    "src/population/population.cpp": "de05da67e16beaabf31ba54559b65bd2af5c5f789e8ef729a7354a71ffc5afd1",
+    "scripts/population_result.ts": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+    "scripts/verify_typed_population_artifact.ts": "aa490ef6c3f8031ef840103dfbe28630dd96676a7a9a216e03bb77ba79ecd1da",
+    "scripts/verify_population_mcp.ts": "21aa1c51bf5199c9810e64fd6c8e4ad44618508c2e670cbb4b65be363e56171c",
+    "scripts/verify_population_transport.ts": "5fdd868e0192ad6ed473323810d53a6829f86fad2af7c168a5bf65bc2dbc4e7a",
+    "examples/population_server.sql": "7f1e5ee31da9b4527968eeb20a8f560db643f820efaeca445ceb62c8738237a3",
+    "scripts/full_functionality_check.sh": "9c45ad839015f6236fd21c29a1bea8070d182fc6e9b63e6cc239bb8d14b1b791",
+    "test/tooling/population_result.test.ts": "8f2b4d9bfe66e23803ed9173266dd95b55138dab9f1ae0578514d4eb224696c6",
+    "test/sql/ossie_population_result.test": "ef64492e1882b9817a0ef6e36060cc1c003d939eaa5009df4e5a9c71ec81ed4d",
+    "test/sql/ossie_population_discovery.test": "87479f314d79ec58adfa1f19db8d94e32060a93fdf9035b37ff2469e057d82ad",
+    "test/sql/ossie_function_metadata.test": "4ac13f2d2f995b6adf9a7781b53eb2ee88e165b6bdf737a81d47ade835ef0c77",
+    ".github/workflows/MainDistributionPipeline.yml": "88a1d190a9c22c3193ba6ca3e0a0fb8f845042e9994f917574601791b749dc4b"
+  },
+  "documentation_sha256": {
+    "docs/population-result.md": "978c0a2fdcb12a9571221857cb7e63cd1d5ea535f9573a16d8c791365b788d51",
+    "docs/population-mcp.md": "e0629b025dfde403df78cb52fdc5f23c9eabaf81aa5156deef262ec8176c68eb",
+    "docs/population-discovery.md": "de83a7a0bf97a352d3efa4353ddccea4cc7b69337cf78f7494a1ac53aa328267",
+    "docs/population-profile.md": "eeaa99e43d70ef9603765f2a86f1ae73540fc9546a5158220328e371887d9b28",
+    "docs/ossie-execution-research.md": "5cd3c31e4d20f375f599a00f9ac46fe35c9a2c4c57049156f7bf177d0a915da2",
+    "ossie-duckdb-plan.md": "c166313fc16acec4c9c64bc7da31b1a8512b32ca74425643beb6fe7e727480b5"
+  },
+  "reports": {
+    "docs/research/ossie-req-001/r7-typed-loader-artifact-results.json": "4e5a7c67803b566573eb6ed3f184819a68152e7460af25d49476d3907e7253d1",
+    "docs/research/ossie-req-001/r7-typed-population-artifact-results.json": "4b939501baf324086111dde3b141117f50683fcb36b748dbcb0a5c4cfd3f98b1",
+    "docs/research/ossie-req-001/r7-typed-expression-artifact-results.json": "eb28cd058b3ed6ee512752d8282b2d065b29807f78a1dbe7b55d700142b57200",
+    "docs/research/ossie-req-001/r7-typed-date-artifact-results.json": "9510cb0855b3bec31120d69d1325bb3aa292ab9147f2dec71c53122e27047b71",
+    "docs/research/ossie-req-001/r7-typed-join_research-artifact-results.json": "ad01f02bcdf0c709d8bb0d8046c26d02f6841624bcfe90889286f2aeb8fb4d30",
+    "docs/research/ossie-req-001/r7-typed-joined_population-artifact-results.json": "044233b34f14eff1ccd34ba84342945ef445243da46d1b84c2fa5e8326515939",
+    "docs/research/ossie-req-001/r7-typed-plan-artifact-results.json": "6a9dd91efd78515b74e37278d69a555ed3c2e724eebb4969ccfa3722cf52be22",
+    "docs/research/ossie-req-001/r7-typed-discovery-artifact-results.json": "00c47ffb2f9850e4f1a015ce02e4980994c4b6c5a33ce00696ccf11c8e750e77",
+    "docs/research/ossie-req-001/r7-typed-error-artifact-results.json": "7606b0147d58bed9d47988aa83e4b95701f48335fedd7338e3bbf0c336c46594",
+    "docs/research/ossie-req-001/r7-typed-typed_population-artifact-results.json": "94f58cb7cc7484e9345beb5a84b3c77f4619e20066eb9c005d972cbb233991b7",
+    "docs/research/ossie-req-001/r7-typed-mcp-results.json": "7cbd84f9d9fe23c07719fc10ec6b607474d0dced20be2e654c3bec97cfe40d3f",
+    "docs/research/ossie-req-001/r7-typed-raw_transport-results.json": "50d644efb7994c3c004d02986e06b058fd36a18b858251240f5c68c608509d55"
+  },
+  "evidence_source_hash_assertions": 159,
+  "verification": {
+    "release": true,
+    "quality_local": true,
+    "state": 19,
+    "grain": 42,
+    "capture": 158,
+    "sql_assertions": 814,
+    "sql_cases": 23,
+    "sql_skips": 0,
+    "bun_tests": 38,
+    "bun_expects": 124,
+    "stock_artifact_verifiers": 10,
+    "typed_checks": 24,
+    "population_mcp_checks": 330,
+    "population_mcp_refusals": 106,
+    "raw_control_checks": 18,
+    "raw_control_numeric_token_discrepancies": 0,
+    "raw_control_ordinary_json_discrepancies": 18,
+    "stock_cli_pass": 40,
+    "stock_cli_fail": 0,
+    "stock_cli_skip": 0,
+    "stock_cli_faithful": true,
+    "core_mcp_actual_resources": true,
+    "remote_ci": false,
+    "ubuntu_tidy": false
+  },
+  "compatibility": "MCP success payload changes to one result_json carrier and typed envelope; API major2 per documented policy, result schema v1 independent of pinned Ossie0.2.0.dev0. SQL native schemas unchanged, JSON SQL adapters additive, three tools/four resources and compile/discovery formats retained.",
+  "retained_failures": [
+    "Multi-file patch expected error.json instead of actual errors.json; whole patch wrote nothing; corrected exact workflow path and added SQL file separately.",
+    "Two format gate failures: Lead omitted --fix from default check-only pinned format.py; inspected flags, applied --fix --noconfirm, rebuilt and reran same-artifact final evidence.",
+    "Advisor identified duplicate alias bypass of outer binder; adapter now refuses actual prepared ASCII-case duplicate names.",
+    "Advisor follow-up identified Unicode toLowerCase differing from DuckDB ASCII folding; fixed decoder and verified native/MCP Ä versus ä."
+  ],
+  "advisor": {
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "scope": "one readonly architecture round plus focused clarification, no children/writes"
+  },
+  "remaining": [
+    "R2 scalar coercion in string arrays and final field correspondence/deviation conclusion",
+    "final rule-driven P0 acceptance archive",
+    "pagination future research only, not current P0 requirement",
+    "existing P1/non-goals and unrun remote CI/Ubuntu tidy"
+  ],
+  "delivery": "local commit only, no push/merge/publication"
+}

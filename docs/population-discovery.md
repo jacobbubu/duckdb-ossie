@@ -48,7 +48,7 @@ output names and other request combinations still require request binding.
 Unsupported declarations reject the whole load; no unavailable-definition list
 is synthesized. Time flags describe declared/defaulted roles, not calendar support.
 
-Capabilities return one row with `api_version=1.1.0`,
+Capabilities return one row with `api_version=2.0.0`,
 `discovery_schema=ossie-population-discovery-v1`,
 `plan_schema=ossie-population-plan-v1`, `ossie_spec_version=0.2.0.dev0`,
 `capabilities_json`, and the shared trace columns. These are separate identities:
@@ -59,6 +59,10 @@ Capabilities return one row with `api_version=1.1.0`,
   major version; compatible corrections use a patch. Consumers read by column
   name and accept additive metadata. This establishes the current baseline,
   including eleven-column compile; it does not version the separate core APIs.
+  Version 2.0.0 marks the MCP object's/query's switch from row-object arrays to
+  typed envelopes, even though the optional SQL adapters are additive and the
+  existing native SQL schemas remain unchanged. The result envelope is separately
+  identified as `ossie-population-result-v1`; consumers must decode the new carrier.
 - Discovery and plan schema identifiers version their documented metadata shapes.
 - Ossie version identifies the accepted document format. Profile identifiers
   identify bounded execution semantics; neither implies full Ossie conformance.
@@ -72,9 +76,14 @@ limits. MCP list encoding and transport uncertainty are explicitly properties of
 the example adapter; their presence does not mean an MCP server is installed or
 running. The [error contract](population-errors.md) covers recoverable population
 callback failures; `error_contract` lists external boundaries and serious native
-errors that remain outside the envelope. Arbitrary ontology execution, cross-call reload atomicity,
-exact numeric MCP transport and unbounded transport size/truncation guarantees
-are not advertised as implemented. The 16 MiB canonical limit is not peak memory.
+errors that remain outside the envelope. `mcp_example.result_schema` identifies
+the [typed result adapter](population-result.md), and `numeric_encoding` is
+`typed strings`. Integer/Decimal cells preserve native values without Number
+conversion; floating results remain approximate. The retained broad
+`exact_numeric_transport_verified=false` flag does not certify arbitrary client
+arithmetic or all numeric types as exact. Arbitrary ontology execution, cross-call
+reload atomicity and unbounded transport size/truncation guarantees are not
+advertised as implemented. The 16 MiB canonical limit is not peak memory.
 
 GAAP remains the primary requirement fixture. The generic fact/dimension fixture,
 reversed datasets and computed/quoted names test discovery-driven requests without

@@ -38,6 +38,7 @@
 #include "duckdb/storage/object_cache.hpp"
 #include "yyjson.hpp"
 #include <atomic>
+#include <cmath>
 #include <thread>
 
 namespace duckdb {
@@ -1694,6 +1695,11 @@ struct PopulationBind : TableFunctionData {
 	bool load = false;
 	bool compile = false;
 	bool discover = false;
+	bool encoded = false;
+	bool objects = false;
+	string concept;
+	vector<LogicalType> result_types;
+	vector<string> result_names;
 	string vocabulary;
 };
 
@@ -1737,7 +1743,7 @@ unique_ptr<FunctionData> DiscoverBind(ClientContext &context, TableFunctionBindI
 }
 
 // Versioned separately from the Ossie document and diagnostic plan schema.
-constexpr const char *POPULATION_API_VERSION = "1.1.0";
+constexpr const char *POPULATION_API_VERSION = "2.0.0";
 
 unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBindInput &input,
                                         vector<LogicalType> &types, vector<string> &names) {
@@ -1872,6 +1878,7 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 		    "false},"
 		    "\"mcp_example\":{\"list_encoding\":\"JSON-encoded string "
 		    "arrays\",\"exact_numeric_transport_verified\":false,"
+		    "\"result_schema\":\"ossie-population-result-v1\",\"numeric_encoding\":\"typed strings\","
 		    "\"transport_size_and_truncation_verified\":\"fixed fixtures only\"},"
 		    "\"uniform_errors\":true,\"error_contract\":{\"schema\":\"ossie-population-error-v1\","
 		    "\"scope\":\"recoverable population callback errors and JSON list helper\","
@@ -1891,6 +1898,7 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
 	if (input.inputs[0].IsNull())
 		Fail("concept", "bind", "concept required");
 	auto concept = input.inputs[0].GetValue<string>();
+	result->concept = concept;
 	bool objects = input.inputs.size() == 2;
 	auto metrics = objects ? vector<string>() : ToStringList(input.inputs[1], "ossie_concept_query");
 	auto dimensions = objects ? vector<string>() : ToStringList(input.inputs[2], "ossie_concept_query");
@@ -1898,8 +1906,11 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
 	if (metrics.size() > 64 || dimensions.size() > 256)
 		Fail(concept, "capability", "request exceeds 64 metrics or 256 dimensions");
 	result->compile = input.table_function.name == "ossie_concept_compile";
+	result->encoded =
+	    input.table_function.name == "ossie_objects_json" || input.table_function.name == "ossie_concept_query_json";
 	// Empty metrics explicitly select the object path for the compile endpoint only.
 	objects |= result->compile && metrics.empty();
+	result->objects = objects;
 	if (objects && !dimensions.empty())
 		Fail(concept, "bind", "object compile does not accept dimensions");
 	lock_guard<mutex> guard(result->bundle->query_lock);
@@ -1945,8 +1956,102 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
 			NormalizeError(prepared->GetErrorObject(), concept, "bind", ExceptionType::INVALID_INPUT);
 		types = prepared->GetTypes();
 		names = prepared->GetNames();
+		if (result->encoded) {
+			case_insensitive_set_t unique_names;
+			for (auto &name : names) {
+				if (!unique_names.insert(name).second)
+					Fail(name, "bind", "duplicate column name in typed JSON result");
+			}
+			result->result_types = types;
+			result->result_names = names;
+			types = {LogicalType::VARCHAR};
+			names = {"result_json"};
+		}
 	}
 	return std::move(result);
+}
+
+string ResultEncoding(const LogicalType &type) {
+	switch (type.id()) {
+	case LogicalTypeId::TINYINT:
+	case LogicalTypeId::SMALLINT:
+	case LogicalTypeId::INTEGER:
+	case LogicalTypeId::BIGINT:
+	case LogicalTypeId::HUGEINT:
+		return "integer-text";
+	case LogicalTypeId::DECIMAL:
+		return "decimal-text";
+	case LogicalTypeId::FLOAT:
+	case LogicalTypeId::DOUBLE:
+		return "ieee754-text";
+	case LogicalTypeId::BOOLEAN:
+		return "boolean";
+	case LogicalTypeId::DATE:
+		return "date-text";
+	case LogicalTypeId::VARCHAR:
+		return "string";
+	default:
+		Fail(type.ToString(), "capability", "typed JSON result does not support this bound type");
+	}
+}
+
+string ResultJSON(ClientContext &context, const PopulationBind &data, QueryResult &query) {
+	if (query.types != data.result_types || query.names != data.result_names)
+		Fail("query", "execute", "typed JSON result schema differs from the bound schema");
+	auto &b = *data.bundle;
+	string json =
+	    "{\"schema_version\":\"ossie-population-result-v1\",\"request_kind\":" +
+	    JSONString(data.objects ? "objects" : "metrics") + ",\"concept\":" + JSONString(data.concept) +
+	    ",\"executed\":true,\"profile\":" + JSONString(b.profile) + ",\"snapshot_id\":" + JSONString(b.snapshot_id) +
+	    ",\"content_sha256\":" + JSONString(b.content_hash) + ",\"core_sha256\":" + JSONString(b.core_hash) +
+	    ",\"ontology_sha256\":" + JSONString(b.ontology_hash) + ",\"mapping_sha256\":" + JSONString(b.mapping_hash) +
+	    ",\"manifest_sha256\":" + JSONString(b.manifest_hash) +
+	    ",\"ordering\":\"unspecified\",\"paging\":false,\"truncated\":false,\"columns\":[";
+	for (idx_t col = 0; col < query.types.size(); col++) {
+		if (col)
+			json += ",";
+		json += "{\"ordinal\":" + to_string(col + 1) + ",\"name\":" + JSONString(query.names[col]) +
+		        ",\"bound_type\":" + JSONString(query.types[col].ToString()) +
+		        ",\"encoding\":" + JSONString(ResultEncoding(query.types[col])) + "}";
+	}
+	json += "],\"rows\":[";
+	idx_t count = 0;
+	while (auto chunk = query.Fetch()) {
+		if (chunk->ColumnCount() != query.types.size())
+			Fail("query", "execute", "typed JSON chunk width differs from the bound schema");
+		for (idx_t row = 0; row < chunk->size(); row++) {
+			if (context.IsInterrupted())
+				throw InterruptException();
+			if (count++)
+				json += ",";
+			json += "[";
+			for (idx_t col = 0; col < query.types.size(); col++) {
+				if (col)
+					json += ",";
+				auto value = chunk->GetValue(col, row);
+				if (value.IsNull())
+					json += "null";
+				else if (value.type().id() == LogicalTypeId::BOOLEAN)
+					json += value.GetValue<bool>() ? "true" : "false";
+				else if (value.type().id() == LogicalTypeId::FLOAT || value.type().id() == LogicalTypeId::DOUBLE) {
+					auto number = value.GetValue<double>();
+					auto text = std::isnan(number)                    ? "NaN"
+					            : std::isinf(number)                  ? (number < 0 ? "-Infinity" : "+Infinity")
+					            : number == 0 && std::signbit(number) ? "-0"
+					                                                  : value.ToString();
+					json += JSONString(text);
+				} else
+					json += JSONString(value.type().id() == LogicalTypeId::VARCHAR ? value.GetValue<string>()
+					                                                               : value.ToString());
+			}
+			json += "]";
+		}
+	}
+	if (query.HasError())
+		NormalizeError(query.GetErrorObject(), "query", "execute", ExceptionType::INVALID_INPUT);
+	if (context.IsInterrupted())
+		throw InterruptException();
+	return json + "],\"row_count\":" + to_string(count) + "}";
 }
 
 unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionInitInput &input) {
@@ -1984,6 +2089,10 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 		lock_guard<mutex> guard(data.bundle->query_lock);
 		auto engine = Engine(*data.bundle);
 		result->result = Run(context, *engine, data.statement->Copy());
+		if (data.encoded) {
+			result->rows.push_back({Value(ResultJSON(context, data, *result->result))});
+			result->result.reset();
+		}
 	}
 	return std::move(result);
 }
@@ -2103,6 +2212,20 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	                 "Execute bounded SUM/COUNT/AVG metrics for a concept, using the same frozen batch and population "
 	                 "predicate as ossie_objects. NULL and sparse groups follow DuckDB SQL behavior.",
 	                 "SELECT * FROM ossie_concept_query('ValidUser', ['mean_gaap'], ['dws_gaap_di.ds'], [])");
+	for (bool objects : {true, false}) {
+		auto arguments = objects ? vector<LogicalType> {LogicalType::VARCHAR, list}
+		                         : vector<LogicalType> {LogicalType::VARCHAR, list, list, list};
+		auto name = objects ? "ossie_objects_json" : "ossie_concept_query_json";
+		RegisterDescribe(
+		    loader, traced(TableFunction(name, arguments, ScanBoundary, BindBoundary, InitBoundary)),
+		    "Execute the same frozen population query with a versioned typed JSON result. One result_json row carries "
+		    "actual bound columns, snapshot/definition hashes and row arrays even when empty. Integers, Decimal and "
+		    "approximate IEEE floats use strings, NULL stays null; no sorting, paging or truncation. Native APIs "
+		    "retain "
+		    "their types. This adapter materializes the complete response; input limits are not output/memory bounds.",
+		    objects ? "SELECT * FROM ossie_objects_json('ValidUser', [])"
+		            : "SELECT * FROM ossie_concept_query_json('ValidUser', ['mean_gaap'], [], [])");
+	}
 	RegisterDescribe(
 	    loader,
 	    traced(TableFunction("ossie_concept_compile", {LogicalType::VARCHAR, list, list, list}, ScanBoundary,

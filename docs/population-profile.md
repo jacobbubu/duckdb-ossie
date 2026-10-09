@@ -9,6 +9,10 @@ membership rule. It does not represent full Ossie ontology conformance.
 original metric/field names, successful load-preflight types, and versioned
 capabilities. It is separate from the core model discovery state.
 
+Optional [typed JSON adapters](population-result.md) preserve integer/Decimal
+values as strings with actual bound types, including metadata for empty results.
+The native APIs below keep their original schemas and types.
+
 ## Load a definition bundle
 
 The implementation manifest is separate from the three standard documents:

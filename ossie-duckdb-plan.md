@@ -641,3 +641,9 @@ DATE包fccce8d本地完成。下一已授权动作：人工事实/唯一维度�
 ### 后续 MCP 分页需求（2026-10-09）
 
 用户要求只记录今后需求，先调研再设计/实施。问题、目标、研究方向及未决定事项归现 [OSSIE-REQ-001 的分页需求](docs/ossie-execution-research.md#后续需求mcp-大结果分页2026-10-09用户新增)。目前不启动研究或实现，不加入当前数值传输修复包/P0 必需完成条件；当前 10,000 行上限仍是输入批次限额，接口没有分页。将来先核对协议/实际实现及参考方案，再确定对象/分组分页、快照一致性、输出预算和独立完整性验收。
+
+### MCP typed numeric 本地交付 checkpoint（2026-10-09，当前）
+
+e2468ca 后数值修复包完成，细节/失败/兼容与报告归现 [issue](docs/ossie-execution-research.md)。新增可选 typed JSON SQL adapter，实际 bound types/values 编码；普通 JSON 客户端保留 integer/Decimal 字符串，Float 明确近似及非有限值，空结果带同一 bound batch 的 metadata。原生 SQL 类型/公式不变；MCP 成功 schema 有不兼容变化，按项目政策 API2.0.0，独立 result-v1；保持三个工具/四资源及 compile/discovery 形状。ASCII duplicate 拒绝/Unicode 不同列、prepared/reload/运行时错误及取消恢复已验证。
+
+最终同 artifact e95dd360…：19 state/42 grain/158 capture、814 SQL/23 cases/0 skips、38 Bun/124 expects、10 stock verifiers、新 typed24、真实 MCP330/106 refusals、CLI40 PASS FAITHFUL/core resource 通过。10,000 对象/17 columns 与 10,000 groups 完整，新 object wire63,181,123 bytes；不是 output/峰值内存上界。CI已接 typed probe，远程未跑；分页仍只为后续需求。当前本地提交保留、不推送。下一已授权 R2 字符串数组 scalar 容错收紧及字段偏离结论，再归档完整规则驱动验收；整体 P0 尚未完成，原更广范围及 remote CI 未自动扩权。

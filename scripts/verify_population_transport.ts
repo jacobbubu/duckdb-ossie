@@ -190,10 +190,14 @@ export async function verify(artifact: string) {
         const source = readFileSync(
           join(ROOT, "examples/population_server.sql"),
           "utf8",
-        ).replace(
-          "INSTALL ossie FROM community;\nLOAD ossie;\n",
-          `LOAD ${sqlString(resolve(artifact))};\n`,
-        );
+        )
+          .replace(
+            "INSTALL ossie FROM community;\nLOAD ossie;\n",
+            `LOAD ${sqlString(resolve(artifact))};\n`,
+          )
+          .replaceAll("ossie_objects_json(", "ossie_objects(")
+          .replaceAll("ossie_concept_query_json(", "ossie_concept_query(");
+        // Preserve this raw-numeric research control independently of the repaired adapter.
         const text =
           source.slice(0, source.indexOf("-- BEGIN OPERATOR SETUP")) +
           "-- BEGIN OPERATOR SETUP\n" +
@@ -663,7 +667,7 @@ export async function verify(artifact: string) {
   }
   return {
     scope:
-      "Real MCP precise numeric and bounded large-output research; observed loss is a finding, not a passing lossless contract",
+      "Raw/native MCP control deliberately bypasses typed adapters; observed Number decoding loss is not the production typed-result behavior",
     artifact_sha256: digest(artifact),
     cli_sha256: digest(cli),
     mcp_runtime: {
@@ -696,7 +700,7 @@ export async function verify(artifact: string) {
     ordinary_json_roundtrip_exact_for_fixture: decodedFailures.length === 0,
     limitations: [
       "Raw numeric spelling and ordinary JSON Number decoding are separate; token fidelity does not establish a lossless client contract",
-      "No production encoding change; decoded discrepancies block a lossless ordinary-JSON client claim",
+      "This raw/native control bypasses production typed encoding; its decoded discrepancies concern raw Number parsing",
       "Large completeness only demonstrated for this fixture, not all payloads/configurations",
       "Canonical input cap is not a JSON-RPC output or peak-memory bound",
       "No remote CI, cross-platform or autonomous Agent evidence; observed MCP dependency not repo-pinned",

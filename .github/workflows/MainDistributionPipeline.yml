@@ -137,6 +137,7 @@ jobs:
           bun scripts/verify_plan_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/plan.json
           bun scripts/verify_discovery_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/discovery.json
           bun scripts/verify_error_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/errors.json
+          bun scripts/verify_typed_population_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/typed-result.json
 
       - uses: actions/upload-artifact@v4
         if: always()

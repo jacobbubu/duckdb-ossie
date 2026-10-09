@@ -4,6 +4,7 @@ import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { RpcProcess } from "./mcp_check.ts";
 import { populationError } from "./population_error.ts";
+import { populationResult, resultRecords } from "./population_result.ts";
 import {
   assert,
   digest,
@@ -142,6 +143,11 @@ export async function verify(artifact: string) {
         assert(!reply.error && !reply.result?.isError, JSON.stringify(reply));
         const content = reply.result?.content as { text?: string }[];
         assert.equal(content.length, 1);
+        if (tool !== "population_compile") {
+          const result = populationResult(content[0].text!);
+          checks.push(label + ": actual typed result " + tool);
+          return resultRecords(result);
+        }
         const data: unknown = JSON.parse(content[0].text!);
         assert(
           Array.isArray(data) &&
@@ -223,7 +229,7 @@ export async function verify(artifact: string) {
         }
         check(label + ": actual versioned vocabulary content", () => {
           const capability = vocabulary.capabilities![0]!;
-          assert.equal(capability.api_version, "1.1.0");
+          assert.equal(capability.api_version, "2.0.0");
           assert.equal(
             capability.discovery_schema,
             "ossie-population-discovery-v1",
@@ -357,8 +363,8 @@ export async function verify(artifact: string) {
         const total = (await rows("population_query", args))[0];
         const expected = baseline.cases[String(threshold)];
         check(`gaap-${threshold}: independent totals and trace`, () => {
-          assert.equal(total.record_count, expected.record_count);
-          assert.equal(total.gaap_value_count, expected.record_count);
+          assert.equal(total.record_count, String(expected.record_count));
+          assert.equal(total.gaap_value_count, String(expected.record_count));
           assert.equal(Number(total.gaap_sum).toFixed(2), expected.gaap_sum);
           assert.equal(total._ossie_snapshot_id, compiled.snapshot_id);
           assert.equal(total._ossie_content_sha256, compiled.content_sha256);
@@ -398,7 +404,7 @@ export async function verify(artifact: string) {
               (r) => r["dws_gaap_di.ds"] === target.ds,
             )!;
             assert(actual);
-            assert.equal(actual.record_count, target.record_count);
+            assert.equal(actual.record_count, String(target.record_count));
             assert.equal(Number(actual.gaap_sum).toFixed(2), target.gaap_sum);
             assert(
               Math.abs(Number(actual.mean_gaap) - Number(target.gaap_average)) <
@@ -421,7 +427,7 @@ export async function verify(artifact: string) {
                 r["dws_gaap_di.user_type"] === target.user_type,
             );
             assert(actual);
-            assert.equal(actual.record_count, target.record_count);
+            assert.equal(actual.record_count, String(target.record_count));
             assert.equal(Number(actual.gaap_sum).toFixed(2), target.gaap_sum);
           }
         });
@@ -472,7 +478,7 @@ export async function verify(artifact: string) {
         checks.push(`gaap-${threshold}: sparse empty objects and groups`);
         const empty = (await rows("population_query", emptyArgs))[0];
         check(`gaap-${threshold}: ungrouped empty metrics`, () => {
-          assert.equal(empty.record_count, 0);
+          assert.equal(empty.record_count, String(0));
           assert.equal(empty.gaap_sum, null);
           assert.equal(empty.mean_gaap, null);
         });
@@ -662,7 +668,7 @@ export async function verify(artifact: string) {
       const total = (await rows("population_query", args))[0];
       const compiled = (await rows("population_compile", args))[0];
       check("joined: independent totals/trace", () => {
-        assert.equal(total.record_count, 4);
+        assert.equal(total.record_count, String(4));
         assert.equal(Number(total.amount_sum).toFixed(2), "24.98");
         assert.equal(total._ossie_snapshot_id, compiled.snapshot_id);
         assert.equal(compiled.executed, false);
@@ -728,6 +734,7 @@ export async function verify(artifact: string) {
         "examples/population_server.sql",
         "scripts/verify_population_mcp.ts",
         "scripts/population_error.ts",
+        "scripts/population_result.ts",
         "scripts/mcp_check.ts",
         "examples/server.sql",
         ".github/workflows/MainDistributionPipeline.yml",
@@ -750,9 +757,9 @@ export async function verify(artifact: string) {
     refusals,
     observations,
     limitations: [
-      "JSON numeric serialization is not lossless DECIMAL transport",
+      "Integer/Decimal typed strings preserve native values; later conversion to Number can lose precision, FLOAT/DOUBLE remain approximate",
       "Schema types are not enforced by MCP; valid native arrays serialize to accepted JSON bytes; extra unused parameters are ignored",
-      "No row trace for empty results; use compile and retain fixed operator bundle",
+      "Empty row sets carry bound schema and hashes in the typed envelope; no cross-call reload atomicity",
       "Vocabulary comes from the bound operator-approved bundle; compare hashes across discovery and execution",
       "Registry MCP dependency is observed rather than pinned by this repository",
       "No remote CI, cross-platform or actual autonomous Agent validation",

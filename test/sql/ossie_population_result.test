@@ -1,0 +1,78 @@
+# name: test/sql/ossie_population_result.test
+# description: typed JSON result preserves native API and frozen binding
+# group: [sql]
+
+require ossie
+
+statement error
+SELECT * FROM ossie_objects_json('User',[]);
+----
+no bundle loaded
+
+statement ok
+CREATE TABLE dws_gaap_di(ds DATE, product VARCHAR, region VARCHAR, user_type VARCHAR, user_id VARCHAR, gaap_val DECIMAL(18,2), ytd_gaap DECIMAL(18,2));
+
+statement ok
+COPY dws_gaap_di FROM 'docs/research/ossie-req-001/gaap-boundary.csv' (HEADER);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population/bundle-10.json');
+
+query IIIII
+SELECT contains(result_json,'"schema_version":"ossie-population-result-v1"')::INTEGER, contains(result_json,'"request_kind":"objects"')::INTEGER, contains(result_json,'"concept":"ValidUser"')::INTEGER, contains(result_json,'"bound_type":"DECIMAL(18,2)"')::INTEGER, contains(result_json,'"encoding":"decimal-text"')::INTEGER FROM ossie_objects_json('ValidUser',[]);
+----
+1	1	1	1	1
+
+query IIII
+SELECT contains(result_json,'"rows":[]')::INTEGER, contains(result_json,'"row_count":0')::INTEGER, contains(result_json,'"snapshot_id":')::INTEGER, contains(result_json,'"columns":[')::INTEGER FROM ossie_objects_json('ValidUser',['User.product = ''absent''']);
+----
+1	1	1	1
+
+query II
+SELECT contains(result_json,'"bound_type":"DECIMAL(38,2)"')::INTEGER, contains(result_json,'"encoding":"integer-text"')::INTEGER FROM ossie_concept_query_json('ValidUser',['gaap_sum','record_count'],[],[]);
+----
+1	1
+
+statement error
+SELECT * FROM ossie_concept_query_json('ValidUser',['gaap_sum','GAAP_SUM'],[],[]);
+----
+duplicate column name
+
+statement error
+SELECT * FROM ossie_concept_query_json('ValidUser',['missing_metric'],[],[]);
+----
+missing_metric
+
+query TT
+SELECT typeof(gaap_sum),typeof(record_count) FROM ossie_concept_query('ValidUser',['gaap_sum','record_count'],[],[]);
+----
+DECIMAL(38,2)	BIGINT
+
+statement ok
+CREATE TABLE old_typed_result AS SELECT * FROM ossie_objects_json('User',[]);
+
+statement ok
+PREPARE old_typed AS SELECT (now.result_json=previous.result_json)::INTEGER FROM ossie_objects_json('User',[]) now,old_typed_result previous;
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population/bundle-20.json');
+
+query I
+EXECUTE old_typed;
+----
+1
+
+query I
+SELECT (now.result_json<>previous.result_json)::INTEGER FROM ossie_objects_json('User',[]) now,old_typed_result previous;
+----
+1
+
+statement error
+CALL ossie_bundle_load('/missing/typed-bundle.json');
+----
+ossie_population_error_v1
+
+query I
+EXECUTE old_typed;
+----
+1
