@@ -624,3 +624,21 @@ c25d118 数组修复已本地交付；本包核对固定 core schema 的全部 p
 本包仅新增对应文档与 characterization verifier；生产 C++ 未变，未重建或重跑已通过的功能门禁。quality-local 格式/类型/架构和 38 Bun tests/124 expects 通过，[审阅控制记录](research/ossie-req-001/r2-correspondence-control-results.json) 检查来源 manifest、50 项 schema inventory/table 对齐与源码/报告/产物 hashes。工具验证失败保留：numeric expression 控制初版错误读取 metadata.expression（此列不存在），改为实际 ossie_fields.expression 后成功，不改生产行为。证据审计初版假定全部 manifest 项使用 saved_path，业务原件实际使用 source_path；按记录路径校验后重跑成功，首次未生成报告/未提交。
 
 逐字段审阅包本地完成，R2.5 对应表缺口已补，但 R2/P0 仍未最终验收。下一已授权必要动作是 length-aware 字符串保真修复及 raw/flattened/list 对照，再处理剩余校验偏离收口、最终 A1–A8 规则驱动归档。只本地提交，不推送；分页、P1/非目标和 remote CI/Ubuntu tidy 保留原边界，无新 backlog。
+
+## R2 字符串保真 checkpoint（2026-10-09，恢复）
+
+2470cff 的真实控制已定位 NUL 截短；本包修复 parser 的单值字符串、AI string instructions 和 unique_keys 成员读取长度，保留原始 JSON 与展开值一致。不修改数字/Boolean scalar 容错、minLength 或全 schema；既有数组严格成员检查保持。先将旧 defect characterization 改为完整值回归，增加说明/label、两种 AI 形态/所有 scope、复合键与合法控制字符的实测；执行表达式/名称边界单独核验，不把 metadata 保真当作授权 NUL SQL。失败加载保留旧状态，重建最终同产物运行质量/native/SQL/stock/MCP 回归。旧证据不可覆盖，交付只本地提交，不推送，R2 剩余校验偏离及最终 A1–A8 归档仍必要。
+
+R2 保真包发现与范围补充：初次 length-aware 修复后的真实执行边界控制显示，core 的 ANSI_SQL 表达式 `amount\u0000 + 100` 被 DuckDB parser 按前缀解析成 amount，虽然发现出口保留完整字符串。这会改变公式，故本包增加所有 expression variants 的显式 NUL 拒绝，放在 AST parse 前。core 描述性文本继续完整保留；population 既有整份定义 NoNUL 拒绝保持，不将 core metadata 能力扩大为 population NUL 支持。未扩大为全字段/全 schema 校验。
+
+## R2 字符串保真结果（2026-10-09）
+
+修复 ScalarText 的字符串分支、AI string instructions 与 unique_keys 的读取长度；它们不再把合法 NUL 后内容截掉。所有 model expression variants 在 AST parse 前拒绝 NUL，避免 DuckDB prefix parse 改变公式；描述性 metadata 的保留和 SQL 可执行边界分开。project API 仍 2.0.0，单值数字/Boolean scalar 容错与其他 schema 偏离未改，population 整份定义 NoNUL 仍拒绝。
+
+[26 个真实字段/保真控制](research/ossie-req-001/r2-fidelity-correspondence-artifact-results.json) 更新之前的 14 characterization，增加五个 scope 的 AI string/object 完整 raw/flattened 对照、模型/数据集/字段/指标 description 与 field label、复合 unique_keys、含 NUL expression 拒绝及完整旧 metadata 保持。测试使用实际 NUL 加中文/quote/backslash/newline/tab，而非仅文本字面量“\u0000”。[46 个实际错误控制](research/ossie-req-001/r2-fidelity-error-artifact-results.json) 另核对 hash-valid NUL core 的 population parse 拒绝/旧 bundle 保持。旧 truncation 报告不覆盖，字段对应表/limitations 更新为修复后的现状。
+
+最终 artifact SHA256 `df2f3285e591df96ef70287771eb5384efd64ae89050eb3150bfe4a17cfbd43a`。release、quality-local、19 state/42 grain/158 capture、829 SQL assertions/23 cases/0 skips、38 Bun tests/124 expects 通过；11 个 stock artifact verifiers（原十项加字段对应/保真）、population MCP 330 检查/106 拒绝、core MCP 实际资源、stock CLI 40 PASS/0 FAIL/0 SKIP FAITHFUL 均同产物通过。[控制汇总](research/ossie-req-001/r2-fidelity-control-results.json) 绑定最终源码/输入/报告 hashes，固定 schema 50 项 inventory 与对应表对齐。新增 verifier 接 CI same-download artifact step；remote CI/Ubuntu tidy 未执行。
+
+发现/纠正保留：初次仅改长度读取后，真实 ANSI_SQL `amount\u0000 + 100` probe 显示 metadata 完整而 Compile 实际生成 avg(facts.amount)，证明 parser 只用前缀；在本包增加显式表达式拒绝并重建后，最终 fixture/verifier 检查拒绝且旧模型完整保留。此中间产物不是最终通过证据。质量门禁未失败；最终哈希审计发现新增 CI verifier 后 plan/MCP 报告仍绑定旧 workflow hash，重新运行这两项同产物控制后通过，未手改报告哈希。既有 metadata 与 expression AST 的用途区别未改变。
+
+本地保真工作包完成，只提交保留、不推送。必要剩余为 R2 单值 scalar/minLength/unknown properties/custom extension/dialect 校验偏离的明确收口（尚未接受为兼容例外），之后最终 A1–A8 规则驱动验收归档；整体 R2/P0 未完成。下一已授权步骤优先收紧单值字符串类型容错，再核对其他校验边界。分页只作未来调研、P1/非目标和远端验证维持原范围。

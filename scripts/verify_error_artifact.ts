@@ -255,6 +255,27 @@ export async function verify(artifact: string) {
       );
       assert.deepEqual(await db.rows("SELECT * FROM ossie_concepts()"), before);
       checks.push("hash-valid malformed core retains frozen bundle");
+      core.ai_context = { instructions: "before\0after" };
+      writeFileSync(invalidCore, JSON.stringify(core));
+      writeFileSync(
+        invalid,
+        JSON.stringify({
+          ...manifest,
+          core: {
+            ...manifest.core,
+            path: invalidCore,
+            sha256: digest(invalidCore),
+          },
+        }),
+      );
+      await refuse(
+        "population profile still refuses NUL core metadata",
+        "CALL ossie_bundle_load(?)",
+        [invalid],
+        "parse",
+      );
+      assert.deepEqual(await db.rows("SELECT * FROM ossie_concepts()"), before);
+      checks.push("NUL profile refusal retains previous frozen bundle");
       writeFileSync(invalid, "{invalid");
       await refuse(
         "document parse stage retained",

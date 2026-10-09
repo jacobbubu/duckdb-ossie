@@ -30,6 +30,12 @@ in executable expressions or identifiers. The loader is not a full JSON Schema
 validator: single-value `RequiredString`/`OptionalString` paths retain their
 existing scalar conversion and other field-specific checks still apply.
 
+Core descriptive strings and unique-key members are read using their actual
+length, so NUL does not truncate metadata. Model expression variants containing
+NUL are refused before SQL parsing because DuckDB otherwise parses only the
+prefix. The bounded population profiles continue to reject NUL in their
+complete definition documents.
+
 ## Grain
 
 **Metrics that aggregate at more than one grain.** `store_productivity` is

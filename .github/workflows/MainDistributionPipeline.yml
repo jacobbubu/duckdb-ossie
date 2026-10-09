@@ -128,6 +128,7 @@ jobs:
         run: |
           mkdir -p quality-reports
           bun scripts/verify_loader_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/loader.json
+          bun scripts/verify_core_correspondence.ts downloaded/ossie.duckdb_extension --output quality-reports/core-correspondence.json
           bun scripts/verify_population_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/population.json
           bun scripts/verify_expression_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/expression.json
           bun scripts/verify_date_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/date.json

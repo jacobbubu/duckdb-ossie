@@ -161,9 +161,9 @@ export async function verify(artifact: string) {
         (rows) => {
           const row = rows.find((r) => r.kind === "model")!;
           assert.equal(JSON.parse(String(row.ai_context)), "before\0after");
-          assert.equal(row.instructions, "before");
+          assert.equal(row.instructions, "before\0after");
         },
-        "valid JSON string retained raw but flattened instructions truncated at NUL; unresolved fidelity defect",
+        "valid JSON string preserved identically in raw AI and flattened instructions",
       );
       await accepted(
         "nul-ai-instructions",
@@ -176,9 +176,9 @@ export async function verify(artifact: string) {
             JSON.parse(String(row.ai_context)).instructions,
             "before\0after",
           );
-          assert.equal(row.instructions, "before");
+          assert.equal(row.instructions, "before\0after");
         },
-        "valid JSON string retained raw but flattened instructions truncated at NUL; unresolved fidelity defect",
+        "valid JSON string preserved identically in raw AI and flattened instructions",
       );
       await accepted(
         "nul-unique-key",
@@ -186,12 +186,12 @@ export async function verify(artifact: string) {
           m.datasets[0].unique_keys = [["before\0after"]];
         },
         () => {},
-        "valid string unique key truncated at NUL in internal list; unresolved fidelity defect",
+        "valid string unique key preserved in internal list",
       );
       const [dataset] = await db.records(
         "SELECT unique_keys FROM ossie_datasets()",
       );
-      assert.deepEqual(dataset!.unique_keys, [["before"]]);
+      assert.deepEqual(dataset!.unique_keys, [["before\0after"]]);
       await accepted(
         "undeclared-keys",
         (m) => {
@@ -204,6 +204,99 @@ export async function verify(artifact: string) {
         "SELECT primary_key FROM ossie_datasets()",
       );
       assert.deepEqual(keys!.primary_key, ["not_declared"]);
+      const bytes = 'before\0after中文\\"\n\t';
+      for (const scope of [
+        "model",
+        "dataset",
+        "field",
+        "metric",
+        "relationship",
+      ]) {
+        for (const shape of ["string", "object"]) {
+          await accepted(
+            `fidelity-${scope}-${shape}`,
+            (m) => {
+              m.relationships = [
+                {
+                  name: "self",
+                  from: "facts",
+                  to: "facts",
+                  from_columns: ["amount"],
+                  to_columns: ["amount"],
+                },
+              ];
+              const target =
+                scope === "model"
+                  ? m
+                  : scope === "dataset"
+                    ? m.datasets[0]
+                    : scope === "field"
+                      ? m.datasets[0].fields[7]
+                      : scope === "metric"
+                        ? m.metrics[0]
+                        : m.relationships[0];
+              target.ai_context =
+                shape === "string" ? bytes : { instructions: bytes };
+            },
+            (rows) => {
+              const target = rows.find(
+                (r) =>
+                  r.kind === scope &&
+                  (scope !== "field" || r.name === "amount"),
+              )!;
+              assert.equal(target.instructions, bytes);
+              const raw = JSON.parse(String(target.ai_context));
+              assert.equal(shape === "string" ? raw : raw.instructions, bytes);
+            },
+            "legal AI raw and flattened bytes agree across all five scopes",
+          );
+        }
+      }
+      await accepted(
+        "fidelity-descriptions-label",
+        (m) => {
+          m.description = bytes;
+          m.datasets[0].description = bytes;
+          m.datasets[0].fields[7].description = bytes;
+          m.datasets[0].fields[7].label = bytes;
+          m.metrics[0].description = bytes;
+        },
+        (rows) => {
+          for (const kind of ["model", "dataset", "metric"])
+            assert.equal(rows.find((r) => r.kind === kind)!.description, bytes);
+          const amount = rows.find(
+            (r) => r.kind === "field" && r.name === "amount",
+          )!;
+          assert.equal(amount.description, bytes);
+          assert.equal(amount.label, bytes);
+        },
+        "optional scalar strings preserve legal control and UTF-8 bytes",
+      );
+      const fixture = join(ROOT, "test/fixtures/conformance/nul_metadata.json");
+      await db.run("CALL ossie_load(?)", [fixture]);
+      const before = await db.records("SELECT * FROM ossie_metadata()");
+      const [composite] = await db.records(
+        "SELECT unique_keys FROM ossie_datasets()",
+      );
+      assert.deepEqual(composite!.unique_keys, [["before\0after", "中文"]]);
+      const malformed = join(
+        ROOT,
+        "test/fixtures/conformance/nul_expression.json",
+      );
+      await assert.rejects(
+        db.run("CALL ossie_load(?)", [malformed]),
+        /expression must not contain NUL/,
+      );
+      assert.deepEqual(
+        await db.records("SELECT * FROM ossie_metadata()"),
+        before,
+      );
+      observations.push({
+        name: "NUL expression refusal preserves full prior metadata",
+        accepted: false,
+        classification: "SQL parser prefix truncation prevented before parsing",
+        input_sha256: digest(malformed),
+      });
       const emptyKey = json<any>(base);
       emptyKey.datasets[0].unique_keys = [[]];
       const emptyPath = join(directory, "empty-unique-key.json");
@@ -243,13 +336,15 @@ export async function verify(artifact: string) {
     return {
       scope:
         "read-only characterization and complete schema property inventory, not approval of deviations or full conformance",
-      base_commit: "c25d118",
+      base_commit: "2470cff",
       engine,
       artifact_sha256: digest(artifact),
       verifier_sha256: digest(import.meta.path),
       source_sha256: Object.fromEntries(
         [
           "src/model/parser.cpp",
+          "test/fixtures/conformance/nul_metadata.json",
+          "test/fixtures/conformance/nul_expression.json",
           "src/model/validate.cpp",
           "src/functions/describe.cpp",
           "src/include/ossie/model.hpp",
@@ -260,9 +355,9 @@ export async function verify(artifact: string) {
       ),
       schema_property_inventory: inventory,
       observations,
-      production_changed: false,
+      production_changed: true,
       remaining: [
-        "length-aware fidelity defects need repair before final R2 acceptance",
+        "final R2 acceptance still requires remaining validation deviation conclusion",
         "scalar coercion/minLength/additionalProperties/extension validation deviations need explicit compatibility conclusion",
         "final rule-driven P0 acceptance",
       ],

@@ -1,0 +1,75 @@
+{
+  "scope": "length-aware core scalar strings/AI instructions/unique keys; reject model expression NUL before SQL prefix parsing; population NUL policy unchanged",
+  "base_commit": "2470cff",
+  "artifact_sha256": "df2f3285e591df96ef70287771eb5384efd64ae89050eb3150bfe4a17cfbd43a",
+  "source_sha256": {
+    "src/model/parser.cpp": "2dcb19ada11dc0a4f827b28ae2609dcd57d87d6f2cd85433319fa876af8d8b44",
+    "scripts/verify_core_correspondence.ts": "967d82140d09d67c44fb7d35aa1d8a14a630f724fa5c90e0cadc65d0066ba6a9",
+    "scripts/verify_error_artifact.ts": "accda5f64716d4c38f8acb16735e126d554958cc07185bd38ed9a557d74d6140",
+    "test/sql/ossie_loader_contract.test": "28482cb1464ff0fb8802a81d288d7b6b8ffdf116237919f6e25374808ef6dc6b",
+    "test/fixtures/conformance/nul_metadata.json": "9ad523993fa37ed4b8e137c57afe8e0e194db128596bdef8beb0f22a9f00f6d7",
+    "test/fixtures/conformance/nul_expression.json": "897d4d1c0db060777fa119d6accde19440e04306a0a016e9db821b06e21c2a52",
+    ".github/workflows/MainDistributionPipeline.yml": "653d61b6ec6b6c02819c5e71ef06b23880ba5ae80b8a7a83180c6bbe20a5cb32"
+  },
+  "documentation_sha256": {
+    "docs/core-field-correspondence.md": "985c726b7e1403f6dd47647b1f3323e6153e705ac7d5c56df1870d77e495634f",
+    "docs/limitations.md": "2baf4029b5b645d4bb11067e0f74af307699673e0bd9f60d6cebbee266a6fdd6",
+    "docs/ossie-execution-research.md": "7e270877910a102b40d9653caa2c49b7992e744904419c0cdbb59bcefcdf1515",
+    "ossie-duckdb-plan.md": "0ca75a7fe5bed3614d3799289f14000b5e8789d44e6be21b7962c9e38cac6b65"
+  },
+  "reports": {
+    "docs/research/ossie-req-001/r2-fidelity-loader-artifact-results.json": "01f96da75630c608c9e2caadacb57158db1ee06005457eed140d5324bff95793",
+    "docs/research/ossie-req-001/r2-fidelity-population-artifact-results.json": "f729620f7823251ac499c93bdf5593cf3b6da35e58100da94e31a0c35453528b",
+    "docs/research/ossie-req-001/r2-fidelity-expression-artifact-results.json": "bf3f8e5971d1900f2021f3f819a65933c08eab08a919c02b564e46c267fbc04a",
+    "docs/research/ossie-req-001/r2-fidelity-date-artifact-results.json": "054362f9b8c8a8154a0e4e818de6f538bbc377707307f5443f822fee35375915",
+    "docs/research/ossie-req-001/r2-fidelity-join_research-artifact-results.json": "43a513b4c3901f5779adbf89ebc7f811f9e1cd276420c30c4221197e9ab98874",
+    "docs/research/ossie-req-001/r2-fidelity-joined_population-artifact-results.json": "0980ebfcee9fffeb445de490451e67a5fa9fd862b00999b03913a49c20d41bbc",
+    "docs/research/ossie-req-001/r2-fidelity-plan-artifact-results.json": "1f5724ab5dac0c7d9dbfcf414cb2bb7f70588670e475eb4e6a44f6513f6fcc49",
+    "docs/research/ossie-req-001/r2-fidelity-discovery-artifact-results.json": "35545d3f86a0a2835443d3b462791d160141e2d770cdc69a442b0043f4afb2be",
+    "docs/research/ossie-req-001/r2-fidelity-error-artifact-results.json": "97e6f861e4d8b196d5785ec001c134262ca414623262202038e0cf0366e636c6",
+    "docs/research/ossie-req-001/r2-fidelity-typed_population-artifact-results.json": "ffdb84b070289cfe7d1012778bc63e624235936b6da6c8b8bbb05d67eeaf4ab6",
+    "docs/research/ossie-req-001/r2-fidelity-correspondence-artifact-results.json": "1aacea691a70164cefa5c898473b7bdef7f69635cef7d86233d9849b63f5a883",
+    "docs/research/ossie-req-001/r2-fidelity-mcp-results.json": "eb55d259faed9f427eb0976b300bd900b32dc3d9980840a98191068ef331a443"
+  },
+  "source_and_generated_input_hash_assertions": 185,
+  "matrix_property_rows": 50,
+  "verification": {
+    "release": true,
+    "quality_local": true,
+    "state": 19,
+    "grain": 42,
+    "capture": 158,
+    "sql_assertions": 829,
+    "sql_cases": 23,
+    "sql_skips": 0,
+    "bun_tests": 38,
+    "bun_expects": 124,
+    "stock_artifact_verifiers": 11,
+    "correspondence_controls": 26,
+    "error_controls": 46,
+    "population_mcp_checks": 330,
+    "population_mcp_refusals": 106,
+    "stock_cli_pass": 40,
+    "stock_cli_fail": 0,
+    "stock_cli_skip": 0,
+    "stock_cli_faithful": true,
+    "core_mcp_actual_resources": true,
+    "remote_ci": false,
+    "ubuntu_tidy": false
+  },
+  "local_log_sha256": {
+    "/tmp/ossie-fidelity-build-final.log": "aa754eb6ec22860bcb9bb27e7328029fbe006963ab4c7a766db5304fdbefd3d4",
+    "/tmp/ossie-fidelity-gates.log": "ef1e493e219b460aab4c89e8dc77bd1963a38cb75c62ac4beffca37e471e6944",
+    "/tmp/ossie-fidelity-quality-final.log": "b796e978c22f7cc4a6b528dd2d4e26983d4752e756485e40f7c5a7d4a0e55dde",
+    "/tmp/ossie-fidelity-cli.log": "292689c49c1ecf919351381b62736842f844126d23eeb6513b6f5eb45c211510",
+    "/tmp/ossie-fidelity-core-mcp.log": "d2432264f935c32cc555a71999dd97f9dad6647fb4fa3615441a560ffd9fd591"
+  },
+  "retained_discovery": "After the initial length-only repair, a real ANSI_SQL amount\u0000 + 100 probe preserved the complete metadata but compiled only the amount prefix. Added model expression NUL refusal, rebuilt and passed final refusal/prior-state controls. Intermediate artifact is not final evidence. Final evidence audit detected stale workflow hashes in plan/MCP reports after adding the verifier to CI; reran both against final workflow, without manually replacing hashes.",
+  "compatibility": "API2.0.0/resultv1 retained; core legal metadata values preserve bytes, expression NUL explicitly refused; population complete-definition NUL rejection retained. Other schema validation deviations unchanged.",
+  "necessary_remaining": [
+    "R2 scalar/minLength/unknown-property/extension/dialect validation deviation conclusion; exceptions not yet accepted",
+    "final rule-driven A1-A8 P0 acceptance archive",
+    "pagination future research only; existing P1/non-goals and unrun remote CI/tidy"
+  ],
+  "delivery": "local commit only; no push/merge/publication"
+}

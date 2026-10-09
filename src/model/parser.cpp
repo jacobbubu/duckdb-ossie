@@ -54,7 +54,7 @@ bool ScalarText(yyjson_val *val, string &out) {
 		return false;
 	}
 	if (yyjson_is_str(val)) {
-		out = string(yyjson_get_str(val));
+		out = string(yyjson_get_str(val), yyjson_get_len(val));
 		return true;
 	}
 	if (yyjson_is_bool(val)) {
@@ -171,7 +171,7 @@ AIContext ParseAIContext(yyjson_val *parent, const string &context) {
 	}
 	result.raw_json = JSONText(ai_context);
 	if (yyjson_is_str(ai_context)) {
-		result.instructions = yyjson_get_str(ai_context);
+		result.instructions = string(yyjson_get_str(ai_context), yyjson_get_len(ai_context));
 		return result;
 	}
 	auto instructions = Member(ai_context, "instructions");
@@ -206,6 +206,10 @@ ModelExpression ParseModelExpression(yyjson_val *parent, const string &context) 
 	yyjson_arr_foreach(dialects, idx, max, item) {
 		auto dialect = RequiredString(item, "dialect", context);
 		auto sql = RequiredString(item, "expression", context);
+		// DuckDB's text parser stops at NUL; accepting a prefix would change the model formula.
+		if (sql.find('\0') != string::npos) {
+			throw InvalidInputException("ossie_load: %s expression must not contain NUL", context);
+		}
 		result.available_dialects.push_back(dialect);
 		variants.emplace_back(dialect, sql);
 	}
@@ -310,7 +314,7 @@ vector<vector<string>> ParseUniqueKeys(yyjson_val *dataset_obj, const string &co
 			if (!yyjson_is_str(col)) {
 				throw InvalidInputException("ossie_load: %s has a non-string column in 'unique_keys'", context);
 			}
-			key.emplace_back(yyjson_get_str(col));
+			key.emplace_back(yyjson_get_str(col), yyjson_get_len(col));
 		}
 		result.push_back(std::move(key));
 	}

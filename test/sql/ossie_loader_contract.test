@@ -253,3 +253,34 @@ query I
 SELECT is_time FROM ossie_fields();
 ----
 true
+
+query TTIIII
+CALL ossie_load('test/fixtures/conformance/nul_metadata.json');
+----
+nul_metadata	0.2.0.dev0	1	1	0	0
+
+query T rowsort
+SELECT CASE WHEN instructions = 'before' || chr(0) || 'after' THEN 'preserved' ELSE 'truncated' END FROM ossie_metadata() WHERE kind IN ('model','field');
+----
+preserved
+preserved
+
+query T
+SELECT CASE WHEN label = 'before' || chr(0) || 'after' AND description = label THEN 'preserved' ELSE 'truncated' END FROM ossie_metadata() WHERE kind='field';
+----
+preserved
+
+query T
+SELECT CASE WHEN unique_keys[1][1] = 'before' || chr(0) || 'after' AND unique_keys[1][2]='中文' THEN 'preserved' ELSE 'truncated' END FROM ossie_datasets();
+----
+preserved
+
+statement error
+CALL ossie_load('test/fixtures/conformance/nul_expression.json');
+----
+expression must not contain NUL
+
+query T
+SELECT name FROM ossie_metadata() WHERE kind='model';
+----
+nul_metadata

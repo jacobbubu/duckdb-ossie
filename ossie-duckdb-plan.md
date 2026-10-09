@@ -667,3 +667,13 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 50 个固定 schema properties 已逐行映射到内部/发现/执行边界，14 个真实 characterization 保存 13 接受/1 拒绝（不等于符合 schema）。发现合法 NUL 在 AI instructions/unique_keys 展开出口截短，raw AI 完整；单值 scalar、minLength、未知属性/扩展和方言容错也已单列，未自动接受为例外。生产 C++/artifact 未改，复用 c25d118 同产物，新增工具 quality-local/38 Bun/124 expects 通过，证据与失败归现 issue/对应表/r2-correspondence 报告。
 
 审阅包本地完成，提交保留、不推送；整体 R2/P0 未完成。下一已授权必要修复为 length-aware string fidelity，再收紧或明确处理剩余校验偏离并归档 A1–A8。分页仅未来调研、P1/非目标、remote CI/Ubuntu tidy 和发布权限保持既有范围。
+
+### R2 字符串保真 checkpoint（2026-10-09，恢复）
+
+当前必要动作：修复 ScalarText、AI string 和 unique_keys 的非 length-aware 读取，增加 raw/flattened/list 与执行边界、失败保持控制，沿 OSSIE-REQ-001 记录证据。其他 scalar/schema 容错不在本轮修改；重建同产物门禁后本地提交。剩余为其他校验偏离的明确收口、最终规则驱动验收；分页/P1/远端验证与交付边界保持原范围。
+
+### R2 保真本地交付 checkpoint（2026-10-09）
+
+实际长度读取修复 scalar string/AI instructions/unique_keys，26 字段控制验证 raw/flattened/list 与五个 scope/说明/label/复合键。新增 model expression NUL 明确拒绝，防 DuckDB prefix parse 改公式；失败旧 metadata 保持，population NoNUL 边界保持。最终同产物 19/42/158 native、829 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、population MCP330/106、core MCP 与 CLI40/0/0 通过，证据/中间 prefix parse 发现归现 issue/r2-fidelity 报告。CI接新增 verifier，remote CI/Ubuntu tidy 未跑。
+
+本包完成，本地提交、不推送。整体 R2/P0 仍须单值 scalar/minLength/unknown properties/extension/dialect 校验偏离收口、最终 A1–A8 归档；下一已授权动作优先单值字符串类型校验。分页/P1/非目标及发布权限保持既有边界。
