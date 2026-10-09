@@ -449,39 +449,42 @@ MCP 示例现在有四个可读资源（concepts/metrics/fields/capabilities）�
 
 用户授权继续，4a9c01d 后工作区干净。本包在现有 OSSIE-REQ-001 内核对原需求 38 子项与 A1–A8；按用户决定更新 R1.3/A8 解释，逐项区分已验证的限定实现、尚缺证据、显式拒绝和 P1/非目标。读取原始需求、固定规范/来源审阅、各本地合同和最后同产物报告，并检查引用/哈希，不重复跑已通过门禁。原需求与历史结果保持不变；不创建第二 backlog、不实现新的接口/计算/transport、不将 remote CI 或真实自主 Agent 验证冒充已有证据。比较候选下一包的要求来源与影响，必要时用限定 Advisor 审阅 P0/P1 边界；本轮只交付核对和具体下一步，不扩展 push/merge/发布权限。
 
-## P0 当前证据矩阵（2026-10-09，基于 4a9c01d）
+## P0 当前证据矩阵（2026-10-10，基于 3ca59c6；五轮第1轮）
 
 本表是当前状态，前面的 checkpoint 和原始报告保留各包当时的状态。判定对象为固定 `0.2.0.dev0`、DuckDB 1.5.6 的两个受限 population profile；不把 live core 的宽松函数/列透传当作 population 白名单，也不宣称全量 Ossie 符合性。“已验证”指该限定范围有实际执行或拒绝证据；“有偏离”指支持路径有证据但与规范/需求仍存在明确差异；“待补证据”不等于已发现计算错误。用户已将 R1.3/A8 改为仅支持新格式，YTD 阈值分类已接受，active/paid 未验证。
 
 证据索引（均为本地证据，远程 CI 未运行）：
 
 - S：[固定来源清单](research/ossie-req-001/sources/manifest.json)、[固定表达式规范](research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md)、[原始提取](research/ossie-req-001/sources/business-source-extraction.json)、[对应关系审阅](research/ossie-req-001/source-correspondence-review.json)。后两者证明来源及人工对应，不证明视觉呈现或任意自然语言冲突自动检测；历史草案状态由本文后续用户决定与实际执行证据补充，原文件不改。
-- L：[当前 loader 验证](research/ossie-req-001/r7-errors-loader-artifact-results.json)，17 类拒绝、46 个元数据对象及 2,500 字段跨批次。实现映射见 [parser.cpp](../src/model/parser.cpp)、[model.hpp](../src/include/ossie/model.hpp) 和 [describe.cpp](../src/functions/describe.cpp)。它不是完整 JSON Schema validator。
-- P：[当前单表执行](research/ossie-req-001/r7-errors-population-artifact-results.json)、[独立原始基准](research/ossie-req-001/baseline-results.json)、[独立边界基准](research/ossie-req-001/boundary-results.json)，合同见 [population-profile.md](population-profile.md)。原 CSV、USD 来源与阈值 10/20 定义分别绑定哈希。
-- X：[表达式控制](research/ossie-req-001/r7-errors-expression-artifact-results.json)、[DATE 控制](research/ossie-req-001/r7-errors-date-artifact-results.json)，覆盖独立比值/空值/精度/日期 oracle 和具名拒绝，不声称支持全部语言。
-- J：[core 连接研究控制](research/ossie-req-001/r7-errors-join_research-artifact-results.json)、[生产双表 profile](research/ossie-req-001/r7-errors-joined_population-artifact-results.json)。前者报告中的“生产尚未实现”是研究脚本旧范围说明，不能覆盖后者生产正例；单表拒绝多表仍正确。[safe-join-research.md](safe-join-research.md) 保留独立粒度 oracle。
-- C：[实际生成 AST/plan](research/ossie-req-001/r7-errors-plan-artifact-results.json)，36 检查，合同见 [population-plan.md](population-plan.md)。不是物理计划或最终输出 binder 的保证。
-- D：[当前词汇/版本发现](research/ossie-req-001/r7-errors-discovery-artifact-results.json)，17 检查，合同见 [population-discovery.md](population-discovery.md)。单项 load preflight 类型验证不证明任意组合请求可执行。
-- E：[当前错误](research/ossie-req-001/r7-errors-error-artifact-results.json)，42 检查，合同见 [population-errors.md](population-errors.md)。取消/严重 native 错误和外部 SQL/MCP 边界明确排除。
-- M：[真实 MCP 调用](research/ossie-req-001/r7-errors-mcp-results.json)，301 检查/106 拒绝，合同见 [population-mcp.md](population-mcp.md)。实际资源、对象/聚合/compile 内容已验证；不证明自主 Agent，也不证明任意精确数值/大结果传输。
-- Q：[最后控制汇总](research/ossie-req-001/r7-errors-control-results.json)，19 state/42 grain/158 capture、788 SQL assertions/22 cases/0 skips、33 Bun tests/112 expects、9 stock artifact verifiers 和 40 stock CLI PASS。所有当前 artifact 报告绑定同一 SHA-256 `615af62accc92fd62f0936c71b8234822ffa1fceb3bb4e9f8775b4dd91777623`；本包只核对证据，不重跑这些门禁。
+- L：[当前 loader 验证](research/ossie-req-001/r2-vocabulary-loader-artifact-results.json)，19 类拒绝、46 个元数据对象及 2,500 字段跨批次。实现映射见 [parser.cpp](../src/model/parser.cpp)、[model.hpp](../src/include/ossie/model.hpp) 和 [describe.cpp](../src/functions/describe.cpp)。它不是完整 JSON Schema validator。
+- P：[当前单表执行](research/ossie-req-001/r2-vocabulary-population-artifact-results.json)、[独立原始基准](research/ossie-req-001/baseline-results.json)、[独立边界基准](research/ossie-req-001/boundary-results.json)，合同见 [population-profile.md](population-profile.md)。原 CSV、USD 来源与阈值 10/20 定义分别绑定哈希。
+- X：[表达式控制](research/ossie-req-001/r2-vocabulary-expression-artifact-results.json)、[DATE 控制](research/ossie-req-001/r2-vocabulary-date-artifact-results.json)，覆盖独立比值/空值/精度/日期 oracle 和具名拒绝，不声称支持全部语言。
+- J：[core 连接研究控制](research/ossie-req-001/r2-vocabulary-join_research-artifact-results.json)、[生产双表 profile](research/ossie-req-001/r2-vocabulary-joined_population-artifact-results.json)。前者报告中的“生产尚未实现”是研究脚本旧范围说明，不能覆盖后者生产正例；单表拒绝多表仍正确。[safe-join-research.md](safe-join-research.md) 保留独立粒度 oracle。
+- C：[实际生成 AST/plan](research/ossie-req-001/r2-vocabulary-plan-artifact-results.json)，36 检查，合同见 [population-plan.md](population-plan.md)。不是物理计划或最终输出 binder 的保证。
+- D：[当前词汇/版本发现](research/ossie-req-001/r2-vocabulary-discovery-artifact-results.json)，18 检查，合同见 [population-discovery.md](population-discovery.md)。单项 load preflight 类型验证不证明任意组合请求可执行。
+- E：[当前错误](research/ossie-req-001/r2-vocabulary-error-artifact-results.json)，54 检查，合同见 [population-errors.md](population-errors.md)。取消/严重 native 错误和外部 SQL/MCP 边界明确排除。
+- M：[真实 MCP 调用](research/ossie-req-001/r2-vocabulary-mcp-results.json)，330 检查/106 拒绝，合同见 [population-mcp.md](population-mcp.md)。实际资源、typed对象/聚合/compile及10,000对象/分组完整性已验证；整数/DECIMAL文本保真，Float仍近似，不证明自主Agent或任意大小。
+- Q：[最后控制汇总](research/ossie-req-001/r2-vocabulary-control-results.json)，19 state/42 grain/158 capture、840 SQL assertions/23 cases/0 skips、38 Bun tests/124 expects、11 stock artifact verifiers 和 40 stock CLI PASS。所有当前 artifact 报告绑定同一 SHA-256 `4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307`；本包只核对证据，不重跑这些门禁。
+
+- F：[50字段对应与偏离](core-field-correspondence.md)、[365字段控制](research/ossie-req-001/r2-vocabulary-correspondence-artifact-results.json)，严格字符串/非空/已知属性/扩展/方言及保真；不是完整JSON Schema承诺。
+- T：[typed实际数值控制](research/ossie-req-001/r2-vocabulary-typed_population-artifact-results.json)，整数/DECIMAL文本保真、实际绑定类型、非有限Float/DATE、空集schema及重复列拒绝；Float近似与全量materialization仍有明确限制。
 
 ### R1–R7：38 个子项
 
 | 子项 | 当前判定 | 对应行为、证据及边界 |
 |---|---|---|
 | R1.1 | 已验证 | S 固定 core/ontology/mapping/expression 到 `8dd6732…`，DuckDB gitlink `069cc9f9b5…`；Q 与各 artifact 报告保存实际 engine/source、源码/输入/产物哈希。当前扩展提交为本节基准。 |
-| R1.2 | 已验证 | L/D 精确 `0.2.0.dev0` 开发快照与项目 API 1.1.0 分开；没有“最新/完整 0.2”承诺。 |
+| R1.2 | 已验证 | L/D 精确 `0.2.0.dev0` 开发快照与项目 API 2.0.0 分开；没有“最新/完整 0.2”承诺。 |
 | R1.3 | 用户调整，已验证 | 仅新根级格式；L/P 验证新格式接受、legacy wrapper/embedded mapping 拒绝与迁移诊断。原需求不覆盖用户后续决定。 |
 | R1.4 | 已验证（限定范围） | L/P/E 拒绝版本/格式/绑定/规则冲突；描述性扩展保留但不执行。未知执行 AST 在 population 原始与展开阶段均拒绝。 |
 | R2.1 | 已验证（限定范围） | L/P/J：单模型、名字/引用检查；发布前核对真实字段/类型/全批键。未支持的 source、身份或关系形态拒绝；不是完整 schema 校验。 |
-| R2.2 | 支持路径已验证，有偏离 | L/D：十种逻辑类型元数据、时间默认/显式值、AI 字符串/对象及三个子字段有证据；parser 的 StringArray 仍将数字/Boolean scalar 转为文本，未严格实现 schema 的字符串成员类型。Time/DateTime metadata 不等于 population 执行支持。 |
+| R2.2 | 已验证（限定范围） | L/D/F：十种逻辑类型、时间默认/显式值、AI两种形态与严格子字段类型和长度保真通过；Time/DateTime metadata不代表population执行支持。 |
 | R2.3 | 已验证 | L/D/S 保存说明、label、AI/custom extensions 和原来源；USD 来自 workbook `metric!E2`，不推断、不换算，描述变动不改变计算（P）。 |
 | R2.4 | 已验证（限定范围） | D/M 分别发现概念、指标、字段、能力/版本/方言和限制，词汇来自实际 bundle；自然语言不参与计算。 |
-| R2.5 | 部分，需完成偏离收口 | S 与 L/D/P/C 已分别核对根结构、类型/时间、AI、方言、键/关系及 provenance；不是仅换 wrapper。AI scalar 容错及 quoted case 语义偏离明确可见，尚无逐字段最终验收结论汇总。 |
+| R2.5 | 已验证，对应与偏离已归档 | F与S/L/D/P/C完成50个properties映射及已发现校验缺口；quoted ASCII case、表来源、空unique key/关系列限制明确保留，不宣称全schema。 |
 | R3.1 | 已验证（子集） | X/P/C：OSSIE_SQL_2026 确定 lowering 与 ANSI_SQL，支持/转换/拒绝合同；规则/filter 的更小语言不冒充完整 expression language。 |
 | R3.2 | 已验证（子集） | P/X/SQL：字段、算术/比较/Boolean/CASE、SUM/COUNT/DISTINCT/AVG、NULLIF/COALESCE、用例 DATE/显式 cast；除法必须直接 NULLIF 数值零 guard。 |
-| R3.3 | 已验证原生范围；传输待补证据 | X/DATE/P 检查作用域、NULL/空集/除零、DOUBLE 比值、精确 DECIMAL SUM 和日期边界；quoted names 沿 DuckDB 不区分大小写的偏离已说明。M 仅验证有限 fixture 数值，未证明大整数/高精度 Decimal wire。 |
+| R3.3 | 已验证（声明边界） | X/DATE/P/T/M覆盖NULL/空集/除零、DECIMAL/大整数文本保真及非有限值；DOUBLE仍近似，quoted names遵循DuckDB ASCII case偏离，无通用精确算术承诺。 |
 | R3.4 | 已验证 | L/C/D/X 保存声明与选中方言及实际 lowered expression，双方言优先 OSSIE_SQL_2026，不只改标签。 |
 | R3.5 | 已验证（population） | P/X/J 原始与展开 AST/函数/引用白名单、宏隔离、间接危险表达式拒绝；live core 保留较宽行为，不纳入此结论。 |
 | R3.6 | 显式拒绝符合边界 | P/X/J 拒绝窗口/嵌套聚合；未证明阶段语义前不启用，无完整语言符合性声明。 |
@@ -506,7 +509,7 @@ MCP 示例现在有四个可读资源（concepts/metrics/fields/capabilities）�
 | R7.1 | 已验证生成语义 AST | P/C/M compile/query 共用编译及最终 EngineFunctions AST，可检查实际执行语义 SQL；文本依赖内部冻结扫描，不可普通 SQL replay。 |
 | R7.2 | 已验证（semantic plan） | C/D：机器 plan 含规则/正式来源/指标/方言/版本/hash/WHERE/time role/grain/capture join/限制；physical=false/range_inferred=false，不虚构未知值。 |
 | R7.3 | 已验证边界 | C/P/D：最终 AST 与实际 bundle/capture 状态，prepared/reload/失败验证；executed=false，load preflight 不是执行，compile 尚未保证最终 output binding。 |
-| R7.4 | 原生/fixture 已验证，传输待补证据 | P/C/M：实际行 trace、导入 content/snapshot 与定义哈希、unsorted/sparse/unpaged 声明；空集需要 compile/operator 记录。超 fixture 大小/截断及精确 numeric wire 没有实测合同，不能宣布无损完整传输。 |
+| R7.4 | 已验证（受控规模） | P/C/T/M提供绑定的typed envelope、实际row_count/schema、空集与定义/捕获哈希；10,000对象和分组完整实测，未分页/未截断，不保证任意大小或峰值内存，跨reload调用不原子。 |
 | R7.5 | 已验证（受控出口） | D/E/M：概念/对象/指标/compile 契约分开，recoverable callback/list 错误有对象/阶段/原因/nullable capability；native serious/cancel、SQL binder/协议错误明确在契约外。 |
 
 ### A1–A8：支持路径与拒绝路径
@@ -519,16 +522,16 @@ MCP 示例现在有四个可读资源（concepts/metrics/fields/capabilities）�
 | A4 | P/M：全部 date/region/type 分组及 drilldown，父产品/日期/正式规则保留，SUM 与 COUNT 分别对照。 | sparse groups，无 calendar completion，不相加组均值。 |
 | A5 | P/X/DATE/J：等阈值、NULL/空集/日期边界、缺失/NULL FK 和无匹配拒绝。 | 无匹配 join 是 load 拒绝；空 grouped/object 无行 trace，需外部记录 compile/bundle。 |
 | A6 | J/M：双表 hand-derived cents 正例、duplicate/NULL key/FK/unused dimension 反例，core fan-out/歧义/mixed grain 控制。 | 只 checked 两表 fact grain，不能以 research SQL 冒充生产控制。 |
-| A7 | P/C/D/M：同 capture/定义可复核 SQL/rule/binding；prepared 保留旧批次、failed load 保持、source update 仅显式 reload。 | separate compile/query 跨 reload 不原子；大输出及数值传输须补证据，服务记录 execution reference。 |
-| A8 | L/P/X/J：按用户仅新格式接受；旧形态/未知版本拒绝，方言 selection/lowering 和非法展开 AST 验证。 | 两种已发布格式兼容不在当前要求；AI scalar 容错与 quoted case 偏离仍需收口。 |
+| A7 | P/C/D/T/M：同capture/定义可复核SQL/rule/binding，typed envelope与空集schema；prepared/failed load/reload行为及10,000规模完整性已验证。 | separate compile/query跨reload不原子；Float近似，结果不是通用output/内存上界，服务仍维护执行引用。 |
+| A8 | L/F/P/X/J：按用户仅新格式接受；旧形态/未知版本/非法属性、扩展和方言名称拒绝，选择/lowering与展开AST控制。 | 不要求旧格式兼容；quoted ASCII case与声明执行子集保留，不宣称全规范。 |
 
 ### 剩余必要工作与候选下一包
 
-当前不能宣布整体 P0 完成。首阶段原生计算和现有 fixture 的支持/拒绝路径已有证据；尚须收口 R2 字段对应/容错偏离、R3.3/R7.4 的 adapter 数值与大小证据，并将调整后的范围形成最终验收结论。完整 JSON Schema validator 不是隐含新增目标；发现的 scalar 容错应明确选择严格拒绝或声明偏离，并验证其兼容影响。Quoted case 已有明确 DuckDB 偏离，不为此承诺替换引擎 identifier semantics。
+当前本地实现与R2/transport必要缺口已有实际证据；整体P0最终结论仍待本次五轮归档完成。已调整范围下的A1–A8需形成完整、可复现的查询与证据入口。完整 JSON Schema validator 不是隐含新增目标；发现的 scalar 容错应明确选择严格拒绝或声明偏离，并验证其兼容影响。Quoted case 已有明确 DuckDB 偏离，不为此承诺替换引擎 identifier semantics。
 
-候选包比较：parser 严格化直接处理 R2 的实际偏离；MCP 数值/大小研究处理当前结果可能失真的未验证边界；直接归档 A1–A8 会遗漏这些限制的实测或裁定。compile 最终绑定与 ontology attribute catalogue 可改善诊断/发现，但不是原文独立要求的必需新功能。更广时间/calendar、多期身份、requires/一般 ontology、混合粒度/窗口明确留在 P1 或非目标；remote CI/Ubuntu tidy 是未运行的质量证据，不能用本地接线代替，也不自动授权 push。
+历史候选包比较（基于4a9c01d；已由后续包完成）：parser 严格化直接处理 R2 的实际偏离；MCP 数值/大小研究处理当前结果可能失真的未验证边界；直接归档 A1–A8 会遗漏这些限制的实测或裁定。compile 最终绑定与 ontology attribute catalogue 可改善诊断/发现，但不是原文独立要求的必需新功能。更广时间/calendar、多期身份、requires/一般 ontology、混合粒度/窗口明确留在 P1 或非目标；remote CI/Ubuntu tidy 是未运行的质量证据，不能用本地接线代替，也不自动授权 push。
 
-取舍：下一本地包优先做 MCP 数值与有界大结果研究，不预设编码方案。按当前支持类型/公开输入限额构造大于 2^53 的整数、可区分相邻分的高精度 DECIMAL、聚合扩大精度、负值/NULL；先比较原生值、原始 MCP content token 和客户端解码，oracle 不先经过普通 JSON.parse。大结果核对完整 ID 多重集、字段/行数、消息字节及错误/截断；同时展示固定 operator 批次下空结果与 compile metadata 的关联。若失真，随后选择保真表示或明确限制传输支持范围，不能只加警告仍称该值正确。不在本审计包新增 adapter 接口。
+历史取舍（基于4a9c01d）：下一本地包优先做 MCP 数值与有界大结果研究，不预设编码方案。按当前支持类型/公开输入限额构造大于 2^53 的整数、可区分相邻分的高精度 DECIMAL、聚合扩大精度、负值/NULL；先比较原生值、原始 MCP content token 和客户端解码，oracle 不先经过普通 JSON.parse。大结果核对完整 ID 多重集、字段/行数、消息字节及错误/截断；同时展示固定 operator 批次下空结果与 compile metadata 的关联。若失真，随后选择保真表示或明确限制传输支持范围，不能只加警告仍称该值正确。不在本审计包新增 adapter 接口。
 
 采用 advisor-escalation：复用现有只读 Advisor，一轮范围反证、无 children/写入。Advisor 同意 transport 证据优先，并指出 AI scalar 容错是具体尚未接受的偏差，不能用“不做完整 schema”消解。Lead 核对 StringArray/ScalarText 确认该行为，已单列 R2.2/R2.5；R5.6 后续用户决定与历史审阅分开，空结果在固定启动/no reload 示例中可关联，不能推广到任意可重载服务。requested `gpt-6-astra`/high，effective backend/effort/usage/billing unknown。未把 Advisor 意见当测试结果。
 
@@ -694,3 +697,11 @@ RequiredNonEmptyString 在五类 name、dataset source、relationship from/to �
 最终 artifact SHA256 `4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307`。release、quality-local、19 state/42 grain/158 capture、840 SQL assertions/23 cases/0 skips、38 Bun tests/124 expects、11 stock artifact verifiers、population MCP330/106 refusals、core MCP 实际资源与 stock CLI40 PASS/0 FAIL/0 SKIP FAITHFUL 同产物通过。population47拒绝控制、discovery18控制包含保留的旧非法扩展；[控制汇总](research/ossie-req-001/r2-vocabulary-control-results.json) 绑定最终源码/报告/输入/50行对应表，20份固定来源哈希核对不变。remote CI/Ubuntu tidy 未运行；project API2.0.0与result-v1保持。
 
 [50行字段对应与偏离结论](core-field-correspondence.md) 已更新：已发现的数组/单值类型、字符串保真、minLength、unknown properties、extension成员和dialect enum/case缺口已补。表来源、最少数据集、空unique key拒绝、关系列非空/等宽、quoted ASCII case及有界执行profile仍为明确边界；不是完整JSON Schema/全表达式规范符合性承诺。本工作包本地完成，只提交保留、不推送。整体P0仍待最终规则驱动A1–A8验收归档，下一已授权动作是整理该验收结论与必要证据；分页只未来调研、P1/非目标和remote发布权限不变。
+
+## 五轮自动执行 checkpoint（2026-10-10，用户授权）
+
+用户明确授权继续自动执行5轮，沿现OSSIE-REQ-001与最终A1–A8验收必要工作推进，不启动P1/分页或远程交付。第1轮更新38项当前证据矩阵并核对同产物来源；第2轮保存A1–A4完整原始/规则变更/对象/分组/下钻证据；第3轮核验A5–A6边界与安全连接；第4轮核验A7–A8追溯、typed/MCP与格式方言；第5轮汇总验收结论与复现入口。每轮记录范围、实际证据、剩余及本地提交。第1轮仅核对已有证据，不冒充重跑功能；原始需求和历史报告不改。
+
+### 自动第1轮结果：当前证据与范围（2026-10-10）
+
+38项需求和8项验收索引已更新到3ca59c6同产物证据，R2.2/R2.5/R3.3/R7.4的旧待补状态已被后续真实校验/typed控制取代；保留quoted case、DOUBLE近似、规模/内存和跨reload边界。[证据审计](research/ossie-req-001/p0-round1-evidence-results.json)核对20份固定来源、12份同产物报告的源码/fixture/helper绑定、38/8索引和50字段清单。哈希核对不是计算正确性测试；本轮没有重跑原生功能门禁。新Bun审计脚本format/typecheck通过。本轮本地提交；必要剩余是第2轮完整查询证据、第3/4轮边界和追溯、第5轮最终结论。
