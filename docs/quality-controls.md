@@ -155,7 +155,7 @@ finite date. Local verification passes 31 Bun controls, 19 C++ checks and 610 SQ
 assertions in 17 cases; CI wiring schedules all four verifiers against one download.
 No C++ execution change or new artifact build was necessary in this slice.
 
-Current R6 research controls are in
+Historical R6 research controls are in
 [r6-join-control-results.json](research/ossie-req-001/r6-join-control-results.json) and
 [r6-join-research-artifact-results.json](research/ossie-req-001/r6-join-research-artifact-results.json).
 The fifth same-download verifier distinguishes actual live core behavior from a
@@ -163,6 +163,14 @@ fixed-fixture research SQL safety oracle; it does not add joined population supp
 Local gates pass 31 Bun controls, 19 C++ checks and 661 SQL assertions in 18 cases.
 The previous four actual-artifact reports remain applicable to unchanged sources,
 helper and artifact; they were not rerun in this research package.
+
+Current designated-grain prerequisite evidence is in
+[r6-grain-control-results.json](research/ossie-req-001/r6-grain-control-results.json).
+The dedicated ossie_metric_grain_test runner runs explicitly before SQL alongside
+the state runner, even with ENABLE_UNITTEST_CPP_TESTS=FALSE. Local results are
+42 grain controls plus 19 state checks, 661 SQL assertions in 18 cases, and 31 Bun
+controls. All five actual-artifact verifiers were rerun on the rebuilt artifact.
+This adds an internal original-model analysis prerequisite, not joined population.
 
 Previous Bun migration results and source hashes are in
 [bun-toolchain-results.json](research/ossie-req-001/bun-toolchain-results.json),

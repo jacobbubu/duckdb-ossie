@@ -321,6 +321,34 @@ void CollectGrains(const Model &model, const ParsedExpression &expr, const strin
 	    expr, [&](const ParsedExpression &child) { CollectGrains(model, child, metric_name, grains, has_grainless); });
 }
 
+struct MetricAnalysis {
+	const Metric *metric = nullptr;
+	case_insensitive_set_t grains;
+	bool grainless = false;
+};
+
+MetricAnalysis AnalyzeMetric(const Model &model, const string &metric_name) {
+	auto metric = model.FindMetric(metric_name);
+	if (!metric) {
+		throw InvalidInputException(
+		    "ossie: model \"%s\" has no metric named \"%s\".%s", model.name, metric_name,
+		    StringUtil::CandidatesErrorMessage(MetricNames(model), metric_name, "Did you mean"));
+	}
+	// A metric's window cannot define the partition/order of an arbitrary request.
+	auto window = FindWindow(*metric->expression.tree);
+	if (window) {
+		throw InvalidInputException(
+		    "ossie: metric \"%s\" uses the window function %s, whose result changes with the dimensions "
+		    "requested in a way the model does not define: the rows it runs over depend on the request, but "
+		    "its partition and order are fixed in the metric. Window metrics are not supported yet",
+		    metric->name, StringUtil::Upper(window->function_name));
+	}
+	MetricAnalysis result;
+	result.metric = metric;
+	CollectGrains(model, *metric->expression.tree, metric->name, result.grains, result.grainless);
+	return result;
+}
+
 struct Filter {
 	unique_ptr<ParsedExpression> expr;
 	//! Aggregates cannot appear in WHERE, so such a predicate goes to HAVING whole rather than
@@ -499,6 +527,28 @@ unique_ptr<ParsedExpression> JoinCondition(const Relationship &relationship) {
 
 } // namespace
 
+void RequireMetricGrain(const Model &model, const vector<string> &metrics, const string &designated_dataset) {
+	if (!model.FindDataset(designated_dataset)) {
+		throw InvalidInputException("ossie: designated grain dataset \"%s\" is not declared", designated_dataset);
+	}
+	if (metrics.empty()) {
+		throw InvalidInputException("ossie: at least one metric is required for designated grain validation");
+	}
+	for (auto &name : metrics) {
+		auto analysis = AnalyzeMetric(model, name);
+		if (analysis.grainless) {
+			throw InvalidInputException("ossie: metric \"%s\" contains an aggregate without a dataset; "
+			                            "designated grain validation does not infer a grain for it",
+			                            name);
+		}
+		if (analysis.grains.size() != 1 || !StringUtil::CIEquals(*analysis.grains.begin(), designated_dataset)) {
+			throw InvalidInputException("ossie: metric \"%s\" must aggregate only at designated grain \"%s\"; "
+			                            "inferred grains: [%s]",
+			                            name, designated_dataset, StringUtil::Join(SortedNames(analysis.grains), ", "));
+		}
+	}
+}
+
 unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,
                                     const vector<string> &filters, const CompileOptions &options) {
 	if (metrics.empty()) {
@@ -516,27 +566,13 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 	vector<unique_ptr<ParsedExpression>> metric_expressions;
 
 	for (auto &metric_name : metrics) {
-		auto metric = model.FindMetric(metric_name);
-		if (!metric) {
-			throw InvalidInputException(
-			    "ossie: model \"%s\" has no metric named \"%s\".%s", model.name, metric_name,
-			    StringUtil::CandidatesErrorMessage(MetricNames(model), metric_name, "Did you mean"));
+		auto analysis = AnalyzeMetric(model, metric_name);
+		auto metric = analysis.metric;
+		for (auto &grain : analysis.grains) {
+			grains.insert(grain);
 		}
-		// Refused rather than computed: grouped by date and category, a running total ordered by date
-		// alone runs across categories, and ties on date make the order, and so the number, arbitrary.
-		auto window = FindWindow(*metric->expression.tree);
-		if (window) {
-			throw InvalidInputException(
-			    "ossie: metric \"%s\" uses the window function %s, whose result changes with the dimensions "
-			    "requested in a way the model does not define: the rows it runs over depend on the request, but "
-			    "its partition and order are fixed in the metric. Window metrics are not supported yet",
-			    metric->name, StringUtil::Upper(window->function_name));
-		}
-
-		bool metric_grainless = false;
-		CollectGrains(model, *metric->expression.tree, metric->name, grains, metric_grainless);
 		CollectDatasets(*metric->expression.tree, metric_datasets);
-		if (metric_grainless) {
+		if (analysis.grainless) {
 			has_grainless = true;
 			grainless_metric = metric->name;
 		}

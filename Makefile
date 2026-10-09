@@ -71,6 +71,16 @@ state-test-debug:
 state-test-reldebug:
 	cmake --build build/reldebug --target ossie_state_test
 	./build/reldebug/extension/ossie/ossie_state_test "$(PROJ_DIR)"
-test_release_internal: state-test-release
-test_debug_internal: state-test-debug
-test_reldebug_internal: state-test-reldebug
+.PHONY: metric-grain-test-release metric-grain-test-debug metric-grain-test-reldebug
+metric-grain-test-release:
+	cmake --build build/release --target ossie_metric_grain_test
+	./build/release/extension/ossie/ossie_metric_grain_test "$(PROJ_DIR)"
+metric-grain-test-debug:
+	cmake --build build/debug --target ossie_metric_grain_test
+	./build/debug/extension/ossie/ossie_metric_grain_test "$(PROJ_DIR)"
+metric-grain-test-reldebug:
+	cmake --build build/reldebug --target ossie_metric_grain_test
+	./build/reldebug/extension/ossie/ossie_metric_grain_test "$(PROJ_DIR)"
+test_release_internal: state-test-release metric-grain-test-release
+test_debug_internal: state-test-debug metric-grain-test-debug
+test_reldebug_internal: state-test-reldebug metric-grain-test-reldebug

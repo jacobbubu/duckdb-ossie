@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-09。状态：首轮研究、core loader/元数据与单表人口执行工作包已完成并本地验证；R3 NULLIF/受保护除法及DATE边界控制已本地完成；R6连接研究控制也已本地完成；当前661条SQL断言、19项C++与31项Bun控制通过。下一步实施指定fact粒度验证与独立冻结双表profile；P0 尚未完成。
+日期：2026-10-09。状态：首轮研究、core loader/元数据与单表人口执行工作包已完成并本地验证；R3 NULLIF/受保护除法及DATE边界控制已本地完成；R6连接研究控制也已本地完成；当前661条SQL断言、19项C++与31项Bun控制通过。指定fact粒度前置检查已实现并通过42项独立C++控制，下一步实施独立冻结双表profile；P0 尚未完成。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -317,3 +317,20 @@ R6研究结果：6行fact/4行dimension（含无引用行），独立手工关�
 本地验证：31 Bun控制/100断言、19 C++状态检查、18个SQL用例661断言通过；新R6真实产物verifier核对11数据反例/4规划拒绝/单事务及v1多表拒绝。CI追加research verifier到同download产物，明确其是core研究控制不是生产安全连接；当前其他四verifier输入/helper/artifact未改变，沿前轮同哈希证据复用，没有假称本轮重新运行。新报告[研究产物证据](research/ossie-req-001/r6-join-research-artifact-results.json)、[门禁汇总](research/ossie-req-001/r6-join-control-results.json)。远程CI/Ubuntu tidy未运行。
 
 本研究包本地完成，下一动作本地提交，不推送。整体R6/P0未完成；下一已授权实施按上述边界先共享指定fact粒度验证，再独立双表profile冻结/预检/映射及对象指标共同人口，禁止关闭现有保护。R3其余语言/时间类型、calendar、多期身份/更广ontology、population MCP与完整验收仍是既有必要剩余。
+
+### R6 指定事实粒度校验（2026-10-09，继续实施）
+
+恢复：0f05afb研究包已本地提交且工作区干净，未推送。用户继续授权既有实现；本轮先共享原模型metric grain分析，并新增RequireMetricGrain指定dataset校验，不先实现完整双表profile。复用现Compile的FindMetric/FindWindow/CollectGrains/AggregateGrain/SafelyReachable，不复制第二套AST算法，默认core行为保持兼容。
+
+范围与验证：每个指标必须有且仅有一个指定事实grain；维度grain、混合grain、窗口、未知metric、无aggregate和无grain aggregate明确拒绝。新校验不代替引用/path/physical binder或真实键/完整匹配预检；COUNT(*)继承在现core可用，但新指定grain路径不静默推断。C++直接控制核对原core维度metric能compile而新API拒绝、合法CASE/计算字段/函数包裹递归、旧SQL不变、非法表达式后续binder拒绝。独立runner明确接入Make/CI，不依赖ENABLE_UNITTEST_CPP_TESTS。构建真实产物后原五artifact verifiers继续复核。必要剩余仍是冻结双表profile/来源AST映射/预检/对象指标/失败保持与生命周期；本轮本地提交不推送。
+
+
+指定grain结果：新增内部C++ RequireMetricGrain，与Compile共用AnalyzeMetric（FindMetric/FindWindow/CollectGrains），不新增公开SQL或Compile选项，不提前接入双表profile。逐metric要求被现分析器识别出的grain唯一且等于指定dataset；维度COUNT/DISTINCT、混合grain、无aggregate、窗口、空请求、未知metric/dataset及已识别无来源聚合拒绝。COUNT(*)/COUNT(1)及SUM+COUNT(*)在新路径不推断grain；旧core anchored COUNT(*)仍通过，SQL及模型不变。带维度CASE、计算常量字段、大小写/引号、SUM/AVG/COUNT和函数包裹比值实际计算与手工group/金额/计数/容差一致。
+
+分层限制已经实测：nested/hidden SUM、字段内window及嵌套COUNT(*)可能通过前置grain分析，但binder拒绝；识别集合外的approx_count_distinct(dimension.id)+SUM(fact.amount)通过前置分析和binder，结果58.01。此控制是必要的限制证据，不是新profile已允许该函数。未来profile必须先在原表达式与展开后执行现Strict白名单，再原模型grain校验/Compile/实际绑定与数据预检；不能只凭binder或flatten后的单表grain称安全。现API不改legacy分析顺序，也不修复非穷尽aggregate识别的通用core能力。
+
+验证：新独立C++ runner明确接入CMake/Make release/debug/reldebug及既有test路径，不依赖ENABLE_UNITTEST_CPP_TESTS（本机FALSE）。42grain控制、原19state检查、18个SQL用例661断言与31Bun/103断言通过；缺fixture实际退出1。重建后的同一真实artifact五验证器全部通过（loader17、population46/475行+11边界、expression27、DATE21、join研究11数据反例/4规划拒绝）。stock CLI40 PASS与MCP通过，diff/format/type/graph检查通过。保留旧报告；新证据见[r6-grain-control-results.json](research/ossie-req-001/r6-grain-control-results.json)。原样来源/proposed definitions/子模块未改。
+
+保留失败：首次MetricAnalysis聚合初始化在extension实际-std=c++11编译下失败，改默认构造后显式赋值，未改变全局编译标准。初次MCP调用漏OSSIE_EXTENSION，实际尝试community注册产物404；重跑明确指向本轮产物后通过。这是调用配置错误，不能记为扩展回归。格式与初次build曾短暂并行，最终格式完成后重新完整构建并绑定源码/产物哈希验证，不以中间构建证明最终源码。测试编写期间删掉一处未运行的错误数值sentinel，最终采用两个组的独立成员/金额/人数oracle；最终runner单独退出0。
+
+限定Advisor一轮只读建议，Lead核对代码与分层实际结果，采纳API-only/严格白名单边界，不扩大Compile选项或通用parser重构。有效backend/effort/usage/billing unknown。当前包本地完成，下一动作本地提交，不推送；整体R6/P0未完成。下一已授权阶段才是显式冻结双表profile：完整schema/data同事务捕获、整批键/匹配预检、dataset-column来源映射、原模型strict+grain校验、最终只冻结AST、共同人口及失败/取消/重载/生命周期。其余R3/calendar/多期身份/ontology/MCP和远端CI/Ubuntu tidy仍必要。

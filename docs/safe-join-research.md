@@ -81,10 +81,20 @@ change their input hash; document whether row order affects hashes.
 Before flattening, validate each metric against the original model and the designated
 fact grain. Extract a small read-only RequireMetricGrain-style interface from existing
 compiler analysis, sharing CollectGrains/AggregateGrain/SafelyReachable with Compile.
-Do not duplicate a second AST grain implementation. Every aggregate's inferred grain
-must equal the designated fact. Fact SUM/AVG/COUNT and a dimension condition in a
+Do not duplicate a second AST grain implementation. Every aggregate recognized by this analysis must infer the designated fact grain.
+The recognized function-name set is not exhaustive, and analysis precedes field
+expansion. This is a prerequisite, not a complete expression safety proof. Fact SUM/AVG/COUNT and a dimension condition in a
 fact-grain CASE may pass; dimension-grain aggregates, mixed grains, windows and
-independent grainless COUNT(*) keep explicit refusals. This check supplements normal
+independent grainless COUNT(*) keep explicit refusals. The new checker also does
+not infer a grain for COUNT(1) or a grainless aggregate alongside SUM(fact.amount),
+while the existing core's anchored COUNT(*) behavior is retained. These are bounded
+profile restrictions, not claims that such SQL formulas are universally unsafe.
+Nested aggregates and hidden field expressions can pass the grain prerequisite
+and fail physical binding later. In a measured counterexample, an unrecognized
+approx_count_distinct(dimension.id) alongside SUM(fact.amount) passes both grain
+analysis and binding. Therefore the future profile must apply its strict AST
+allowlist to original and expanded expressions before using this prerequisite;
+physical binding cannot substitute for that allowlist. This check supplements normal
 Compile reference/path checks and physical binding; it does not prove data safety.
 Never perform this check after merging both datasets into a single synthetic dataset.
 
@@ -105,9 +115,13 @@ planner refusals and the native transaction experiment. The
 [control summary](research/ossie-req-001/r6-join-control-results.json) records local gates.
 The [existing issue](ossie-execution-research.md) and
 [existing plan](../ossie-duckdb-plan.md) own remaining work and authorization.
-The next implementation package is the shared grain validator plus this explicit
-frozen two-table profile, followed by object/metric and reload/cancellation/lifetime
-controls. These necessary production behaviors are not yet verified by this research.
+The designated-grain prerequisite is now implemented as internal C++
+RequireMetricGrain, sharing AnalyzeMetric with Compile. It has no public SQL
+entry and is not yet wired into a joined population profile. Its
+[control evidence](research/ossie-req-001/r6-grain-control-results.json) covers 42
+C++ checks plus actual-artifact regressions. The next implementation package is
+the explicit frozen two-table profile and object/metric, reload/cancellation/lifetime
+controls. Those production behaviors are not yet implemented or verified.
 
 The fixed [Ossie relationships schema](research/ossie-req-001/sources/apache-ossie/core-spec/spec.md)
 defines foreign/target columns without an INNER/LEFT selection. DuckDB's official

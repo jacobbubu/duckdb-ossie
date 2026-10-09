@@ -1,0 +1,422 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "metric_grain_control",
+  "description": "Original-model designated-grain validation controls; not flattened execution.",
+  "datasets": [
+    {
+      "name": "fact",
+      "source": "memory.main.r6_fact",
+      "primary_key": [
+        "id"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "dim_id",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "dim_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "amount",
+          "datatype": "Decimal",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "amount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "active",
+          "datatype": "Boolean",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "active"
+              }
+            ]
+          }
+        },
+        {
+          "name": "constant_field",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "1"
+              }
+            ]
+          }
+        },
+        {
+          "name": "hidden_sum",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "SUM(amount)"
+              }
+            ]
+          }
+        },
+        {
+          "name": "hidden_window",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "SUM(amount) OVER ()"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "dimension",
+      "source": "memory.main.r6_dimension",
+      "primary_key": [
+        "id"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "label",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "label"
+              }
+            ]
+          }
+        },
+        {
+          "name": "eligible",
+          "datatype": "Boolean",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "eligible"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "fact_dimension",
+      "from": "fact",
+      "to": "dimension",
+      "from_columns": [
+        "dim_id"
+      ],
+      "to_columns": [
+        "id"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "amount_sum",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(fact.amount)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "record_count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(fact.id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "dimension_count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(dimension.id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "eligible_amount",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(CASE WHEN dimension.eligible THEN fact.amount END)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "value_count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(fact.amount)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "amount_avg",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "AVG(fact.amount)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "dimension_distinct",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(DISTINCT dimension.id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "mixed",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(fact.amount) + COUNT(dimension.id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "wrapped_mixed",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "NULLIF(SUM(fact.amount), 0) / NULLIF(COUNT(dimension.id),0)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "wrapped_fact",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "NULLIF(SUM(fact.amount),0) / NULLIF(COUNT(fact.id),0)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "constant_field_sum",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(fact.constant_field)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "star",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(*)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "with_star",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(fact.amount)+COUNT(*)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "scalar",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "fact.amount"
+          }
+        ]
+      }
+    },
+    {
+      "name": "windowed",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(fact.amount) OVER ()"
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(AVG(fact.amount))"
+          }
+        ]
+      }
+    },
+    {
+      "name": "quoted_fact",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(\"FACT\".\"amount\")"
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown_function",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "unknown_measure(fact.amount)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "dimension_scalar",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(CASE WHEN dimension.eligible THEN fact.amount ELSE 0 END)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "one",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(1)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested_star",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(fact.amount + COUNT(*))"
+          }
+        ]
+      }
+    },
+    {
+      "name": "hidden_sum_metric",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(fact.hidden_sum)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "hidden_window_metric",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(fact.hidden_window)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "unrecognized_aggregate",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(fact.amount)+approx_count_distinct(dimension.id)"
+          }
+        ]
+      }
+    }
+  ]
+}

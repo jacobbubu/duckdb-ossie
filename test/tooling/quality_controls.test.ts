@@ -163,7 +163,7 @@ test("script formatting failure and recovery", () => {
     rmSync(root, { recursive: true, force: true });
   }
 });
-test("state runner required before SQL", () => {
+test("state and metric-grain runners required before SQL", () => {
   const result = spawnSync("make", ["-n", "test_release_internal"], {
     cwd: ROOT,
     encoding: "utf8",
@@ -172,6 +172,11 @@ test("state runner required before SQL", () => {
   expect(result.stdout).toContain("--target ossie_state_test");
   expect(result.stdout).toContain('ossie_state_test "');
   expect(result.stdout.indexOf("ossie_state_test")).toBeLessThan(
+    result.stdout.indexOf("test/unittest"),
+  );
+  expect(result.stdout).toContain("--target ossie_metric_grain_test");
+  expect(result.stdout).toContain('ossie_metric_grain_test "');
+  expect(result.stdout.indexOf("ossie_metric_grain_test")).toBeLessThan(
     result.stdout.indexOf("test/unittest"),
   );
 });

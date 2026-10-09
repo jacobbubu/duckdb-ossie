@@ -5,9 +5,9 @@
 Latest local milestone: R6 safe-join research controls completed after NULLIF/guarded
 division and DATE boundaries. Local gates pass 661 SQL assertions, 19 C++ checks
 and 31 Bun controls. Actual core behavior and research preflight remain distinct;
-production joined population is not implemented. Next authorized implementation
-is designated fact-grain validation and a separate frozen two-table profile; P0
-remains incomplete. Detailed current
+production joined population is not implemented. The shared designated fact-grain prerequisite now passes 42 dedicated C++ controls;
+it still requires strict expression validation and data checks. Next authorized
+implementation is a separate frozen two-table profile; P0 remains incomplete. Detailed current
 decisions and failures are in the checkpoints below and the existing research record.
 The earlier package counts in this introduction remain historical evidence.
 
@@ -571,3 +571,14 @@ DATE包fccce8d本地完成。下一已授权动作：人工事实/唯一维度�
 结果：6fact/4dimension独立oracle与core真实产物正例、11数据反例、4规划拒绝和双连接同事务实验通过。坏声明键确实重复/丢弃事实，维度COUNT4不能在事实展平上变成6。v1多表拒绝保留；生产双表人口未实现。31 Bun/100断言、19 C++、18 SQL用例661断言通过，新证据与集成约束在现issue及docs/safe-join-research.md，失败也保留。
 
 本包本地研究完成，下一动作本地提交，不推送。下一已授权实施从共享原模型指定fact grain校验和独立冻结双表profile开始；实际键/完整匹配检查、来源AST重写与同冻结数据对象/指标、失败保持/取消/重载/lifetime都仍须落地证明。其余R3/calendar/多期身份/ontology/MCP和远端CI/tidy仍未完成。
+
+### R6 grain validator checkpoint（2026-10-09，恢复）
+
+研究0f05afb已交付；当前指定fact grain前置检查包先实施。共用原模型Compile grain分析，每指标指定grain控制，默认core不改，独立C++runner接Make/CI与真实artifact回归。结果/失败/剩余维护现local issue；完整双表冻结profile是下一必要阶段，本轮不先宣称连接人口可执行，不推送。
+
+
+### R6指定grain本地交付 checkpoint（2026-10-09）
+
+结果：内部RequireMetricGrain与Compile共享原模型识别分析，42独立grain控制+19 state、661 SQL/18用例、31 Bun/103断言与五个重建同产物verifier、stock CLI/MCP通过。已识别无来源聚合在新API保守拒绝，旧core行为不改；隐藏/嵌套与未识别聚合分层证据明确，不能把此API称完整安全证明。失败和哈希归现local issue/r6-grain-control-results.json。
+
+本包本地完成，下一动作本地提交，不推送。下一已授权实施是独立双表冻结profile及严格AST+指定grain+数据预检/来源重写/对象指标共同人口；完整R6/P0和前述R3/calendar/身份/ontology/MCP仍未完成，远程CI/Ubuntu tidy未验证。

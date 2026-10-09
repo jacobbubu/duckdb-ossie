@@ -17,6 +17,11 @@ struct CompileOptions {
 	TableRef *population_source = nullptr;
 };
 
+//! Requires each metric's recognized original-model aggregate grain to be the designated dataset.
+//! Does not infer recognized grainless aggregates. Needs separate original/expanded expression
+//! validation, Compile/binding and data-key checks; the aggregate-name set is not exhaustive.
+void RequireMetricGrain(const Model &model, const vector<string> &metrics, const string &designated_dataset);
+
 //! Compiles a semantic request, throwing when it cannot answer.
 unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,
                                     const vector<string> &filters, const CompileOptions &options);
