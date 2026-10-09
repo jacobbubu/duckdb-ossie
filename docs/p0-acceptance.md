@@ -2,7 +2,7 @@
 
 本验收针对固定 Apache Ossie `8dd6732da354f22ca71f16d82626a46039ecdcd9` 的 `0.2.0.dev0`、DuckDB 1.5.6，以及本项目两个有界 population profiles。它验证审核后的业务规则实际进入查询并改变结果。仅支持新根级 core 格式；不承诺完整 Ossie/JSON Schema、一般本体推理或真实 Agent 自主回答。
 
-当前归档到自动第4轮：A1–A8相关计算、边界与追溯已实际核验，第5轮整体结论及可复现入口仍待收口。需求、授权与38项对应沿用 [OSSIE-REQ-001](ossie-execution-research.md)，本文件是验收入口。
+结论：按用户调整后的新格式、YTD分类及SQL NULL/分组契约，两个有界profile共同覆盖的相关支持路径与拒绝路径通过A1–A8本地规则驱动验收。每个profile并非分别执行全部八项；此结论不代表全规范、真实自主Agent、远端CI或P1能力通过。需求、授权与38项对应沿用 [OSSIE-REQ-001](ossie-execution-research.md)，本文件是验收入口。
 
 ## A1–A4：原始基准与规则变化
 
@@ -55,3 +55,31 @@ bun scripts/verify_population_artifact.ts build/release/extension/ossie/ossie.du
 10,000对象、17列的完整typed响应实测wire为63,181,123 bytes；10,000分组wire为2,749,800 bytes，核对完整ID/组集合。不是任意大小或输出/峰值内存上界；输入限额不等于输出限额。分页尚未设计，仍待将来调研。MCP资源/工具在固定operator启动下运行，不允许tool换规则/导入/reload；真实自主Agent未测试，remote CI与Ubuntu tidy未运行。
 
 本轮core MCP实际读取资源通过；stock CLI为40 PASS/0 FAIL/0 SKIP，使用真实loadable artifact（FAITHFUL）。这些是实际本地协议/功能测试，不证明远端发布或服务授权。
+
+## 最终归档与复现
+
+[机器验收索引](research/ossie-req-001/p0-final-acceptance-results.json) 逐项关联A1–A8的实际报告及hash；[最终控制记录](research/ossie-req-001/p0-final-control-results.json) 记录门禁、源码/输入/报告绑定、独立进程来源、失败与声明边界。索引检查数和hash一致性不是计算正确性测试；数值结论来自各verifier的独立oracle和实际执行。
+
+实际重跑（先按[构建说明](../README.md#building--contributing)准备Bun依赖、DuckDB1.5.6 release产物，以及PATH中的stock DuckDB1.5.6 CLI）：
+
+```sh
+bun scripts/run_p0_acceptance.ts build/release/extension/ossie/ossie.duckdb_extension /tmp/ossie-p0-new-run
+```
+
+来源核对还会读取固定清单记录路径中的原始xlsx/docx；迁移环境需要这些固定哈希文件，本入口不宣称脱离原始来源资产的自包含复现。输出目录须新建或为空。命令实际启动11个独立产物verifiers、population MCP、另一个独立进程population replay、core MCP及stock CLI，写出报告、日志和 `acceptance.json`。失败时停止、保留部分报告及 `failure.json`；不会覆盖仓库历史证据。MCP依赖使用本机已安装/可安装的duckdb_mcp，报告保存实际版本/hash，并非本项目固定的上游API规范。
+
+原生与工具质量门禁另行运行，实际重跑入口不冒充已执行这些门禁：
+
+```sh
+make quality-local test
+```
+
+只核对仓库现有归档（需要stock CLI在PATH以比对其hash，不重跑功能）：
+
+```sh
+bun scripts/verify_p0_acceptance.ts build/release/extension/ossie/ossie.duckdb_extension --output /tmp/ossie-p0-archive-audit.json
+```
+
+最终本地证据包括840 SQL断言/23用例/0 skips，19 state/42 grain/158 capture，38 Bun tests/124 expects，365字段与54错误控制，真实MCP330检查/106拒绝和CLI40/0/0。实际单命令复现同样通过；C++产物未在五轮中修改，SHA256为 `4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307`。
+
+五轮均本地提交，没有推送/合并/发布。此次调整范围的本地验收工作完成；后续分页、calendar/多期身份、一般ontology、混合粒度/窗口等P1仍需独立启动。remote CI/Ubuntu tidy和真实自主Agent仍是未验证的独立证据，不能以本地成功替代。

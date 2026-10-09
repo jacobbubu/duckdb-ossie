@@ -26,12 +26,14 @@ interface Report {
 }
 const sorted = (rows: unknown[]) =>
   rows.map((row) => JSON.stringify(row)).sort();
-export function verifyReplay(artifact: string) {
-  const paths = ["p0-final", "p0-replay"].map(
-    (prefix) =>
-      `docs/research/ossie-req-001/${prefix}-population-artifact-results.json`,
+export function verifyReplay(
+  artifact: string,
+  reportDirectory = join(ROOT, "docs/research/ossie-req-001"),
+) {
+  const paths = ["p0-final", "p0-replay"].map((prefix) =>
+    join(reportDirectory, `${prefix}-population-artifact-results.json`),
   );
-  const reports = paths.map((p) => json<Report>(join(ROOT, p)));
+  const reports = paths.map((p) => json<Report>(resolve(ROOT, p)));
   for (const report of reports) {
     assert.equal(report.artifact_sha256, digest(artifact));
     assert.equal(
@@ -83,7 +85,7 @@ export function verifyReplay(artifact: string) {
     verifier_sha256: digest(import.meta.path),
     helper_sha256: digest(join(ROOT, "scripts/artifact_helpers.ts")),
     reports_sha256: Object.fromEntries(
-      paths.map((p) => [p, digest(join(ROOT, p))]),
+      paths.map((p) => [p, digest(resolve(ROOT, p))]),
     ),
     checks,
     result_order: "unspecified SQL row order; complete row multisets compared",

@@ -1,28 +1,26 @@
 # duckdb_ossie — Implementation Plan
 
-## Current research checkpoint — 2026-10-10
+## Current research checkpoint — 2026-10-10, five rounds complete
 
-Current local milestone: the core parser now validates custom-extension arrays,
-member objects, required vendor_name/data strings and closed member properties.
-All expression variants must use an exact, case-sensitive name from the pinned
-Ossie eleven-name dialect enum; executable selection still prefers OSSIE_SQL_2026
-then ANSI_SQL. Arbitrary vendor names/data string content and AI additional
-properties remain descriptive and preserved. Project API stays 2.0.0.
-The 50-property correspondence and known scalar/array/fidelity/nonempty/unknown-
-property/extension/dialect gaps have been addressed. This is a targeted validation
-conclusion, not full JSON Schema or expression-language conformance.
-Final same-artifact local verification: 365 field controls (35 accepted/330
-refused), 54 error controls, 19 state/42 grain/158 capture controls, 840 SQL
-assertions in 23 cases with no skips, 38 Bun tests/124 expects, eleven stock
-artifact verifiers, population MCP330/106 refusals, core MCP resources and stock
-CLI40/0/0 FAITHFUL. Legacy malformed descriptive-extension test inputs remain
-negative controls; legal metadata still leaves population values unchanged.
-Evidence and retained failures stay in OSSIE-REQ-001 and r2-vocabulary reports.
-This work package is complete locally. The next authorized necessity is the
-final rule-driven A1–A8 acceptance archive; overall P0 is not complete. Existing
-source/execution limitations, bounded profiles, P1/non-goals, future pagination
-research and unrun remote CI/Ubuntu tidy remain visible. Delivery is local
-commit only; no additional push, merge or publication authority.
+The adjusted A1–A8 local rule-driven acceptance is complete for the two reviewed
+bounded profiles jointly covering relevant cases. This is not a full-spec/P1,
+autonomous Agent or remote CI claim. Core targets the pinned new 0.2.0.dev0 shape;
+project API 2.0.0, result-v1, typed numeric and declared execution restrictions remain.
+Complete original GAAP objects/daily/groups/drilldown, threshold-only definition
+changes, independent oracles, boundary/safe joins, actual AST/capture/definition
+provenance, source/failure/prepared controls and separate-process replay are saved.
+Final native/SQL evidence: 19 state/42 grain/158 capture, 840 assertions/23 cases/0
+skips. Final quality-local: 38 Bun/124 expects, format/typecheck/architecture pass.
+Eleven stock verifiers, 365 field controls, 54 error controls, MCP 330/106 refusals,
+core MCP resources and CLI 40/0/0 FAITHFUL pass. The persistent Bun reproduction
+runner was actually executed and separately audits reports; failures are retained.
+The artifact SHA256 is 4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307.
+See [final acceptance](docs/p0-acceptance.md) and existing OSSIE-REQ-001 for details.
+The five authorized local rounds are complete. No push/merge/publication occurred.
+Future pagination research, calendar/multi-period/general ontology/mixed grains/
+windows remain independently scoped P1 needs; remote CI/Ubuntu tidy and autonomous
+Agent validation remain unrun. No additional implementation or remote action is
+implicitly authorized by this bounded acceptance conclusion.
 
 ## Historical error/discovery milestones — 2026-10-09
 
@@ -698,7 +696,7 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 
 ### R2 保真本地交付 checkpoint（2026-10-09）
 
-实际长度读取修复 scalar string/AI instructions/unique_keys，26 字段控制验证 raw/flattened/list 与五个 scope/说明/label/复合键。新增 model expression NUL 明确拒绝，防 DuckDB prefix parse 改公式；失败旧 metadata 保持，population NoNUL 边界保持。最终同产物 19/42/158 native、829 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、population MCP330/106、core MCP 与 CLI40/0/0 通过，证据/中间 prefix parse 发现归现 issue/r2-fidelity 报告。CI接新增 verifier，remote CI/Ubuntu tidy 未跑。
+实际长度读取修复 scalar string/AI instructions/unique_keys，26 字段控制验证 raw/flattened/list 与五个 scope/说明/label/复合键。新增 model expression NUL 明确拒绝，防 DuckDB prefix parse 改公式；失败旧 metadata 保持，population NoNUL 边界保持。最终同产物 19/42/158 native、829 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、population MCP330/106、core MCP 与 CLI 40/0/0 通过，证据/中间 prefix parse 发现归现 issue/r2-fidelity 报告。CI接新增 verifier，remote CI/Ubuntu tidy 未跑。
 
 本包完成，本地提交、不推送。整体 R2/P0 仍须单值 scalar/minLength/unknown properties/extension/dialect 校验偏离收口、最终 A1–A8 归档；下一已授权动作优先单值字符串类型校验。分页/P1/非目标及发布权限保持既有边界。
 
@@ -708,7 +706,7 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 
 ### R2 单值字符串本地交付 checkpoint（2026-10-09）
 
-仅接受 actual string 的 RequiredString/OptionalString 已落实；optional 缺省保留空值，显式 NULL/数字/Boolean/容器拒绝，合法长度保真/quoted text 保持。154 字段控制中120具名拒绝逐次完整旧 metadata 保持，hash-valid bad core 旧 bundle 保持与恢复；旧 YAML 裸1.5原样负例保留，正例quoted与JSON一致，首轮 SQL失败及纠正归现 issue。最终同产物19/42/158 native、834 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP与CLI40/0/0通过，证据 r2-scalars-* 绑定最终文件。
+仅接受 actual string 的 RequiredString/OptionalString 已落实；optional 缺省保留空值，显式 NULL/数字/Boolean/容器拒绝，合法长度保真/quoted text 保持。154 字段控制中120具名拒绝逐次完整旧 metadata 保持，hash-valid bad core 旧 bundle 保持与恢复；旧 YAML 裸1.5原样负例保留，正例quoted与JSON一致，首轮 SQL失败及纠正归现 issue。最终同产物19/42/158 native、834 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP与CLI 40/0/0通过，证据 r2-scalars-* 绑定最终文件。
 
 本包完成，本地提交、不推送。整体 R2/P0 仍需 minLength/unknown properties/extension/dialect 校验边界收口、最终A1–A8归档；下一已授权动作优先名称非空/未知core属性检查。分页/P1/非目标、remote CI/Ubuntu tidy 与发布权限维持原范围。
 
@@ -718,7 +716,7 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 
 ### R2 名称/未知属性本地交付 checkpoint（2026-10-09）
 
-八个 required nonempty 位置与八种 closed core objects 已按固定 schema 校验；unknown/case/NUL 属性键拒绝且旧 metadata 保持，五种 AI context 自定义内容/empty optional/whitespace name 合法保留。193 字段控制、50 错误控制、最终同产物19/42/158 native、837 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP/CLI40/0/0通过。一次 quoted C++ context 编辑构建失败及修复、全部 hashes 归现 issue/r2-fields-*；API2.0.0不变。
+八个 required nonempty 位置与八种 closed core objects 已按固定 schema 校验；unknown/case/NUL 属性键拒绝且旧 metadata 保持，五种 AI context 自定义内容/empty optional/whitespace name 合法保留。193 字段控制、50 错误控制、最终同产物19/42/158 native、837 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP/CLI 40/0/0通过。一次 quoted C++ context 编辑构建失败及修复、全部 hashes 归现 issue/r2-fields-*；API2.0.0不变。
 
 本包完成，本地提交、不推送。必要剩余 extension 成员结构/字段和 dialect enum/大小写，再最终 A1–A8 归档；整体R2/P0未完成。下一已授权优先这两项schema检查，不额外限制vendor自由字符串/AI追加属性或extension.data内容格式；分页/P1/远端验证及发布边界不变。
 
@@ -728,7 +726,7 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 
 ### R2 扩展/方言本地交付 checkpoint（2026-10-10）
 
-五种custom_extensions严格成员校验、全部dialect精确enum/case已实现；任意vendor/data字符串、合法AI追加属性和方言执行子集保持。365字段控制35接受/330拒绝、54错误控制、population47拒绝/discovery18控制及旧非法扩展负例通过；中间fixture/转义匹配失败与修复归现issue。最终同产物19/42/158 native、840 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP/CLI40/0/0通过，证据r2-vocabulary-*。
+五种custom_extensions严格成员校验、全部dialect精确enum/case已实现；任意vendor/data字符串、合法AI追加属性和方言执行子集保持。365字段控制35接受/330拒绝、54错误控制、population47拒绝/discovery18控制及旧非法扩展负例通过；中间fixture/转义匹配失败与修复归现issue。最终同产物19/42/158 native、840 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP/CLI 40/0/0通过，证据r2-vocabulary-*。
 
 50字段对应与已发现校验偏离结论完成，声明执行限制保留，不称全schema/语言符合性。当前包本地提交保留、不推送；整体P0仍需最后A1–A8规则驱动验收归档。下一已授权动作是该归档；分页仅未来调研、P1/非目标、remote CI/Ubuntu tidy未跑与发布权限维持原范围。
 
@@ -762,4 +760,12 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 
 ### 自动第4轮结果：A7–A8追溯/格式/传输
 
-固定CSV/定义在独立进程复现完整两阈值对象、aggregate、每日/分组/下钻及SQL/content/ontology hashes一致，记录p0-round4-replay-results.json；并非普通SQL-text replay/通用determinism。loader、365字段、36plan、18discovery、54error、24typed、实际MCP330/106拒绝、core MCP资源与stock CLI40/0/0 FAITHFUL实际重跑通过。10,000对象/分组完整传输与Float近似/输出内存限制保持，未实现分页或发布。新replay检查脚本format/typecheck通过。第4轮本地提交后仅余第5轮最终归档及复现入口；remote CI/Ubuntu tidy、P1/非目标均不扩大。
+固定CSV/定义在独立进程复现完整两阈值对象、aggregate、每日/分组/下钻及SQL/content/ontology hashes一致，记录p0-round4-replay-results.json；并非普通SQL-text replay/通用determinism。loader、365字段、36plan、18discovery、54error、24typed、实际MCP330/106拒绝、core MCP资源与stock CLI 40/0/0 FAITHFUL实际重跑通过。10,000对象/分组完整传输与Float近似/输出内存限制保持，未实现分页或发布。新replay检查脚本format/typecheck通过。第4轮本地提交后仅余第5轮最终归档及复现入口；remote CI/Ubuntu tidy、P1/非目标均不扩大。
+
+### 自动第5轮 checkpoint：最终验收与复现
+
+沿现issue汇总A1–A8最终支持/拒绝证据、声明偏离与范围，提供Bun单命令复现及机器归档检查；复现写入调用方新目录，保留仓库历史结果。核对最终源码/输入/报告hash并执行quality-local。范围裁定使用既有只读Advisor一次反证，requested Astra/high，有效backend/effort/usage/billing未知；Lead自行核实。结论仅覆盖已调整要求的两个有界profile，remote CI/Agent/P1/分页不得以本地通过冒充。
+
+### 自动第5轮完成：最终交付
+
+调整范围A1–A8验收归档及实际单命令复现完成，source/fixture/report绑定和最终quality-local通过；前四轮支持/拒绝路径证据已共同收口。Bun runner的stderr类型/import错误和修复保留，Advisor限定反证与Lead实测分开。五轮均本地提交，无推送/合并/发布。当前已授权验收目标完成；P1/分页/remote CI/自主Agent等独立后续范围不自动启动。

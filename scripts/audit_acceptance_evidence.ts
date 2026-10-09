@@ -17,7 +17,11 @@ export const VERIFIERS = [
   "typed_population",
   "correspondence",
 ] as const;
-export function auditEvidence(artifact: string, prefix = "r2-vocabulary") {
+export function auditEvidence(
+  artifact: string,
+  prefix = "p0-final",
+  reportDirectory = join(ROOT, EVIDENCE),
+) {
   const artifactHash = digest(artifact);
   const checked: { path: string; sha256: string; carrier: string }[] = [];
   function check(path: string, expected: string, carrier: string) {
@@ -34,10 +38,10 @@ export function auditEvidence(artifact: string, prefix = "r2-vocabulary") {
   const reports: Record<string, string> = {};
   for (const tag of [...VERIFIERS, "mcp"] as const) {
     const path = join(
-      EVIDENCE,
+      reportDirectory,
       `${prefix}-${tag}${tag === "mcp" ? "" : "-artifact"}-results.json`,
     );
-    const report = json<Record<string, unknown>>(join(ROOT, path));
+    const report = json<Record<string, unknown>>(resolve(ROOT, path));
     assert.equal(report.artifact_sha256, artifactHash, path);
     const script =
       tag === "correspondence"
@@ -54,6 +58,14 @@ export function auditEvidence(artifact: string, prefix = "r2-vocabulary") {
       population_source_sha256: "src/population/population.cpp",
       fixture_sha256: "test/fixtures/joined-population/core.json",
     };
+    if (typeof report.cli_sha256 === "string") {
+      const cli = Bun.which("duckdb");
+      assert(
+        cli,
+        "stock DuckDB CLI must be on PATH to verify MCP source binding",
+      );
+      check(cli, report.cli_sha256, path);
+    }
     for (const [key, value] of Object.entries(report)) {
       if (!key.endsWith("_sha256")) continue;
       if (typeof value === "string" && single[key])
@@ -64,7 +76,7 @@ export function auditEvidence(artifact: string, prefix = "r2-vocabulary") {
           check(source, hash as string, path);
         }
     }
-    reports[path] = digest(join(ROOT, path));
+    reports[path] = digest(resolve(ROOT, path));
   }
   const issuePath = "docs/ossie-execution-research.md";
   const issue = readFileSync(join(ROOT, issuePath), "utf8");

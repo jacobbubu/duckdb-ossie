@@ -1,0 +1,154 @@
+{
+  "scope": "five authorized local rounds; adjusted A1-A8 jointly covered by two bounded profiles",
+  "analyzed_commit": "dc1801a plus final source/documentation hashes",
+  "artifact_sha256": "4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307",
+  "verification": {
+    "quality_local": true,
+    "native_state": 19,
+    "native_grain": 42,
+    "native_capture": 158,
+    "sql_assertions": 840,
+    "sql_cases": 23,
+    "sql_skips": 0,
+    "bun_tests": 38,
+    "bun_expects": 124,
+    "stock_verifiers": 11,
+    "field_controls": 365,
+    "error_controls": 54,
+    "population_mcp_checks": 330,
+    "population_mcp_refusals": 106,
+    "stock_cli_pass": 40,
+    "stock_cli_fail": 0,
+    "stock_cli_skip": 0,
+    "stock_cli_faithful": true,
+    "core_mcp_actual_resources": true,
+    "independent_process_replay": true,
+    "persistent_reproduction_runner_actually_run": true,
+    "remote_ci": false,
+    "ubuntu_tidy": false,
+    "autonomous_agent": false
+  },
+  "source_sha256": {
+    "scripts/audit_acceptance_evidence.ts": "a56115d1786e385ac0f5066970c90dfe0e88022dd2974a2c475030b5ce878ce8",
+    "scripts/verify_acceptance_replay.ts": "370f53b10068e797cacba9ca4bcb15592bab3080ce31813ead1175321757ddd8",
+    "scripts/verify_p0_acceptance.ts": "12df375265624fa73ad8c49abebb83ec2c2039699bd3f4a5e500c57ff5b9417e",
+    "scripts/run_p0_acceptance.ts": "b98df1d9e50e385748d8fe31056c2a99b18b52112b1f98fbfe58ef18eec53d97",
+    "scripts/verify_population_artifact.ts": "7c05d8ff099c4814473f244808c778e67ddf6a5751652dcd991fa8c7513111f0",
+    "src/model/parser.cpp": "efb44a16d4d8d0ed84b5918161ce651629073e6b7556bb3ce0260a89bea46a19",
+    ".github/workflows/MainDistributionPipeline.yml": "653d61b6ec6b6c02819c5e71ef06b23880ba5ae80b8a7a83180c6bbe20a5cb32"
+  },
+  "documentation_sha256": {
+    "README.md": "e1d0e8e1efa245734210f20926d5f04e7d9ae13b99d642f20444c1a1c0b1fdd0",
+    "docs/p0-acceptance.md": "8a670426776931ef6e474ce5666f0bb01e727837e3d5de2dbdb6350cd4da68db",
+    "docs/core-field-correspondence.md": "e45de094f89d17c7fd668135a13c5ba5e62bc9d7f837722b3be52efefa59cce2",
+    "docs/limitations.md": "60fd01ec65f35e91e962bd6a1c62345e1165662090156601d14d385f2ea8ea5f",
+    "docs/ossie-execution-research.md": "562734c9d2b5e5d4364e3e40ceaf65ef12e55a7f51714a57270b4d7d5f37eda0",
+    "ossie-duckdb-plan.md": "8607a880d3f638f9e9d4c82b609ae662f2e99aaf3df221a66fb2de19a7c6ab76"
+  },
+  "reports_sha256": {
+    "docs/research/ossie-req-001/p0-final-acceptance-results.json": "a1b2f102f13161b38ed54f5384183c392b449bf53d91b7dd7fec8676110bebda",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-loader-artifact-results.json": "94ae9d28433530c66973e59e926693dba94feebf51b70fecfe474abec319983e",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-population-artifact-results.json": "8d56fdc737967e718309383deb34b1d48f5d0ce3c28c17abfd5657642a13bdf6",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-expression-artifact-results.json": "7f8720d68471600c1195590dc2e5511ccf14ef088f2b36bffec4e7b42f19877d",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-date-artifact-results.json": "4ef9d95a812c7dc4ad487d8e1d1f029e329a5f8ab3b67d3d8c05962d018a469b",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-join_research-artifact-results.json": "6af76ed90a51e3b039a7cfcb59a64f820610190a10113c17217443b1cdc25cf6",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-joined_population-artifact-results.json": "e07a643224b9e71ed372eed2866ae52cf5f5a2beff80f3edca91cb77a1cd47a6",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-plan-artifact-results.json": "cd6fd941bc0b6bf937ffac69e66f9ce59da2ddee2f36bc1561d061616b163819",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-discovery-artifact-results.json": "308109bedb5d3b4df4638db998ef8e1191eadbe0b8beef624d47dd6c912726f4",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-error-artifact-results.json": "15514ee139c7741ba5dca35294539484cc566513194d68bf02b542d3468e3b9c",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-typed_population-artifact-results.json": "37682ff2032cd7d4840c27703c71558f08fed69181c33a5d22c1e051f91682f8",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-correspondence-artifact-results.json": "6ec1bf199f47ad22dd71806d88b0cbfeb9fbddeb3968a61a5852305e544315cf",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-mcp-results.json": "bc8824fd7b96e977fd8275f9c39941e42e26d03936951221dec01d06953fe561",
+    "docs/research/ossie-req-001/p0-replay-population-artifact-results.json": "8d56fdc737967e718309383deb34b1d48f5d0ce3c28c17abfd5657642a13bdf6",
+    "docs/research/ossie-req-001/p0-round4-replay-results.json": "05550d6bc365b60d40b406330c1e87dde41d543e5c1d6cd10aad4804d7db0297"
+  },
+  "local_log_sha256": {
+    "/tmp/ossie-five-round3-native-sql.log": "0f46f9b933db8dedce4bb3ff5ba81b7e5b544043dfc176e26b9bef90a4aa082a",
+    "/tmp/ossie-five-round5-quality-final.log": "2b9f4fd0ed6f40bfcd01aa6f121f74459879a7147e37e8cadeba2c5dc55320ed",
+    "/tmp/ossie-five-round5-reproduction-final.log": "cc408cb99061ac1b66476d8ca8a88952890c383fc5dcb12e46bfa523b562ec82",
+    "/tmp/ossie-five-round4-cli.log": "292689c49c1ecf919351381b62736842f844126d23eeb6513b6f5eb45c211510",
+    "/tmp/ossie-five-round4-core-mcp.log": "d2432264f935c32cc555a71999dd97f9dad6647fb4fa3615441a560ffd9fd591"
+  },
+  "actual_reproduction": {
+    "command": "bun scripts/run_p0_acceptance.ts ARTIFACT NEW_OUTPUT_DIRECTORY",
+    "directory": "/tmp/ossie-five-round5-reproduction-final",
+    "exit_code": 0,
+    "acceptance_report_sha256": "3341804fc8e0a44721d6707cd68035d81ca8d414955af9886265d6200ec5d4c8",
+    "reports": {
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-loader-artifact-results.json": "94ae9d28433530c66973e59e926693dba94feebf51b70fecfe474abec319983e",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-population-artifact-results.json": "8d56fdc737967e718309383deb34b1d48f5d0ce3c28c17abfd5657642a13bdf6",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-expression-artifact-results.json": "7f8720d68471600c1195590dc2e5511ccf14ef088f2b36bffec4e7b42f19877d",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-date-artifact-results.json": "4ef9d95a812c7dc4ad487d8e1d1f029e329a5f8ab3b67d3d8c05962d018a469b",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-join_research-artifact-results.json": "6af76ed90a51e3b039a7cfcb59a64f820610190a10113c17217443b1cdc25cf6",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-joined_population-artifact-results.json": "f1678ba89e37aa6fb1f1c79c188eed9040d53ad312b22bdc64e0a990b02a922c",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-plan-artifact-results.json": "4421fbbbaa90687be4e236d77b68214260443818d310341e8491716d47910991",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-discovery-artifact-results.json": "f0dd82db0166caf1a13d24c406a16bac6097d8df17ec85b5ba81a500e6e6db83",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-error-artifact-results.json": "87859ef773c1e79b80537ebdc59944da8ff254ac48a6737da0ce1b46262e828d",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-typed_population-artifact-results.json": "4ec6701b382e588066bbcfce083ab9d13d1d37653e8f0a0ba8f4325943ae056d",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-correspondence-artifact-results.json": "6ec1bf199f47ad22dd71806d88b0cbfeb9fbddeb3968a61a5852305e544315cf",
+      "/tmp/ossie-five-round5-reproduction-final/p0-final-mcp-results.json": "8facaff7d5b8f62c4cbbcc12975b934cef329a58392871d69beca5c051a908b0"
+    },
+    "logs": {
+      "/tmp/ossie-five-round5-reproduction-final/loader.log": "94ae9d28433530c66973e59e926693dba94feebf51b70fecfe474abec319983e",
+      "/tmp/ossie-five-round5-reproduction-final/population.log": "8d56fdc737967e718309383deb34b1d48f5d0ce3c28c17abfd5657642a13bdf6",
+      "/tmp/ossie-five-round5-reproduction-final/expression.log": "7f8720d68471600c1195590dc2e5511ccf14ef088f2b36bffec4e7b42f19877d",
+      "/tmp/ossie-five-round5-reproduction-final/date.log": "4ef9d95a812c7dc4ad487d8e1d1f029e329a5f8ab3b67d3d8c05962d018a469b",
+      "/tmp/ossie-five-round5-reproduction-final/join_research.log": "6af76ed90a51e3b039a7cfcb59a64f820610190a10113c17217443b1cdc25cf6",
+      "/tmp/ossie-five-round5-reproduction-final/joined_population.log": "f1678ba89e37aa6fb1f1c79c188eed9040d53ad312b22bdc64e0a990b02a922c",
+      "/tmp/ossie-five-round5-reproduction-final/plan.log": "4421fbbbaa90687be4e236d77b68214260443818d310341e8491716d47910991",
+      "/tmp/ossie-five-round5-reproduction-final/discovery.log": "f0dd82db0166caf1a13d24c406a16bac6097d8df17ec85b5ba81a500e6e6db83",
+      "/tmp/ossie-five-round5-reproduction-final/error.log": "87859ef773c1e79b80537ebdc59944da8ff254ac48a6737da0ce1b46262e828d",
+      "/tmp/ossie-five-round5-reproduction-final/typed_population.log": "4ec6701b382e588066bbcfce083ab9d13d1d37653e8f0a0ba8f4325943ae056d",
+      "/tmp/ossie-five-round5-reproduction-final/correspondence.log": "6ec1bf199f47ad22dd71806d88b0cbfeb9fbddeb3968a61a5852305e544315cf",
+      "/tmp/ossie-five-round5-reproduction-final/mcp.log": "8facaff7d5b8f62c4cbbcc12975b934cef329a58392871d69beca5c051a908b0",
+      "/tmp/ossie-five-round5-reproduction-final/replay.log": "8d56fdc737967e718309383deb34b1d48f5d0ce3c28c17abfd5657642a13bdf6",
+      "/tmp/ossie-five-round5-reproduction-final/core-mcp.log": "d2432264f935c32cc555a71999dd97f9dad6647fb4fa3615441a560ffd9fd591",
+      "/tmp/ossie-five-round5-reproduction-final/stock-cli.log": "292689c49c1ecf919351381b62736842f844126d23eeb6513b6f5eb45c211510"
+    },
+    "native_quality_gates_separate": true
+  },
+  "failure": {
+    "reason": "Unsupported stderr=\"stdout\" rejected by Bun types; descriptor replacement missed openSync/closeSync imports, causing typecheck/quality failure and one runner ReferenceError. Imports fixed; final gates and complete actual reproduction passed. Final link audit caught a historic reference to the removed Python loader script; the record now explicitly points to the current Bun equivalent while retaining the historical report.",
+    "first_runner_failure": {
+      "status": "FAIL",
+      "artifact_sha256": "4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307",
+      "reason": "ReferenceError: openSync is not defined",
+      "run_log_sha256": {}
+    },
+    "failure_sha256": "eb16c661d5bc8deb11eae9e5ce1698ba3d8125a896136c64101372fe2c0e74d0",
+    "production_and_fixtures_unchanged": true
+  },
+  "advisor": {
+    "scope": "one readonly falsification of scoped acceptance conclusion; no functional rerun",
+    "decision": "conditionally accept after final gates/archive; Lead completed and verified these conditions",
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "high",
+    "effective_identity": null,
+    "effective_effort": null,
+    "usage": null,
+    "billing": null,
+    "lead_constraints_verified": [
+      "joint profile coverage, not each profile independently executing all A cases",
+      "manual source conflict review, not arbitrary NL detection",
+      "archive audit and actual rerun are separate",
+      "research join report is not production evidence"
+    ]
+  },
+  "necessary_remaining": [
+    "remote CI/Ubuntu tidy not run",
+    "real autonomous Agent not tested",
+    "pagination future research only",
+    "P1/calendar/multi-period/general ontology/mixed grain/windows remain outside this acceptance"
+  ],
+  "limitations": [
+    "reviewed YTD classification does not establish active/paid status or automatic NL conflict detection",
+    "quoted identifiers use DuckDB ASCII case semantics",
+    "compile is diagnostic semantic AST, not physical/final binder proof or ordinary SQL replay",
+    "separate calls across reload are not atomic; service maintains execution reference",
+    "Float approximate; typed numeric transport does not prove arbitrary client arithmetic",
+    "10000-row response tests are not universal output or peak-memory bounds",
+    "local acceptance does not authorize push/merge/publication"
+  ],
+  "conclusion": "PASS adjusted A1-A8 local rule-driven acceptance; five rounds complete, not full-spec/P1/Agent/remote acceptance",
+  "delivery": "local commit only; no push/merge/publication"
+}

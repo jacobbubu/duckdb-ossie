@@ -1,11 +1,11 @@
 {
   "scope": "A7 fixed-definition replay in separate processes with separately imported same immutable fixture; no live SQL-text replay or cross-reload atomicity promise",
   "artifact_sha256": "4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307",
-  "verifier_sha256": "4164d61280bfcd9ac032fd556d1ecc750b5b9d20416f2e3344f2b848fee9acab",
+  "verifier_sha256": "370f53b10068e797cacba9ca4bcb15592bab3080ce31813ead1175321757ddd8",
   "helper_sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
   "reports_sha256": {
-    "docs/research/ossie-req-001/p0-final-population-artifact-results.json": "8d56fdc737967e718309383deb34b1d48f5d0ce3c28c17abfd5657642a13bdf6",
-    "docs/research/ossie-req-001/p0-replay-population-artifact-results.json": "8d56fdc737967e718309383deb34b1d48f5d0ce3c28c17abfd5657642a13bdf6"
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-final-population-artifact-results.json": "8d56fdc737967e718309383deb34b1d48f5d0ce3c28c17abfd5657642a13bdf6",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p0-replay-population-artifact-results.json": "8d56fdc737967e718309383deb34b1d48f5d0ce3c28c17abfd5657642a13bdf6"
   },
   "checks": [
     "threshold 10: complete objects, aggregates, daily/groups/drilldown, SQL and content/definition hashes reproduced",

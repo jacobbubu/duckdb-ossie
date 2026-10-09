@@ -16,8 +16,15 @@ This local implementation targets the root-level core model at Apache Ossie
 whose version is `0.2.0.dev0`. This is a pinned development snapshot. Other version
 strings, missing versions and legacy `semantic_model` wrappers are rejected.
 The core loader refuses ontology and mapping document markers. The separate
-`ossie_bundle_load` path executes a bounded single-table population profile, described
+`ossie_bundle_load` path executes bounded single-table and fact-dimension population profiles, described
 in [the profile contract](docs/population-profile.md). See the [bounded implementation record](docs/ossie-execution-research.md).
+The [adjusted A1–A8 local acceptance](docs/p0-acceptance.md) records complete
+rule-driven GAAP results, declared refusals and reproducible evidence. With Bun
+dependencies, a release artifact and a stock DuckDB1.5.6 CLI on PATH, run
+`bun scripts/run_p0_acceptance.ts build/release/extension/ossie/ossie.duckdb_extension /tmp/ossie-p0-new-run`.
+The output directory must be new or empty; native quality gates are separate.
+This local acceptance does not claim full Ossie, autonomous Agent or remote CI coverage.
+
 
 Ossie is a vendor-neutral file format for semantic models: `datasets` bound to physical tables,
 `fields`, declared `relationships`, and `metrics` written as aggregate expressions. It describes
