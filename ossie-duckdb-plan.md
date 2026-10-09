@@ -16,9 +16,12 @@ The historical ontology non-goal below is superseded only for the reviewed bound
 scalar-population profile in OSSIE-REQ-001. General ontology/OWL/RDF execution is
 still excluded. The user accepted the YTD-only initial population rule (active/paid
 unverified), SQL grouping and NULL defaults, and explicit calendar completion as
-a separate capability. The pinned feature build is now in progress; the next
-implementation milestone is loader/version and metadata adaptation with regressions,
-before ontology population execution.
+a separate capability. The first local implementation package is complete: exact core version checks,
+logical datatypes/time defaults and metadata discovery, verified by 437 assertions in
+14 SQL cases plus a real artifact loaded in an independent DuckDB wheel. The next
+authorized milestone is the strict single-table User→ValidUser profile and identity
+preflight, sharing population scope between objects and metrics. Ontology execution
+and A1–A8 remain incomplete.
 
 A DuckDB extension that reads Apache Ossie semantic model files and answers
 semantic queries against the tables they describe, exposed to AI agents over MCP.

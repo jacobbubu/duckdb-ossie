@@ -1,0 +1,240 @@
+# name: test/sql/ossie_loader_contract.test
+# description: pinned core version, temporal defaults and preserved discovery metadata
+# group: [sql]
+
+require ossie
+
+statement error
+SELECT * FROM ossie_metadata();
+----
+call ossie_load
+
+query TTIIII
+CALL ossie_load('test/fixtures/loader_contract/valid.json');
+----
+metadata_contract	0.2.0.dev0	1	11	0	1
+
+query TTT
+SELECT kind, name, instructions FROM ossie_metadata() WHERE kind = 'model';
+----
+model	metadata_contract	阈值规则需要显式指定
+
+query TTTTT
+SELECT dataset, name, label, instructions, examples[1] FROM ossie_metadata() WHERE name = 'amount';
+----
+facts	amount	收入（元）	保留 NULL	每日收入是多少？
+
+query TTT
+SELECT description, synonyms[1], ai_context FROM ossie_metadata() WHERE name = 'amount';
+----
+金额说明	收入	{"synonyms":["收入"],"instructions":"保留 NULL","examples":["每日收入是多少？"],"vendor_hint":{"keep":true}}
+
+query T
+SELECT custom_extensions FROM ossie_metadata() WHERE name = 'amount';
+----
+[{"vendor_name":"business","data":"{\"unit\":\"CNY\"}"}]
+
+query TTT
+SELECT name, expression_dialect, array_to_string(available_dialects, ',') FROM ossie_metadata() WHERE kind = 'metric';
+----
+mean_amount	OSSIE_SQL_2026	ANSI_SQL,OSSIE_SQL_2026
+
+query TII rowsort
+SELECT f.name, f.is_time, m.is_time_explicit FROM ossie_fields() f JOIN ossie_metadata() m ON m.kind='field' AND m.dataset=f.dataset AND m.name=f.name;
+----
+amount	false	false
+audit	false	true
+category	false	false
+clock	true	false
+day	true	false
+flag	false	false
+instant	true	false
+local_ts	true	false
+opaque	false	false
+unknown	false	false
+year	true	true
+
+query I
+SELECT count(*) FROM ossie_metadata();
+----
+14
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/missing_version.json');
+----
+version must be
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/old_version.json');
+----
+version must be
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/future_version.json');
+----
+version must be
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/numeric_version.json');
+----
+version must be
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/null_version.json');
+----
+version must be
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/empty_datasets.json');
+----
+nonempty 'datasets'
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/invalid_ai.json');
+----
+ai_context must be
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/invalid_instructions.json');
+----
+ai_context.instructions
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/invalid_datatype.json');
+----
+unsupported datatype
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/null_datatype.json');
+----
+unsupported datatype
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/invalid_metric_datatype.json');
+----
+unsupported datatype
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/invalid_dimension.json');
+----
+dimension must be
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/invalid_time.json');
+----
+dimension must be
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/mixed_ontology.json');
+----
+core model cannot contain
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/mixed_mapping.json');
+----
+core model cannot contain
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+阈值规则需要显式指定
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/invalid_timestamp_datatype.json');
+----
+unsupported datatype
+
+statement error
+CALL ossie_load('test/fixtures/loader_contract/nul_version.json');
+----
+version must be
+
+query TTIIII
+CALL ossie_load('test/fixtures/loader_contract/valid.yaml');
+----
+yaml_metadata	0.2.0.dev0	1	1	0	0
+
+query T
+SELECT instructions FROM ossie_metadata() WHERE kind='model';
+----
+字符串上下文
+
+query T
+SELECT examples[1] FROM ossie_metadata() WHERE kind='dataset';
+----
+每日收入？
+
+query I
+SELECT is_time FROM ossie_fields();
+----
+true

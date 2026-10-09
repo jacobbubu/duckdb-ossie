@@ -168,6 +168,100 @@ void MetricsFunction(ClientContext &context, TableFunctionInput &data_p, DataChu
 	output.SetCardinality(count);
 }
 
+// Metadata has its own surface so existing discovery table schemas remain stable.
+struct MetadataGlobalState : public GlobalTableFunctionState {
+	shared_ptr<Model> model;
+	vector<vector<Value>> rows;
+	idx_t offset = 0;
+};
+
+Value OptionalText(const string &text) {
+	return text.empty() ? Value(LogicalType::VARCHAR) : Value(text);
+}
+
+void AddMetadataRow(MetadataGlobalState &state, const string &kind, const string &dataset, const string &name,
+                    const string &description, const string &label, const AIContext &ai, const string &extensions,
+                    const ModelExpression *expression = nullptr, const Field *field = nullptr) {
+	state.rows.push_back({Value(kind), OptionalText(dataset), Value(name), Value(description), OptionalText(label),
+	                      Value(ai.instructions), StringList(ai.synonyms), StringList(ai.examples),
+	                      OptionalText(ai.raw_json), OptionalText(extensions),
+	                      expression ? Value(expression->dialect) : Value(LogicalType::VARCHAR),
+	                      StringList(expression ? expression->available_dialects : vector<string>()),
+	                      field ? Value::BOOLEAN(field->is_time_explicit) : Value(LogicalType::BOOLEAN)});
+}
+
+unique_ptr<GlobalTableFunctionState> MetadataInit(ClientContext &context, TableFunctionInitInput &input) {
+	auto state = make_uniq<MetadataGlobalState>();
+	state->model = OssieState::Get(context).GetModel();
+	if (!state->model) {
+		throw InvalidInputException("no Ossie model is loaded -- call ossie_load('model.json') first");
+	}
+	auto &model = *state->model;
+	AddMetadataRow(*state, "model", "", model.name, model.description, "", model.ai_context,
+	               model.custom_extensions_json);
+	for (auto &dataset : model.datasets) {
+		AddMetadataRow(*state, "dataset", "", dataset.name, dataset.description, "", dataset.ai_context,
+		               dataset.custom_extensions_json);
+		for (auto &field : dataset.fields) {
+			AddMetadataRow(*state, "field", dataset.name, field.name, field.description, field.label, field.ai_context,
+			               field.custom_extensions_json, &field.expression, &field);
+		}
+	}
+	for (auto &relationship : model.relationships) {
+		AddMetadataRow(*state, "relationship", "", relationship.name, "", "", relationship.ai_context,
+		               relationship.custom_extensions_json);
+	}
+	for (auto &metric : model.metrics) {
+		AddMetadataRow(*state, "metric", "", metric.name, metric.description, "", metric.ai_context,
+		               metric.custom_extensions_json, &metric.expression);
+	}
+	return std::move(state);
+}
+
+unique_ptr<FunctionData> MetadataBind(ClientContext &context, TableFunctionBindInput &input,
+                                      vector<LogicalType> &return_types, vector<string> &names) {
+	names = {"kind",
+	         "dataset",
+	         "name",
+	         "description",
+	         "label",
+	         "instructions",
+	         "synonyms",
+	         "examples",
+	         "ai_context",
+	         "custom_extensions",
+	         "expression_dialect",
+	         "available_dialects",
+	         "is_time_explicit"};
+	return_types = {LogicalType::VARCHAR,
+	                LogicalType::VARCHAR,
+	                LogicalType::VARCHAR,
+	                LogicalType::VARCHAR,
+	                LogicalType::VARCHAR,
+	                LogicalType::VARCHAR,
+	                LogicalType::LIST(LogicalType::VARCHAR),
+	                LogicalType::LIST(LogicalType::VARCHAR),
+	                LogicalType::VARCHAR,
+	                LogicalType::VARCHAR,
+	                LogicalType::VARCHAR,
+	                LogicalType::LIST(LogicalType::VARCHAR),
+	                LogicalType::BOOLEAN};
+	return nullptr;
+}
+
+void MetadataFunction(ClientContext &context, TableFunctionInput &input, DataChunk &output) {
+	auto &state = input.global_state->Cast<MetadataGlobalState>();
+	idx_t count = 0;
+	while (state.offset < state.rows.size() && count < STANDARD_VECTOR_SIZE) {
+		auto &row = state.rows[state.offset++];
+		for (idx_t col = 0; col < row.size(); col++) {
+			output.SetValue(col, count, row[col]);
+		}
+		count++;
+	}
+	output.SetCardinality(count);
+}
+
 } // namespace
 
 //! Registers one description table function with the metadata duckdb_functions() exposes.
@@ -179,6 +273,12 @@ void RegisterDescribe(ExtensionLoader &loader, TableFunction function, const str
 }
 
 void RegisterDescribeFunctions(ExtensionLoader &loader) {
+	RegisterDescribe(loader, TableFunction("ossie_metadata", {}, MetadataFunction, MetadataBind, MetadataInit),
+	                 "Discover model, dataset, field, relationship and metric metadata, including labels, AI "
+	                 "instructions/examples, original AI context and descriptive vendor extensions as JSON text. "
+	                 "Extensions are preserved without interpretation. Expression dialects and explicit time roles "
+	                 "are reported where applicable.",
+	                 "SELECT kind, dataset, name, instructions, examples FROM ossie_metadata()");
 	RegisterDescribe(loader,
 	                 TableFunction("ossie_relationships", {}, RelationshipsFunction, RelationshipsBind, DescribeInit),
 	                 "List the loaded model's relationships with the cardinality derived from the endpoints' declared "

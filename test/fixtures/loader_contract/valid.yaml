@@ -1,0 +1,15 @@
+version: 0.2.0.dev0
+name: yaml_metadata
+ai_context: "字符串上下文"
+datasets:
+  - name: facts
+    source: memory.main.facts
+    ai_context:
+      examples: ["每日收入？"]
+    fields:
+      - name: day
+        datatype: Date
+        expression:
+          dialects:
+            - dialect: ANSI_SQL
+              expression: day

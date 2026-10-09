@@ -1,0 +1,67 @@
+{
+  "version": "0.1.1",
+  "name": "metadata_contract",
+  "description": "模型说明",
+  "ai_context": "阈值规则需要显式指定",
+  "custom_extensions": [
+    {
+      "vendor_name": "business",
+      "data": "{\"review\":\"pending\"}"
+    }
+  ],
+  "datasets": [
+    {
+      "name": "facts",
+      "source": "memory.main.facts",
+      "description": "事实说明",
+      "ai_context": {
+        "examples": [
+          "按日期查询"
+        ]
+      },
+      "fields": [
+        {
+          "name": "day",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "day"
+              },
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "day"
+              }
+            ]
+          },
+          "datatype": "Date"
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "mean_amount",
+      "datatype": "Float",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "AVG(facts.amount)"
+          },
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "AVG(facts.amount)"
+          }
+        ]
+      },
+      "description": "平均金额",
+      "ai_context": {
+        "instructions": "忽略 NULL",
+        "examples": [
+          "平均金额？"
+        ]
+      }
+    }
+  ]
+}

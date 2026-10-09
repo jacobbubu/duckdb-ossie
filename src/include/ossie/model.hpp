@@ -10,7 +10,10 @@ namespace ossie {
 //! `ai_context` contains vocabulary for LLM consumers. An agent can discover what it can ask for by reading synonyms.
 struct AIContext {
 	vector<string> synonyms;
+	vector<string> examples;
 	string instructions;
+	//! Serialized original string/object, including vendor keys; empty means absent.
+	string raw_json;
 };
 
 struct ModelExpression {
@@ -63,7 +66,10 @@ struct Field {
 	string description;
 	//! `dimension.is_time`
 	bool is_time = false;
+	bool is_time_explicit = false;
 	AIContext ai_context;
+	//! Descriptive vendor data, preserved without executing or inferring units.
+	string custom_extensions_json;
 	//! False only if the expression is exactly a reference to this field's own name
 	bool is_computed;
 };
@@ -78,6 +84,8 @@ struct Dataset {
 	vector<vector<string>> unique_keys;
 	string description;
 	AIContext ai_context;
+	//! Descriptive vendor data, preserved without executing or inferring units.
+	string custom_extensions_json;
 	vector<Field> fields;
 	case_insensitive_map_t<idx_t> field_index;
 
@@ -109,6 +117,8 @@ struct Relationship {
 	vector<string> from_columns;
 	vector<string> to_columns;
 	AIContext ai_context;
+	//! Descriptive vendor data, preserved without executing or inferring units.
+	string custom_extensions_json;
 	//! Default to the most conservative value.
 	Cardinality cardinality = Cardinality::MANY_TO_MANY;
 };
@@ -120,6 +130,8 @@ struct Metric {
 	string datatype;
 	string description;
 	AIContext ai_context;
+	//! Descriptive vendor data, preserved without executing or inferring units.
+	string custom_extensions_json;
 };
 
 struct Model {
@@ -128,6 +140,8 @@ struct Model {
 	string name;
 	string description;
 	AIContext ai_context;
+	//! Descriptive vendor data, preserved without executing or inferring units.
+	string custom_extensions_json;
 	vector<Dataset> datasets;
 	vector<Relationship> relationships;
 	vector<Metric> metrics;

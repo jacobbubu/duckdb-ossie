@@ -11,6 +11,13 @@ semantic layer via MCP.
 
 **This extension works with DuckDB v1.5.6.**
 
+This local implementation targets the root-level core model at Apache Ossie
+[`8dd6732`](https://github.com/apache/ossie/tree/8dd6732da354f22ca71f16d82626a46039ecdcd9),
+whose version is `0.2.0.dev0`. This is a pinned development snapshot. Other version
+strings, missing versions and legacy `semantic_model` wrappers are rejected.
+Ontology and mapping documents require a separate execution implementation; the core
+loader refuses their document markers. See the [bounded implementation record](docs/ossie-execution-research.md).
+
 Ossie is a vendor-neutral file format for semantic models: `datasets` bound to physical tables,
 `fields`, declared `relationships`, and `metrics` written as aggregate expressions. It describes
 data in place and never transforms it. What the format deliberately leaves open is the *query*
@@ -26,7 +33,9 @@ implementation that answers a question rather than translating one.
 
 Claims about a file format should be checkable, so:
 
-- Models are validated against the format's own [`core-spec/ossie-schema.json`](https://github.com/apache/ossie/blob/main/core-spec/ossie-schema.json)
+- Conformance fixtures are checked against the pinned [`core-spec/ossie-schema.json`](test/fixtures/conformance/ossie-schema.json).
+  The runtime loader performs bounded validation of versions, document shape, logical
+  datatypes, expressions and references; it is not a complete JSON Schema validator.
 - The suite includes six models from `apache/ossie`, vendored verbatim: five published by *other*
   Ossie implementers — Databricks, GoodData, NVIDIA, Omni and OrionBelt — and the spec's own TPC-DS
   example. Five load and answer queries. The Databricks model carries only `DATABRICKS`
@@ -82,11 +91,26 @@ records every such refusal and why it exists.
 | `ossie_fields()` | Fields with datatype, `is_time`, `is_computed`, expression, synonyms |
 | `ossie_metrics()` | Metrics with datatype, expression, synonyms |
 | `ossie_relationships()` | Relationships with derived cardinality |
+| `ossie_metadata()` | Descriptions, field labels, AI instructions/synonyms/examples, preserved JSON and expression dialects across all model scopes |
 | `ossie_query(metrics, dimensions, filters)` | Compile the request and execute it |
 | `ossie_compile(metrics, dimensions, filters)` | Return the SQL without running it |
 
 `rebind` remaps warehouse-qualified prefixes onto the local catalog: a model saying
 `tpcds.public.store_sales` needs `rebind => MAP{'tpcds.public': 'tpcds.main'}` to find local tables.
+
+`ossie_metadata()` returns `kind`, optional field `dataset`, `name`, `description`,
+`label`, `instructions`, `synonyms`, `examples`, `ai_context`, `custom_extensions`,
+`expression_dialect`, `available_dialects`, and `is_time_explicit`. The JSON columns
+preserve the original JSON values, including extra AI context keys; whitespace is
+normalized. A string AI context is exposed as instructions and also retained as JSON.
+Vendor extensions are descriptive only: units are preserved with their vendor source,
+and are not inferred, converted or executed. Available dialects record the definition;
+`expression_dialect` identifies the one actually selected. Fields and metrics are
+executable through the existing query vocabulary; other rows describe model structure.
+
+Temporal logical types default to `is_time=true`; an explicit `dimension.is_time`
+overrides that default, including opting an audit timestamp out. This role does not
+cast physical columns. Natural-language metadata never creates a calculation rule.
 
 `ossie_compile` is a first-class output, not a debug aid — it is the useful surface wherever DuckDB
 is not the executor. It runs the identical compiler `ossie_query` does, so the SQL you inspect is

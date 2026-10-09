@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 研究证据复现
 
-本目录包含固定来源、研究定义草案和独立数值基准。扩展实现没有修改，也未加载或编译 ossie。本目录中的通过结果不代表 A1—A8 通过。
+本目录包含固定来源、研究定义草案和独立数值基准。初始研究独立于扩展实现；其后已完成首个 bounded core loader/元数据工作包的本地构建与产物加载验证。本目录中的通过结果仍不代表 A1—A8 通过。
 
 主要结论和执行 profile 见 [研究记录](../../ossie-execution-research.md)。原始需求和业务文档保持不变；来源与文件 SHA-256 见 [manifest](sources/manifest.json)。Apache Ossie 来源文件按固定提交保存，保留版权与许可；QwenPaw 来源记录使用本地固定提交和内容哈希。
 
@@ -42,3 +42,17 @@ CSV 是固定生成器的派生序列化；已存在而内容不同会拒绝覆�
 `sources/apache-ossie/` 为 Apache Ossie 固定提交的文档、schema、示例和只读研究所需源码，按 Apache-2.0 使用；该目录保存原 LICENSE 和 NOTICE。它们不是扩展二进制的一部分，未更新产品 vendor 快照。
 
 `sources/qwenpaw-data/` 保留原 LICENSE，原始生成器和说明仅用于研究基准；xlsx/docx 原文件未复制，只记录来源哈希和提取内容。新生成的 CSV、研究脚本及定义草案属于本地研究产物。本次未推送或发布这些文件。
+
+## 首个 loader 工作包验证
+
+固定 feature 原有基线为 13 个用例、340 条断言。新增版本、格式、AI 元数据和时间角色控制后，完整 SQL 回归为 14 个用例、437 条断言。
+
+独立 DuckDB wheel 1.5.6 可复核实际扩展产物（需要先 `make release`）：
+
+```sh
+/tmp/duckdb-ossie-req-001-venv/bin/python scripts/verify_loader_artifact.py \
+  build/release/extension/ossie/ossie.duckdb_extension \
+  --output docs/research/ossie-req-001/loader-artifact-results.json
+```
+
+结果记录扩展产物 SHA-256、验证脚本 SHA-256、17 个拒绝文档、46 个参考模型元数据对象和 2,500 个字段的跨批次扫描。SQL 控制使用人工指定结果；参考文档逐字段核对只证明元数据保真，不证明其中的自然语言或 vendor 数据被执行。测试产物与独立 wheel 加载分别提供证据，尚未运行 ontology 人口、对象追溯或 A1—A8。

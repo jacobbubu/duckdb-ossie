@@ -135,13 +135,57 @@ vector<string> StringArray(yyjson_val *obj, const char *key, const string &conte
 	return result;
 }
 
+string JSONText(yyjson_val *value) {
+	if (!value) {
+		return string();
+	}
+	auto serialized = yyjson_val_write(value, 0, nullptr);
+	if (!serialized) {
+		throw InvalidInputException("ossie_load: could not preserve metadata JSON");
+	}
+	string result(serialized);
+	free(serialized);
+	return result;
+}
+
+string ParseDatatype(yyjson_val *parent, const string &context) {
+	auto value = Member(parent, "datatype");
+	if (!value) {
+		return string();
+	}
+	if (yyjson_is_str(value)) {
+		string datatype(yyjson_get_str(value), yyjson_get_len(value));
+		for (auto allowed :
+		     {"String", "Integer", "Decimal", "Float", "Boolean", "Date", "Time", "DateTime", "DateTimeTz", "Opaque"}) {
+			if (datatype == allowed) {
+				return datatype;
+			}
+		}
+	}
+	throw InvalidInputException("ossie_load: %s has an unsupported datatype; use the Ossie logical type vocabulary",
+	                            context);
+}
+
 AIContext ParseAIContext(yyjson_val *parent, const string &context) {
 	AIContext result;
 	auto ai_context = Member(parent, "ai_context");
 	if (!ai_context) {
 		return result;
 	}
+	if (!yyjson_is_str(ai_context) && !yyjson_is_obj(ai_context)) {
+		throw InvalidInputException("ossie_load: %s ai_context must be a string or object", context);
+	}
+	result.raw_json = JSONText(ai_context);
+	if (yyjson_is_str(ai_context)) {
+		result.instructions = yyjson_get_str(ai_context);
+		return result;
+	}
+	auto instructions = Member(ai_context, "instructions");
+	if (instructions && !yyjson_is_str(instructions)) {
+		throw InvalidInputException("ossie_load: %s ai_context.instructions must be a string", context);
+	}
 	result.synonyms = StringArray(ai_context, "synonyms", context);
+	result.examples = StringArray(ai_context, "examples", context);
 	result.instructions = OptionalString(ai_context, "instructions");
 	return result;
 }
@@ -223,16 +267,23 @@ Field ParseField(yyjson_val *field_obj, const string &dataset_name) {
 	auto context = StringUtil::Format("field \"%s.%s\"", dataset_name, result.name);
 
 	result.expression = ParseModelExpression(field_obj, context);
-	result.datatype = OptionalString(field_obj, "datatype");
+	result.datatype = ParseDatatype(field_obj, context);
 	result.label = OptionalString(field_obj, "label");
 	result.description = OptionalString(field_obj, "description");
 	result.ai_context = ParseAIContext(field_obj, context);
+	result.custom_extensions_json = JSONText(Member(field_obj, "custom_extensions"));
 
+	result.is_time = result.datatype == "Date" || result.datatype == "Time" || result.datatype == "DateTime" ||
+	                 result.datatype == "DateTimeTz";
 	auto dimension = Member(field_obj, "dimension");
 	if (dimension) {
 		auto is_time = Member(dimension, "is_time");
-		if (is_time && yyjson_is_bool(is_time)) {
+		if (!yyjson_is_obj(dimension) || (is_time && !yyjson_is_bool(is_time))) {
+			throw InvalidInputException("ossie_load: %s dimension must be an object with a boolean is_time", context);
+		}
+		if (is_time) {
 			result.is_time = yyjson_get_bool(is_time);
+			result.is_time_explicit = true;
 		}
 	}
 
@@ -363,6 +414,7 @@ Dataset ParseDataset(yyjson_val *dataset_obj, const RebindMap &rebind) {
 	result.unique_keys = ParseUniqueKeys(dataset_obj, context);
 	result.description = OptionalString(dataset_obj, "description");
 	result.ai_context = ParseAIContext(dataset_obj, context);
+	result.custom_extensions_json = JSONText(Member(dataset_obj, "custom_extensions"));
 
 	auto fields = Member(dataset_obj, "fields");
 	if (fields) {
@@ -395,6 +447,7 @@ Relationship ParseRelationship(yyjson_val *obj) {
 	result.from_columns = StringArray(obj, "from_columns", context);
 	result.to_columns = StringArray(obj, "to_columns", context);
 	result.ai_context = ParseAIContext(obj, context);
+	result.custom_extensions_json = JSONText(Member(obj, "custom_extensions"));
 
 	if (result.from_columns.empty() || result.to_columns.empty()) {
 		throw InvalidInputException("ossie_load: %s must declare both 'from_columns' and 'to_columns'", context);
@@ -456,17 +509,27 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 	}
 
 	Model result;
-	result.spec_version = OptionalString(root, "version");
+	auto version = Member(root, "version");
+	if (!yyjson_is_str(version) || string(yyjson_get_str(version), yyjson_get_len(version)) != "0.2.0.dev0") {
+		throw InvalidInputException("ossie_load: version must be the supported string '0.2.0.dev0'");
+	}
+	for (auto key : {"ontology", "concept_mappings", "ontology_ref", "semantic_model_ref", "ontology_mappings"}) {
+		if (Member(root, key)) {
+			throw InvalidInputException("ossie_load: core model cannot contain ontology/mapping field '%s'", key);
+		}
+	}
+	result.spec_version = yyjson_get_str(version);
 
 	auto model_obj = root;
 	result.name = RequiredString(model_obj, "name", "the semantic model");
 	auto context = StringUtil::Format("semantic model \"%s\"", result.name);
 	result.description = OptionalString(model_obj, "description");
 	result.ai_context = ParseAIContext(model_obj, context);
+	result.custom_extensions_json = JSONText(Member(model_obj, "custom_extensions"));
 
 	auto datasets = Member(model_obj, "datasets");
-	if (!datasets || !yyjson_is_arr(datasets)) {
-		throw InvalidInputException("ossie_load: %s has no 'datasets' array", context);
+	if (!datasets || !yyjson_is_arr(datasets) || yyjson_arr_size(datasets) == 0) {
+		throw InvalidInputException("ossie_load: %s requires a nonempty 'datasets' array", context);
 	}
 	size_t idx, max;
 	yyjson_val *item;
@@ -499,9 +562,10 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 			metric.name = RequiredString(item, "name", "metric");
 			auto metric_context = StringUtil::Format("metric \"%s\"", metric.name);
 			metric.expression = ParseModelExpression(item, metric_context);
-			metric.datatype = OptionalString(item, "datatype");
+			metric.datatype = ParseDatatype(item, metric_context);
 			metric.description = OptionalString(item, "description");
 			metric.ai_context = ParseAIContext(item, metric_context);
+			metric.custom_extensions_json = JSONText(Member(item, "custom_extensions"));
 
 			if (result.metric_index.find(metric.name) != result.metric_index.end()) {
 				throw InvalidInputException("ossie_load: %s declares metric \"%s\" more than once", context,

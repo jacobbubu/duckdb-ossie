@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-09。状态：首轮研究完成，本地实施已授权并开始固定 feature 的构建基线；P0 尚未完成。
+日期：2026-10-09。状态：首轮研究和首个 core loader/元数据工作包已完成并本地验证；P0 尚未完成。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -141,11 +141,28 @@ User 使用 identify_by 的单一二元 id 关系，映射到 user_id。product/
 
 ## 剩余必要工作与下一步
 
-本轮研究交付完成。整体 P0 未完成，必要工作仍包括：业务语义裁定评审、profile 与接口契约定稿、feature 本地构建和原有测试复核、新版本/元数据/表达式边界补齐、概念/mapping 编译、同快照预检、追溯产物、多表拒绝 fixture，以及 A1—A8 实际运行。
+### 当前实施工作包
 
-下一已授权工作包：在隔离 checkout 中固定现有 feature，先构建并运行现有测试；以研究样例补 R1/R2/R3 的缺口，再实现首个单表 User→ValidUser 执行切片。不能把“schema 接受研究样例”作为切片完成。业务定义和空日期输出已按用户接受的建议确定；推送、上游 PR、合并与发布分别保留授权边界。
+范围：固定 feature 的本地构建与原有测试；随后补 core 的固定版本检查、非空模型集合、ai_context 字符串/对象与 examples、datatype 枚举和时间角色默认值，并通过独立发现接口保留说明、标签与描述性扩展。它是 R1/R2 的一部分，不替代真实列/键预检、表达式白名单、本体执行或 A1—A8。
 
-本地实施准备：已创建并附加 `/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie`，分支 `codex/ossie-execution` 从固定 feature `c2947c7` 开始。三个子模块已按记录提交初始化：DuckDB `069cc9f9b5be802405797faecc284961b07c70ef`、ci-tools `3fd6109fc01555673b7c7123eba8d0d143fe8ce4`、fkYAML `1818a25156b9b1a65a9c9b6126631e2cd7cfa8f6`。这一准备没有修改扩展源码，也还没有构建结果。
+验证：先记录未修改源码的基线断言；新测试覆盖版本/格式拒绝、元数据内容及缺省/显式时间角色，失败加载不得替换上一个有效模型；完成后运行整个现有 SQL 测试集和 stock DuckDB 的产物加载验证。仅以 fixture 同源互转不作为语义正确依据。
+
+已完成结果：固定版本 `0.2.0.dev0` 必须为精确字符串（包括拒绝嵌入 NUL 的伪装版本）；缺失、旧版本、未知版本和非字符串版本拒绝，legacy wrapper 保留迁移提示。空 datasets、ontology/mapping 混入 core、非法 datatype、错误 AI context 和时间角色类型拒绝。支持十个固定逻辑 datatype；Date/Time/DateTime/DateTimeTz 默认时间角色为 true，显式 false/true 优先。新增 `ossie_metadata()`，逐 model/dataset/field/relationship/metric 发现说明、字段标签、instructions/synonyms/examples、原 AI context JSON、vendor extensions JSON、选中/声明方言和显式时间角色。原发现接口列结构不变。单位扩展仅保留来源与内容，不执行或换算。失败加载不替换已加载模型。
+
+证据：
+
+- 源码未修改的 feature 基线：13 个 SQL 用例、340 条断言通过；实际版本 `v1.5.6 / 069cc9f9b5`。这与上游 PR 描述的旧断言数不同，以本次实测为准。
+- 最终全量 SQL 回归：14 个用例、437 条断言通过；`make format-check` 通过。
+- 独立安装的 DuckDB wheel 1.5.6 加载实际 `.duckdb_extension` 成功；17 类拒绝输入后保持原模型；核对参考模型 46 个元数据对象及全部 AI/vendor 内容；2,500 个字段跨输出批次无丢失/重复。产物、验证脚本、源码和输入 SHA-256 见 [loader-artifact-results.json](research/ossie-req-001/loader-artifact-results.json)。脚本 [verify_loader_artifact.py](../scripts/verify_loader_artifact.py) 可以复跑；它不验证 ontology 执行。
+- 现有完整功能脚本：40 PASS，0 FAIL，0 XFAIL，0 SKIP。因 PATH 无 stock CLI，它使用 build-tree shell、静态链接模式；独立 wheel 的真实产物加载是另一项单独证据。这个 40 项运行发生在最终 embedded-NUL version 拒绝补充之前，该补充随后由全量 SQL 和独立 wheel 复核。
+
+保留的发现和修复：浅克隆缺少版本标签使首次配置使用 dummy v0.0.1；只获取固定提交对应的 v1.5.6 标签并设置 core.abbrev=10 后重新构建，实际版本与 artifact 已确认，未改变 DuckDB 源码提交。原 expression fixture 的 `Timestamp` 非固定 schema 的合法逻辑类型，现改为 `DateTime`，表达式和数值预期不变，并新增 `Timestamp` 拒绝控制。新增 SQL 测试初版使用未构建的 JSON 扩展函数，改为直接核对保留文本，JSON 内容另由 stock wheel/Python 解析核对。格式检查缺少工具，已在 task venv 安装规定版本后复核。独立加载 harness 初版用 LOAD 参数占位符被 SQL parser 拒绝，改用正确引号转义路径后通过；不得把该失败解释为二进制不兼容。
+
+本工作包完成，整体 P0 未完成。必要工作仍包括：其余 core 名称/键/真实列预检与表达式 allowlist、单表 profile 和接口契约落地、概念/mapping 编译、同快照人口双射预检、对象与指标共享人口、追溯产物、多表拒绝 fixture，以及 A1—A8 实际运行。现有 loader 不是完整 JSON Schema validator；AI 数组仍沿用既有 scalar 文本容错。可发现的自然语言和 descriptive extensions 不等于可执行规则。active/paid 仍缺数据，明确未验证。
+
+下一已授权工作包：以独立 GAAP oracle 落地单表 User→ValidUser profile；先建立严格标量规则和引用/identity 预检，再让对象清单与指标查询共享人口计划。必要执行语义不能解释时明确拒绝。不能把“schema 接受研究样例”作为切片完成；业务阈值和默认空日期输出已确定，推送、上游 PR、合并与发布分别保留授权边界。
+
+本地实现：附加 worktree `/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie`，分支 `codex/ossie-execution` 从固定 feature `c2947c7` 开始，研究提交已 cherry-pick。三个子模块仍为记录提交：DuckDB `069cc9f9b5be802405797faecc284961b07c70ef`、ci-tools `3fd6109fc01555673b7c7123eba8d0d143fe8ce4`、fkYAML `1818a25156b9b1a65a9c9b6126631e2cd7cfa8f6`。仅本地变更与验证，未推送、改上游 PR、合并或发布。
 
 ### 用户决策的规范依据
 
