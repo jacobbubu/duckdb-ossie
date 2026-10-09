@@ -48,7 +48,7 @@ output names and other request combinations still require request binding.
 Unsupported declarations reject the whole load; no unavailable-definition list
 is synthesized. Time flags describe declared/defaulted roles, not calendar support.
 
-Capabilities return one row with `api_version=1.0.0`,
+Capabilities return one row with `api_version=1.1.0`,
 `discovery_schema=ossie-population-discovery-v1`,
 `plan_schema=ossie-population-plan-v1`, `ossie_spec_version=0.2.0.dev0`,
 `capabilities_json`, and the shared trace columns. These are separate identities:
@@ -70,7 +70,9 @@ lists the active concepts, checked capture-join policy, input/request limits,
 frozen source/reload behavior, sparse/unsorted/unpaged results and compile-stage
 limits. MCP list encoding and transport uncertainty are explicitly properties of
 the example adapter; their presence does not mean an MCP server is installed or
-running. Uniform errors, arbitrary ontology execution, cross-call reload atomicity,
+running. The [error contract](population-errors.md) covers recoverable population
+callback failures; `error_contract` lists external boundaries and serious native
+errors that remain outside the envelope. Arbitrary ontology execution, cross-call reload atomicity,
 exact numeric MCP transport and unbounded transport size/truncation guarantees
 are not advertised as implemented. The 16 MiB canonical limit is not peak memory.
 

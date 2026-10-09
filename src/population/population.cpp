@@ -8,8 +8,10 @@
 #include "duckdb/catalog/entry_lookup_info.hpp"
 #include "duckdb/catalog/catalog_entry/table_catalog_entry.hpp"
 #include "duckdb/common/file_system.hpp"
+#include "duckdb/common/error_data.hpp"
 #include "duckdb/common/string_util.hpp"
 #include "duckdb/function/table_function.hpp"
+#include "duckdb/function/scalar_function.hpp"
 #include "duckdb/main/client_context.hpp"
 #include "duckdb/main/connection.hpp"
 #include "duckdb/main/database.hpp"
@@ -49,9 +51,113 @@ constexpr idx_t MAX_ROWS = 10000;
 constexpr idx_t MAX_BYTES = 16 * 1024 * 1024;
 std::atomic<uint64_t> batch_sequence {0};
 
+string JSONString(const string &value);
+constexpr const char *ERROR_SCHEMA = "ossie-population-error-v1";
+constexpr const char *ERROR_MARKER = "ossie_population_error_v1: ";
+constexpr const char *ERROR_INFO = "ossie_population_error_json";
+
+string ErrorCode(const string &stage) {
+	if (stage == "capability")
+		return "UNSUPPORTED_CAPABILITY";
+	if (stage == "identity")
+		return "IDENTITY_VIOLATION";
+	if (stage == "execute")
+		return "EXECUTION_FAILED";
+	if (stage == "load")
+		return "LOAD_FAILED";
+	if (stage == "snapshot")
+		return "SNAPSHOT_REJECTED";
+	if (stage == "mapping")
+		return "MAPPING_INVALID";
+	if (stage == "rule")
+		return "RULE_REJECTED";
+	if (stage == "parse")
+		return "DEFINITION_INVALID";
+	if (stage == "hash")
+		return "DEFINITION_HASH_MISMATCH";
+	return "INVALID_REQUEST";
+}
+
+[[noreturn]] void PopulationError(const string &object, const string &stage, const string &reason, ExceptionType type,
+                                  const string &source_type, unordered_map<string, string> extra = {}) {
+	// legacy_message is diagnostic compatibility, not the machine capability field.
+	auto legacy = "ossie_population: object=" + object + " stage=" + stage + " reason=" + reason +
+	              " missing_capability=bounded population profile";
+	auto payload = "{\"schema_version\":" + JSONString(ERROR_SCHEMA) + ",\"code\":" + JSONString(ErrorCode(stage)) +
+	               ",\"object\":" + JSONString(object) + ",\"stage\":" + JSONString(stage) +
+	               ",\"reason\":" + JSONString(reason) +
+	               ",\"missing_capability\":" + (stage == "capability" ? JSONString(reason) : "null") +
+	               ",\"exception_type\":" + JSONString(Exception::ExceptionTypeToString(type)) +
+	               ",\"source_exception_type\":" + (source_type.empty() ? "null" : JSONString(source_type)) +
+	               ",\"legacy_message\":" + JSONString(legacy) + "}";
+	extra[ERROR_INFO] = payload;
+	throw Exception(extra, type, string(ERROR_MARKER) + payload);
+}
+
 [[noreturn]] void Fail(const string &object, const string &stage, const string &reason) {
-	throw InvalidInputException("ossie_population: object=%s stage=%s reason=%s missing_capability=%s", object, stage,
-	                            reason, "bounded population profile");
+	PopulationError(object, stage, reason, ExceptionType::INVALID_INPUT, "");
+}
+
+bool RecoverableError(ExceptionType type) {
+	switch (type) {
+	case ExceptionType::INVALID_INPUT:
+	case ExceptionType::BINDER:
+	case ExceptionType::PARSER:
+	case ExceptionType::CATALOG:
+	case ExceptionType::CONVERSION:
+	case ExceptionType::OUT_OF_RANGE:
+	case ExceptionType::IO:
+	case ExceptionType::NOT_IMPLEMENTED:
+	case ExceptionType::CONSTRAINT:
+	case ExceptionType::INVALID_TYPE:
+		return true;
+	default:
+		return false;
+	}
+}
+
+[[noreturn]] void NormalizeError(const ErrorData &error, const string &object, const string &stage,
+                                 ExceptionType reported_type) {
+	if (!RecoverableError(error.Type()))
+		error.Throw();
+	auto own = error.ExtraInfo().find(ERROR_INFO);
+	if (own != error.ExtraInfo().end()) {
+		auto doc = yyjson_read(own->second.data(), own->second.size(), 0);
+		bool valid = doc && yyjson_is_obj(yyjson_doc_get_root(doc));
+		if (valid) {
+			auto schema = yyjson_obj_get(yyjson_doc_get_root(doc), "schema_version");
+			valid = yyjson_is_str(schema) && string(yyjson_get_str(schema), yyjson_get_len(schema)) == ERROR_SCHEMA;
+		}
+		if (doc)
+			yyjson_doc_free(doc);
+		if (valid)
+			error.Throw();
+	}
+	PopulationError(object, stage, error.Message(), reported_type, Exception::ExceptionTypeToString(error.Type()),
+	                error.ExtraInfo());
+}
+
+template <class WORK>
+auto ErrorBoundary(const string &object, const string &stage, WORK work,
+                   ExceptionType translated_type = ExceptionType::INVALID) -> decltype(work()) {
+	try {
+		return work();
+	} catch (const std::bad_alloc &) {
+		throw;
+	} catch (const std::exception &error) {
+		auto original = std::current_exception();
+		ErrorData data;
+		try {
+			data = ErrorData(error);
+		} catch (...) {
+			std::rethrow_exception(original);
+		}
+		// Avoid relying on class RTTI across the extension/host boundary.
+		// Unknown standard exceptions, interrupts and serious failures retain their original exception.
+		if (!RecoverableError(data.Type()))
+			throw;
+		NormalizeError(data, object, stage, translated_type == ExceptionType::INVALID ? data.Type() : translated_type);
+	}
 }
 
 string Quote(const string &name) {
@@ -62,7 +168,7 @@ template <class QUERY>
 unique_ptr<QueryResult> Run(ClientContext &caller, Connection &connection, QUERY sql) {
 	auto pending = connection.PendingQuery(std::move(sql));
 	if (pending->HasError()) {
-		Fail("query", "bind", pending->GetError());
+		NormalizeError(pending->GetErrorObject(), "query", "bind", ExceptionType::INVALID_INPUT);
 	}
 	while (true) {
 		if (caller.IsInterrupted()) {
@@ -75,7 +181,7 @@ unique_ptr<QueryResult> Run(ClientContext &caller, Connection &connection, QUERY
 		}
 		auto status = pending->ExecuteTask();
 		if (status == PendingExecutionResult::EXECUTION_ERROR) {
-			Fail("query", "execute", pending->GetError());
+			NormalizeError(pending->GetErrorObject(), "query", "execute", ExceptionType::INVALID_INPUT);
 		}
 		if (PendingQueryResult::IsResultReady(status)) {
 			break;
@@ -84,7 +190,7 @@ unique_ptr<QueryResult> Run(ClientContext &caller, Connection &connection, QUERY
 	}
 	auto result = pending->Execute();
 	if (result->HasError()) {
-		Fail("query", "execute", result->GetError());
+		NormalizeError(result->GetErrorObject(), "query", "execute", ExceptionType::INVALID_INPUT);
 	}
 	return result;
 }
@@ -92,7 +198,7 @@ unique_ptr<QueryResult> Run(ClientContext &caller, Connection &connection, QUERY
 string Hash(Connection &connection, const string &bytes) {
 	auto result = connection.Query("SELECT system.main.sha256(?)", Value(bytes));
 	if (result->HasError()) {
-		Fail("hash", "load", result->GetError());
+		NormalizeError(result->GetErrorObject(), "hash", "load", ExceptionType::INVALID_INPUT);
 	}
 	return result->Fetch()->GetValue(0, 0).GetValue<string>();
 }
@@ -407,7 +513,7 @@ unique_ptr<ParsedExpression> Parse(const string &sql) {
 	try {
 		expressions = Parser::ParseExpressionList(sql);
 	} catch (const ParserException &error) {
-		Fail(sql, "rule", error.what());
+		NormalizeError(ErrorData(error), sql, "rule", ExceptionType::INVALID_INPUT);
 	}
 	if (expressions.size() != 1) {
 		Fail(sql, "rule", "exactly one expression required");
@@ -793,7 +899,7 @@ void CheckBooleanType(Bundle &bundle, const ParsedExpression &expression) {
 	auto engine = Engine(bundle);
 	auto prepared = engine->Prepare(FrozenSQL(bundle, sql));
 	if (prepared->HasError()) {
-		Fail(expression.ToString(), "bind", prepared->GetError());
+		NormalizeError(prepared->GetErrorObject(), expression.ToString(), "bind", ExceptionType::INVALID_INPUT);
 	}
 	if (prepared->GetTypes()[0] != LogicalType::BOOLEAN) {
 		Fail(expression.ToString(), "rule", "population predicate must have BOOLEAN type without implicit coercion");
@@ -1340,7 +1446,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	projection += " FROM main.ossie_snapshot AS " + Quote(dataset.name);
 	auto prepared = engine->Prepare(FrozenSQL(*bundle, projection));
 	if (prepared->HasError())
-		Fail(dataset.name, "bind", prepared->GetError());
+		NormalizeError(prepared->GetErrorObject(), dataset.name, "bind", ExceptionType::INVALID_INPUT);
 	for (idx_t index = 0; index < dataset.fields.size(); index++) {
 		if (!Matches(dataset.fields[index].datatype, prepared->GetTypes()[index])) {
 			Fail(dataset.fields[index].name, "bind",
@@ -1364,7 +1470,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 			EngineFunctions(*expression);
 		auto bound = engine->Prepare(std::move(statement));
 		if (bound->HasError())
-			Fail(metric.name, "bind", bound->GetError());
+			NormalizeError(bound->GetErrorObject(), metric.name, "bind", ExceptionType::INVALID_INPUT);
 		if (!Matches(metric.datatype, bound->GetTypes()[0]))
 			Fail(metric.name, "bind", "metric datatype incompatible with bound aggregate type");
 		bundle->metric_types[metric.name] = bound->GetTypes()[0].ToString();
@@ -1631,7 +1737,7 @@ unique_ptr<FunctionData> DiscoverBind(ClientContext &context, TableFunctionBindI
 }
 
 // Versioned separately from the Ossie document and diagnostic plan schema.
-constexpr const char *POPULATION_API_VERSION = "1.0.0";
+constexpr const char *POPULATION_API_VERSION = "1.1.0";
 
 unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBindInput &input,
                                         vector<LogicalType> &types, vector<string> &names) {
@@ -1767,7 +1873,12 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 		    "\"mcp_example\":{\"list_encoding\":\"JSON-encoded string "
 		    "arrays\",\"exact_numeric_transport_verified\":false,"
 		    "\"transport_size_and_truncation_verified\":\"fixed fixtures only\"},"
-		    "\"uniform_errors\":false,\"arbitrary_ontology_execution\":false,\"cross_call_reload_atomicity\":false}";
+		    "\"uniform_errors\":true,\"error_contract\":{\"schema\":\"ossie-population-error-v1\","
+		    "\"scope\":\"recoverable population callback errors and JSON list helper\","
+		    "\"external_boundaries\":[\"SQL signature/conversion before callbacks\",\"outer table output binding\","
+		    "\"MCP missing argument/unknown tool/protocol\",\"cancellation/fatal/internal/OOM/unknown native "
+		    "failures\"]},"
+		    "\"arbitrary_ontology_execution\":false,\"cross_call_reload_atomicity\":false}";
 		append({Value(POPULATION_API_VERSION), Value("ossie-population-discovery-v1"),
 		        Value("ossie-population-plan-v1"), Value(b.definition_model.spec_version), Value(capabilities)});
 	}
@@ -1831,7 +1942,7 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
 		auto engine = Engine(*result->bundle);
 		auto prepared = engine->Prepare(result->statement->Copy());
 		if (prepared->HasError())
-			Fail(concept, "bind", prepared->GetError());
+			NormalizeError(prepared->GetErrorObject(), concept, "bind", ExceptionType::INVALID_INPUT);
 		types = prepared->GetTypes();
 		names = prepared->GetNames();
 	}
@@ -1842,14 +1953,8 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 	auto result = make_uniq<PopulationScan>();
 	auto &data = input.bind_data->Cast<PopulationBind>();
 	if (data.load) {
-		shared_ptr<Bundle> bundle;
-		try {
-			bundle = LoadBundle(context, data.path);
-		} catch (const InterruptException &) {
-			throw;
-		} catch (const std::exception &error) {
-			Fail(data.path, "load", error.what());
-		}
+		auto bundle = ErrorBoundary(
+		    data.path, "load", [&]() { return LoadBundle(context, data.path); }, ExceptionType::INVALID_INPUT);
 		result->rows.push_back({Value(bundle->profile), Value(bundle->snapshot_id), Value(bundle->content_hash),
 		                        Value::BIGINT(bundle->rows)});
 		ObserveLoad(context, PopulationLoadCheckpoint::BEFORE_PUBLISH);
@@ -1901,6 +2006,59 @@ void Scan(ClientContext &context, TableFunctionInput &input, DataChunk &output) 
 	output.SetCardinality(count);
 }
 
+unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
+                                      vector<string> &names) {
+	auto name = input.table_function.name;
+	string object = name;
+	if (!input.inputs.empty() && !input.inputs[0].IsNull() && input.inputs[0].type() == LogicalType::VARCHAR)
+		object = input.inputs[0].GetValue<string>();
+	return ErrorBoundary(object, "bind", [&]() {
+		if (name == "ossie_bundle_load")
+			return LoadBind(context, input, types, names);
+		if (name == "ossie_concepts")
+			return DiscoverBind(context, input, types, names);
+		if (name == "ossie_population_metrics" || name == "ossie_population_fields" ||
+		    name == "ossie_population_capabilities")
+			return VocabularyBind(context, input, types, names);
+		return RequestBind(context, input, types, names);
+	});
+}
+
+unique_ptr<GlobalTableFunctionState> InitBoundary(ClientContext &context, TableFunctionInitInput &input) {
+	auto &data = input.bind_data->Cast<PopulationBind>();
+	return ErrorBoundary(data.load ? data.path : "query", data.load ? "load" : "execute",
+	                     [&]() { return Init(context, input); });
+}
+
+void ScanBoundary(ClientContext &context, TableFunctionInput &input, DataChunk &output) {
+	ErrorBoundary("query", "execute", [&]() { Scan(context, input, output); });
+}
+
+void JSONListFunction(DataChunk &args, ExpressionState &, Vector &result) {
+	for (idx_t row = 0; row < args.size(); row++) {
+		auto value = args.data[0].GetValue(row);
+		if (value.IsNull())
+			Fail("list", "arguments", "population MCP: list argument required");
+		auto bytes = value.GetValue<string>();
+		auto doc = yyjson_read(bytes.data(), bytes.size(), 0);
+		if (!doc)
+			Fail("list", "arguments", "population MCP: malformed JSON; JSON array of strings required");
+		std::unique_ptr<yyjson_doc, decltype(&yyjson_doc_free)> owner(doc, yyjson_doc_free);
+		auto root = yyjson_doc_get_root(doc);
+		if (!yyjson_is_arr(root))
+			Fail("list", "arguments", "population MCP: JSON array of strings required");
+		vector<Value> values;
+		size_t index, max;
+		yyjson_val *item;
+		yyjson_arr_foreach(root, index, max, item) {
+			if (!yyjson_is_str(item))
+				Fail("list[" + to_string(index) + "]", "arguments", "population MCP: JSON array of strings required");
+			values.push_back(Value(string(yyjson_get_str(item), yyjson_get_len(item))));
+		}
+		result.SetValue(row, Value::LIST(LogicalType::VARCHAR, std::move(values)));
+	}
+}
+
 } // namespace
 
 void RegisterPopulationFunctions(ExtensionLoader &loader) {
@@ -1911,47 +2069,59 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 		function.named_parameters["include_trace"] = LogicalType::BOOLEAN;
 		return function;
 	};
-	RegisterDescribe(loader, TableFunction("ossie_bundle_load", {LogicalType::VARCHAR}, Scan, LoadBind, Init),
-	                 "Load a hash-bound local core/ontology/mapping bundle for gaap-scalar-population-v1 or "
-	                 "fact-dimension-population-v1. Captures a "
-	                 "committed native table into a frozen typed observation batch (AST dependency required) and "
-	                 "preflights entire-batch "
-	                 "identity before publishing. Requires autocommit, one dataset or an explicit INTEGER-key "
-	                 "INNER/reject pair, at most 10000 rows/256 columns per batch and "
-	                 "16 MiB canonical values. Explicit reload is required to observe source changes.",
-	                 "CALL ossie_bundle_load('bundle.json')");
-	RegisterDescribe(loader, TableFunction("ossie_concepts", {}, Scan, DiscoverBind, Init),
+	RegisterDescribe(
+	    loader, TableFunction("ossie_bundle_load", {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+	    "Load a hash-bound local core/ontology/mapping bundle for gaap-scalar-population-v1 or "
+	    "fact-dimension-population-v1. Captures a "
+	    "committed native table into a frozen typed observation batch (AST dependency required) and "
+	    "preflights entire-batch "
+	    "identity before publishing. Requires autocommit, one dataset or an explicit INTEGER-key "
+	    "INNER/reject pair, at most 10000 rows/256 columns per batch and "
+	    "16 MiB canonical values. Explicit reload is required to observe source changes.",
+	    "CALL ossie_bundle_load('bundle.json')");
+	RegisterDescribe(loader, TableFunction("ossie_concepts", {}, ScanBoundary, BindBoundary, InitBoundary),
 	                 "Discover the two executable concepts in the current frozen batch, with parent, identity, rule, "
 	                 "definition hashes, source and snapshot identity. Database-wide state is captured at binding.",
 	                 "SELECT * FROM ossie_concepts()");
 	for (auto name : {"ossie_population_metrics", "ossie_population_fields", "ossie_population_capabilities"}) {
 		RegisterDescribe(
-		    loader, TableFunction(name, {}, Scan, VocabularyBind, Init),
+		    loader, TableFunction(name, {}, ScanBoundary, BindBoundary, InitBoundary),
 		    "Discover the bound immutable population bundle vocabulary or project API capabilities. "
 		    "Original names/definitions and actual load-preflight types retain snapshot hashes; "
 		    "individual preflight does not guarantee arbitrary combined requests. Independent of core model state.",
 		    "SELECT * FROM " + string(name) + "()");
 	}
+	RegisterDescribe(
+	    loader,
+	    traced(TableFunction("ossie_objects", {LogicalType::VARCHAR, list}, ScanBoundary, BindBoundary, InitBoundary)),
+	    "Return entity_id, record_id and every logical field for a concept in the bound immutable batch. "
+	    "Strict scalar filters can only narrow population. No implicit sorting, paging or truncation.",
+	    "SELECT * FROM ossie_objects('ValidUser', [])");
 	RegisterDescribe(loader,
-	                 traced(TableFunction("ossie_objects", {LogicalType::VARCHAR, list}, Scan, RequestBind, Init)),
-	                 "Return entity_id, record_id and every logical field for a concept in the bound immutable batch. "
-	                 "Strict scalar filters can only narrow population. No implicit sorting, paging or truncation.",
-	                 "SELECT * FROM ossie_objects('ValidUser', [])");
+	                 traced(TableFunction("ossie_concept_query", {LogicalType::VARCHAR, list, list, list}, ScanBoundary,
+	                                      BindBoundary, InitBoundary)),
+	                 "Execute bounded SUM/COUNT/AVG metrics for a concept, using the same frozen batch and population "
+	                 "predicate as ossie_objects. NULL and sparse groups follow DuckDB SQL behavior.",
+	                 "SELECT * FROM ossie_concept_query('ValidUser', ['mean_gaap'], ['dws_gaap_di.ds'], [])");
 	RegisterDescribe(
 	    loader,
-	    traced(TableFunction("ossie_concept_query", {LogicalType::VARCHAR, list, list, list}, Scan, RequestBind, Init)),
-	    "Execute bounded SUM/COUNT/AVG metrics for a concept, using the same frozen batch and population "
-	    "predicate as ossie_objects. NULL and sparse groups follow DuckDB SQL behavior.",
-	    "SELECT * FROM ossie_concept_query('ValidUser', ['mean_gaap'], ['dws_gaap_di.ds'], [])");
-	RegisterDescribe(
-	    loader,
-	    traced(
-	        TableFunction("ossie_concept_compile", {LogicalType::VARCHAR, list, list, list}, Scan, RequestBind, Init)),
+	    traced(TableFunction("ossie_concept_compile", {LogicalType::VARCHAR, list, list, list}, ScanBoundary,
+	                         BindBoundary, InitBoundary)),
 	    "Compile a concept request without executing it, with diagnostic SQL targeting a frozen batch and pinned "
 	    "definition/snapshot hashes and project-versioned plan_json from the generated AST; executed is false. "
 	    "Empty metrics select the object query path. include_trace adds the execution trace projections. "
 	    "A separate query after reload may bind a different snapshot.",
 	    "SELECT * FROM ossie_concept_compile('ValidUser', ['mean_gaap'], [], [])");
+	ScalarFunction strings("ossie_population_strings", {LogicalType::VARCHAR}, LogicalType::LIST(LogicalType::VARCHAR),
+	                       JSONListFunction);
+	strings.null_handling = FunctionNullHandling::SPECIAL_HANDLING;
+	CreateScalarFunctionInfo info(strings);
+	info.descriptions.push_back(
+	    Describe({"value"},
+	             "Decode a JSON string array for the population MCP example. Rejects SQL/JSON NULL, malformed JSON and "
+	             "non-string elements with the population error contract; no empty-list fallback.",
+	             {"SELECT ossie_population_strings('[\"amount_sum\"]')"}));
+	loader.RegisterFunction(std::move(info));
 }
 
 } // namespace ossie

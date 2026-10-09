@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { RpcProcess } from "./mcp_check.ts";
+import { populationError } from "./population_error.ts";
 import {
   assert,
   digest,
@@ -222,15 +223,16 @@ export async function verify(artifact: string) {
         }
         check(label + ": actual versioned vocabulary content", () => {
           const capability = vocabulary.capabilities![0]!;
-          assert.equal(capability.api_version, "1.0.0");
+          assert.equal(capability.api_version, "1.1.0");
           assert.equal(
             capability.discovery_schema,
             "ossie-population-discovery-v1",
           );
           assert.equal(capability.plan_schema, "ossie-population-plan-v1");
           assert.equal(
-            JSON.parse(String(capability.capabilities_json)).uniform_errors,
-            false,
+            JSON.parse(String(capability.capabilities_json)).error_contract
+              .schema,
+            "ossie-population-error-v1",
           );
           assert(
             vocabulary.metrics!.length > 0 && vocabulary.fields!.length > 0,
@@ -563,7 +565,39 @@ export async function verify(artifact: string) {
           check(`gaap-${threshold}: reject ${label}`, () =>
             assert(reply.error || reply.result?.isError, JSON.stringify(reply)),
           );
-          refusals.push({ case: threshold, label, reply });
+          const carrier = reply.error as { message?: string } | undefined;
+          const content = reply.result?.content as
+            | { text?: string }[]
+            | undefined;
+          const envelope = populationError(
+            carrier?.message ??
+              content?.map((c) => c.text ?? "").join("\n") ??
+              "",
+          );
+          if (label.startsWith("missing ")) {
+            check(
+              `gaap-${threshold}: external missing parameter ${label}`,
+              () => assert.equal(envelope, undefined),
+            );
+          } else {
+            check(`gaap-${threshold}: structured ${label}`, () => {
+              assert(envelope, JSON.stringify(reply));
+              assert.equal(
+                envelope.schema_version,
+                "ossie-population-error-v1",
+              );
+              assert(
+                !envelope.reason.startsWith("ossie_population_error_v1: "),
+              );
+            });
+          }
+          refusals.push({
+            case: threshold,
+            label,
+            reply,
+            envelope,
+            external_boundary: !envelope,
+          });
         }
         for (const tool of ["population_objects", "population_compile"]) {
           const bad = await call(tool, { ...args, filters: "[null]" });
@@ -693,6 +727,7 @@ export async function verify(artifact: string) {
       [
         "examples/population_server.sql",
         "scripts/verify_population_mcp.ts",
+        "scripts/population_error.ts",
         "scripts/mcp_check.ts",
         "examples/server.sql",
         ".github/workflows/MainDistributionPipeline.yml",
@@ -718,7 +753,7 @@ export async function verify(artifact: string) {
       "JSON numeric serialization is not lossless DECIMAL transport",
       "Schema types are not enforced by MCP; valid native arrays serialize to accepted JSON bytes; extra unused parameters are ignored",
       "No row trace for empty results; use compile and retain fixed operator bundle",
-      "Metric/dimension vocabulary supplied by trusted operator, not population discovery",
+      "Vocabulary comes from the bound operator-approved bundle; compare hashes across discovery and execution",
       "Registry MCP dependency is observed rather than pinned by this repository",
       "No remote CI, cross-platform or actual autonomous Agent validation",
     ],

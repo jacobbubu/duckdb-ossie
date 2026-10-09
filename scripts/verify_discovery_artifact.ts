@@ -31,7 +31,7 @@ export async function verify(artifact: string) {
     );
     const capabilities = JSON.parse(String(capability!.capabilities_json));
     check("version and active snapshot", () => {
-      assert.equal(capability!.api_version, "1.0.0");
+      assert.equal(capability!.api_version, "1.1.0");
       assert.equal(
         capability!.discovery_schema,
         "ossie-population-discovery-v1",
@@ -60,7 +60,10 @@ export async function verify(artifact: string) {
           row.selected_dialect,
         ]);
       }
-      assert.equal(capabilities.uniform_errors, false);
+      assert.equal(
+        capabilities.error_contract.schema,
+        "ossie-population-error-v1",
+      );
       assert.equal(capabilities.compile.final_output_binding, false);
       assert.equal(
         capabilities.mcp_example.exact_numeric_transport_verified,

@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-09。状态：新格式core、bounded单表/双表人口及并发取消控制已本地完成；population MCP契约及本轮实际AST编译说明/来源验证已通过。现有P0/R7整体未完成，当前剩余和下一授权动作见文末checkpoint；历史计数按当时包保留。
+日期：2026-10-09。状态：新格式 core、bounded 单表/双表执行、并发取消、MCP、实际 AST 说明、词汇发现与本轮受控边界的统一错误均已本地验证。现有 P0/R7 整体未完成，当前剩余和下一授权动作见文末 checkpoint；历史计数按当时包保留。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -428,3 +428,19 @@ MCP 示例现在有四个可读资源（concepts/metrics/fields/capabilities）�
 保留失败：初版预期未加引号 dimension.label，实际 AST 为 dimension."label"；手动 CLI probe 把 .read 放入 -c SQL 被 parser 拒绝，之后用 actual stock binding 检查名字。新增 SQL 假设 gaap_sum/count 声明 datatype，原文件实际未声明，改为 (empty) 并独立核对真实 Decimal/BIGINT；mean_gaap 实际声明 Float，绑定 DOUBLE。旧函数 inventory 原 15 registrations/13 names 随新增三函数更新为 18/16。新增 verifier 初版误预期派生 label 有三组；原始行与规则证明只有 North/f1,f2,f5,f6/24.98，根概念另有 South/f3,f4/30.03，Unused 无 fact 不生成组；Lead 与 Advisor 独立复核后改完整 oracle，未改 source/formula。duplicate-column refusal regex 初版大小写不符、array equality 初版误用 equal 均为 harness 修正。一次文档 patch 无匹配 context 未写入，按实际 heading 修正。Advisor 一个只读架构 round 加一次针对失败的源证据澄清，无 nested delegation；requested Astra/high，effective backend/effort/usage/billing unknown。
 
 本地发现/接口版本工作包完成，当前动作提交保留、不推送。对比此前 R7.5 缺口，metric/field vocabulary 和 project API version 已补；下一本地包优先统一错误结构，再处理剩余验收与 MCP 数值/大小证据。ontology attribute vocabulary catalogue 尚未新增，概念规则/identity 仍通过 concepts 发现。compile 最终表输出绑定、精确 decimal/bigint transport、超 fixture size/truncation、更广时间/calendar/多期身份/ontology、remote CI 均继续可见，整体 R7/P0/A1–A8 不因此完成。
+
+## R7 统一错误 checkpoint（2026-10-09，恢复）
+
+用户授权继续，cdeeab9 后工作区干净。沿用 OSSIE-REQ-001 补 population 插件边界的版本化机器可读错误，保留可读诊断和旧拒绝范围；复用 core 编译/name/list 错误应在 population 出口归一化，插件自有错误避免重复包装或覆盖实际 stage。取消和致命 engine 异常不能冒充普通无效输入；最终 engine table schema binding、函数签名和未知 MCP 工具属于外部边界，明确支持范围。MCP JSON list 目前由示例宏验证，需与插件错误契约一致，不能放宽 malformed/null/非字符串元素拒绝。验收覆盖未加载、定义/哈希/身份/load 回滚、未知名字/AST/类型/list/执行错误、特殊字符和伪造 marker、原 prepared/取消控制以及真实 MCP 错误载体和恢复。接口版本按真实兼容影响更新；成功结果 schema 不变。不修改 core API 语义、source/oracle、vendor 或发布权限。Advisor 限定错误封装/控制流/兼容审阅，requested Astra/high，effective backend/effort/usage/billing unknown。精确数值/超 fixture transport、更广语义、remote CI 和整体 P0 仍未完成。
+
+## R7 统一错误结果（2026-10-09）
+
+新增 [population-errors.md](population-errors.md) 定义项目 error schema v1；recoverable population bind/load/execute/scan 和严格 JSON list helper 均产生带 object/stage/reason/code、nullable missing_capability 和实际/source exception_type 的 envelope。保留 legacy_message 便于过渡，但其旧 missing_capability 占位文字不是机器事实。自身错误通过专用 DuckDB ExtraInfo payload 和 schema 检查原样转发，不靠用户文本辨认；load 外层不再覆写真实 hash/parse/identity/capability stage。复用 core 名称/list 编译错误由人口入口归一化。成功 query/object/compile/concept/vocabulary schema 不变，API 升为 1.1.0；原 uniform_errors boolean 保留，新增 error_contract 明确覆盖/排除范围。
+
+异常语义：已存在的 Run/Prepare/规则 Parser/加载 INVALID_INPUT 转换保留，source_exception_type 另列真实底层分类；新包裹的 core 错误保持原分类。std catch 只按 ErrorData 序列化类型白名单包装，bad_alloc 先原样抛出，未知/严重/取消和解码失败重抛原异常；已成为 QueryResult 的错误按 ErrorData.Type/ExtraInfo 传播。保留 nested pending 任务取消/排空修复。MCP 例子去掉旧宏，调用新增 ossie_population_strings(VARCHAR)；SPECIAL_HANDLING 拒绝 SQL NULL、JSON null、畸形/尾随 JSON、非字符串成员，无 stringify/无空列表 fallback，字符串长度感知保留包括 NUL 的字节供后续校验。
+
+真实验证：最终 artifact SHA256 615af62accc92fd62f0936c71b8234822ffa1fceb3bb4e9f8775b4dd91777623，release、quality-local、19 state/42 grain/158 capture controls、788 SQL assertions/22 cases/0 skips、33 Bun tests/112 expects 均通过；九个 stock verifier 同产物通过，新增 error 42 checks；MCP 301 checks/106 refusals，callback 错误实际解码，missing argument/unknown tool 作为外部边界验证；core MCP actual resource 和 stock CLI 40 PASS/0 FAIL/0 SKIP FAITHFUL。原生 capture runner 对 threads 4/1 检查 missing-file envelope、unknown system_error 无 envelope、取消 native type 与现有真实扫描恢复。显式事务中 core 和 population 的 INVALID_INPUT 均使事务 aborted，ROLLBACK 后恢复，未用错误格式更改行为。额外实际 stock Parser syntax probe `User.amount = ` 返回 rule/RULE_REJECTED/source Parser。新 [控制报告](research/ossie-req-001/r7-errors-control-results.json)、[错误证据](research/ossie-req-001/r7-errors-error-artifact-results.json)、[MCP 证据](research/ossie-req-001/r7-errors-mcp-results.json) 和其余同产物报告均验证源哈希；旧报告不变。CI 仅增加同下载 probe，未运行 remote CI/Ubuntu tidy。
+
+保留失败：若干多 hunk/context patch 与格式化后源码不符，未写入，按实际内容拆分后成功。首次 Bun framing fixture 的 schema_version 推断为宽 string，使 strict literal check 失败；修正 fixture annotation。首次 stock missing-file error 没进入 DuckDB Exception 类 catch，裸 IO 被发现后改为 std::exception + 序列化类型白名单；native/stock 后续均通过。cross-DSO RTTI 是合理但未证实的假设，不声称定位了根因。曾在最终重建过程中启动 probe，未当作最终证据，完成后重新运行九个 stock verifier 和实际 MCP。Advisor 一个只读架构 round 加一次 IO/catch 澄清，无 children；requested Astra/high，有效 backend/effort/usage/billing unknown。
+
+本地统一错误工作包完成，当前动作提交保留、不推送。对比既有下一项 R7.5，受控 population 边界及 adapter list 错误已补，SQL signature/outer output binding、协议/unknown tool、取消/严重/未知 native 错误明确在契约外，并不冒充全引擎统一错误。整体 R7/P0/A1–A8 仍未完成。下一本地动作先核对 R1–R7/A1–A8 剩余证据，再选择精确 decimal/bigint MCP transport、超 fixture size/truncation 或其他必要验收包；compile 最终绑定、ontology attribute catalogue、自然语言语义对应、更广时间/calendar/多期身份/ontology 与 remote CI 继续保留，未扩大发布权限。

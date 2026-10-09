@@ -1,0 +1,45 @@
+# name: test/sql/ossie_population_errors.test
+# description: structured population errors and strict JSON list adapter
+# group: [sql]
+
+require ossie
+
+statement error
+SELECT * FROM ossie_population_fields();
+----
+"schema_version":"ossie-population-error-v1"
+
+query I
+SELECT len(ossie_population_strings('[]'));
+----
+0
+
+query T
+SELECT ossie_population_strings('["a,b;value","second"]')[1];
+----
+a,b;value
+
+statement error
+SELECT ossie_population_strings(NULL);
+----
+"stage":"arguments"
+
+statement error
+SELECT ossie_population_strings('null');
+----
+JSON array of strings required
+
+statement error
+SELECT ossie_population_strings('["valid",null]');
+----
+"object":"list[1]"
+
+statement error
+SELECT ossie_population_strings('[1]');
+----
+"missing_capability":null
+
+statement error
+SELECT ossie_population_strings('{');
+----
+malformed JSON

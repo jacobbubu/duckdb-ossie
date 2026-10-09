@@ -12,6 +12,7 @@
 #include <mutex>
 #include <sstream>
 #include <stdexcept>
+#include <system_error>
 #include <thread>
 
 namespace {
@@ -186,6 +187,9 @@ void Controls(const string &root, int threads) {
 		attempt.Finish();
 		Check(attempt.result && attempt.result->HasError(), "controlled capture/prepublication cancellation fails");
 		Check(attempt.result->GetError().find("Interrupt") != string::npos, "explicit cancellation error");
+		Check(attempt.result->GetErrorObject().Type() == ExceptionType::INTERRUPT &&
+		          attempt.result->GetError().find("ossie_population_error_v1:") == string::npos,
+		      "interrupt keeps native type without population envelope");
 		Check(Scalar(reader, SNAPSHOT) == before && Scalar(reader, HASH) == hash_before,
 		      "cancellation retains identity/hash");
 		Check(Scalar(reader, TOTAL) == "154.01" && Scalar(reader, MEMBERS) == "f5,f6", "cancel retains values/members");
@@ -203,6 +207,24 @@ void Controls(const string &root, int threads) {
 	Check(failed->HasError() && failed->GetError().find("observer injected failure") != string::npos,
 	      "observer exception propagated");
 	Check(Scalar(reader, SNAPSHOT) == before && Scalar(reader, HASH) == hash_before, "callback failure retains batch");
+	loader.context->registered_state->Insert(
+	    PopulationLoadObserver::KEY, make_shared_ptr<Observer>([](PopulationLoadCheckpoint point) {
+		    if (point == PopulationLoadCheckpoint::AFTER_FACT_CAPTURE)
+			    throw std::system_error(std::make_error_code(std::errc::invalid_argument),
+			                            "controlled unknown native failure");
+	    }));
+	failed = loader.Query(load);
+	loader.context->registered_state->Remove(PopulationLoadObserver::KEY);
+	Check(failed->HasError() && failed->GetError().find("controlled unknown native failure") != string::npos,
+	      "unknown system failure propagated");
+	Check(failed->GetError().find("ossie_population_error_v1:") == string::npos,
+	      "unknown system failure is not downgraded to population input error");
+	Check(Scalar(reader, SNAPSHOT) == before && Scalar(reader, HASH) == hash_before,
+	      "unknown system failure retains frozen batch");
+	failed = loader.Query("CALL ossie_bundle_load('" + root + "test/fixtures/population/missing.json')");
+	Check(failed->HasError() && failed->GetError().find("ossie-population-error-v1") != string::npos,
+	      "native missing-file load has structured envelope");
+	Check(Scalar(reader, SNAPSHOT) == before, "native missing-file failure retains frozen batch");
 	Query(loader, load);
 	Check(Scalar(reader, SNAPSHOT) != before && Scalar(reader, HASH) == hash_before,
 	      "observer removed; reload succeeds");

@@ -1,0 +1,74 @@
+{
+  "scope": "Local recoverable population callback error contract; excludes external SQL/MCP and serious/unknown native failures; not full R7/P0",
+  "base_commit": "cdeeab9",
+  "artifact_sha256": "615af62accc92fd62f0936c71b8234822ffa1fceb3bb4e9f8775b4dd91777623",
+  "source_sha256": {
+    "src/population/population.cpp": "d0faf77b2d949f06038fc214934a2191c391ba60148e7c6b1d321e55725d38c0",
+    "scripts/population_error.ts": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff",
+    "scripts/verify_error_artifact.ts": "5a359924514f764a562c2cfb4204ca740d4abc869c5f4aa41201640eeaf0e857",
+    "scripts/verify_discovery_artifact.ts": "957c8043c618d5277248623ef8d163912496460042fd142de328340e00a45c60",
+    "scripts/verify_population_mcp.ts": "cd9ebe8fb230eb80a2978a612445d6dcd2f64df7fc12691ebfcfd52e7c3dd05b",
+    "scripts/full_functionality_check.sh": "7ca5873fad5078670c3cd1bd49712f2af6f56fea651ebd49ec6c15dc994bd83d",
+    "examples/population_server.sql": "6230d2df7f6fc4341a9fb985864fc91cd05c641af747854e28a574386ecd5f46",
+    "test/cpp/population_capture_test.cpp": "3bc00dd19fcdd285c9011293860a3f4842aaf44d48ffa7dc8270ae4337fc97d4",
+    "test/sql/ossie_population_errors.test": "6120eb74f2117913c4b627a9926ce85a9e7476b61438b2a79bd5c1ccd4263fc9",
+    "test/sql/ossie_population_discovery.test": "fcf36a6f01c7a582d995693aef5622d16d391ff504787e151417e8f094381e86",
+    "test/sql/ossie_function_metadata.test": "76cc1f0c7211b1e58b575e9e60efb9ae3409af1c70c7c09c1f0b44ed93025b37",
+    "test/tooling/population_error.test.ts": "75c17ddd06470fb378960e84a5b8bf30b6d94581a65bb27af5dbbfc413c6ad35",
+    ".github/workflows/MainDistributionPipeline.yml": "a47f889409342a5cab6e391eefa838bc8bd51601e1beaa434da47574c7c61eb1"
+  },
+  "verification": {
+    "state": 19,
+    "grain": 42,
+    "capture": 158,
+    "sql_assertions": 788,
+    "sql_cases": 22,
+    "sql_skips": 0,
+    "bun_tests": 33,
+    "bun_expects": 112,
+    "stock_artifact_verifiers": 9,
+    "error_checks": 42,
+    "population_mcp_checks": 301,
+    "population_mcp_refusals": 106,
+    "core_mcp_actual_resource_reads": true,
+    "stock_cli_pass": 40,
+    "stock_cli_fail": 0,
+    "stock_cli_skip": 0
+  },
+  "reports": [
+    "r7-errors-loader-artifact-results.json",
+    "r7-errors-population-artifact-results.json",
+    "r7-errors-expression-artifact-results.json",
+    "r7-errors-date-artifact-results.json",
+    "r7-errors-join_research-artifact-results.json",
+    "r7-errors-joined_population-artifact-results.json",
+    "r7-errors-plan-artifact-results.json",
+    "r7-errors-discovery-artifact-results.json",
+    "r7-errors-error-artifact-results.json",
+    "r7-errors-mcp-results.json"
+  ],
+  "retained_failures": [
+    "Context-mismatched multi-hunk production/docs patches wrote nothing; reread actual formatted context and applied smaller patches.",
+    "First Bun decoder fixture inferred schema_version as string, failed strict literal type check; annotated literal, no production change.",
+    "First stock missing-file probe escaped catch(const DuckDB Exception&), yielding bare IO. Replaced class catch with std::exception plus serialized type whitelist, original rethrow for unknown/serious/cancellation and decoder failure. Native and stock probes now pass. Cross-DSO RTTI is an unconfirmed hypothesis, not an established cause.",
+    "A verifier was started while the final rebuild was running; discarded as final evidence and reran all nine stock verifiers and MCP after the build finished."
+  ],
+  "advisor": {
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "scope": "one readonly architecture round and one focused IO/catch clarification; no children"
+  },
+  "compatibility": "API1.1.0 adds error v1/helper; successful schemas retained, boolean uniform_errors retained and scoped with new error_contract. Existing recoverable exception translations retained; core leaks preserve classification. Unknown/fatal/cancel and external boundaries remain native.",
+  "remaining": [
+    "audit R1-R7/A1-A8 evidence before choosing next package",
+    "lossless MCP decimal/bigint and transport size/truncation beyond fixtures",
+    "compile final output binding and ontology attribute catalogue",
+    "broader time/calendar/multiperiod identity/ontology and natural-language semantic correspondence",
+    "remote CI/Ubuntu tidy"
+  ],
+  "delivery": "local commit only; no push/merge/service publication"
+}

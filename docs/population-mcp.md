@@ -65,7 +65,7 @@ Empty metrics select the object path only for compile and require empty dimensio
 All filters retain the [profile AST restrictions](population-profile.md) and can
 only narrow the formal concept rule. JSON encoding preserves commas, semicolons
 and escaped quotes inside a single predicate; lists are never delimiter-split.
-The SQL macro rejects malformed JSON, wrong top-level types and every non-string
+The extension helper rejects malformed JSON, wrong top-level types and every non-string
 or NULL element. There is no invalid-input fallback to an unfiltered query.
 
 The observed duckdb_mcp build does not enforce every schema type. Native JSON
@@ -90,10 +90,11 @@ Fixture totals are checked at cents precision and AVG with 1e-10 tolerance; that
 proves these finite fixture values, not arbitrary large/precise money or integer
 transport. Native extension arithmetic/types remain as documented in the profile.
 
-Errors may be a JSON-RPC `error` or tool `result.isError`; inspect both. Population
-AST/capability errors include object/stage/reason/missing capability, while JSON
-argument failures and some reused core name-resolution errors retain their native
-messages. Uniform structured errors for every endpoint remain an R7 gap.
+Errors may be a JSON-RPC `error` or tool `result.isError`; inspect both. Recoverable
+population callback and JSON-list failures expose the versioned
+[error contract](population-errors.md), including object/stage/reason and nullable
+missing capability. SQL signature/output binding, missing MCP arguments, unknown
+tools and cancellation/serious native failures remain external boundaries.
 All built-in query/export/describe/list_tables/database_info/execute calls and
 unpublished load/reload tools are refused by the demonstrated server configuration.
 

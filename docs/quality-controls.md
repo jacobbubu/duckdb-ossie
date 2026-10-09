@@ -220,3 +220,16 @@ quoted dataset provenance. Actual MCP probes read all four discovery resources
 and construct queries from returned names; there remain exactly three tools.
 See [the discovery contract](population-discovery.md). Validation flags describe
 successful load binding, not execution or arbitrary combined-request success.
+
+## Population error checkpoint
+
+`verify_error_artifact.ts` adds real callback/JSON-list error framing, preserved
+stages and failed-publication checks, runtime conversion, external binding and
+explicit-transaction controls to the same-download matrix. The native capture
+runner additionally tests structured missing-file failures, unknown system
+exceptions without envelopes, and native interrupt types; the existing task
+draining and frozen-query recovery controls remain mandatory. Actual MCP probes
+parse versioned envelopes for callback failures and explicitly retain external
+missing-argument/unknown-tool errors. Quote-aware framing has dedicated Bun
+controls. See [the error contract](population-errors.md). This is local evidence;
+remote CI/Ubuntu tidy and wider product acceptance remain unverified.

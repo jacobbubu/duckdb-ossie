@@ -168,6 +168,7 @@ with concept/metric/field/capability discovery and object/query/compile tools.
 The [population discovery contract](docs/population-discovery.md) separates declared
 types from actual load-preflight types and versions this project's API independently
 of the Ossie format. See [its calling contract](docs/population-mcp.md)
+and [versioned error boundaries](docs/population-errors.md)
 for explicit JSON list encoding, trusted operator setup, trace, refusals and numeric transport limits.
 
 ## Building & Contributing

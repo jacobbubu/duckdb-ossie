@@ -2,7 +2,26 @@
 
 ## Current research checkpoint — 2026-10-09
 
-Current local milestone: frozen population bundles now expose original metric and
+Current local milestone: population API 1.1.0 adds error schema v1 for recoverable
+callback and JSON-list failures. Errors retain object/stage/reason, expose coarse
+codes and nullable missing capabilities, and preserve pre-existing DuckDB exception
+classification and transaction behavior. ExtraInfo prevents nested envelopes;
+unknown native failures, cancellation/serious errors and external SQL/MCP boundaries
+remain native. A new strict JSON-list helper replaces the example-only MCP macro.
+Final local gates pass 788 SQL assertions in 22 cases without skips, 19 state/42
+grain/158 capture controls, 33 Bun tests/112 expects, nine same-artifact stock
+verifiers (42 new error checks), 301 actual MCP checks/106 refusals, core MCP and
+40 FAITHFUL stock CLI checks. Native and stock missing-file behavior, stage retention,
+escaped/marker inputs, explicit transactions and recovery are verified. A bare IO
+escape from the original class catch was repaired using serialized error types;
+cross-DSO RTTI remains an unconfirmed explanation. Sources and failures are retained
+in OSSIE-REQ-001. This error package is locally complete, not full R7/P0/A1–A8.
+Next local work should audit remaining requirement evidence before selecting the
+numeric MCP transport/size or other acceptance package. Compile final output binding,
+ontology attribute catalogue, broader time/calendar/multiperiod semantics and remote
+CI/Ubuntu tidy remain visible. No push, merge or service publication is authorized.
+
+The preceding milestone: frozen population bundles expose original metric and
 field vocabulary, declared and actual load-preflight types, time/AI metadata,
 snapshot/definition hashes, and project API 1.0.0/discovery-v1 capabilities.
 The MCP example publishes four resources and retains three tools; names used by
@@ -15,11 +34,8 @@ Final local gates pass 780 SQL assertions in 21 cases without skips, 19 state/42
 grain/138 capture native checks, 31 Bun controls, eight same-artifact stock
 verifiers, 195 actual population MCP checks (106 refusals), core MCP and 40
 FAITHFUL stock CLI checks. Source-bound reports and retained harness failures
-stay in OSSIE-REQ-001. This discovery package is locally complete; R7/P0 remain
-incomplete. Next local work is uniform structured errors, followed by remaining
-numeric transport/size and acceptance gaps; broader ontology/calendar/time and
-remote CI/Ubuntu tidy remain explicit later needs. No push, merge or external
-service publication is authorized.
+stay in OSSIE-REQ-001. That discovery package was locally complete; its next
+uniform-error package is now complete as described above. R7/P0 remain incomplete.
 
 The preceding milestone: compile exposes project-versioned plan_json from the
 actual generated semantic SELECT AST, with immutable definition/dialect and input
