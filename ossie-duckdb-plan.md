@@ -637,3 +637,7 @@ DATE包fccce8d本地完成。下一已授权动作：人工事实/唯一维度�
 06b88c5 后研究包完成：实际原生/原始 MCP numeric token 保留 synthetic 大整数/DECIMAL/HUGEINT SUM，但普通 JSON Number 解码有 18 处差异。10,000 全字段对象与 10,000 分组 oracle 完整，最大已测 line 为 33,367,965 bytes；不是最大输出保证。固定启动空结果 compile/hash 关联、10,001 行和超 canonical byte limit 失败保持通过。证据和限定 Advisor 取舍归现 [issue](docs/ossie-execution-research.md) 与 r7-transport-* 报告，quality-local 33 Bun/112 expects 通过，生产代码/templates 未改，未重建/重跑无关门禁。
 
 当前本地提交保留、不推送。下一已授权本地包：MCP adapter 稳定字符串数值/实际类型的版本化契约与兼容验证，先确定类型来源，原生 SQL 类型/业务公式不变；非有限 DOUBLE 仍需明确处理。R2 scalar 字符串容错/字段对应结论及最终规则驱动验收随后收口，整体 P0 未完成。更广 P1/非目标与 remote CI 继续可见，未扩发布权限。
+
+### 后续 MCP 分页需求（2026-10-09）
+
+用户要求只记录今后需求，先调研再设计/实施。问题、目标、研究方向及未决定事项归现 [OSSIE-REQ-001 的分页需求](docs/ossie-execution-research.md#后续需求mcp-大结果分页2026-10-09用户新增)。目前不启动研究或实现，不加入当前数值传输修复包/P0 必需完成条件；当前 10,000 行上限仍是输入批次限额，接口没有分页。将来先核对协议/实际实现及参考方案，再确定对象/分组分页、快照一致性、输出预算和独立完整性验收。

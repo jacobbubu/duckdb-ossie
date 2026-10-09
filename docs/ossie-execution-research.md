@@ -562,3 +562,11 @@ MCP 示例现在有四个可读资源（concepts/metrics/fields/capabilities）�
 Advisor：按 advisor-escalation 复用只读 Astra/high 一轮取舍、无 children/写入；确认 serializer 与 client decode 的区分、已测成功点不等于 output 上界，提出原 synthetic unit 文案风险。Lead 检查实际 token/原生值后采纳。requested gpt-6-astra/high，effective backend/effort/usage/billing unknown。后续推荐 MCP adapter 的稳定十进制字符串表示和实际类型说明，而非仅要求未知客户端选用 lossless parser；整数/Decimal 同类型不能小值 number、大值 string 混用，AVG DOUBLE 仍近似。编码变化应独立版本并复测普通 JSON 客户端、对象/分组/空集和当前大 fixture；不改原生 SQL 类型/计算。
 
 本地研究工作包完成，当前动作提交保留、不推送。下一已授权本地包优先设计/实现受控 MCP typed numeric 表示，先明确实际绑定类型如何进入 adapter，再验证兼容；同时处理非有限 DOUBLE 的明确表示/拒绝边界。之后收紧 R2 字符串数组容错、完成字段对应偏离结论和最终规则驱动验收。整体 P0 仍未完成，calendar/多期身份/一般 ontology/混合粒度/窗口及 remote CI 保持既有边界。
+
+## 后续需求：MCP 大结果分页（2026-10-09，用户新增）
+
+用户要求将分页作为今后需求记录，明确先调研，不贸然设计或实施。本次仅记录于现 OSSIE-REQ-001，不创建第二 backlog，不修改接口，也不立即开展调研；不把分页加入当前数值传输修复包或 P0 必需完成条件。
+
+问题与依据：当前 objects/query 一次返回全部结果，没有 page size/cursor/next-page 契约，也不保证顺序。10,000 行是输入批次上限，不是分页；已测 33.4 MB 对象响应完整，不证明 Agent 消费或模型上下文适用性。目标是让调用方能够分批消费大结果并明确完整性，具体方案待研究。
+
+将来启动时先核对固定 MCP 协议与实际 duckdb_mcp 实现的分页能力/约束及可参考实现，再评估对象与聚合分组的不同语义、稳定顺序、冻结快照/游标生命周期、行数与响应字节预算、错误与兼容影响，以及调用方如何确认完整结果。游标或 offset、参数/返回 schema、默认页大小、上限和版本策略均未决定；这些是调研问题，不是已选方案。分页不能改变完整人口上的聚合口径；验收应独立检查重复/漏行、空页/结束标识、重载/失效边界及跨页合并结果。后续范围、设计与实施须在用户启动该需求后确定。
