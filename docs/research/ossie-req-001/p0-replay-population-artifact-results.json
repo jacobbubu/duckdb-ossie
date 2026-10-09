@@ -1,0 +1,5270 @@
+{
+  "scope": "real single-table population execution; not full P0/A1-A8 acceptance",
+  "runtime": "Bun 1.3.11",
+  "client": "@duckdb/node-api 1.5.6-r.1",
+  "duckdb_version": "1.5.6",
+  "duckdb_source_id": "069cc9f9b5",
+  "artifact_loaded_in_stock_node_bindings": true,
+  "artifact_sha256": "4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307",
+  "script_sha256": "7c05d8ff099c4814473f244808c778e67ddf6a5751652dcd991fa8c7513111f0",
+  "helper_sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+  "inputs_sha256": {
+    "docs/research/ossie-req-001/gaap-original-475.csv": "e01a940a3f83ed6f5f22beb598e64206144658ad3b9fef89124e2790e7fc3e18",
+    "docs/research/ossie-req-001/gaap-boundary.csv": "93aabea30c8f94246e44e1c7d4d7c1ddb2b4650cd347c5c57edbbf4e8abcb6b1",
+    "docs/research/ossie-req-001/baseline-results.json": "f286859729b7cf0b99a0c8ee022bff79940b495b9486f1148c0fd975cafaef23",
+    "docs/research/ossie-req-001/boundary-results.json": "da7e1638387e3ea2b431dfa50432b9ab694f677c0222f8657832d94e000961d5",
+    "docs/research/ossie-req-001/proposed-definitions/gaap.core.json": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a",
+    "docs/research/ossie-req-001/proposed-definitions/gaap.mapping.json": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807",
+    "docs/research/ossie-req-001/proposed-definitions/gaap.ontology.threshold-10.json": "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc",
+    "docs/research/ossie-req-001/proposed-definitions/gaap.ontology.threshold-20.json": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf",
+    "test/fixtures/population/bundle-10.json": "61498fe419af6bace141492be85d8296d378fbba8205695efce9056a6f61964a",
+    "test/fixtures/population/bundle-20.json": "0f87d33a6c6a7d0b4558a75414728c976b705ac0a1ed83b69495606ebdc089aa",
+    "test/sql/ossie_population.test": "0e37629dcf29ab9638eca8a5d730c0b4395b2341a1267abf0aa447a684d9962c",
+    "scripts/population_error.ts": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff"
+  },
+  "cases": {
+    "10": {
+      "query": {
+        "concept": "ValidUser",
+        "metrics": [
+          "record_count",
+          "gaap_value_count",
+          "gaap_sum",
+          "mean_gaap"
+        ],
+        "filters": [
+          "User.product = 'X'",
+          "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'"
+        ],
+        "daily_dimensions": [
+          "dws_gaap_di.ds"
+        ],
+        "drill_dimensions": [
+          "dws_gaap_di.ds",
+          "dws_gaap_di.region",
+          "dws_gaap_di.user_type"
+        ]
+      },
+      "object_ids": [
+        "u00003",
+        "u00013",
+        "u00019",
+        "u00022",
+        "u00026",
+        "u00029",
+        "u00031",
+        "u00034",
+        "u00036",
+        "u00039",
+        "u00040",
+        "u00042",
+        "u00043",
+        "u00047",
+        "u00049",
+        "u00050",
+        "u00058",
+        "u00059",
+        "u00064",
+        "u00065",
+        "u00074",
+        "u00077",
+        "u00086",
+        "u00087",
+        "u00089",
+        "u00096",
+        "u00098",
+        "u00102",
+        "u00104",
+        "u00109",
+        "u00115",
+        "u00116",
+        "u00117",
+        "u00118",
+        "u00119",
+        "u00124",
+        "u00128",
+        "u00131",
+        "u00135",
+        "u00139",
+        "u00140",
+        "u00143",
+        "u00146",
+        "u00147",
+        "u00148",
+        "u00153",
+        "u00154",
+        "u00157",
+        "u00163",
+        "u00165",
+        "u00168",
+        "u00172",
+        "u00174",
+        "u00176",
+        "u00177",
+        "u00181",
+        "u00183",
+        "u00184",
+        "u00185",
+        "u00190",
+        "u00201",
+        "u00206",
+        "u00214",
+        "u00216",
+        "u00223",
+        "u00226",
+        "u00230",
+        "u00233",
+        "u00241",
+        "u00242",
+        "u00250",
+        "u00255",
+        "u00256",
+        "u00258",
+        "u00270",
+        "u00274",
+        "u00275",
+        "u00280",
+        "u00281",
+        "u00282",
+        "u00292",
+        "u00293",
+        "u00294",
+        "u00295",
+        "u00297",
+        "u00298",
+        "u00299",
+        "u00301",
+        "u00302",
+        "u00303",
+        "u00304",
+        "u00305",
+        "u00306",
+        "u00307",
+        "u00308",
+        "u00309",
+        "u00310",
+        "u00311",
+        "u00312",
+        "u00313",
+        "u00314",
+        "u00315",
+        "u00316",
+        "u00317",
+        "u00318",
+        "u00319",
+        "u00320",
+        "u00321",
+        "u00322",
+        "u00323",
+        "u00324",
+        "u00325",
+        "u00330",
+        "u00333",
+        "u00335",
+        "u00341",
+        "u00342",
+        "u00344",
+        "u00347",
+        "u00349",
+        "u00352",
+        "u00358",
+        "u00361",
+        "u00368",
+        "u00380",
+        "u00382",
+        "u00392",
+        "u00393",
+        "u00396",
+        "u00397",
+        "u00398",
+        "u00400",
+        "u00402",
+        "u00406",
+        "u00408",
+        "u00413",
+        "u00415",
+        "u00417",
+        "u00420",
+        "u00421",
+        "u00422",
+        "u00423",
+        "u00425",
+        "u00426",
+        "u00429",
+        "u00430",
+        "u00433",
+        "u00434",
+        "u00436",
+        "u00437",
+        "u00439",
+        "u00440",
+        "u00445",
+        "u00446",
+        "u00447",
+        "u00451",
+        "u00454",
+        "u00455",
+        "u00457",
+        "u00459",
+        "u00460",
+        "u00461",
+        "u00462",
+        "u00470",
+        "u00471",
+        "u00473"
+      ],
+      "aggregate": [
+        166,
+        166,
+        "2265.86",
+        13.649759036144578
+      ],
+      "daily_results": [
+        [
+          "2026-03-01",
+          6,
+          6,
+          "27.82",
+          4.636666666666667
+        ],
+        [
+          "2026-03-02",
+          12,
+          12,
+          "48.49",
+          4.0408333333333335
+        ],
+        [
+          "2026-03-03",
+          7,
+          7,
+          "23.62",
+          3.374285714285714
+        ],
+        [
+          "2026-03-04",
+          10,
+          10,
+          "53.10",
+          5.31
+        ],
+        [
+          "2026-03-05",
+          10,
+          10,
+          "50.63",
+          5.063
+        ],
+        [
+          "2026-03-06",
+          10,
+          10,
+          "42.63",
+          4.263
+        ],
+        [
+          "2026-03-07",
+          7,
+          7,
+          "27.60",
+          3.942857142857143
+        ],
+        [
+          "2026-03-08",
+          6,
+          6,
+          "29.54",
+          4.923333333333333
+        ],
+        [
+          "2026-03-09",
+          7,
+          7,
+          "33.35",
+          4.764285714285714
+        ],
+        [
+          "2026-03-10",
+          37,
+          37,
+          "1697.80",
+          45.88648648648649
+        ],
+        [
+          "2026-03-11",
+          9,
+          9,
+          "41.74",
+          4.637777777777778
+        ],
+        [
+          "2026-03-12",
+          5,
+          5,
+          "16.60",
+          3.32
+        ],
+        [
+          "2026-03-13",
+          11,
+          11,
+          "56.76",
+          5.16
+        ],
+        [
+          "2026-03-14",
+          16,
+          16,
+          "69.07",
+          4.316875
+        ],
+        [
+          "2026-03-15",
+          13,
+          13,
+          "47.11",
+          3.623846153846154
+        ]
+      ],
+      "grouped_results": [
+        [
+          "2026-03-01",
+          "South",
+          "individual",
+          2,
+          2,
+          "9.54",
+          4.77
+        ],
+        [
+          "2026-03-01",
+          "South",
+          "enterprise",
+          1,
+          1,
+          "3.66",
+          3.66
+        ],
+        [
+          "2026-03-01",
+          "West",
+          "student",
+          1,
+          1,
+          "6.29",
+          6.29
+        ],
+        [
+          "2026-03-01",
+          "North",
+          "individual",
+          1,
+          1,
+          "7.19",
+          7.19
+        ],
+        [
+          "2026-03-01",
+          "East",
+          "enterprise",
+          1,
+          1,
+          "1.14",
+          1.14
+        ],
+        [
+          "2026-03-02",
+          "East",
+          "enterprise",
+          2,
+          2,
+          "13.20",
+          6.6
+        ],
+        [
+          "2026-03-02",
+          "South",
+          "student",
+          2,
+          2,
+          "9.67",
+          4.835
+        ],
+        [
+          "2026-03-02",
+          "West",
+          "student",
+          1,
+          1,
+          "6.49",
+          6.49
+        ],
+        [
+          "2026-03-02",
+          "North",
+          "enterprise",
+          1,
+          1,
+          "6.10",
+          6.1
+        ],
+        [
+          "2026-03-02",
+          "West",
+          "individual",
+          1,
+          1,
+          "1.69",
+          1.69
+        ],
+        [
+          "2026-03-02",
+          "North",
+          "student",
+          1,
+          1,
+          "2.16",
+          2.16
+        ],
+        [
+          "2026-03-02",
+          "East",
+          "student",
+          1,
+          1,
+          "1.35",
+          1.35
+        ],
+        [
+          "2026-03-02",
+          "South",
+          "enterprise",
+          1,
+          1,
+          "1.84",
+          1.84
+        ],
+        [
+          "2026-03-02",
+          "North",
+          "individual",
+          1,
+          1,
+          "1.57",
+          1.57
+        ],
+        [
+          "2026-03-02",
+          "East",
+          "individual",
+          1,
+          1,
+          "4.42",
+          4.42
+        ],
+        [
+          "2026-03-03",
+          "North",
+          "enterprise",
+          2,
+          2,
+          "6.08",
+          3.04
+        ],
+        [
+          "2026-03-03",
+          "East",
+          "student",
+          2,
+          2,
+          "7.53",
+          3.765
+        ],
+        [
+          "2026-03-03",
+          "East",
+          "enterprise",
+          1,
+          1,
+          "1.49",
+          1.49
+        ],
+        [
+          "2026-03-03",
+          "South",
+          "student",
+          1,
+          1,
+          "1.32",
+          1.32
+        ],
+        [
+          "2026-03-03",
+          "West",
+          "enterprise",
+          1,
+          1,
+          "7.20",
+          7.2
+        ],
+        [
+          "2026-03-04",
+          "East",
+          "enterprise",
+          1,
+          1,
+          "3.24",
+          3.24
+        ],
+        [
+          "2026-03-04",
+          "North",
+          "enterprise",
+          2,
+          2,
+          "8.58",
+          4.29
+        ],
+        [
+          "2026-03-04",
+          "West",
+          "student",
+          3,
+          3,
+          "16.92",
+          5.64
+        ],
+        [
+          "2026-03-04",
+          "East",
+          "student",
+          2,
+          2,
+          "12.50",
+          6.25
+        ],
+        [
+          "2026-03-04",
+          "North",
+          "individual",
+          1,
+          1,
+          "6.41",
+          6.41
+        ],
+        [
+          "2026-03-04",
+          "West",
+          "enterprise",
+          1,
+          1,
+          "5.45",
+          5.45
+        ],
+        [
+          "2026-03-05",
+          "East",
+          "enterprise",
+          1,
+          1,
+          "3.38",
+          3.38
+        ],
+        [
+          "2026-03-05",
+          "East",
+          "individual",
+          3,
+          3,
+          "15.66",
+          5.22
+        ],
+        [
+          "2026-03-05",
+          "East",
+          "student",
+          1,
+          1,
+          "6.20",
+          6.2
+        ],
+        [
+          "2026-03-05",
+          "South",
+          "student",
+          2,
+          2,
+          "11.59",
+          5.795
+        ],
+        [
+          "2026-03-05",
+          "South",
+          "individual",
+          1,
+          1,
+          "2.48",
+          2.48
+        ],
+        [
+          "2026-03-05",
+          "South",
+          "enterprise",
+          1,
+          1,
+          "6.51",
+          6.51
+        ],
+        [
+          "2026-03-05",
+          "West",
+          "student",
+          1,
+          1,
+          "4.81",
+          4.81
+        ],
+        [
+          "2026-03-06",
+          "South",
+          "individual",
+          1,
+          1,
+          "6.85",
+          6.85
+        ],
+        [
+          "2026-03-06",
+          "East",
+          "individual",
+          1,
+          1,
+          "1.28",
+          1.28
+        ],
+        [
+          "2026-03-06",
+          "South",
+          "enterprise",
+          3,
+          3,
+          "15.84",
+          5.28
+        ],
+        [
+          "2026-03-06",
+          "West",
+          "individual",
+          1,
+          1,
+          "3.04",
+          3.04
+        ],
+        [
+          "2026-03-06",
+          "East",
+          "enterprise",
+          1,
+          1,
+          "3.38",
+          3.38
+        ],
+        [
+          "2026-03-06",
+          "West",
+          "student",
+          2,
+          2,
+          "8.87",
+          4.435
+        ],
+        [
+          "2026-03-06",
+          "West",
+          "enterprise",
+          1,
+          1,
+          "3.37",
+          3.37
+        ],
+        [
+          "2026-03-07",
+          "West",
+          "student",
+          1,
+          1,
+          "5.86",
+          5.86
+        ],
+        [
+          "2026-03-07",
+          "South",
+          "individual",
+          1,
+          1,
+          "3.88",
+          3.88
+        ],
+        [
+          "2026-03-07",
+          "South",
+          "student",
+          1,
+          1,
+          "1.55",
+          1.55
+        ],
+        [
+          "2026-03-07",
+          "West",
+          "individual",
+          1,
+          1,
+          "2.00",
+          2
+        ],
+        [
+          "2026-03-07",
+          "South",
+          "enterprise",
+          1,
+          1,
+          "5.00",
+          5
+        ],
+        [
+          "2026-03-07",
+          "West",
+          "enterprise",
+          2,
+          2,
+          "9.31",
+          4.655
+        ],
+        [
+          "2026-03-08",
+          "East",
+          "student",
+          2,
+          2,
+          "11.41",
+          5.705
+        ],
+        [
+          "2026-03-08",
+          "North",
+          "student",
+          1,
+          1,
+          "1.10",
+          1.1
+        ],
+        [
+          "2026-03-08",
+          "East",
+          "individual",
+          1,
+          1,
+          "5.43",
+          5.43
+        ],
+        [
+          "2026-03-08",
+          "West",
+          "enterprise",
+          1,
+          1,
+          "7.22",
+          7.22
+        ],
+        [
+          "2026-03-08",
+          "South",
+          "individual",
+          1,
+          1,
+          "4.38",
+          4.38
+        ],
+        [
+          "2026-03-09",
+          "North",
+          "student",
+          2,
+          2,
+          "9.76",
+          4.88
+        ],
+        [
+          "2026-03-09",
+          "East",
+          "enterprise",
+          2,
+          2,
+          "11.72",
+          5.86
+        ],
+        [
+          "2026-03-09",
+          "West",
+          "student",
+          1,
+          1,
+          "7.03",
+          7.03
+        ],
+        [
+          "2026-03-09",
+          "East",
+          "student",
+          2,
+          2,
+          "4.84",
+          2.42
+        ],
+        [
+          "2026-03-10",
+          "East",
+          "individual",
+          1,
+          1,
+          "3.64",
+          3.64
+        ],
+        [
+          "2026-03-10",
+          "North",
+          "individual",
+          1,
+          1,
+          "5.69",
+          5.69
+        ],
+        [
+          "2026-03-10",
+          "South",
+          "individual",
+          1,
+          1,
+          "6.40",
+          6.4
+        ],
+        [
+          "2026-03-10",
+          "West",
+          "student",
+          5,
+          5,
+          "208.93",
+          41.786
+        ],
+        [
+          "2026-03-10",
+          "West",
+          "individual",
+          3,
+          3,
+          "14.30",
+          4.766666666666667
+        ],
+        [
+          "2026-03-10",
+          "East",
+          "student",
+          6,
+          6,
+          "204.31",
+          34.05166666666667
+        ],
+        [
+          "2026-03-10",
+          "South",
+          "student",
+          5,
+          5,
+          "217.34",
+          43.468
+        ],
+        [
+          "2026-03-10",
+          "West",
+          "enterprise",
+          1,
+          1,
+          "5.31",
+          5.31
+        ],
+        [
+          "2026-03-10",
+          "South",
+          "enterprise",
+          1,
+          1,
+          "4.00",
+          4
+        ],
+        [
+          "2026-03-10",
+          "North",
+          "student",
+          3,
+          3,
+          "152.27",
+          50.75666666666667
+        ],
+        [
+          "2026-03-10",
+          "North",
+          "enterprise",
+          10,
+          10,
+          "875.61",
+          87.561
+        ],
+        [
+          "2026-03-11",
+          "North",
+          "student",
+          1,
+          1,
+          "6.94",
+          6.94
+        ],
+        [
+          "2026-03-11",
+          "West",
+          "enterprise",
+          1,
+          1,
+          "3.60",
+          3.6
+        ],
+        [
+          "2026-03-11",
+          "North",
+          "individual",
+          1,
+          1,
+          "2.30",
+          2.3
+        ],
+        [
+          "2026-03-11",
+          "East",
+          "individual",
+          2,
+          2,
+          "9.83",
+          4.915
+        ],
+        [
+          "2026-03-11",
+          "South",
+          "enterprise",
+          2,
+          2,
+          "5.70",
+          2.85
+        ],
+        [
+          "2026-03-11",
+          "East",
+          "enterprise",
+          1,
+          1,
+          "8.00",
+          8
+        ],
+        [
+          "2026-03-11",
+          "South",
+          "individual",
+          1,
+          1,
+          "5.37",
+          5.37
+        ],
+        [
+          "2026-03-12",
+          "East",
+          "individual",
+          2,
+          2,
+          "6.80",
+          3.4
+        ],
+        [
+          "2026-03-12",
+          "South",
+          "student",
+          2,
+          2,
+          "5.44",
+          2.72
+        ],
+        [
+          "2026-03-12",
+          "North",
+          "individual",
+          1,
+          1,
+          "4.36",
+          4.36
+        ],
+        [
+          "2026-03-13",
+          "East",
+          "enterprise",
+          1,
+          1,
+          "5.59",
+          5.59
+        ],
+        [
+          "2026-03-13",
+          "South",
+          "individual",
+          3,
+          3,
+          "16.06",
+          5.3533333333333335
+        ],
+        [
+          "2026-03-13",
+          "North",
+          "student",
+          1,
+          1,
+          "3.89",
+          3.89
+        ],
+        [
+          "2026-03-13",
+          "South",
+          "student",
+          2,
+          2,
+          "12.10",
+          6.05
+        ],
+        [
+          "2026-03-13",
+          "West",
+          "individual",
+          1,
+          1,
+          "7.55",
+          7.55
+        ],
+        [
+          "2026-03-13",
+          "West",
+          "enterprise",
+          1,
+          1,
+          "2.30",
+          2.3
+        ],
+        [
+          "2026-03-13",
+          "East",
+          "student",
+          1,
+          1,
+          "6.12",
+          6.12
+        ],
+        [
+          "2026-03-13",
+          "North",
+          "enterprise",
+          1,
+          1,
+          "3.15",
+          3.15
+        ],
+        [
+          "2026-03-14",
+          "South",
+          "individual",
+          1,
+          1,
+          "6.28",
+          6.28
+        ],
+        [
+          "2026-03-14",
+          "South",
+          "enterprise",
+          1,
+          1,
+          "6.98",
+          6.98
+        ],
+        [
+          "2026-03-14",
+          "West",
+          "student",
+          2,
+          2,
+          "11.88",
+          5.94
+        ],
+        [
+          "2026-03-14",
+          "West",
+          "individual",
+          2,
+          2,
+          "11.12",
+          5.56
+        ],
+        [
+          "2026-03-14",
+          "West",
+          "enterprise",
+          3,
+          3,
+          "10.48",
+          3.493333333333333
+        ],
+        [
+          "2026-03-14",
+          "North",
+          "enterprise",
+          1,
+          1,
+          "1.22",
+          1.22
+        ],
+        [
+          "2026-03-14",
+          "East",
+          "student",
+          1,
+          1,
+          "2.25",
+          2.25
+        ],
+        [
+          "2026-03-14",
+          "South",
+          "student",
+          3,
+          3,
+          "9.74",
+          3.2466666666666666
+        ],
+        [
+          "2026-03-14",
+          "North",
+          "individual",
+          1,
+          1,
+          "3.93",
+          3.93
+        ],
+        [
+          "2026-03-14",
+          "East",
+          "individual",
+          1,
+          1,
+          "5.19",
+          5.19
+        ],
+        [
+          "2026-03-15",
+          "North",
+          "enterprise",
+          3,
+          3,
+          "9.25",
+          3.0833333333333335
+        ],
+        [
+          "2026-03-15",
+          "North",
+          "student",
+          1,
+          1,
+          "6.63",
+          6.63
+        ],
+        [
+          "2026-03-15",
+          "East",
+          "enterprise",
+          2,
+          2,
+          "7.56",
+          3.78
+        ],
+        [
+          "2026-03-15",
+          "South",
+          "student",
+          3,
+          3,
+          "12.67",
+          4.223333333333334
+        ],
+        [
+          "2026-03-15",
+          "West",
+          "individual",
+          1,
+          1,
+          "5.58",
+          5.58
+        ],
+        [
+          "2026-03-15",
+          "East",
+          "student",
+          1,
+          1,
+          "1.98",
+          1.98
+        ],
+        [
+          "2026-03-15",
+          "North",
+          "individual",
+          2,
+          2,
+          "3.44",
+          1.72
+        ]
+      ],
+      "drilldown_objects": [
+        {
+          "dimensions": [
+            "2026-03-01",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-01'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00003",
+            "u00029"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-01",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-01'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00013"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-01",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-01'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00019"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-01",
+            "North",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-01'",
+            "User.region = 'North'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00022"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-01",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-01'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00026"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00031",
+            "u00058"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00034",
+            "u00040"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00036"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "North",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'North'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00039"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "West",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'West'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00042"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "North",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'North'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00043"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00047"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00049"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "North",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'North'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00050"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00059"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-03",
+            "North",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-03'",
+            "User.region = 'North'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00064",
+            "u00089"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-03",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-03'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00065",
+            "u00074"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-03",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-03'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00077"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-03",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-03'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00086"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-03",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-03'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00087"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-04",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-04'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00096"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-04",
+            "North",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-04'",
+            "User.region = 'North'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00098",
+            "u00116"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-04",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-04'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00102",
+            "u00104",
+            "u00119"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-04",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-04'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00109",
+            "u00117"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-04",
+            "North",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-04'",
+            "User.region = 'North'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00115"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-04",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-04'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00118"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00124"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00128",
+            "u00135",
+            "u00146"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00131"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00139",
+            "u00140"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00143"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00147"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00148"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-06",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-06'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00153"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-06",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-06'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00154"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-06",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-06'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00157",
+            "u00163",
+            "u00176"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-06",
+            "West",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-06'",
+            "User.region = 'West'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00165"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-06",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-06'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00168"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-06",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-06'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00172",
+            "u00174"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-06",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-06'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00177"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-07",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-07'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00181"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-07",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-07'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00183"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-07",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-07'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00184"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-07",
+            "West",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-07'",
+            "User.region = 'West'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00185"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-07",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-07'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00190"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-07",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-07'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00201",
+            "u00206"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-08",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-08'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00214",
+            "u00230"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-08",
+            "North",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-08'",
+            "User.region = 'North'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00216"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-08",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-08'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00223"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-08",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-08'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00226"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-08",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-08'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00233"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-09",
+            "North",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-09'",
+            "User.region = 'North'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00241",
+            "u00258"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-09",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-09'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00242",
+            "u00256"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-09",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-09'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00250"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-09",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-09'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00255",
+            "u00270"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00274"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "North",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'North'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00275"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00280"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00281",
+            "u00303",
+            "u00308",
+            "u00310",
+            "u00313"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "West",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'West'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00282",
+            "u00297",
+            "u00298"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00292",
+            "u00295",
+            "u00301",
+            "u00306",
+            "u00307",
+            "u00312"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00293",
+            "u00305",
+            "u00309",
+            "u00311",
+            "u00314"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00294"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00299"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "North",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'North'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00302",
+            "u00304",
+            "u00315"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "North",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'North'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00316",
+            "u00317",
+            "u00318",
+            "u00319",
+            "u00320",
+            "u00321",
+            "u00322",
+            "u00323",
+            "u00324",
+            "u00325"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-11",
+            "North",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-11'",
+            "User.region = 'North'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00330"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-11",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-11'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00333"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-11",
+            "North",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-11'",
+            "User.region = 'North'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00335"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-11",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-11'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00341",
+            "u00349"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-11",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-11'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00342",
+            "u00347"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-11",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-11'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00344"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-11",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-11'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00352"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-12",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-12'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00358",
+            "u00368"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-12",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-12'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00361",
+            "u00382"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-12",
+            "North",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-12'",
+            "User.region = 'North'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00380"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00392"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00393",
+            "u00400",
+            "u00408"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "North",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'North'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00396"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00397",
+            "u00415"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "West",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'West'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00398"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00402"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00406"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "North",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'North'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00413"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00417"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00420"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00421",
+            "u00422"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "West",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'West'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00423",
+            "u00440"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00425",
+            "u00439",
+            "u00445"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "North",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'North'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00426"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00429"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00430",
+            "u00434",
+            "u00436"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "North",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'North'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00433"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00437"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-15",
+            "North",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-15'",
+            "User.region = 'North'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00446",
+            "u00461",
+            "u00470"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-15",
+            "North",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-15'",
+            "User.region = 'North'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00447"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-15",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-15'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00451",
+            "u00454"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-15",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-15'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00455",
+            "u00462",
+            "u00473"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-15",
+            "West",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-15'",
+            "User.region = 'West'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00457"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-15",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-15'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00459"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-15",
+            "North",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-15'",
+            "User.region = 'North'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00460",
+            "u00471"
+          ]
+        }
+      ],
+      "actual_plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807"
+          },
+          "manifest_sha256": "61498fe419af6bace141492be85d8296d378fbba8205695efce9056a6f61964a"
+        },
+        "snapshot": {
+          "id": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180:1",
+          "content_sha256": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180",
+          "captured_population_rows": 475,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "ValidUser",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": true,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ytd_gaap >= 10",
+            "resolved_definition_sql": "(dws_gaap_di.ytd_gaap >= 10)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 475,
+            "sha256": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "record_count",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "COUNT(dws_gaap_di.user_id)",
+              "parsed_lowered_sql": "count(dws_gaap_di.user_id)"
+            }
+          },
+          {
+            "name": "gaap_value_count",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "COUNT(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "count(dws_gaap_di.gaap_val)"
+            }
+          },
+          {
+            "name": "gaap_sum",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "sum(dws_gaap_di.gaap_val)"
+            }
+          },
+          {
+            "name": "mean_gaap",
+            "declared_datatype": "Float",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "AVG(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "avg(dws_gaap_di.gaap_val)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": true,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'"
+          ],
+          "effective_where_sql": "((dws_gaap_di.ytd_gaap >= 10) AND (dws_gaap_di.product = 'X') AND (dws_gaap_di.ds >= CAST('2026-03-01' AS \"DATE\")) AND (dws_gaap_di.ds < CAST('2026-04-01' AS \"DATE\")))"
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "record_count",
+              "sql": "\"system\".main.count(dws_gaap_di.user_id)"
+            },
+            {
+              "ordinal": 2,
+              "alias": "gaap_value_count",
+              "sql": "\"system\".main.count(dws_gaap_di.gaap_val)"
+            },
+            {
+              "ordinal": 3,
+              "alias": "gaap_sum",
+              "sql": "\"system\".main.sum(dws_gaap_di.gaap_val)"
+            },
+            {
+              "ordinal": 4,
+              "alias": "mean_gaap",
+              "sql": "\"system\".main.avg(dws_gaap_di.gaap_val)"
+            }
+          ],
+          "group_by_sql": []
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      },
+      "traced_aggregate": [
+        166,
+        166,
+        "2265.86",
+        13.649759036144578,
+        "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180:1",
+        "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180",
+        "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc"
+      ],
+      "objects": 166,
+      "sum": "2265.86",
+      "daily_groups": 15,
+      "drill_groups": 101,
+      "snapshot_id": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180:1",
+      "content_sha256": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180",
+      "sql": "SELECT \"system\".main.count(dws_gaap_di.user_id) AS record_count, \"system\".main.count(dws_gaap_di.gaap_val) AS gaap_value_count, \"system\".main.sum(dws_gaap_di.gaap_val) AS gaap_sum, \"system\".main.avg(dws_gaap_di.gaap_val) AS mean_gaap FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di WHERE ((dws_gaap_di.ytd_gaap >= 10) AND (dws_gaap_di.product = 'X') AND (dws_gaap_di.ds >= CAST('2026-03-01' AS \"DATE\")) AND (dws_gaap_di.ds < CAST('2026-04-01' AS \"DATE\")))",
+      "ontology_sha256": "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc"
+    },
+    "20": {
+      "query": {
+        "concept": "ValidUser",
+        "metrics": [
+          "record_count",
+          "gaap_value_count",
+          "gaap_sum",
+          "mean_gaap"
+        ],
+        "filters": [
+          "User.product = 'X'",
+          "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'"
+        ],
+        "daily_dimensions": [
+          "dws_gaap_di.ds"
+        ],
+        "drill_dimensions": [
+          "dws_gaap_di.ds",
+          "dws_gaap_di.region",
+          "dws_gaap_di.user_type"
+        ]
+      },
+      "object_ids": [
+        "u00013",
+        "u00019",
+        "u00026",
+        "u00034",
+        "u00036",
+        "u00039",
+        "u00049",
+        "u00059",
+        "u00064",
+        "u00086",
+        "u00089",
+        "u00115",
+        "u00117",
+        "u00118",
+        "u00119",
+        "u00124",
+        "u00131",
+        "u00139",
+        "u00146",
+        "u00174",
+        "u00176",
+        "u00181",
+        "u00184",
+        "u00206",
+        "u00233",
+        "u00256",
+        "u00280",
+        "u00293",
+        "u00294",
+        "u00301",
+        "u00302",
+        "u00305",
+        "u00306",
+        "u00308",
+        "u00312",
+        "u00313",
+        "u00314",
+        "u00316",
+        "u00317",
+        "u00318",
+        "u00319",
+        "u00320",
+        "u00321",
+        "u00322",
+        "u00323",
+        "u00324",
+        "u00325",
+        "u00341",
+        "u00347",
+        "u00349",
+        "u00352",
+        "u00358",
+        "u00361",
+        "u00397",
+        "u00398",
+        "u00400",
+        "u00408",
+        "u00417",
+        "u00430",
+        "u00436",
+        "u00440",
+        "u00455",
+        "u00460"
+      ],
+      "aggregate": [
+        63,
+        63,
+        "1472.73",
+        23.376666666666665
+      ],
+      "daily_results": [
+        [
+          "2026-03-01",
+          3,
+          3,
+          "11.09",
+          3.6966666666666668
+        ],
+        [
+          "2026-03-02",
+          5,
+          5,
+          "26.19",
+          5.238
+        ],
+        [
+          "2026-03-03",
+          3,
+          3,
+          "7.40",
+          2.466666666666667
+        ],
+        [
+          "2026-03-04",
+          4,
+          4,
+          "24.95",
+          6.2375
+        ],
+        [
+          "2026-03-05",
+          4,
+          4,
+          "19.24",
+          4.81
+        ],
+        [
+          "2026-03-06",
+          2,
+          2,
+          "8.98",
+          4.49
+        ],
+        [
+          "2026-03-07",
+          3,
+          3,
+          "11.01",
+          3.67
+        ],
+        [
+          "2026-03-08",
+          1,
+          1,
+          "4.38",
+          4.38
+        ],
+        [
+          "2026-03-09",
+          1,
+          1,
+          "6.09",
+          6.09
+        ],
+        [
+          "2026-03-10",
+          21,
+          21,
+          "1277.54",
+          60.8352380952381
+        ],
+        [
+          "2026-03-11",
+          4,
+          4,
+          "19.72",
+          4.93
+        ],
+        [
+          "2026-03-12",
+          2,
+          2,
+          "4.59",
+          2.295
+        ],
+        [
+          "2026-03-13",
+          4,
+          4,
+          "28.46",
+          7.115
+        ],
+        [
+          "2026-03-14",
+          4,
+          4,
+          "19.02",
+          4.755
+        ],
+        [
+          "2026-03-15",
+          2,
+          2,
+          "4.07",
+          2.035
+        ]
+      ],
+      "grouped_results": [
+        [
+          "2026-03-01",
+          "South",
+          "enterprise",
+          1,
+          1,
+          "3.66",
+          3.66
+        ],
+        [
+          "2026-03-01",
+          "West",
+          "student",
+          1,
+          1,
+          "6.29",
+          6.29
+        ],
+        [
+          "2026-03-01",
+          "East",
+          "enterprise",
+          1,
+          1,
+          "1.14",
+          1.14
+        ],
+        [
+          "2026-03-02",
+          "South",
+          "student",
+          1,
+          1,
+          "7.34",
+          7.34
+        ],
+        [
+          "2026-03-02",
+          "West",
+          "student",
+          1,
+          1,
+          "6.49",
+          6.49
+        ],
+        [
+          "2026-03-02",
+          "North",
+          "enterprise",
+          1,
+          1,
+          "6.10",
+          6.1
+        ],
+        [
+          "2026-03-02",
+          "South",
+          "enterprise",
+          1,
+          1,
+          "1.84",
+          1.84
+        ],
+        [
+          "2026-03-02",
+          "East",
+          "individual",
+          1,
+          1,
+          "4.42",
+          4.42
+        ],
+        [
+          "2026-03-03",
+          "North",
+          "enterprise",
+          2,
+          2,
+          "6.08",
+          3.04
+        ],
+        [
+          "2026-03-03",
+          "South",
+          "student",
+          1,
+          1,
+          "1.32",
+          1.32
+        ],
+        [
+          "2026-03-04",
+          "North",
+          "individual",
+          1,
+          1,
+          "6.41",
+          6.41
+        ],
+        [
+          "2026-03-04",
+          "East",
+          "student",
+          1,
+          1,
+          "6.95",
+          6.95
+        ],
+        [
+          "2026-03-04",
+          "West",
+          "enterprise",
+          1,
+          1,
+          "5.45",
+          5.45
+        ],
+        [
+          "2026-03-04",
+          "West",
+          "student",
+          1,
+          1,
+          "6.14",
+          6.14
+        ],
+        [
+          "2026-03-05",
+          "East",
+          "enterprise",
+          1,
+          1,
+          "3.38",
+          3.38
+        ],
+        [
+          "2026-03-05",
+          "East",
+          "student",
+          1,
+          1,
+          "6.20",
+          6.2
+        ],
+        [
+          "2026-03-05",
+          "South",
+          "student",
+          1,
+          1,
+          "6.68",
+          6.68
+        ],
+        [
+          "2026-03-05",
+          "East",
+          "individual",
+          1,
+          1,
+          "2.98",
+          2.98
+        ],
+        [
+          "2026-03-06",
+          "West",
+          "student",
+          1,
+          1,
+          "1.88",
+          1.88
+        ],
+        [
+          "2026-03-06",
+          "South",
+          "enterprise",
+          1,
+          1,
+          "7.10",
+          7.1
+        ],
+        [
+          "2026-03-07",
+          "West",
+          "student",
+          1,
+          1,
+          "5.86",
+          5.86
+        ],
+        [
+          "2026-03-07",
+          "South",
+          "student",
+          1,
+          1,
+          "1.55",
+          1.55
+        ],
+        [
+          "2026-03-07",
+          "West",
+          "enterprise",
+          1,
+          1,
+          "3.60",
+          3.6
+        ],
+        [
+          "2026-03-08",
+          "South",
+          "individual",
+          1,
+          1,
+          "4.38",
+          4.38
+        ],
+        [
+          "2026-03-09",
+          "East",
+          "enterprise",
+          1,
+          1,
+          "6.09",
+          6.09
+        ],
+        [
+          "2026-03-10",
+          "South",
+          "individual",
+          1,
+          1,
+          "6.40",
+          6.4
+        ],
+        [
+          "2026-03-10",
+          "South",
+          "student",
+          3,
+          3,
+          "103.39",
+          34.46333333333333
+        ],
+        [
+          "2026-03-10",
+          "West",
+          "enterprise",
+          1,
+          1,
+          "5.31",
+          5.31
+        ],
+        [
+          "2026-03-10",
+          "East",
+          "student",
+          3,
+          3,
+          "134.33",
+          44.776666666666664
+        ],
+        [
+          "2026-03-10",
+          "North",
+          "student",
+          1,
+          1,
+          "47.81",
+          47.81
+        ],
+        [
+          "2026-03-10",
+          "West",
+          "student",
+          2,
+          2,
+          "104.69",
+          52.345
+        ],
+        [
+          "2026-03-10",
+          "North",
+          "enterprise",
+          10,
+          10,
+          "875.61",
+          87.561
+        ],
+        [
+          "2026-03-11",
+          "East",
+          "individual",
+          2,
+          2,
+          "9.83",
+          4.915
+        ],
+        [
+          "2026-03-11",
+          "South",
+          "enterprise",
+          1,
+          1,
+          "4.52",
+          4.52
+        ],
+        [
+          "2026-03-11",
+          "South",
+          "individual",
+          1,
+          1,
+          "5.37",
+          5.37
+        ],
+        [
+          "2026-03-12",
+          "East",
+          "individual",
+          1,
+          1,
+          "3.24",
+          3.24
+        ],
+        [
+          "2026-03-12",
+          "South",
+          "student",
+          1,
+          1,
+          "1.35",
+          1.35
+        ],
+        [
+          "2026-03-13",
+          "South",
+          "student",
+          1,
+          1,
+          "7.75",
+          7.75
+        ],
+        [
+          "2026-03-13",
+          "West",
+          "individual",
+          1,
+          1,
+          "7.55",
+          7.55
+        ],
+        [
+          "2026-03-13",
+          "South",
+          "individual",
+          2,
+          2,
+          "13.16",
+          6.58
+        ],
+        [
+          "2026-03-14",
+          "South",
+          "individual",
+          1,
+          1,
+          "6.28",
+          6.28
+        ],
+        [
+          "2026-03-14",
+          "South",
+          "student",
+          2,
+          2,
+          "8.27",
+          4.135
+        ],
+        [
+          "2026-03-14",
+          "West",
+          "individual",
+          1,
+          1,
+          "4.47",
+          4.47
+        ],
+        [
+          "2026-03-15",
+          "South",
+          "student",
+          1,
+          1,
+          "2.83",
+          2.83
+        ],
+        [
+          "2026-03-15",
+          "North",
+          "individual",
+          1,
+          1,
+          "1.24",
+          1.24
+        ]
+      ],
+      "drilldown_objects": [
+        {
+          "dimensions": [
+            "2026-03-01",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-01'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00013"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-01",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-01'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00019"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-01",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-01'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00026"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00034"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00036"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "North",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'North'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00039"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00049"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-02",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-02'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00059"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-03",
+            "North",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-03'",
+            "User.region = 'North'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00064",
+            "u00089"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-03",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-03'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00086"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-04",
+            "North",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-04'",
+            "User.region = 'North'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00115"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-04",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-04'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00117"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-04",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-04'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00118"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-04",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-04'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00119"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00124"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00131"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00139"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-05",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-05'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00146"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-06",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-06'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00174"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-06",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-06'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00176"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-07",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-07'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00181"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-07",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-07'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00184"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-07",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-07'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00206"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-08",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-08'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00233"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-09",
+            "East",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-09'",
+            "User.region = 'East'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00256"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00280"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00293",
+            "u00305",
+            "u00314"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "West",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'West'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00294"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "East",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'East'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00301",
+            "u00306",
+            "u00312"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "North",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'North'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00302"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "West",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'West'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00308",
+            "u00313"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-10",
+            "North",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-10'",
+            "User.region = 'North'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00316",
+            "u00317",
+            "u00318",
+            "u00319",
+            "u00320",
+            "u00321",
+            "u00322",
+            "u00323",
+            "u00324",
+            "u00325"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-11",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-11'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00341",
+            "u00349"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-11",
+            "South",
+            "enterprise"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-11'",
+            "User.region = 'South'",
+            "User.user_type = 'enterprise'"
+          ],
+          "object_ids": [
+            "u00347"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-11",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-11'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00352"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-12",
+            "East",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-12'",
+            "User.region = 'East'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00358"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-12",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-12'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00361"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00397"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "West",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'West'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00398"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-13",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-13'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00400",
+            "u00408"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "South",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'South'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00417"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00430",
+            "u00436"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-14",
+            "West",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-14'",
+            "User.region = 'West'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00440"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-15",
+            "South",
+            "student"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-15'",
+            "User.region = 'South'",
+            "User.user_type = 'student'"
+          ],
+          "object_ids": [
+            "u00455"
+          ]
+        },
+        {
+          "dimensions": [
+            "2026-03-15",
+            "North",
+            "individual"
+          ],
+          "filters": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'",
+            "User.date = DATE '2026-03-15'",
+            "User.region = 'North'",
+            "User.user_type = 'individual'"
+          ],
+          "object_ids": [
+            "u00460"
+          ]
+        }
+      ],
+      "actual_plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807"
+          },
+          "manifest_sha256": "0f87d33a6c6a7d0b4558a75414728c976b705ac0a1ed83b69495606ebdc089aa"
+        },
+        "snapshot": {
+          "id": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180:2",
+          "content_sha256": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180",
+          "captured_population_rows": 475,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "ValidUser",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": true,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ytd_gaap >= 20",
+            "resolved_definition_sql": "(dws_gaap_di.ytd_gaap >= 20)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 475,
+            "sha256": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "record_count",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "COUNT(dws_gaap_di.user_id)",
+              "parsed_lowered_sql": "count(dws_gaap_di.user_id)"
+            }
+          },
+          {
+            "name": "gaap_value_count",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "COUNT(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "count(dws_gaap_di.gaap_val)"
+            }
+          },
+          {
+            "name": "gaap_sum",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "sum(dws_gaap_di.gaap_val)"
+            }
+          },
+          {
+            "name": "mean_gaap",
+            "declared_datatype": "Float",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "AVG(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "avg(dws_gaap_di.gaap_val)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": true,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [
+            "User.product = 'X'",
+            "User.date >= DATE '2026-03-01' AND User.date < DATE '2026-04-01'"
+          ],
+          "effective_where_sql": "((dws_gaap_di.ytd_gaap >= 20) AND (dws_gaap_di.product = 'X') AND (dws_gaap_di.ds >= CAST('2026-03-01' AS \"DATE\")) AND (dws_gaap_di.ds < CAST('2026-04-01' AS \"DATE\")))"
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "record_count",
+              "sql": "\"system\".main.count(dws_gaap_di.user_id)"
+            },
+            {
+              "ordinal": 2,
+              "alias": "gaap_value_count",
+              "sql": "\"system\".main.count(dws_gaap_di.gaap_val)"
+            },
+            {
+              "ordinal": 3,
+              "alias": "gaap_sum",
+              "sql": "\"system\".main.sum(dws_gaap_di.gaap_val)"
+            },
+            {
+              "ordinal": 4,
+              "alias": "mean_gaap",
+              "sql": "\"system\".main.avg(dws_gaap_di.gaap_val)"
+            }
+          ],
+          "group_by_sql": []
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      },
+      "traced_aggregate": [
+        63,
+        63,
+        "1472.73",
+        23.376666666666665,
+        "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180:2",
+        "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180",
+        "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf"
+      ],
+      "objects": 63,
+      "sum": "1472.73",
+      "daily_groups": 15,
+      "drill_groups": 45,
+      "snapshot_id": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180:2",
+      "content_sha256": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180",
+      "sql": "SELECT \"system\".main.count(dws_gaap_di.user_id) AS record_count, \"system\".main.count(dws_gaap_di.gaap_val) AS gaap_value_count, \"system\".main.sum(dws_gaap_di.gaap_val) AS gaap_sum, \"system\".main.avg(dws_gaap_di.gaap_val) AS mean_gaap FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di WHERE ((dws_gaap_di.ytd_gaap >= 20) AND (dws_gaap_di.product = 'X') AND (dws_gaap_di.ds >= CAST('2026-03-01' AS \"DATE\")) AND (dws_gaap_di.ds < CAST('2026-04-01' AS \"DATE\")))",
+      "ontology_sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf"
+    }
+  },
+  "boundary_cases": {
+    "10": {
+      "snapshot": [
+        "gaap-scalar-population-v1",
+        "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:3",
+        "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+        11
+      ],
+      "object_ids": [
+        "e01",
+        "e04",
+        "e07",
+        "e08",
+        "e10"
+      ],
+      "daily_results": [
+        [
+          "2026-03-01",
+          2,
+          1,
+          "10.00",
+          10
+        ],
+        [
+          "2026-03-03",
+          2,
+          2,
+          "20.00",
+          10
+        ],
+        [
+          "2026-03-31",
+          1,
+          1,
+          "50.00",
+          50
+        ]
+      ],
+      "independent_expected": {
+        "daily": [
+          [
+            "2026-03-01",
+            2,
+            1,
+            10,
+            10
+          ],
+          [
+            "2026-03-03",
+            2,
+            2,
+            20,
+            10
+          ],
+          [
+            "2026-03-31",
+            1,
+            1,
+            50,
+            50
+          ]
+        ],
+        "object_ids": [
+          "e01",
+          "e04",
+          "e07",
+          "e08",
+          "e10"
+        ]
+      }
+    },
+    "20": {
+      "snapshot": [
+        "gaap-scalar-population-v1",
+        "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:4",
+        "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+        11
+      ],
+      "object_ids": [
+        "e04",
+        "e07"
+      ],
+      "daily_results": [
+        [
+          "2026-03-01",
+          1,
+          0,
+          null,
+          null
+        ],
+        [
+          "2026-03-03",
+          1,
+          1,
+          "0.00",
+          0
+        ]
+      ],
+      "independent_expected": {
+        "daily": [
+          [
+            "2026-03-01",
+            1,
+            0,
+            null,
+            null
+          ],
+          [
+            "2026-03-03",
+            1,
+            1,
+            0,
+            0
+          ]
+        ],
+        "object_ids": [
+          "e04",
+          "e07"
+        ]
+      }
+    }
+  },
+  "empty_results": {
+    "filters": [
+      "User.product = 'absent'"
+    ],
+    "objects": [],
+    "scalar": [
+      [
+        0,
+        0,
+        null,
+        null
+      ]
+    ],
+    "grouped": []
+  },
+  "acceptance_evidence": {
+    "cases": [
+      "A1",
+      "A2",
+      "A3",
+      "A4"
+    ],
+    "full_object_and_group_results_saved": true,
+    "only_formal_derived_rule_changes": true,
+    "metric_mapping_and_request_template_unchanged": true,
+    "unit": "USD",
+    "unit_source": "original workbook metric!E2; correspondence review",
+    "decimal_sum_oracle": "independent bigint cents from immutable CSV",
+    "average_absolute_tolerance": 1e-10,
+    "query_order": "unspecified; object IDs sorted in verifier for comparison only",
+    "grouped_means_are_not_additive": true,
+    "autonomous_agent_verified": false
+  },
+  "numeric_oracle": "CSV parsed independently into bigint cents; exact SUM and count; DOUBLE AVG tolerance 1e-10",
+  "same_capture_content_for_thresholds": true,
+  "prepared_query_retains_original_snapshot": true,
+  "explicit_reload_observes_source_changes": true,
+  "failed_load_preserves_bundle": true,
+  "computed_field_expanded_once": true,
+  "typed_null_date_decimal_quoted_text_preserved": true,
+  "parallel_queries_threads_1": true,
+  "interrupted_load_preserves_bundle": true,
+  "native_interrupt_calls": 1,
+  "engine_macro_shadowing_prevented": true,
+  "diagnostic_sql_cannot_access_frozen_batch": true,
+  "descriptive_metadata_does_not_change_values": true,
+  "database_close_releases_native_file_lock": true,
+  "implementation_sources_sha256": {
+    "CMakeLists.txt": "4da33780d274cfecbd7e11ae83e1c76d9446f6122416bef03dbf6628c4fe6562",
+    "src/compile/compile.cpp": "dec2c6a72ac178b9ef16cd2796d7b8dc15ff88542ddbf8266fff60beca3ef460",
+    "src/functions/compile.cpp": "0ced88a9668b3334bd241aaade5a17995869f01f69c5ff219caa86aed9eff419",
+    "src/functions/describe.cpp": "beca66aba1855721ab72ae06ecafff7f46a1a3cb9f148b3e18d4245b64b5c5c3",
+    "src/functions/load.cpp": "940ea630f93f4b6ebe45b9a49879416f7ffba6c693557f9211d4f968ceb219ba",
+    "src/functions/query.cpp": "a4e9721e1723d03b4dedd79ef67db675ca7d4ce0fd01025450975fcfb8390488",
+    "src/include/ossie/catalog.hpp": "31a14b4b8680e9303902508ffd2975a426894df96a2cf212468483a552a38d51",
+    "src/include/ossie/compile.hpp": "6cab076df7d19429934d75f9389036aa5f435709387f1df8a34944f3160d0d84",
+    "src/include/ossie/describe_functions.hpp": "bb7417d8892a606a23f5862dd146dcf0dafd9666ea7005c0b3eb483c1e25414c",
+    "src/include/ossie/dialect.hpp": "3bff6bde0ece193c5ec6bdf51f6470e5eafabb88cf0aff101caf7d0579603dac",
+    "src/include/ossie/functions.hpp": "21e4cae9e69b336add2cb33be9829167353f03e699ff040e398a5ce2a3b0cae1",
+    "src/include/ossie/graph.hpp": "620a388ad927e71534f83d29daf19ea07e1b52d6c05239197a89e510c6293ac5",
+    "src/include/ossie/model.hpp": "0f51d181d2e2a7b280639133f86274a9e9b50542ae5f545103ecf2d86c05d4cd",
+    "src/include/ossie/parser.hpp": "8e339cb4addb44d37873b820d3ddee0bc1d974e1d1c61dbb535850b709009df5",
+    "src/include/ossie/population_testing.hpp": "995ae3a68e711ac080d4bb36e9af935b11787508682453225741ae68eaa6f0f3",
+    "src/include/ossie/state.hpp": "ed1d0e9966aca2a949072afea36ad7b1f9150b349691cc5eaffca26811b12f25",
+    "src/include/ossie/validate.hpp": "b460c6e776d9c9c2d5aa579b54a2808cff7bec1a98e81e108717c5bd898e40bc",
+    "src/include/ossie/yaml.hpp": "7409822d510d4d09a12a699c7ad95d7e869d5cafcb05c0ddafe29ca95eb88351",
+    "src/include/ossie_extension.hpp": "382f683e705384688bb6928a9b3dae0a359923f4257d8f75835c6d052f366f12",
+    "src/model/catalog.cpp": "095735539374ed0a04a071f7b2d4af0eb137ffeb4bf94f1c2df42a619344612a",
+    "src/model/dialect.cpp": "cba1454964c879092926fb8ff2920a4fcb4c46dd04f82acbbcc5e162906aaaf7",
+    "src/model/graph.cpp": "da654783f170010c6ada5a0c538053104ae9bbbb00c6aa647050fd4a65fe5292",
+    "src/model/parser.cpp": "efb44a16d4d8d0ed84b5918161ce651629073e6b7556bb3ce0260a89bea46a19",
+    "src/model/validate.cpp": "557ce77b1c86ab7bb6070e840ea232c014524b59b91047d3b1542816181b5d22",
+    "src/model/yaml.cpp": "a0418e52478e8ea608dff4d42fa61f4b44895c0958a4272283e3d8339374df0d",
+    "src/ossie_extension.cpp": "62b6b2022ab4a721dc7316cf3d9e8d35e0889bce6b2d7092822fbcf716bb797e",
+    "src/population/population.cpp": "de05da67e16beaabf31ba54559b65bd2af5c5f789e8ef729a7354a71ffc5afd1"
+  },
+  "rejected_controls": [
+    "legacy malformed vendor extension retains population",
+    "root_requires",
+    "derived_requires",
+    "identity_requires",
+    "attribute_requires",
+    "value_type_requires",
+    "ontology_requires",
+    "multiple_inheritance",
+    "derived_identity_override",
+    "derived_relation_override",
+    "derived_mapping",
+    "link_identity_override",
+    "duplicate_binding",
+    "bad_target",
+    "reference_name_mismatch",
+    "nul_core_field_expression",
+    "nul_rule",
+    "unknown_version",
+    "unknown_rule_function",
+    "aggregate_rule",
+    "subquery_rule",
+    "implicit_boolean_rule",
+    "implicit_boolean_conjunction",
+    "implicit_boolean_case",
+    "hidden_aggregate_field",
+    "hidden_window_field",
+    "hidden_subquery_field",
+    "hidden_unknown_field",
+    "metric_unknown_function",
+    "metric_nested_aggregate",
+    "metric_qualified_function",
+    "multi_dataset",
+    "metric_without_aggregate",
+    "metric_type_mismatch",
+    "reserved_metric_case",
+    "physical_type_mismatch",
+    "nonunique_attribute",
+    "missing_physical_column",
+    "sha256_mismatch",
+    "manifest_name_mismatch",
+    "duplicate_identical_row",
+    "duplicate_id_outside_filter",
+    "null_id_outside_filter",
+    "explicit_transaction_load",
+    "view_source",
+    "temp_source",
+    "row_limit_no_truncation"
+  ]
+}

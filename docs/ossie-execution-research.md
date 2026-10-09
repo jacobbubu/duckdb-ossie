@@ -721,3 +721,11 @@ RequiredNonEmptyString 在五类 name、dataset source、relationship from/to �
 ### 自动第3轮结果：A5–A6边界与连接
 
 单表完整报告增加11行边界fixture实际对象/每日与独立期望，空对象/分组=[]，scalar COUNT=0/SUM=AVG=NULL；阈值相等/NULL/半开日期/sparse groups按声明执行。单表/表达式/DATE/core连接研究/生产双表stock verifiers实际重跑通过，生产双表6facts/55.01/11.002、4派生对象和24类拒绝，研究fan-out控制独立保留。原生19state/42grain/158capture与840 SQL/23 cases/0 skips实际通过，无生产C++修改。第2轮报告因新增边界记录重跑更新为本轮完整输出，旧r2证据不覆盖。本轮本地提交后进入第4轮A7–A8；最终结论仍必要。
+
+### 自动第4轮 checkpoint：A7–A8追溯/格式/传输
+
+沿现issue重跑loader/字段对应/plan/discovery/error/typed结果与真实population MCP、core MCP、stock CLI。独立进程重复固定定义/同CSV，对比完整对象与全部组/下钻及SQL/定义/content hashes，不以snapshot ID充当业务相等证明。合法新格式与两种执行方言、其他合法描述性variant、非法版本/类型/AST拒绝保持；10,000规模实测不是分页或任意大小承诺。第5轮最终结论仍必要，无远端行动。
+
+### 自动第4轮结果：A7–A8追溯/格式/传输
+
+固定CSV/定义在独立进程复现完整两阈值对象、aggregate、每日/分组/下钻及SQL/content/ontology hashes一致，记录p0-round4-replay-results.json；并非普通SQL-text replay/通用determinism。loader、365字段、36plan、18discovery、54error、24typed、实际MCP330/106拒绝、core MCP资源与stock CLI40/0/0 FAITHFUL实际重跑通过。10,000对象/分组完整传输与Float近似/输出内存限制保持，未实现分页或发布。新replay检查脚本format/typecheck通过。第4轮本地提交后仅余第5轮最终归档及复现入口；remote CI/Ubuntu tidy、P1/非目标均不扩大。
