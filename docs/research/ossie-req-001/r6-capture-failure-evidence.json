@@ -1,0 +1,99 @@
+{
+  "source_crash_report_sha256": "ba038421f392220fc0f923dc3f26b882d34ea8c1db7af5d7b81081bf9e1171cd",
+  "native_faulting_frames": [
+    {
+      "imageOffset": 38376,
+      "symbol": "__pthread_kill",
+      "symbolLocation": 8,
+      "imageIndex": 3
+    },
+    {
+      "imageOffset": 26840,
+      "symbol": "pthread_kill",
+      "symbolLocation": 296,
+      "imageIndex": 4
+    },
+    {
+      "imageOffset": 493944,
+      "symbol": "abort",
+      "symbolLocation": 148,
+      "imageIndex": 5
+    },
+    {
+      "imageOffset": 91948,
+      "symbol": "__abort_message",
+      "symbolLocation": 132,
+      "imageIndex": 6
+    },
+    {
+      "imageOffset": 13680,
+      "symbol": "demangling_terminate_handler()",
+      "symbolLocation": 272,
+      "imageIndex": 6
+    },
+    {
+      "imageOffset": 149668,
+      "symbol": "_objc_terminate()",
+      "symbolLocation": 172,
+      "imageIndex": 7
+    },
+    {
+      "imageOffset": 79708,
+      "symbol": "std::__terminate(void (*)())",
+      "symbolLocation": 16,
+      "imageIndex": 6
+    },
+    {
+      "imageOffset": 79632,
+      "symbol": "std::terminate()",
+      "symbolLocation": 108,
+      "imageIndex": 6
+    },
+    {
+      "imageOffset": 17961784,
+      "symbol": "duckdb::TaskNotifier::~TaskNotifier()",
+      "symbolLocation": 396,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 17909020,
+      "symbol": "duckdb::ExecutorTask::Execute(duckdb::TaskExecutionMode)",
+      "symbolLocation": 372,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 17966668,
+      "symbol": "duckdb::TaskScheduler::ExecuteForever(std::__1::atomic<bool>*)",
+      "symbolLocation": 508,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 17991204,
+      "symbol": "void* std::__1::__thread_proxy[abi:nqe220106]<std::__1::tuple<std::__1::unique_ptr<std::__1::__thread_struct, std::__1::default_delete<std::__1::__thread_struct>>, void (*)(duckdb::TaskScheduler*, std::__1::atomic<bool>*), duckdb::TaskScheduler*, std::__1::atomic<bool>*>>(void*)",
+      "symbolLocation": 56,
+      "imageIndex": 0
+    },
+    {
+      "imageOffset": 27736,
+      "symbol": "_pthread_start",
+      "symbolLocation": 136,
+      "imageIndex": 4
+    },
+    {
+      "imageOffset": 7196,
+      "symbol": "thread_start",
+      "symbolLocation": 8,
+      "imageIndex": 4
+    }
+  ],
+  "runner_image": {
+    "arch": "arm64",
+    "base": 4376182784,
+    "uuid": "3a7f7f9a-15aa-3c34-a0f6-6b6282a612f8",
+    "name": "ossie_population_capture_test"
+  },
+  "runner_sha256": "a44547e6931772acecbcbcf030ed5f382e14f407c7867827d6967f4f43286917",
+  "artifact_sha256": "4c00c76b7d1fee8d827daf685c9873a1eb8574e1690e536f52556f59d3c85bb1",
+  "stock_failure_stage": "first concept metric query after cancelled joined load; snapshot discovery had succeeded",
+  "debugger_result": "OS denied debugserver attach; no first-throw mutex backtrace obtained"
+}

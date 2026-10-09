@@ -81,6 +81,16 @@ metric-grain-test-debug:
 metric-grain-test-reldebug:
 	cmake --build build/reldebug --target ossie_metric_grain_test
 	./build/reldebug/extension/ossie/ossie_metric_grain_test "$(PROJ_DIR)"
-test_release_internal: state-test-release metric-grain-test-release
-test_debug_internal: state-test-debug metric-grain-test-debug
-test_reldebug_internal: state-test-reldebug metric-grain-test-reldebug
+.PHONY: population-capture-test-release population-capture-test-debug population-capture-test-reldebug
+population-capture-test-release:
+	cmake --build build/release --target ossie_population_capture_test
+	./build/release/extension/ossie/ossie_population_capture_test "$(PROJ_DIR)"
+population-capture-test-debug:
+	cmake --build build/debug --target ossie_population_capture_test
+	./build/debug/extension/ossie/ossie_population_capture_test "$(PROJ_DIR)"
+population-capture-test-reldebug:
+	cmake --build build/reldebug --target ossie_population_capture_test
+	./build/reldebug/extension/ossie/ossie_population_capture_test "$(PROJ_DIR)"
+test_release_internal: state-test-release metric-grain-test-release population-capture-test-release
+test_debug_internal: state-test-debug metric-grain-test-debug population-capture-test-debug
+test_reldebug_internal: state-test-reldebug metric-grain-test-reldebug population-capture-test-reldebug

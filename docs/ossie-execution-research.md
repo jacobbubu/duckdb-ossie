@@ -352,3 +352,21 @@ R6研究结果：6行fact/4行dimension（含无引用行），独立手工关�
 最终源码先format再build，同一真实产物SHA 54dc03ae658f72b7e5d891abd5abd7eb86ebafb3074340c8f5d3ef804169ee68：19state+42grain C++、19SQL用例713断言、31Bun/104expect，六artifact verifier、stockCLI40和既有MCP全部通过。新生产verifier接同downloaded artifact CI job，research verifier仍明确分开。证据：[控制汇总](research/ossie-req-001/r6-joined-control-results.json)、[生产双表](research/ossie-req-001/r6-joined-population-artifact-results.json)、[原单表回归](research/ossie-req-001/r6-joined-single-population-artifact-results.json)。旧报告/原样来源/proposed definitions/旧fixtures/submodules保持原样。
 
 当前本地功能里程碑通过既定门禁，下一动作本地提交保留，不推送。R6/P0整体未完成：生产两次捕获之间writer确定性注入尚未验证（旧host事务实验不能替代），并行native异常若再现须定位，峰值内存不受canonical预算严格约束；其余R3语言/时间、calendar、多期身份/更广ontology、population MCP、完整验收、remote CI/Ubuntu tidy仍为必要剩余。下一授权工作优先加强production capture/concurrency证据，不能以本包通过宣告所有R6能力或远端CI完成。
+
+### R6 生产捕获并发证据（2026-10-09，继续）
+
+恢复：8e90672本地提交，工作区干净。沿OSSIE-REQ-001既有剩余，补事实捕获后/维度捕获前writer确定性提交，以及完整预检后/发布前取消。拟使用caller ClientContextState中的内部C++观察点和native独立runner；无SQL/env开关、不使用timer推断先后、不改事务/查询/发布政策。观察点默认不存在，callback不持manager锁，屏障超时会失败并回收线程。静态链接同production source的受控runner与stock artifact无观察点回归分别记录，不声称stock verifier已注入并发。检查旧/新source版本、对象ID、金额、规则、hash、旧prepared与失败原子性；固定门禁及源码/产物证据后本地提交、不推送。前轮native mutex共同根因仍未知；若实际重现须保留首次阶段并获取native栈，不以更多timer重跑称定位。
+
+补充同范围判别控制：在AFTER_FACT_CAPTURE观察点也注入取消，分别覆盖仍开放的source事务与完整预检后的发布边界；这能区分native路径的两类清理，但不能单凭通过关闭前轮Node/Bun mutex异常。
+
+本轮重现：stock joined verifier在取消后第一次concept metric query报mutex invalid argument，前一snapshot discovery成功；新增AFTER_FACT_CAPTURE确定性取消使native runner后台TaskNotifier析构触发NULL unique_ptr并abort。OS拒绝LLDB/debugserver attach，未拿到首次mutex抛错栈；实际macOS crash report提供TaskNotifier/ExecutorTask/scheduler frames。固定源码显示Run在caller中断时只Interrupt内部Connection就直接throw，PendingQueryResult析构为空，而ClientContext在异常展开中跳过Destroy；可能留下已调度任务访问销毁的context。拟在内部连接仍存活时显式CancelTransaction，走InitialCleanup/CancelTasks等待任务结束再抛caller中断，不改vendor/全局锁/超时。此处为源码与崩溃证据支持的根因推断，需确定性取消与同产物stock回归验证；不能将OS权限拒绝写成成功取得debugger栈。
+
+本轮结果：内部C++ observer在caller context注册、开始query前安装、join后移除；只传checkpoint，不传可变batch/sourceConnection，无SQL/env开关，缺省Get返回空且不分配observer。受控writer在fact捕获后、dimension捕获前原子提交f1 amount109.01及维表label Changed/eligible=false。新发布批次仍旧SUM55.01、f1=10.01、ValidUser f1/f2/f5/f6，完整双输入metadata/hash等于旧版本；无observer reload后SUM154.01/成员f5/f6及新label才出现。旧prepared保持SUM55.01。原子发布前和fact捕获后两阶段取消均保留旧snapshot/hash及实际对象/指标，callback异常失败也保留旧批次；移除observer后正常reload并关闭。threads=4和1分别运行，最终138检查。condition-variable wait有5秒超时，但join不是整个进程硬超时保证。
+
+确认并修复生命周期缺陷：Run现在对独立内部connection依次Interrupt→context.CancelTransaction→throw caller InterruptException。清理发生在内部pending/context仍存活时；固定API通过CleanupInternal/CancelTasks排空已调度任务，不对正在执行的caller context做清理。不吞清理异常。CancelTransaction名称不等于已回滚显式source事务，短命TransactionContext析构回滚；也不宣称所有异常退出路径都被这一条修改验证。旧harness fail-fast缺陷不是这次product任务寿命问题的替代解释。Native取消崩溃已由受控测试修复前后证明；首次mutex原生抛错栈仍未取得，机制与stock症状一致而非所有mutex异常的唯一原因证明。
+
+验证及证据：最终固定产物SHA 2b906ca54582c8a1e15fd69b0cc51b520d95f951a5bbf42efe729f9efe1abc87。19state+42grain+138capture C++、19SQL/713断言、31Bun/107expect，六个stock artifact verifiers全部通过；CLI40/MCP通过，missing fixture runner明确退出1。新runner接release/debug/reldebug test_internal，在SQL之前明确执行，不依赖ENABLE_UNITTEST_CPP_TESTS（本机FALSE）。源代码/runner/产物hash归档，[本轮控制](research/ossie-req-001/r6-capture-control-results.json)、[修复前原生失败](research/ossie-req-001/r6-capture-failure-evidence.json)、[修复后真实双表](research/ossie-req-001/r6-capture-joined-population-artifact-results.json)。静态链接同production source的受控证据与stock loadable正常context回归分别记录，未说stock verifier自身注入writer。旧历史证据/来源/fixtures/submodules未改；未取得或执行remote CI/Linux tidy。
+
+保留其他失败：一次make质量调用缺venv PATH导致black not found，修正调用后通过，非product回归；LLDB被OS拒绝attach，以实际crash report符号栈补充，未声称成功debugger抓栈。Advisor架构一建议+一代码澄清，复现故障另一次限定root-cause只读建议；有效backend/effort/usage/billing unknown。Lead核对API只清理内部query且确实drain，以及实际TaskNotifier crash/前后结果。
+
+本地并发/取消证据工作包及确认的任务寿命修复完成，下一动作本地提交保留，不推送。整体需求未完成。对比既有剩余，先回到R7/P0完整验收差距与population MCP调用契约，再决定是否需要拓宽时间/calendar/ontology/多期身份；不把这些长期范围悄悄混入本包。远程CI/跨平台与峰值内存限制仍未证明。如果修复后native锁异常再出现，需首错native栈而非继续假定同一原因。发布check→Set之间的取消竞态不在两处受控屏障通过的保证内。

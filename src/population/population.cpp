@@ -2,6 +2,7 @@
 #include "ossie/functions.hpp"
 #include "ossie/describe_functions.hpp"
 #include "ossie/parser.hpp"
+#include "ossie/population_testing.hpp"
 #include "ossie/yaml.hpp"
 #include "duckdb/catalog/catalog.hpp"
 #include "duckdb/catalog/entry_lookup_info.hpp"
@@ -66,6 +67,10 @@ unique_ptr<QueryResult> Run(ClientContext &caller, Connection &connection, QUERY
 	while (true) {
 		if (caller.IsInterrupted()) {
 			connection.Interrupt();
+			// PendingQuery schedules tasks before the first ExecuteTask. Its destructor
+			// does not drain them, and ClientContext skips Destroy during unwinding.
+			// Finish cancellation while the nested context and task notifiers are alive.
+			connection.context->CancelTransaction();
 			throw InterruptException();
 		}
 		auto status = pending->ExecuteTask();
@@ -939,6 +944,12 @@ void FlattenLogical(const Bundle &bundle, unique_ptr<ParsedExpression> &expressi
 	    *expression, [&](unique_ptr<ParsedExpression> &child) { FlattenLogical(bundle, child); });
 }
 
+void ObserveLoad(ClientContext &context, PopulationLoadCheckpoint checkpoint) {
+	auto observer = context.registered_state->Get<PopulationLoadObserver>(PopulationLoadObserver::KEY);
+	if (observer)
+		observer->Observe(checkpoint);
+}
+
 // Capture and validation use original datasets. Only the published execution model is flattened.
 void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Connection &engine) {
 	Keys(policy, {"fact", "dimension", "relationship", "type", "missing"}, "join policy");
@@ -988,6 +999,7 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 	optional_ptr<Catalog> catalog;
 	optional_ptr<CatalogEntry> previous;
 	auto facts = CaptureTable(context, source, *fact, catalog, previous);
+	ObserveLoad(context, PopulationLoadCheckpoint::AFTER_FACT_CAPTURE);
 	auto dims = CaptureTable(context, source, *dimension, catalog, previous);
 	Run(context, source, "COMMIT");
 	if (facts.types.size() + dims.types.size() > 256)
@@ -1534,6 +1546,7 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 		}
 		result->rows.push_back({Value(bundle->profile), Value(bundle->snapshot_id), Value(bundle->content_hash),
 		                        Value::BIGINT(bundle->rows)});
+		ObserveLoad(context, PopulationLoadCheckpoint::BEFORE_PUBLISH);
 		if (context.IsInterrupted())
 			throw InterruptException();
 		PopulationState::Get(context).SetBundle(std::move(bundle));

@@ -1,0 +1,132 @@
+{
+  "scope": "Controlled same-production-source capture/publication evidence and nested pending-query cancellation cleanup; wider R6/P0 not complete",
+  "date": "2026-10-09",
+  "base_commit": "8e9067219e500402fc68f4acf73358fc26f0d02f",
+  "runtime": "1.3.11",
+  "platform": "darwin",
+  "arch": "arm64",
+  "duckdb_version": "v1.5.6",
+  "duckdb_source_id": "069cc9f9b5",
+  "artifact_sha256": "2b906ca54582c8a1e15fd69b0cc51b520d95f951a5bbf42efe729f9efe1abc87",
+  "native_runner_sha256": "cce886ce607312a687bb5f7663857c2a662bde97d74c89c5078b7dd6c7674985",
+  "source_sha256": {
+    "CMakeLists.txt": "4da33780d274cfecbd7e11ae83e1c76d9446f6122416bef03dbf6628c4fe6562",
+    "Makefile": "d1605b1f12e0fa64e00571ca0b41b01e0f78a1eb5855fdc4af488ca500f1e808",
+    "src/population/population.cpp": "9f88df05205bc46ad638c020a86e17cda45bfc419694f0be7a3719d9c60037e7",
+    "src/include/ossie/population_testing.hpp": "995ae3a68e711ac080d4bb36e9af935b11787508682453225741ae68eaa6f0f3",
+    "test/cpp/population_capture_test.cpp": "9d9bf00dd5a4e581d99211148d81d6992dbdafef5ed24dc35ed6e3c7db54790e",
+    "test/tooling/quality_controls.test.ts": "5cd5004bbbd9175caa122207e4175026af58fde3675de3dffcd1e30241df743c",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "scripts/verify_population_artifact.ts": "dd62482761c55fed821ca24f7432e8bd574ec69023debe8595ef5678c785ba32",
+    "scripts/verify_joined_population_artifact.ts": "e0b03cf95691f332e18ea8982287c2fe74d37226a686d4b7d1be31d2e0409a09",
+    "test/fixtures/joined-population/bundle.json": "4af4f7bed9a5d179e849d1ff68ebd82f276c584e96cb1b0d5520c2b073289890",
+    "test/fixtures/joined-population/core.json": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878",
+    "test/fixtures/joined-population/ontology.json": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+    "test/fixtures/joined-population/mapping.json": "fede2d077986e8c46162973f87b750afcd1420e8229d480d175a6c7acee4dcfd",
+    "test/fixtures/safe-join-research/rows.sql": "ea9ac378b27a6638090d269f770eeb711f6ec2d7a0bba02d2ef935cc3f8078fa"
+  },
+  "evidence_distinction": {
+    "native_runner": "Statically links same production sources; caller-local C++ observer installed before query, removed after worker joins; no alternative macro implementation",
+    "stock_artifact": "Actual loadable artifact through stock Node client; normal contexts have no observer",
+    "gate_timeout": "5 seconds per condition-variable wait; thread join has no hard deadline",
+    "cancel_scope": "Two acknowledged boundaries before publication interrupt check; not a guarantee about check-to-publication races"
+  },
+  "checks": [
+    {
+      "command": "ordered pinned make format-fix then CMAKE_BUILD_PARALLEL_LEVEL=4 make release",
+      "exit_code": 0
+    },
+    {
+      "command": "pinned PATH CMAKE_BUILD_PARALLEL_LEVEL=4 make quality-local test",
+      "exit_code": 0,
+      "state_cpp_checks": 19,
+      "grain_cpp_checks": 42,
+      "capture_cpp_checks": 138,
+      "capture_scheduler_threads": [
+        4,
+        1
+      ],
+      "sql_cases": 19,
+      "sql_assertions": 713,
+      "bun_controls": 31,
+      "expect_calls": 107
+    },
+    {
+      "command": "ossie_population_capture_test /tmp/ossie-no-capture-fixture",
+      "expected_exit_code": 1,
+      "observed_exit_code": 1
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-capture-loader-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-capture-population-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-capture-expression-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-capture-date-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-capture-join-research-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-capture-joined-population-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "command": "stock CLI full_functionality_check.sh with actual artifact",
+      "exit_code": 0,
+      "pass": 40,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "command": "stock CLI bun scripts/mcp_check.ts with actual artifact",
+      "exit_code": 0
+    }
+  ],
+  "fixed_defect": {
+    "mechanism": "caller interruption threw with a live initialized nested pending query; empty pending destructor and unwind-skipped ClientContext Destroy allowed scheduled tasks to outlive context",
+    "change": "Interrupt nested connection, explicitly CancelTransaction to drain execution tasks while context/pending are alive, then throw caller InterruptException",
+    "transaction_limit": "CancelTransaction does not itself guarantee rollback of explicit read transaction; short-lived TransactionContext destruction rolls it back",
+    "before": "Controlled after-fact cancellation aborted in background TaskNotifier; stock joined post-cancel metric query mutex error",
+    "after": "Both native cancellation boundaries in threads=4/1 and all same-artifact stock regressions pass",
+    "first_mutex_native_backtrace": "not obtained; OS denied debugserver attach",
+    "remaining_inference": "Verified lifetime defect matches earlier mutex symptom; does not establish every possible mutex error has this cause"
+  },
+  "failures_retained": [
+    "First combined shell invocation applied formatter venv PATH only to make format-fix, not subsequent make quality-local; black not found. Correct scoped PATH rerun passed.",
+    "Initial 58-check runner had only prepublication cancel. Added after-fact boundary deterministically exposed background native TaskNotifier crash; sanitized actual crash evidence preserved.",
+    "Pre-fix stock joined verifier reproduced native mutex error on first concept metric query after cancelled load; immediately preceding snapshot discovery succeeded.",
+    "LLDB launch failed because macOS debugserver attach permission was denied; no debugger-native first-throw backtrace is claimed."
+  ],
+  "advisor": {
+    "architecture": "one read-only advice plus implementation clarification",
+    "root_cause": "one bounded read-only advice on reproduced task lifetime defect; Lead verified pinned source/crash frames and controls",
+    "requested": "gpt-6-astra/high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown"
+  },
+  "remaining_necessities": [
+    "R7/P0 end-to-end acceptance and population MCP calling contract",
+    "Declared R3/time/calendar/wider ontology and multi-period identity limits",
+    "Remote CI/Ubuntu tidy/cross-platform verification",
+    "If native mutex error reappears after this fix, obtain first-error native stack rather than assuming same cause",
+    "Canonical acceptance budgets do not strictly bound peak materialization memory"
+  ],
+  "delivery": {
+    "local_commit": "This local milestone; identity in Git",
+    "push": false,
+    "merge": false,
+    "publication": false
+  }
+}

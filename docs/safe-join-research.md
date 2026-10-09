@@ -181,9 +181,56 @@ guarded ratios, successful and failed reload, source updates/deletion, running l
 cancellation and parent-alive database close. All failure/cancellation controls retain
 the prior snapshot. A prepared request keeps its previously bound snapshot across reload.
 The new verifier is separate from the earlier research verifier and wired into the same
-real-artifact CI job. Deterministic writer injection between the two production captures
-has not been tested; the earlier native transaction experiment remains supporting,
-not equivalent, evidence. Remote CI and cross-platform behavior remain unverified.
+real-artifact CI job. At the first production milestone, deterministic writer injection between the two
+production captures had not been tested. The controlled-native checkpoint below
+now supplies that source-path evidence; the earlier host transaction experiment
+remains separate supporting evidence. Remote CI and cross-platform behavior remain unverified.
 Current validation reports and remaining necessities stay in the existing issue/plan.
 
-Production evidence: [joined controls](research/ossie-req-001/r6-joined-population-artifact-results.json) and [local gate summary](research/ossie-req-001/r6-joined-control-results.json). One earlier parallel verifier batch produced an unexplained native mutex error; subsequent runs passed. A proven fail-fast cleanup defect in the old verifier was corrected, but it has not been established as the common native-error cause. The summary preserves that incident.
+Production evidence: [joined controls](research/ossie-req-001/r6-joined-population-artifact-results.json) and [local gate summary](research/ossie-req-001/r6-joined-control-results.json). The first production milestone recorded an unexplained native mutex error under parallel verification. The old verifier cleanup defect was corrected without claiming it caused every native failure. The subsequent checkpoint below retains and investigates that incident with a reproduced product lifetime defect.
+
+
+## Controlled production capture and cancellation checkpoint
+
+A new native `ossie_population_capture_test` links the same production extension
+sources, without a test-specific FreezeJoin variant. A caller-local internal C++
+observer pauses after fact capture and before dimension capture. An independent
+writer connection commits distinguishable changes to both tables in one transaction.
+The published batch still contains old fact values, old dimension attributes/rules,
+and identical full input hashes/metadata. Removing the observer and reloading exposes
+both new versions. Prepared readers retain their original snapshot.
+
+The runner also cancels at two acknowledged boundaries: after fact capture while
+the source transaction remains open, and after all checks but before the publication
+interrupt check. In threads=4 and threads=1, both paths preserve prior snapshot/hash,
+actual objects and metrics. Callback failure does not publish, and reload after
+observer removal succeeds. Observers have no SQL or environment switch, receive
+no mutable bundle/source connection, and execute outside the registry lock.
+Gate waits have five-second timeouts; worker join is not a hard process timeout.
+The test proves these controlled boundaries, not that every interrupt arriving
+between the final check and publication can prevent publication.
+
+The added capture cancellation exposed a real lifetime defect in the existing Run
+helper. A nested PendingQuery had already scheduled work, but caller cancellation
+threw before task cleanup; its destructor does not drain tasks, and ClientContext
+skips Destroy during exception unwinding. A native crash report showed background
+TaskNotifier destruction accessing expired context state. Run now interrupts and
+calls CancelTransaction on the nested connection while it and the pending result
+remain alive, draining tasks before throwing caller interruption. This API cleans
+query execution; it does not by itself roll back an explicit source transaction.
+The short-lived source context's transaction destructor handles that rollback.
+
+The earlier stock mutex error was reproduced immediately after load cancellation.
+The confirmed cleanup defect matches that symptom; no first-throw mutex native
+backtrace was obtained because macOS denied debugserver attach. The actual native
+crash frames are archived in a sanitized hash-bound record. The controlled native
+crash no longer occurs, and all six stock verifiers pass against the fixed artifact.
+This identifies and repairs a verified unsafe lifetime path, without asserting that
+all possible native mutex failures have this one cause.
+
+Evidence: [138-check native capture and local gates](research/ossie-req-001/r6-capture-control-results.json),
+[pre-fix failure evidence](research/ossie-req-001/r6-capture-failure-evidence.json) and
+[fixed stock joined profile](research/ossie-req-001/r6-capture-joined-population-artifact-results.json).
+The native controlled runner and the stock artifact regression are complementary;
+no claim is made that the stock Node verifier itself injected the writer barrier.
+Remote CI, Linux tidy and the wider requirement acceptance remain outstanding.

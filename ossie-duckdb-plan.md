@@ -2,18 +2,20 @@
 
 ## Current research checkpoint — 2026-10-09
 
-Current local milestone: the separate fact-dimension-population-v1 implementation now
-captures and validates two full native tables in one transaction, freezes exact INTEGER
-associations, preserves original provenance and rejects non-fact metric grains before
-flattening. Actual artifact controls cover shared object/metric membership, reload,
-source deletion, cancellation, prepared snapshot retention and database close. Final
-same-artifact gates pass 19 state and 42 grain C++ controls, 713 SQL assertions in
-19 cases, 31 Bun controls, all six stock artifact verifiers, CLI and MCP. Evidence
-is reconciled in OSSIE-REQ-001; an earlier intermittent native mutex incident is
-retained without an established common root cause. Remote CI and
-deterministic concurrent writer injection into production capture remain unverified.
-P0 and the wider R6 goal remain incomplete. This milestone is retained in local Git.
-Next authorized work strengthens production capture/concurrency evidence; no new push is authorized.
+Current local milestone: explicit fact-dimension-population-v1 now has controlled
+production-source evidence for a writer commit between captures. The static native
+runner verifies old-version consistency, later reload, prepared readers and cancellation
+at capture/publication boundaries in threads=4/1 (138 checks). That control exposed
+and now verifies the fix for nested pending-query tasks outliving their context during
+cancellation. Actual crash frames and the failed debugger attempt are retained; the
+first original mutex throw was not captured, so the repair is not a claim about every
+possible mutex error. Final local gates pass 19 state/42 grain/138 capture C++ checks,
+713 SQL assertions in 19 cases, 31 Bun controls and six same-artifact stock verifiers,
+plus CLI/MCP. Native controlled-source evidence and stock artifact evidence are separate.
+P0 and the wider requirement remain incomplete; remote CI/Ubuntu tidy are unverified.
+After retaining this local milestone, next work returns to R7/P0 acceptance gaps and
+the population MCP calling contract, before adding broader ontology/calendar/time scope.
+No new push is authorized. Detailed evidence/remaining needs stay in OSSIE-REQ-001.
 The earlier package counts in this introduction remain historical evidence.
 
 The first research package is complete: pinned source evidence, an independent
