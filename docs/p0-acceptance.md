@@ -29,3 +29,15 @@ bun scripts/verify_population_artifact.ts build/release/extension/ossie/ossie.du
 ```
 
 生产扩展以C++实现，验证器以Bun+TypeScript运行；独立stock `@duckdb/node-api`加载真实产物，不回退静态内核或mock。
+
+## A5–A6：边界与安全连接
+
+[单表完整报告](research/ossie-req-001/p0-final-population-artifact-results.json) 的 `boundary_cases` 保存11行人工边界fixture的实际对象/每日结果和独立期望。阈值相等被纳入、NULL规则值不满足谓词；NULL金额不计入AVG分母。阈值10选出e01/e04/e07/e08/e10，阈值20选出e04/e07；日期3月31日保留、4月1日排除。未命中对象/分组返回空数组，未分组聚合为COUNT=0、SUM/AVG=NULL；没有自动补齐日期。
+
+[表达式](research/ossie-req-001/p0-final-expression-artifact-results.json) 与 [DATE](research/ossie-req-001/p0-final-date-artifact-results.json) 对照独立边界：NULLIF零guard、NULL/空集、COUNT DISTINCT、明确转换、半开日期及配置。guard避免除零不保证结果有限，DOUBLE近似和可能Infinity明确保留。TIMESTAMP/时区的host实验不证明population接受这些类型。
+
+[生产双表报告](research/ossie-req-001/p0-final-joined_population-artifact-results.json) 采用hand-derived bigint cents：6条fact、5个非NULL金额、SUM=55.01、AVG=11.002；派生对象f1/f2/f5/f6。24类实际拒绝覆盖重复/NULL维度键（包括未使用行）、NULL/缺失FK、重复/NULL身份、类型coercion、错误grain/关系/policy、跨数据库和预算等，失败保持旧bundle。
+
+[core连接研究](research/ossie-req-001/p0-final-join_research-artifact-results.json) 独立展示fan-out/丢行风险和many-to-many/歧义路径/mixed-grain拒绝。它的research preflight不能替代生产双表验证：生产profile先捕获整批事实与维度，再检查唯一/非NULL/完整匹配，指定fact grain，按manifest的INNER/missing=reject策略冻结结果。缺失关系被拒绝，不会静默丢掉该事实；不扩展到LEFT、多事实或跨粒度聚合。
+
+本轮实际运行原生19 state/42 grain/158 capture控制及840 SQL断言、23用例、0 skips。capture runner含生产代码上的受控并发/取消屏障；独立loadable双表verifier没有注入同一确定性writer屏障，两者证据各自限定。全量输入预算不代表输出/峰值内存上界。

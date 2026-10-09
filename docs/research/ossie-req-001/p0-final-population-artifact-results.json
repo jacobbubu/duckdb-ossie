@@ -6,7 +6,7 @@
   "duckdb_source_id": "069cc9f9b5",
   "artifact_loaded_in_stock_node_bindings": true,
   "artifact_sha256": "4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307",
-  "script_sha256": "36b303ed2371a60a88c7189912a6d55a2814d66e94393a3f44a7af6ac8876994",
+  "script_sha256": "7c05d8ff099c4814473f244808c778e67ddf6a5751652dcd991fa8c7513111f0",
   "helper_sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
   "inputs_sha256": {
     "docs/research/ossie-req-001/gaap-original-475.csv": "e01a940a3f83ed6f5f22beb598e64206144658ad3b9fef89124e2790e7fc3e18",
@@ -5020,6 +5020,143 @@
       "ontology_sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf"
     }
   },
+  "boundary_cases": {
+    "10": {
+      "snapshot": [
+        "gaap-scalar-population-v1",
+        "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:3",
+        "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+        11
+      ],
+      "object_ids": [
+        "e01",
+        "e04",
+        "e07",
+        "e08",
+        "e10"
+      ],
+      "daily_results": [
+        [
+          "2026-03-01",
+          2,
+          1,
+          "10.00",
+          10
+        ],
+        [
+          "2026-03-03",
+          2,
+          2,
+          "20.00",
+          10
+        ],
+        [
+          "2026-03-31",
+          1,
+          1,
+          "50.00",
+          50
+        ]
+      ],
+      "independent_expected": {
+        "daily": [
+          [
+            "2026-03-01",
+            2,
+            1,
+            10,
+            10
+          ],
+          [
+            "2026-03-03",
+            2,
+            2,
+            20,
+            10
+          ],
+          [
+            "2026-03-31",
+            1,
+            1,
+            50,
+            50
+          ]
+        ],
+        "object_ids": [
+          "e01",
+          "e04",
+          "e07",
+          "e08",
+          "e10"
+        ]
+      }
+    },
+    "20": {
+      "snapshot": [
+        "gaap-scalar-population-v1",
+        "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:4",
+        "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+        11
+      ],
+      "object_ids": [
+        "e04",
+        "e07"
+      ],
+      "daily_results": [
+        [
+          "2026-03-01",
+          1,
+          0,
+          null,
+          null
+        ],
+        [
+          "2026-03-03",
+          1,
+          1,
+          "0.00",
+          0
+        ]
+      ],
+      "independent_expected": {
+        "daily": [
+          [
+            "2026-03-01",
+            1,
+            0,
+            null,
+            null
+          ],
+          [
+            "2026-03-03",
+            1,
+            1,
+            0,
+            0
+          ]
+        ],
+        "object_ids": [
+          "e04",
+          "e07"
+        ]
+      }
+    }
+  },
+  "empty_results": {
+    "filters": [
+      "User.product = 'absent'"
+    ],
+    "objects": [],
+    "scalar": [
+      [
+        0,
+        0,
+        null,
+        null
+      ]
+    ],
+    "grouped": []
+  },
   "acceptance_evidence": {
     "cases": [
       "A1",
@@ -5047,7 +5184,7 @@
   "typed_null_date_decimal_quoted_text_preserved": true,
   "parallel_queries_threads_1": true,
   "interrupted_load_preserves_bundle": true,
-  "native_interrupt_calls": 2,
+  "native_interrupt_calls": 1,
   "engine_macro_shadowing_prevented": true,
   "diagnostic_sql_cannot_access_frozen_batch": true,
   "descriptive_metadata_does_not_change_values": true,

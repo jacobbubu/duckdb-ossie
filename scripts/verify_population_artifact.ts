@@ -388,7 +388,8 @@ export async function verify(artifact: string) {
     assert.equal(contentHashes[0], contentHashes[1]);
     assert.notEqual(cases["10"].ontology_sha256, cases["20"].ontology_sha256);
     const boundary = join(EVIDENCE, "gaap-boundary.csv"),
-      controls = json<Boundary>(join(EVIDENCE, "boundary-results.json"));
+      controls = json<Boundary>(join(EVIDENCE, "boundary-results.json")),
+      boundaryCases: Record<string, unknown> = {};
     assert.equal(digest(boundary), controls.fixture_sha256);
     await con.run("DELETE FROM dws_gaap_di");
     await con.run(
@@ -396,19 +397,23 @@ export async function verify(artifact: string) {
       [boundary],
     );
     for (const threshold of [10, 20]) {
-      await load(
+      const boundarySnapshot = await load(
         con,
         join(ROOT, `test/fixtures/population/bundle-${threshold}.json`),
       );
-      assert.deepEqual(
-        await objects(con),
-        controls.cases[threshold].object_ids,
-      );
+      const boundaryIds = await objects(con);
+      assert.deepEqual(boundaryIds, controls.cases[threshold].object_ids);
       const daily = (await metric(con, FILTERS, ["dws_gaap_di.ds"])).sort(
           (a, b) => String(a[0]).localeCompare(String(b[0])),
         ),
         expectedDaily = controls.cases[threshold].daily;
       assert.equal(daily.length, expectedDaily.length);
+      boundaryCases[threshold] = {
+        snapshot: boundarySnapshot,
+        object_ids: boundaryIds,
+        daily_results: daily,
+        independent_expected: controls.cases[threshold],
+      };
       daily.forEach((actual, index) => {
         const expected = expectedDaily[index];
         assert.equal(actual[0], expected[0]);
@@ -420,16 +425,19 @@ export async function verify(artifact: string) {
         ]);
       });
     }
-    assert.deepEqual((await metric(con, ["User.product = 'absent'"]))[0], [
-      0,
-      0,
-      null,
-      null,
-    ]);
-    assert.deepEqual(
-      await metric(con, ["User.product = 'absent'"], ["dws_gaap_di.ds"]),
-      [],
-    );
+    const emptyResults = {
+      filters: ["User.product = 'absent'"],
+      objects: await objects(con, ["User.product = 'absent'"]),
+      scalar: await metric(con, ["User.product = 'absent'"]),
+      grouped: await metric(
+        con,
+        ["User.product = 'absent'"],
+        ["dws_gaap_di.ds"],
+      ),
+    };
+    assert.deepEqual(emptyResults.objects, []);
+    assert.deepEqual(emptyResults.scalar, [[0, 0, null, null]]);
+    assert.deepEqual(emptyResults.grouped, []);
     const old = await load(
       con,
       join(ROOT, "test/fixtures/population/bundle-10.json"),
@@ -930,6 +938,8 @@ export async function verify(artifact: string) {
         inputPaths.map((path) => [relative(ROOT, path), digest(path)]),
       ),
       cases,
+      boundary_cases: boundaryCases,
+      empty_results: emptyResults,
       acceptance_evidence: {
         cases: ["A1", "A2", "A3", "A4"],
         full_object_and_group_results_saved: true,

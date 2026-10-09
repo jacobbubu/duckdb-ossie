@@ -747,3 +747,11 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 ### 自动第2轮结果：A1–A4完整查询证据
 
 既有独立stock verifier已实际重跑，保存阈值10/20完整166/63对象、15/15逐日、101/45三维分组和全部下钻对象、实际SQL/plan/trace；同core/mapping/请求模板且ontology仅derived_by变化，完整结果对照独立bigint cents及AVG容差通过。3月10日37/1697.80/45.88648648648649与21/1277.54/60.8352380952381可直接复核。新记录[完整报告](docs/research/ossie-req-001/p0-final-population-artifact-results.json)与[验收入口](docs/p0-acceptance.md)在research record中链接；plan内链接以docs为准。本轮只增强证据输出，不改生产C++/原始输入；format/typecheck通过。本地提交后进入第3轮A5–A6；第4轮追溯及第5轮整体结论仍必要。
+
+### 自动第3轮 checkpoint：A5–A6边界与连接
+
+沿现issue保存已有人工边界fixture的完整对象/每日/空集结果，实际重跑单表、表达式、DATE、core连接研究与生产双表控制，以及原生state/grain/capture和SQL。研究join证据与生产拒绝分开，schema/规则/源资产不改；明确全批预检、INNER/missing=reject及无日历补齐。后续追溯/MCP与最终验收仍必要。
+
+### 自动第3轮结果：A5–A6边界与连接
+
+单表完整报告增加11行边界fixture实际对象/每日与独立期望，空对象/分组=[]，scalar COUNT=0/SUM=AVG=NULL；阈值相等/NULL/半开日期/sparse groups按声明执行。单表/表达式/DATE/core连接研究/生产双表stock verifiers实际重跑通过，生产双表6facts/55.01/11.002、4派生对象和24类拒绝，研究fan-out控制独立保留。原生19state/42grain/158capture与840 SQL/23 cases/0 skips实际通过，无生产C++修改。第2轮报告因新增边界记录重跑更新为本轮完整输出，旧r2证据不覆盖。本轮本地提交后进入第4轮A7–A8；最终结论仍必要。
