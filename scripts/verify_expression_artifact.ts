@@ -199,7 +199,7 @@ export async function verify(artifact: string) {
           assert(error.message.includes(reason), `${name}: ${error.message}`);
           assert(
             error.message.includes(
-              "missing_capability=gaap-scalar-population-v1",
+              "missing_capability=bounded population profile",
             ),
           );
           return true;

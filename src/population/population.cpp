@@ -43,13 +43,14 @@ using namespace duckdb_yyjson;
 namespace {
 
 constexpr const char *PROFILE = "gaap-scalar-population-v1";
+constexpr const char *JOIN_PROFILE = "fact-dimension-population-v1";
 constexpr idx_t MAX_ROWS = 10000;
 constexpr idx_t MAX_BYTES = 16 * 1024 * 1024;
 std::atomic<uint64_t> batch_sequence {0};
 
 [[noreturn]] void Fail(const string &object, const string &stage, const string &reason) {
 	throw InvalidInputException("ossie_population: object=%s stage=%s reason=%s missing_capability=%s", object, stage,
-	                            reason, PROFILE);
+	                            reason, "bounded population profile");
 }
 
 string Quote(const string &name) {
@@ -229,6 +230,10 @@ struct Attribute {
 
 struct Bundle {
 	Model model;
+	string profile = PROFILE;
+	// Original logical names survive flattening; generated fields are never a public namespace.
+	vector<pair<vector<string>, string>> provenance;
+	string execution_target = "frozen typed observation batch (AST dependency required)";
 	string root, derived, identity, original_source;
 	string manifest_hash, core_hash, ontology_hash, mapping_hash;
 	string snapshot_id, content_hash, original_rule;
@@ -419,17 +424,36 @@ unique_ptr<ParsedExpression> FieldTree(const Bundle &bundle, const string &field
 	return expression;
 }
 
+string LogicalName(const Bundle &bundle, const vector<string> &names) {
+	if (!bundle.provenance.empty()) {
+		for (auto &entry : bundle.provenance) {
+			if (names.size() == 2 && StringUtil::CIEquals(names[0], entry.first[0]) &&
+			    StringUtil::CIEquals(names[1], entry.first[1]))
+				return entry.second;
+		}
+		Fail("reference", "bind", "unknown original dataset.field");
+	}
+	if (names.size() != 2 || !StringUtil::CIEquals(names[0], bundle.model.datasets[0].name) ||
+	    !bundle.model.datasets[0].FindField(names[1]))
+		Fail("reference", "bind", "mapping must reference a declared field in the single root dataset");
+	return bundle.model.datasets[0].FindField(names[1])->name;
+}
+
+string OriginalName(const Bundle &bundle, const string &field) {
+	for (auto &entry : bundle.provenance) {
+		if (entry.second == field)
+			return entry.first[0] + "." + entry.first[1];
+	}
+	return bundle.model.datasets[0].name + "." + field;
+}
+
 string LogicalField(const Bundle &bundle, const string &sql) {
 	auto expression = Parse(sql);
 	if (expression->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 		Fail(sql, "mapping", "mapping must be a single dataset.field reference");
 	}
 	auto &names = expression->Cast<ColumnRefExpression>().column_names;
-	if (names.size() != 2 || !StringUtil::CIEquals(names[0], bundle.model.datasets[0].name) ||
-	    !bundle.model.datasets[0].FindField(names[1])) {
-		Fail(sql, "mapping", "mapping must reference a declared field in the single root dataset");
-	}
-	return bundle.model.datasets[0].FindField(names[1])->name;
+	return LogicalName(bundle, names);
 }
 
 void Resolve(const Bundle &bundle, unique_ptr<ParsedExpression> &expression, bool ontology_only = false) {
@@ -445,8 +469,8 @@ void Resolve(const Bundle &bundle, unique_ptr<ParsedExpression> &expression, boo
 					field = attribute.field;
 				}
 			}
-		} else if (!ontology_only && StringUtil::CIEquals(names[0], bundle.model.datasets[0].name)) {
-			field = names[1];
+		} else if (!ontology_only) {
+			field = LogicalName(bundle, names);
 		}
 		if (field.empty()) {
 			Fail(expression->ToString(), "rule", "unknown or unmapped concept attribute");
@@ -779,6 +803,348 @@ void CheckBoolean(Bundle &bundle, const ParsedExpression &expression) {
 	CheckBooleanType(bundle, expression);
 }
 
+struct CapturedTable {
+	vector<string> names;
+	vector<LogicalType> types;
+	vector<vector<Value>> rows;
+	string canonical;
+};
+
+void Frame(string &output, const string &value) {
+	output += to_string(value.size()) + ":" + value;
+}
+
+string JSONString(const string &value) {
+	string result = "\"";
+	const char *hex = "0123456789abcdef";
+	for (unsigned char c : value) {
+		if (c == '"' || c == '\\') {
+			result += '\\';
+			result += c;
+		} else if (c < 32) {
+			result += "\\u00";
+			result += hex[c >> 4];
+			result += hex[c & 15];
+		} else {
+			result += c;
+		}
+	}
+	return result + "\"";
+}
+
+idx_t PhysicalColumn(const CapturedTable &table, const string &name) {
+	for (idx_t i = 0; i < table.names.size(); i++) {
+		if (StringUtil::CIEquals(table.names[i], name))
+			return i;
+	}
+	Fail(name, "snapshot", "undeclared physical column in captured source");
+}
+
+CapturedTable CaptureTable(ClientContext &context, Connection &source, const Dataset &dataset,
+                           optional_ptr<Catalog> &catalog, optional_ptr<CatalogEntry> &previous) {
+	auto parts = QualifiedName::ParseComponents(dataset.source_bound);
+	if (parts.size() != 3)
+		Fail(dataset.name, "snapshot", "fully qualified catalog.schema.table source required");
+	auto entry = Catalog::GetEntry(*source.context, parts[0], parts[1],
+	                               EntryLookupInfo(CatalogType::TABLE_ENTRY, parts[2]), OnEntryNotFound::RETURN_NULL);
+	if (!entry || entry->type != CatalogType::TABLE_ENTRY || entry->temporary ||
+	    !entry->Cast<TableCatalogEntry>().IsDuckTable())
+		Fail(dataset.name, "snapshot", "only committed native tables supported; TEMP/view/external source refused");
+	if (catalog && &catalog->GetAttached() != &entry->ParentCatalog().GetAttached())
+		Fail(dataset.name, "snapshot", "both sources must belong to the same underlying database");
+	if (previous == entry)
+		Fail(dataset.name, "snapshot", "two distinct native source tables required");
+	previous = entry;
+	catalog = entry->ParentCatalog();
+	for (auto &column : entry->Cast<TableCatalogEntry>().GetColumns().Logical()) {
+		if (column.Generated())
+			Fail(dataset.name, "snapshot", "generated source columns not supported");
+	}
+	auto result = Run(context, source,
+	                  "SELECT * FROM " + Quote(parts[0]) + "." + Quote(parts[1]) + "." + Quote(parts[2]) + " LIMIT " +
+	                      to_string(MAX_ROWS + 1));
+	CapturedTable capture;
+	capture.names = result->names;
+	capture.types = result->types;
+	auto count = result->Cast<MaterializedQueryResult>().RowCount();
+	if (count > MAX_ROWS || capture.types.empty() || capture.types.size() > 256)
+		Fail(dataset.name, "snapshot", "batch exceeds 10000 rows or 256 physical columns; no truncation performed");
+	capture.canonical = "ossie-join-input-v1:";
+	Frame(capture.canonical, dataset.name);
+	Frame(capture.canonical, dataset.source_bound);
+	Frame(capture.canonical, to_string(count));
+	for (idx_t c = 0; c < capture.types.size(); c++) {
+		if (!Portable(capture.types[c]) ||
+		    (capture.types[c].id() == LogicalTypeId::VARCHAR && !StringType::GetCollation(capture.types[c]).empty()))
+			Fail(capture.names[c], "snapshot", "unsupported physical column type or collation");
+		Frame(capture.canonical, capture.names[c]);
+		Frame(capture.canonical, capture.types[c].ToString());
+	}
+	while (auto chunk = result->Fetch()) {
+		for (idx_t r = 0; r < chunk->size(); r++) {
+			if (context.IsInterrupted())
+				throw InterruptException();
+			vector<Value> row;
+			for (idx_t c = 0; c < chunk->ColumnCount(); c++) {
+				auto value = chunk->GetValue(c, r);
+				Frame(capture.canonical, value.ToSQLString());
+				if (capture.canonical.size() > MAX_BYTES)
+					Fail(dataset.name, "snapshot", "batch exceeds 16 MiB canonical value limit");
+				row.push_back(std::move(value));
+			}
+			capture.rows.push_back(std::move(row));
+		}
+	}
+	return capture;
+}
+
+void ExpandOriginal(const Model &model, unique_ptr<ParsedExpression> &expression) {
+	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
+		auto names = expression->Cast<ColumnRefExpression>().column_names;
+		auto dataset = names.size() == 2 ? model.FindDataset(names[0]) : nullptr;
+		auto field = dataset ? dataset->FindField(names[1]) : nullptr;
+		if (!field)
+			Fail(expression->ToString(), "metric", "qualified original logical field required");
+		expression = field->expression.tree->Copy();
+		Strict(*expression);
+		Qualify(expression, dataset->name);
+		return;
+	}
+	ParsedExpressionIterator::EnumerateChildren(
+	    *expression, [&](unique_ptr<ParsedExpression> &child) { ExpandOriginal(model, child); });
+}
+
+void FlattenPhysical(unique_ptr<ParsedExpression> &expression, const Dataset &dataset, const CapturedTable &capture,
+                     idx_t offset, const string &root) {
+	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
+		auto names = expression->Cast<ColumnRefExpression>().column_names;
+		if (names.empty() || names.size() > 2 || (names.size() == 2 && !StringUtil::CIEquals(names[0], dataset.name)))
+			Fail(expression->ToString(), "bind", "physical reference crosses dataset");
+		auto index = PhysicalColumn(capture, names.back()) + offset;
+		expression = make_uniq<ColumnRefExpression>("_ossie_column_" + to_string(index), root);
+		return;
+	}
+	ParsedExpressionIterator::EnumerateChildren(*expression, [&](unique_ptr<ParsedExpression> &child) {
+		FlattenPhysical(child, dataset, capture, offset, root);
+	});
+}
+
+void FlattenLogical(const Bundle &bundle, unique_ptr<ParsedExpression> &expression) {
+	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
+		auto field = LogicalName(bundle, expression->Cast<ColumnRefExpression>().column_names);
+		expression = make_uniq<ColumnRefExpression>(field, bundle.model.datasets[0].name);
+		return;
+	}
+	ParsedExpressionIterator::EnumerateChildren(
+	    *expression, [&](unique_ptr<ParsedExpression> &child) { FlattenLogical(bundle, child); });
+}
+
+// Capture and validation use original datasets. Only the published execution model is flattened.
+void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Connection &engine) {
+	Keys(policy, {"fact", "dimension", "relationship", "type", "missing"}, "join policy");
+	if (Text(policy, "type") != "INNER" || Text(policy, "missing") != "reject")
+		Fail("join", "capability", "explicit INNER/reject complete-match policy required");
+	Model original = bundle.model;
+	if (original.datasets.size() != 2 || original.relationships.size() != 1)
+		Fail("join", "capability", "exactly two datasets and one relationship required");
+	auto fact = original.FindDataset(Text(policy, "fact"));
+	auto dimension = original.FindDataset(Text(policy, "dimension"));
+	auto &relation = original.relationships[0];
+	if (!fact || !dimension || fact == dimension || relation.name != Text(policy, "relationship") ||
+	    !StringUtil::CIEquals(relation.from_dataset, fact->name) ||
+	    !StringUtil::CIEquals(relation.to_dataset, dimension->name) || relation.from_columns.size() != 1 ||
+	    relation.to_columns.size() != 1 ||
+	    (relation.cardinality != Cardinality::MANY_TO_ONE && relation.cardinality != Cardinality::ONE_TO_ONE))
+		Fail("join", "capability", "one forward single-column fact-to-unique-dimension relationship required");
+	if (fact->primary_key.size() != 1)
+		Fail(fact->name, "identity", "plain single-column fact primary key required");
+	idx_t fields = 0;
+	for (auto &dataset : original.datasets) {
+		fields += dataset.fields.size();
+		if (dataset.name.empty() || dataset.fields.empty())
+			Fail(dataset.name, "capability", "nonempty datasets and declared fields required");
+		for (auto &field : dataset.fields) {
+			if (field.name.empty())
+				Fail(dataset.name, "bind", "empty field name");
+			Strict(*field.expression.tree);
+			auto expression = field.expression.tree->Copy();
+			Qualify(expression, dataset.name);
+		}
+	}
+	if (fields > 256 || original.metrics.empty() || original.metrics.size() > 64)
+		Fail("join", "capability", "require at most 256 fields and 1..64 metrics");
+	for (auto &metric : original.metrics) {
+		if (metric.name.empty() || StringUtil::StartsWith(StringUtil::Lower(metric.name), "_ossie_"))
+			Fail(metric.name, "bind", "empty or reserved metric name");
+		Strict(*metric.expression.tree, true);
+		auto expanded = metric.expression.tree->Copy();
+		ExpandOriginal(original, expanded);
+		Strict(*expanded, true);
+		RequireMetricGrain(original, {metric.name}, fact->name);
+		CompileToSQL(original, {metric.name}, {}, {}, CompileOptions());
+	}
+	Connection source(DatabaseInstance::GetDatabase(context));
+	Run(context, source, "BEGIN TRANSACTION");
+	optional_ptr<Catalog> catalog;
+	optional_ptr<CatalogEntry> previous;
+	auto facts = CaptureTable(context, source, *fact, catalog, previous);
+	auto dims = CaptureTable(context, source, *dimension, catalog, previous);
+	Run(context, source, "COMMIT");
+	if (facts.types.size() + dims.types.size() > 256)
+		Fail("join", "snapshot", "joined batch exceeds 256 physical columns");
+	auto fk = PhysicalColumn(facts, relation.from_columns[0]);
+	auto dk = PhysicalColumn(dims, relation.to_columns[0]);
+	auto id = PhysicalColumn(facts, fact->primary_key[0]);
+	if (facts.types[fk] != LogicalType::INTEGER || dims.types[dk] != LogicalType::INTEGER)
+		Fail("join", "identity", "both join keys must be native INTEGER; coercion refused");
+	if (facts.types[id] != LogicalType::VARCHAR)
+		Fail("join", "identity", "fact identity must be native uncollated String");
+	unordered_map<int32_t, idx_t> lookup;
+	for (idx_t r = 0; r < dims.rows.size(); r++) {
+		if (context.IsInterrupted())
+			throw InterruptException();
+		auto &key = dims.rows[r][dk];
+		if (key.IsNull() || !lookup.emplace(key.GetValue<int32_t>(), r).second)
+			Fail(dimension->name, "identity", "entire dimension batch requires nonnull unique key");
+	}
+	unordered_set<string> identities;
+	vector<idx_t> matches;
+	for (auto &row : facts.rows) {
+		if (context.IsInterrupted())
+			throw InterruptException();
+		if (row[id].IsNull() || !identities.insert(row[id].GetValue<string>()).second)
+			Fail(fact->name, "identity", "entire fact batch requires nonnull unique identity");
+		if (row[fk].IsNull())
+			Fail(fact->name, "identity", "nonnull fact foreign key required before filtering");
+		auto found = lookup.find(row[fk].GetValue<int32_t>());
+		if (found == lookup.end())
+			Fail(fact->name, "identity", "every fact foreign key must match a dimension before filtering");
+		matches.push_back(found->second);
+	}
+	vector<LogicalType> types = facts.types;
+	types.insert(types.end(), dims.types.begin(), dims.types.end());
+	bundle.collection = make_uniq<ColumnDataCollection>(context, types);
+	DataChunk chunk;
+	chunk.Initialize(Allocator::Get(context), types);
+	string joined = "ossie-join-result-v1:";
+	for (idx_t r = 0; r < facts.rows.size(); r++) {
+		if (context.IsInterrupted())
+			throw InterruptException();
+		idx_t slot = r % STANDARD_VECTOR_SIZE;
+		for (idx_t c = 0; c < types.size(); c++) {
+			auto &value = c < facts.types.size() ? facts.rows[r][c] : dims.rows[matches[r]][c - facts.types.size()];
+			chunk.SetValue(c, slot, value);
+			Frame(joined, value.ToSQLString());
+			if (joined.size() > MAX_BYTES)
+				Fail("join", "snapshot", "joined batch exceeds 16 MiB canonical value limit");
+		}
+		chunk.SetCardinality(slot + 1);
+		if (slot + 1 == STANDARD_VECTOR_SIZE || r + 1 == facts.rows.size()) {
+			bundle.collection->Append(chunk);
+			chunk.Reset();
+		}
+	}
+	// Construction appends one row for every unique fact identity, with no filtering or fan-out.
+	if (bundle.collection->Count() != facts.rows.size() || identities.size() != facts.rows.size())
+		Fail("join", "identity", "joined fact identity multiset differs from captured facts");
+	unordered_set<string> joined_identities;
+	ColumnDataScanState scan;
+	bundle.collection->InitializeScan(scan);
+	DataChunk verification;
+	bundle.collection->InitializeScanChunk(verification);
+	while (bundle.collection->Scan(scan, verification)) {
+		if (context.IsInterrupted())
+			throw InterruptException();
+		for (idx_t r = 0; r < verification.size(); r++) {
+			auto value = verification.GetValue(id, r);
+			if (value.IsNull() || !joined_identities.insert(value.GetValue<string>()).second)
+				Fail("join", "identity", "joined identity multiplicity is not one");
+		}
+	}
+	if (identities != joined_identities)
+		Fail("join", "identity", "joined identity set differs from captured facts");
+	bundle.rows = facts.rows.size();
+	Dataset flattened = *fact;
+	flattened.fields.clear();
+	flattened.field_index.clear();
+	flattened.unique_keys.clear();
+	flattened.primary_key = {"_ossie_column_" + to_string(id)};
+	flattened.source_bound = "memory.main.ossie_snapshot";
+	for (auto dataset : {fact, dimension}) {
+		auto &capture = dataset == fact ? facts : dims;
+		auto offset = dataset == fact ? 0 : facts.types.size();
+		for (auto field : dataset->fields) {
+			auto original_name = field.name;
+			field.name = "_ossie_field_" + to_string(flattened.fields.size());
+			FlattenPhysical(field.expression.tree, *dataset, capture, offset, fact->name);
+			field.expression.sql = field.expression.tree->ToString();
+			field.is_computed = true;
+			bundle.provenance.push_back({{dataset->name, original_name}, field.name});
+			flattened.AddField(std::move(field));
+		}
+	}
+	bundle.model.datasets = {std::move(flattened)};
+	bundle.model.dataset_index.clear();
+	bundle.model.dataset_index[fact->name] = 0;
+	bundle.model.relationships.clear();
+	for (auto &metric : bundle.model.metrics) {
+		FlattenLogical(bundle, metric.expression.tree);
+		metric.expression.sql = metric.expression.tree->ToString();
+	}
+	for (idx_t c = 0; c < types.size(); c++)
+		bundle.physical_names.push_back("_ossie_column_" + to_string(c));
+	bundle.original_source = fact->source_bound + " INNER " + dimension->source_bound;
+	string evidence = "ossie-frozen-join-v1:";
+	for (auto value :
+	     {bundle.profile, bundle.manifest_hash, bundle.core_hash, bundle.ontology_hash, bundle.mapping_hash,
+	      Hash(engine, facts.canonical), Hash(engine, dims.canonical), Hash(engine, joined)})
+		Frame(evidence, value);
+	for (auto &entry : bundle.provenance) {
+		Frame(evidence, entry.first[0]);
+		Frame(evidence, entry.first[1]);
+		Frame(evidence, entry.second);
+	}
+	bundle.content_hash = Hash(engine, evidence);
+	bundle.snapshot_id = bundle.content_hash + ":" + to_string(++batch_sequence);
+	bundle.execution_target = "{\"target\":\"frozen fact-dimension batch (AST dependency required)\","
+	                          "\"join_policy\":\"INNER/reject\",\"mapping_version\":1,\"row_order_sensitive\":true,"
+	                          "\"metric_grain\":" +
+	                          JSONString(fact->name) + ",\"relationship\":" + JSONString(relation.name) +
+	                          ",\"fact_foreign_key\":" + JSONString(relation.from_columns[0]) +
+	                          ",\"dimension_key\":" + JSONString(relation.to_columns[0]) +
+	                          ",\"fact_identity_column\":" + JSONString(fact->primary_key[0]) + ",\"inputs\":[";
+	for (auto dataset : {fact, dimension}) {
+		auto &capture = dataset == fact ? facts : dims;
+		if (dataset == dimension)
+			bundle.execution_target += ",";
+		bundle.execution_target += "{\"dataset\":" + JSONString(dataset->name) +
+		                           ",\"source\":" + JSONString(dataset->source_bound) +
+		                           ",\"rows\":" + to_string(capture.rows.size()) +
+		                           ",\"sha256\":" + JSONString(Hash(engine, capture.canonical)) + "}";
+	}
+	bundle.execution_target += "],\"logical_fields\":[";
+	for (idx_t i = 0; i < bundle.provenance.size(); i++) {
+		auto &entry = bundle.provenance[i];
+		if (i)
+			bundle.execution_target += ",";
+		bundle.execution_target += "{\"dataset\":" + JSONString(entry.first[0]) +
+		                           ",\"field\":" + JSONString(entry.first[1]) +
+		                           ",\"frozen_field\":" + JSONString(entry.second) + "}";
+	}
+	bundle.execution_target += "],\"physical_columns\":[";
+	idx_t index = 0;
+	for (auto dataset : {fact, dimension}) {
+		auto &capture = dataset == fact ? facts : dims;
+		for (auto &name : capture.names) {
+			if (index)
+				bundle.execution_target += ",";
+			bundle.execution_target += "{\"dataset\":" + JSONString(dataset->name) + ",\"column\":" + JSONString(name) +
+			                           ",\"frozen_column\":" + JSONString(bundle.physical_names[index++]) + "}";
+		}
+	}
+	bundle.execution_target += "]}";
+}
+
 shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_path) {
 	if (!context.transaction.IsAutoCommit()) {
 		Fail("bundle", "snapshot", "load requires committed native tables outside an explicit transaction");
@@ -792,8 +1158,13 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	Document manifest(manifest_bytes);
 	manifest.NoNUL();
 	auto root = manifest.Root();
-	Keys(root, {"profile", "core", "ontology", "mapping"}, "bundle manifest");
-	if (Text(root, "profile") != PROFILE) {
+	bundle->profile = Text(root, "profile");
+	Keys(root,
+	     bundle->profile == JOIN_PROFILE
+	         ? std::initializer_list<const char *> {"profile", "core", "ontology", "mapping", "join"}
+	         : std::initializer_list<const char *> {"profile", "core", "ontology", "mapping"},
+	     "bundle manifest");
+	if (bundle->profile != PROFILE && bundle->profile != JOIN_PROFILE) {
 		Fail("profile", "capability", "unknown implementation profile");
 	}
 	bundle->manifest_hash = Hash(*engine, manifest_bytes);
@@ -821,6 +1192,8 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	auto ontology_bytes = read_definition("ontology", bundle->ontology_hash);
 	auto mapping_bytes = read_definition("mapping", bundle->mapping_hash);
 	bundle->model = ParseModel(LooksLikeYaml(core_bytes) ? YamlToJson(core_bytes, "core") : core_bytes, RebindMap());
+	if (bundle->profile == JOIN_PROFILE)
+		FreezeJoin(context, *bundle, Member(root, "join"), *engine);
 	if (bundle->model.datasets.size() != 1 || !bundle->model.relationships.empty()) {
 		Fail(bundle->model.name, "capability", "profile supports exactly one dataset and no core joins");
 	}
@@ -848,64 +1221,73 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	}
 	Document ontology(ontology_bytes), mapping(mapping_bytes);
 	Definitions(*bundle, ontology.Root(), mapping.Root());
+	for (auto &entry : bundle->provenance) {
+		if (StringUtil::CIEquals(entry.first[0], bundle->root) || StringUtil::CIEquals(entry.first[0], bundle->derived))
+			Fail(entry.first[0], "bind", "dataset and concept namespaces must be distinct");
+	}
 	if (StringUtil::CIEquals(dataset.name, bundle->root) || StringUtil::CIEquals(dataset.name, bundle->derived)) {
 		Fail(dataset.name, "bind", "dataset and concept namespaces must be distinct");
 	}
-	bundle->original_source = dataset.source_bound;
-	auto parts = QualifiedName::ParseComponents(dataset.source_bound);
-	if (parts.size() != 3) {
-		Fail(dataset.name, "snapshot", "fully qualified catalog.schema.table source required");
-	}
-	Connection source(DatabaseInstance::GetDatabase(context));
-	Run(context, source, "BEGIN TRANSACTION");
-	auto entry = Catalog::GetEntry(*source.context, parts[0], parts[1],
-	                               EntryLookupInfo(CatalogType::TABLE_ENTRY, parts[2]), OnEntryNotFound::RETURN_NULL);
-	if (!entry || entry->type != CatalogType::TABLE_ENTRY || entry->temporary ||
-	    !entry->Cast<TableCatalogEntry>().IsDuckTable()) {
-		Fail(dataset.name, "snapshot", "only committed native tables supported; TEMP/view/external source refused");
-	}
-	for (auto &column : entry->Cast<TableCatalogEntry>().GetColumns().Logical()) {
-		if (column.Generated()) {
-			Fail(dataset.name, "snapshot", "generated source columns not supported");
+	if (bundle->profile == PROFILE)
+		bundle->original_source = dataset.source_bound;
+	if (bundle->profile == PROFILE) {
+		auto parts = QualifiedName::ParseComponents(dataset.source_bound);
+		if (parts.size() != 3) {
+			Fail(dataset.name, "snapshot", "fully qualified catalog.schema.table source required");
 		}
-	}
-	auto capture = Run(context, source,
-	                   "SELECT * FROM " + Quote(parts[0]) + "." + Quote(parts[1]) + "." + Quote(parts[2]) + " LIMIT " +
-	                       to_string(MAX_ROWS + 1));
-	Run(context, source, "COMMIT");
-	auto &materialized = capture->Cast<MaterializedQueryResult>();
-	bundle->rows = materialized.RowCount();
-	if (bundle->rows > MAX_ROWS || capture->types.size() > 256) {
-		Fail(dataset.name, "snapshot", "batch exceeds 10000 rows or 256 physical columns; no truncation performed");
-	}
-	bundle->physical_names = capture->names;
-	string content = "ossie-observation-v1:" + to_string(bundle->rows) + ":" + to_string(capture->types.size()) + ":";
-	auto frame = [&](const string &text) {
-		content += to_string(text.size()) + ":" + text;
-	};
-	for (idx_t col = 0; col < capture->types.size(); col++) {
-		if (!Portable(capture->types[col]) || (capture->types[col].id() == LogicalTypeId::VARCHAR &&
-		                                       !StringType::GetCollation(capture->types[col]).empty())) {
-			Fail(capture->names[col], "snapshot", "unsupported physical column type or collation");
+		Connection source(DatabaseInstance::GetDatabase(context));
+		Run(context, source, "BEGIN TRANSACTION");
+		auto entry =
+		    Catalog::GetEntry(*source.context, parts[0], parts[1], EntryLookupInfo(CatalogType::TABLE_ENTRY, parts[2]),
+		                      OnEntryNotFound::RETURN_NULL);
+		if (!entry || entry->type != CatalogType::TABLE_ENTRY || entry->temporary ||
+		    !entry->Cast<TableCatalogEntry>().IsDuckTable()) {
+			Fail(dataset.name, "snapshot", "only committed native tables supported; TEMP/view/external source refused");
 		}
-		frame(capture->names[col]);
-		frame(capture->types[col].ToString());
-	}
-	while (auto chunk = capture->Fetch()) {
-		if (context.IsInterrupted())
-			throw InterruptException();
-		for (idx_t row = 0; row < chunk->size(); row++) {
-			for (idx_t col = 0; col < chunk->ColumnCount(); col++) {
-				frame(chunk->GetValue(col, row).ToSQLString());
-				if (content.size() > MAX_BYTES) {
-					Fail(dataset.name, "snapshot", "batch exceeds 16 MiB canonical value limit");
+		for (auto &column : entry->Cast<TableCatalogEntry>().GetColumns().Logical()) {
+			if (column.Generated()) {
+				Fail(dataset.name, "snapshot", "generated source columns not supported");
+			}
+		}
+		auto capture = Run(context, source,
+		                   "SELECT * FROM " + Quote(parts[0]) + "." + Quote(parts[1]) + "." + Quote(parts[2]) +
+		                       " LIMIT " + to_string(MAX_ROWS + 1));
+		Run(context, source, "COMMIT");
+		auto &materialized = capture->Cast<MaterializedQueryResult>();
+		bundle->rows = materialized.RowCount();
+		if (bundle->rows > MAX_ROWS || capture->types.size() > 256) {
+			Fail(dataset.name, "snapshot", "batch exceeds 10000 rows or 256 physical columns; no truncation performed");
+		}
+		bundle->physical_names = capture->names;
+		string content =
+		    "ossie-observation-v1:" + to_string(bundle->rows) + ":" + to_string(capture->types.size()) + ":";
+		auto frame = [&](const string &text) {
+			content += to_string(text.size()) + ":" + text;
+		};
+		for (idx_t col = 0; col < capture->types.size(); col++) {
+			if (!Portable(capture->types[col]) || (capture->types[col].id() == LogicalTypeId::VARCHAR &&
+			                                       !StringType::GetCollation(capture->types[col]).empty())) {
+				Fail(capture->names[col], "snapshot", "unsupported physical column type or collation");
+			}
+			frame(capture->names[col]);
+			frame(capture->types[col].ToString());
+		}
+		while (auto chunk = capture->Fetch()) {
+			if (context.IsInterrupted())
+				throw InterruptException();
+			for (idx_t row = 0; row < chunk->size(); row++) {
+				for (idx_t col = 0; col < chunk->ColumnCount(); col++) {
+					frame(chunk->GetValue(col, row).ToSQLString());
+					if (content.size() > MAX_BYTES) {
+						Fail(dataset.name, "snapshot", "batch exceeds 16 MiB canonical value limit");
+					}
 				}
 			}
 		}
+		bundle->collection = materialized.TakeCollection();
+		bundle->content_hash = Hash(*engine, content);
+		bundle->snapshot_id = bundle->content_hash + ":" + to_string(++batch_sequence);
 	}
-	bundle->collection = materialized.TakeCollection();
-	bundle->content_hash = Hash(*engine, content);
-	bundle->snapshot_id = bundle->content_hash + ":" + to_string(++batch_sequence);
 	dataset.source_bound = "memory.main.ossie_snapshot";
 	string projection = "SELECT ";
 	for (idx_t index = 0; index < dataset.fields.size(); index++) {
@@ -991,7 +1373,22 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 		options.population_predicate = predicate.get();
 		auto source = SnapshotTable(bundle);
 		options.population_source = source.get();
-		return Compile(bundle.model, metrics, dimensions, {}, options);
+		vector<string> translated;
+		for (auto &dimension : dimensions) {
+			if (bundle.provenance.empty())
+				translated.push_back(dimension);
+			else
+				translated.push_back(
+				    make_uniq<ColumnRefExpression>(LogicalField(bundle, dimension), bundle.model.datasets[0].name)
+				        ->ToString());
+		}
+		auto statement = Compile(bundle.model, metrics, translated, {}, options);
+		if (!bundle.provenance.empty()) {
+			auto &select = statement->node->Cast<SelectNode>();
+			for (idx_t i = 0; i < dimensions.size(); i++)
+				select.select_list[i]->SetAlias(dimensions[i]);
+		}
+		return statement;
 	}
 	auto select = make_uniq<SelectNode>();
 	for (auto name : {"entity_id", "record_id"}) {
@@ -1001,7 +1398,7 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 	}
 	for (auto &field : bundle.model.datasets[0].fields) {
 		auto expression = FieldTree(bundle, field.name);
-		expression->SetAlias(bundle.model.datasets[0].name + "." + field.name);
+		expression->SetAlias(OriginalName(bundle, field.name));
 		select->select_list.push_back(std::move(expression));
 	}
 	select->where_clause = std::move(predicate);
@@ -1135,26 +1532,27 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 		} catch (const std::exception &error) {
 			Fail(data.path, "load", error.what());
 		}
-		result->rows.push_back(
-		    {Value(PROFILE), Value(bundle->snapshot_id), Value(bundle->content_hash), Value::BIGINT(bundle->rows)});
+		result->rows.push_back({Value(bundle->profile), Value(bundle->snapshot_id), Value(bundle->content_hash),
+		                        Value::BIGINT(bundle->rows)});
+		if (context.IsInterrupted())
+			throw InterruptException();
 		PopulationState::Get(context).SetBundle(std::move(bundle));
 	} else if (data.discover) {
 		auto &b = *data.bundle;
 		for (auto concept : {b.root, b.derived}) {
 			bool derived = concept == b.derived;
 			result->rows.push_back({Value(concept), derived ? Value(b.root) : Value(LogicalType::VARCHAR),
-			                        Value(b.model.datasets[0].name + "." + b.identity),
-			                        derived ? Value(b.original_rule) : Value(LogicalType::VARCHAR), Value(PROFILE),
+			                        Value(OriginalName(b, b.identity)),
+			                        derived ? Value(b.original_rule) : Value(LogicalType::VARCHAR), Value(b.profile),
 			                        Value(b.snapshot_id), Value(b.content_hash), Value(b.core_hash),
 			                        Value(b.ontology_hash), Value(b.mapping_hash), Value(b.manifest_hash),
 			                        Value(b.original_source), Value::BIGINT(b.rows)});
 		}
 	} else if (data.compile) {
 		auto &b = *data.bundle;
-		result->rows.push_back(
-		    {Value(data.sql), Value(PROFILE), Value(b.snapshot_id), Value(b.content_hash), Value(b.core_hash),
-		     Value(b.ontology_hash), Value(b.mapping_hash), Value(b.manifest_hash),
-		     Value("frozen typed observation batch (AST dependency required)"), Value::BOOLEAN(false)});
+		result->rows.push_back({Value(data.sql), Value(b.profile), Value(b.snapshot_id), Value(b.content_hash),
+		                        Value(b.core_hash), Value(b.ontology_hash), Value(b.mapping_hash),
+		                        Value(b.manifest_hash), Value(b.execution_target), Value::BOOLEAN(false)});
 	} else {
 		lock_guard<mutex> guard(data.bundle->query_lock);
 		auto engine = Engine(*data.bundle);
@@ -1192,10 +1590,12 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 		return function;
 	};
 	RegisterDescribe(loader, TableFunction("ossie_bundle_load", {LogicalType::VARCHAR}, Scan, LoadBind, Init),
-	                 "Load a hash-bound local core/ontology/mapping bundle for gaap-scalar-population-v1. Captures a "
+	                 "Load a hash-bound local core/ontology/mapping bundle for gaap-scalar-population-v1 or "
+	                 "fact-dimension-population-v1. Captures a "
 	                 "committed native table into a frozen typed observation batch (AST dependency required) and "
 	                 "preflights entire-batch "
-	                 "identity before publishing. Requires autocommit, one dataset, at most 10000 rows/256 columns and "
+	                 "identity before publishing. Requires autocommit, one dataset or an explicit INTEGER-key "
+	                 "INNER/reject pair, at most 10000 rows/256 columns per batch and "
 	                 "16 MiB canonical values. Explicit reload is required to observe source changes.",
 	                 "CALL ossie_bundle_load('bundle.json')");
 	RegisterDescribe(loader, TableFunction("ossie_concepts", {}, Scan, DiscoverBind, Init),

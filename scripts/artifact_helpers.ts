@@ -80,16 +80,23 @@ export class Database {
     }
   }
   async rows(sql: string, parameters: Parameter[] = []): Promise<Cell[][]> {
-    const result = await this.connection.runAndReadAll(
-      sql,
-      parameters.map((value) =>
-        Array.isArray(value) ? listValue(value) : value,
-      ),
-      parameters.map((value) =>
-        Array.isArray(value) ? LIST(VARCHAR) : VARCHAR,
-      ),
-    );
-    return result.getRows().map((row) => row.map(cell));
+    try {
+      const result = await this.connection.runAndReadAll(
+        sql,
+        parameters.map((value) =>
+          Array.isArray(value) ? listValue(value) : value,
+        ),
+        parameters.map((value) =>
+          Array.isArray(value) ? LIST(VARCHAR) : VARCHAR,
+        ),
+      );
+      return result.getRows().map((row) => row.map(cell));
+    } catch (error) {
+      throw new Error(
+        `artifact query failed (${sql.slice(0, 180)}): ${String(error)}`,
+        { cause: error },
+      );
+    }
   }
   async one(sql: string, parameters: Parameter[] = []): Promise<Cell[]> {
     const result = await this.rows(sql, parameters);

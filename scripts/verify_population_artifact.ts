@@ -747,30 +747,53 @@ export async function verify(artifact: string) {
     });
     await con.run("DROP TABLE cancel_facts");
     const expected = (await objects(con, [])).length;
-    const connections = await Promise.all([
+    // Settle every started task before disconnecting. Each connection has one
+    // outstanding query; independent connections still execute concurrently.
+    const opened = await Promise.allSettled([
       con.instance.connect(),
       con.instance.connect(),
     ]);
-    try {
-      const results = await Promise.all(
+    const connections = opened.flatMap((result) =>
+      result.status === "fulfilled" ? [result.value] : [],
+    );
+    const failures: unknown[] = opened.flatMap((result) =>
+      result.status === "rejected" ? [result.reason] : [],
+    );
+    let results: unknown[] = [];
+    if (!failures.length) {
+      const settled = await Promise.allSettled(
         connections.map(async (connection) => {
           const cursor = new Database(con.instance, connection);
-          return Promise.all(
-            [0, 1].map(
-              async () =>
-                (
-                  await cursor.one(
-                    "SELECT count(*) FROM ossie_objects('ValidUser', [])",
-                  )
-                )[0],
-            ),
-          );
+          const values = [];
+          for (let i = 0; i < 2; i++)
+            values.push(
+              (
+                await cursor.one(
+                  "SELECT count(*) FROM ossie_objects('ValidUser', [])",
+                )
+              )[0],
+            );
+          return values;
         }),
       );
-      assert.deepEqual(results.flat(), Array(4).fill(expected));
-    } finally {
-      for (const connection of connections) connection.disconnectSync();
+      failures.push(
+        ...settled.flatMap((result) =>
+          result.status === "rejected" ? [result.reason] : [],
+        ),
+      );
+      results = settled.flatMap((result) =>
+        result.status === "fulfilled" ? result.value : [],
+      );
     }
+    for (const connection of connections) {
+      try {
+        connection.disconnectSync();
+      } catch (error) {
+        failures.push(error);
+      }
+    }
+    if (failures.length) throw failures[0];
+    assert.deepEqual(results, Array(4).fill(expected));
     await temporary("ossie-lifetime-", async (directory) => {
       const databasePath = join(directory, "frozen_lifetime.duckdb"),
         closing = await Database.open(databasePath);

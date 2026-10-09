@@ -1,0 +1,115 @@
+{
+  "scope": "Local explicit frozen fact-dimension population milestone; wider R6/P0 incomplete",
+  "date": "2026-10-09",
+  "base_commit": "1d5675d6b04cda2132f207192e8e36f1f60d1285",
+  "runtime": "1.3.11",
+  "platform": "darwin",
+  "arch": "arm64",
+  "duckdb_version": "v1.5.6",
+  "duckdb_source_id": "069cc9f9b5",
+  "artifact_sha256": "54dc03ae658f72b7e5d891abd5abd7eb86ebafb3074340c8f5d3ef804169ee68",
+  "source_sha256": {
+    "src/population/population.cpp": "39ef75bee8c61af00070f046eb580a09a98318806766a366862bd755d7ebb841",
+    "src/compile/compile.cpp": "dec2c6a72ac178b9ef16cd2796d7b8dc15ff88542ddbf8266fff60beca3ef460",
+    "src/include/ossie/compile.hpp": "6cab076df7d19429934d75f9389036aa5f435709387f1df8a34944f3160d0d84",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "scripts/verify_joined_population_artifact.ts": "e0b03cf95691f332e18ea8982287c2fe74d37226a686d4b7d1be31d2e0409a09",
+    "scripts/verify_population_artifact.ts": "dd62482761c55fed821ca24f7432e8bd574ec69023debe8595ef5678c785ba32",
+    "scripts/verify_expression_artifact.ts": "c91435a6fc858380e31efcc7a5694d7e0f49f93f8eaea621de16b3b1b948e4fb",
+    "test/fixtures/joined-population/core.json": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878",
+    "test/fixtures/joined-population/ontology.json": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+    "test/fixtures/joined-population/mapping.json": "fede2d077986e8c46162973f87b750afcd1420e8229d480d175a6c7acee4dcfd",
+    "test/fixtures/joined-population/bundle.json": "4af4f7bed9a5d179e849d1ff68ebd82f276c584e96cb1b0d5520c2b073289890",
+    "test/fixtures/safe-join-research/rows.sql": "ea9ac378b27a6638090d269f770eeb711f6ec2d7a0bba02d2ef935cc3f8078fa",
+    "test/sql/ossie_joined_population.test": "f25a194bc88b49f2c0db13b8c9edf8a0af8be36bbff3a89c544ee4f2d87144ee",
+    "test/tooling/quality_controls.test.ts": "ae33a5de56c2239c664fb8ecccb4038b215ee0c7b7ebc73cbfdbb0349cb5982f",
+    ".github/workflows/MainDistributionPipeline.yml": "0a86219d19d20d6a2324a6aba2e474485483180dd4177662effb2ea69f905570",
+    "bun.lock": "b9990a6c38d00ae769b79e52939acd1ebfbb3068debec7b684fa803b022323ee",
+    "package.json": "7beebb0c0e63d9e6cf861564878da5a3f5e60cb3dc0c90d4d45c00a82767b34f"
+  },
+  "checks": [
+    {
+      "command": "ordered pinned make format-fix then CMAKE_BUILD_PARALLEL_LEVEL=4 make release",
+      "exit_code": 0
+    },
+    {
+      "command": "make quality-local test with pinned formatter venv",
+      "exit_code": 0,
+      "state_cpp_checks": 19,
+      "designated_grain_cpp_checks": 42,
+      "sql_cases": 19,
+      "sql_assertions": 713
+    },
+    {
+      "command": "make script-format-check tooling-typecheck architecture-check quality-control-tests after verifier cleanup",
+      "exit_code": 0,
+      "bun_controls": 31,
+      "expect_calls": 104
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-joined-loader-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-joined-single-population-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-joined-expression-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-joined-date-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-joined-join-research-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "report": "docs/research/ossie-req-001/r6-joined-population-artifact-results.json",
+      "exit_code": 0
+    },
+    {
+      "command": "PATH stock CLI + OSSIE_EXTENSION full_functionality_check.sh",
+      "exit_code": 0,
+      "pass": 40,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "command": "PATH stock CLI + OSSIE_EXTENSION bun scripts/mcp_check.ts",
+      "exit_code": 0
+    }
+  ],
+  "failures_retained": [
+    "First verifier asserted unquoted dimension.label text; DuckDB quotes label. Replaced with structural metadata checks and original object aliases.",
+    "Nested SUM and COUNT(*) hit Strict unsupported-function rejection before grain analysis; expectations now record the actual stage.",
+    "Initial SQL metadata check used json_extract_string unavailable in the no-autoload build. Core contains control plus TS JSON parsing replaced that check.",
+    "First stock CLI/MCP invocation set unused DUCKDB_CLI rather than putting stock binary on PATH; corrected invocation passed.",
+    "One parallel six-verifier batch returned native mutex lock failed: Invalid argument in single-population and joined-population. No failing query phase/backtrace was captured. Single reruns, a two-verifier parallel rerun, traced six-process batch and final six-process batch passed. Actual common root cause remains unknown; no claim that it is fixed.",
+    "Existing single-population verifier had fail-fast same-connection concurrent query cleanup that could disconnect before all tasks settled. Changed to one outstanding query per connection, wait-all-settled creation/execution, all connection cleanup and first-error retention. This is a proven harness defect, not proof of the common mutex root cause."
+  ],
+  "advisor": {
+    "requested": "gpt-6-astra/high",
+    "architecture": "one read-only advice plus clarification; constraints verified by Lead",
+    "regression": "one bounded read-only root-cause advice; no product root cause established",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown"
+  },
+  "remaining_necessities": [
+    "Deterministic concurrent writer injection between production captures; earlier host transaction experiment is distinct evidence",
+    "Unexplained intermittent native mutex incident under parallel verifier load needs first-error native backtrace if reproduced",
+    "Canonical acceptance budgets do not bound peak materialization memory",
+    "Existing R3 language/time, calendar, wider ontology/identity, population MCP and full acceptance",
+    "Remote CI, Ubuntu tidy and cross-platform validation"
+  ],
+  "delivery": {
+    "local_commit": "Included in this local milestone; identity recorded in Git",
+    "push": false,
+    "merge": false,
+    "publication": false
+  }
+}

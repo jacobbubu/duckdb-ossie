@@ -1,0 +1,67 @@
+{
+  "profile": "fact-dimension-population-v1",
+  "artifact_sha256": "54dc03ae658f72b7e5d891abd5abd7eb86ebafb3074340c8f5d3ef804169ee68",
+  "version": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "fixture_sha256": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878",
+  "source_sha256": {
+    "scripts/verify_joined_population_artifact.ts": "e0b03cf95691f332e18ea8982287c2fe74d37226a686d4b7d1be31d2e0409a09",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "test/fixtures/safe-join-research/rows.sql": "ea9ac378b27a6638090d269f770eeb711f6ec2d7a0bba02d2ef935cc3f8078fa",
+    "test/fixtures/joined-population/core.json": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878",
+    "test/fixtures/joined-population/ontology.json": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+    "test/fixtures/joined-population/mapping.json": "fede2d077986e8c46162973f87b750afcd1420e8229d480d175a6c7acee4dcfd",
+    "test/fixtures/joined-population/bundle.json": "4af4f7bed9a5d179e849d1ff68ebd82f276c584e96cb1b0d5520c2b073289890"
+  },
+  "refusals": 24,
+  "checked": [
+    "referenced duplicate",
+    "unused duplicate",
+    "NULL dimension",
+    "missing FK",
+    "NULL FK",
+    "out of scope FK",
+    "duplicate fact",
+    "NULL identity",
+    "key coercion",
+    "empty fact bad dimension",
+    "empty dimension",
+    "too many unused dimensions",
+    "joined output budget",
+    "input bytes including unused",
+    "different attached database",
+    "dimension grain",
+    "hidden aggregate",
+    "unknown aggregate",
+    "nested aggregate",
+    "grainless count",
+    "reverse relation",
+    "LEFT policy",
+    "dimension identity",
+    "same native source table"
+  ],
+  "totals": [
+    6,
+    5,
+    "55.01",
+    11.002
+  ],
+  "valid_ids": [
+    "f1",
+    "f2",
+    "f5",
+    "f6"
+  ],
+  "source_updates_frozen": true,
+  "prepared_reload_frozen": true,
+  "unused_dimension_hash": true,
+  "parent_alive_close": true,
+  "cancellation_preserves_bundle": true,
+  "quoted_sources_and_columns": true,
+  "computed_fields_and_ratio": true,
+  "limits": "canonical input/result; not peak memory",
+  "concurrent_capture": "not deterministically injected by this verifier"
+}

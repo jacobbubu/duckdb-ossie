@@ -1,0 +1,70 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "joined_ontology",
+  "ontology": [
+    {
+      "concept": "User",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne"
+        },
+        {
+          "name": "amount",
+          "roles": [
+            {
+              "concept": "Decimal"
+            }
+          ],
+          "multiplicity": "ManyToOne"
+        },
+        {
+          "name": "active",
+          "roles": [
+            {
+              "concept": "Boolean"
+            }
+          ],
+          "multiplicity": "ManyToOne"
+        },
+        {
+          "name": "label",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne"
+        },
+        {
+          "name": "eligible",
+          "roles": [
+            {
+              "concept": "Boolean"
+            }
+          ],
+          "multiplicity": "ManyToOne"
+        }
+      ]
+    },
+    {
+      "concept": "ValidUser",
+      "type": "EntityType",
+      "extends": [
+        "User"
+      ],
+      "derived_by": [
+        "User.active AND User.eligible"
+      ]
+    }
+  ]
+}

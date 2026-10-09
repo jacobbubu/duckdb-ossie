@@ -1,0 +1,127 @@
+# name: test/sql/ossie_joined_population.test
+# description: Frozen exact-key fact-dimension population and atomic refusal
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE r6_fact(id VARCHAR, dim_id INTEGER, amount DECIMAL(18,2), active BOOLEAN);
+
+statement ok
+CREATE TABLE r6_dimension(id INTEGER, label VARCHAR, eligible BOOLEAN);
+
+statement ok
+INSERT INTO r6_fact VALUES ('f1',1,10.01,true),('f2',1,20.02,true),('f3',2,30.03,false),('f4',2,NULL,true),('f5',3,-5.05,true),('f6',3,0,true);
+
+statement ok
+INSERT INTO r6_dimension VALUES (1,'North',true),(2,'South',false),(3,'North',true),(4,'Unused',true);
+
+query TI
+SELECT profile,records FROM ossie_bundle_load('test/fixtures/joined-population/bundle.json');
+----
+fact-dimension-population-v1	6
+
+query IITR
+SELECT * FROM ossie_concept_query('User',['record_count','value_count','amount_sum','amount_avg'],[],[]);
+----
+6	5	55.01	11.002
+
+query TIT rowsort
+SELECT * FROM ossie_concept_query('User',['record_count','amount_sum'],['dimension.label'],[]);
+----
+North	4	24.98
+South	2	30.03
+
+query TT rowsort
+SELECT entity_id,record_id FROM ossie_objects('ValidUser',[]);
+----
+f1	f1
+f2	f2
+f5	f5
+f6	f6
+
+query IT
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','amount_sum'],[],[]);
+----
+4	24.98
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('User',['dimension.label = ''South''']);
+----
+f3
+f4
+
+query T
+SELECT * FROM ossie_concept_query('User',['eligible_amount'],[],[]);
+----
+24.98
+
+statement ok
+CREATE TABLE previous AS SELECT snapshot_id,content_sha256 FROM ossie_concepts();
+
+statement ok
+INSERT INTO r6_dimension VALUES(4,'unused duplicate',false);
+
+statement error
+CALL ossie_bundle_load('test/fixtures/joined-population/bundle.json');
+----
+entire dimension batch requires nonnull unique key
+
+query I
+SELECT count(*) FROM (SELECT snapshot_id,content_sha256 FROM ossie_concepts() EXCEPT ALL SELECT * FROM previous);
+----
+0
+
+query IT
+SELECT * FROM ossie_concept_query('User',['record_count','amount_sum'],[],[]);
+----
+6	55.01
+
+statement ok
+DELETE FROM r6_dimension WHERE label='unused duplicate';
+
+statement ok
+UPDATE r6_fact SET amount=999 WHERE id='f1';
+
+statement ok
+UPDATE r6_dimension SET eligible=false WHERE id=1;
+
+query IT
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','amount_sum'],[],[]);
+----
+4	24.98
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/joined-population/bundle.json');
+
+query IT
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','amount_sum'],[],[]);
+----
+2	-5.05
+
+statement ok
+DROP TABLE r6_fact;
+
+statement ok
+DROP TABLE r6_dimension;
+
+query TT rowsort
+SELECT entity_id,record_id FROM ossie_objects('ValidUser',[]);
+----
+f5	f5
+f6	f6
+
+query T
+SELECT identity_field FROM ossie_concepts() WHERE concept='User';
+----
+fact.id
+
+statement error
+SELECT * FROM ossie_objects('User',['fact._ossie_field_0 = ''f1''']);
+----
+unknown original dataset.field
+
+query I
+SELECT CASE WHEN contains(execution_target,'"metric_grain":"fact"') THEN 1 ELSE 0 END FROM ossie_concept_compile('User',['amount_sum'],[],[]);
+----
+1

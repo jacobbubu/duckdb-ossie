@@ -334,3 +334,21 @@ R6研究结果：6行fact/4行dimension（含无引用行），独立手工关�
 保留失败：首次MetricAnalysis聚合初始化在extension实际-std=c++11编译下失败，改默认构造后显式赋值，未改变全局编译标准。初次MCP调用漏OSSIE_EXTENSION，实际尝试community注册产物404；重跑明确指向本轮产物后通过。这是调用配置错误，不能记为扩展回归。格式与初次build曾短暂并行，最终格式完成后重新完整构建并绑定源码/产物哈希验证，不以中间构建证明最终源码。测试编写期间删掉一处未运行的错误数值sentinel，最终采用两个组的独立成员/金额/人数oracle；最终runner单独退出0。
 
 限定Advisor一轮只读建议，Lead核对代码与分层实际结果，采纳API-only/严格白名单边界，不扩大Compile选项或通用parser重构。有效backend/effort/usage/billing unknown。当前包本地完成，下一动作本地提交，不推送；整体R6/P0未完成。下一已授权阶段才是显式冻结双表profile：完整schema/data同事务捕获、整批键/匹配预检、dataset-column来源映射、原模型strict+grain校验、最终只冻结AST、共同人口及失败/取消/重载/生命周期。其余R3/calendar/多期身份/ontology/MCP和远端CI/Ubuntu tidy仍必要。
+
+### R6 冻结双表执行（2026-10-09，继续实施）
+
+恢复：1d5675d本地提交，工作区干净。沿OSSIE-REQ-001既有授权实现显式fact-dimension-population-v1，单表v1保持原契约。范围为单INTEGER等值关系、INNER完整匹配、同库同事务全表捕获、整批键检查、原模型strict/grain/path检查与结构化来源映射。复用冻结collection和原子发布；对象与指标共同人口，来源更新仅reload可见。验证需要合法/非法批次、unused维度、空表、原模型粒度拒绝、冻结/失败保持、prepared重载和关闭寿命。Advisor限定一次架构反证；不推送/合并/发布。R6/P0尚未完成，其他已记录必要剩余不扩入本包。
+
+双表本地里程碑：新增fact-dimension-population-v1显式join manifest，指定fact/dimension/relationship及INNER/reject完整匹配。原模型原始/展开Strict、RequireMetricGrain和Compile检查在flatten前执行；同事务捕获两个不同native表，比较AttachedDatabase身份。完整维表非NULL唯一INTEGER键、事实String主键身份非NULL唯一、非NULL且完整匹配INTEGER外键均先于规则/过滤。C++精确查找按每个fact输出一次，实际collection再次扫描比对身份集合及multiplicity；unused维度也参与输入校验/hash。原映射identity仍需展开为fact单列PK，不能移到dimension。源数据/结果预算分别检查，不称严格峰值内存限制。
+
+来源与查询：原始(dataset,logical field)/(dataset,physical column)分别保留，内部_field与_column命名空间不重叠，通过AST转换；dataset顺序不选择fact。公开mapping/filter/group/object aliases使用原始名称，内部名字不能绕过provenance。flatten清除relationships，最终AST只持frozen collection dependency，避免live dimension BindTable。编译execution_target在新profile为JSON，记录事实grain、实际关系与key、完整inputs/hash、mapping版本及logical/physical来源；单表target文本和执行契约保留，共用missing_capability诊断标签改为bounded population profile。两表完整有序schema/data、joined data、policy/definitions/manifest/provenance均参与hash，明确row-order-sensitive。旧快照原子发布、weak DB及短Connection继续复用。
+
+实际验证：6个事实的身份/维度关联、COUNT6/非NULL5/SUM55.01/AVG11.002，North4/24.98与South2/30.03；ValidUser成员f1/f2/f5/f6，SUM24.98。24具名拒绝覆盖引用/unused重复或NULL维度key、缺失/NULL或过滤外FK、坏fact身份、强转key、空fact坏dimension、空dimension、两份输入/输出预算、不同attached DB、同一native table、原模型维度grain/未知/hidden/nested聚合、COUNT(*)先Strict拒绝、反向关系、LEFT和dimension身份。空双表COUNT0/SUMNULL无group、NULL非key允许、generated候选名字/quoted dataset和physical键、computed fields/guarded ratio均实际核对。源表更新/删除后保持冻结，成功reload才切换；prepared保留旧snapshot；失败/运行中取消保留旧bundle；parent-alive子进程close通过。
+
+限定Advisor架构建议+一次代码澄清，没有发现必须改换结构的缺陷；Lead核对实际集合和产物，不以静态审查当运行证明。另一次限定native异常root-cause建议发现旧population verifier的Promise.all fail-fast清理及同connection outstanding交错路径：现每connection顺序查询、跨connection并行，创建/查询都等待allSettled，关闭所有成功连接并保留首次异常。共享artifact helper补SQL上下文诊断。没有改product所有权/全局锁来假修复。有效backend/effort/usage/billing unknown。
+
+保留失败与不确定性：初次metadata断言忽略label渲染引号，改结构JSON及原始alias；nested SUM/COUNT(*)实际先Strict拒绝，不能记为grain阶段；SQL测试json_extract_string缺未自动加载json扩展，改core contains且TS真实JSON解析；CLI/MCP初次漏PATH而非产物失败。最终一次六verifier并行batch中single-population和joined-population报native mutex lock failed: Invalid argument；未取得失败阶段/native backtrace，根因未建立。单独重跑、双verifier并行、带临时query追踪六进程及最后六进程均通过，追踪已移除。已确认的旧harness清理缺陷不能宣称就是共同native异常根因；若再现需抓首次native抛错栈。报告保留该风险，不抹掉先前失败。
+
+最终源码先format再build，同一真实产物SHA 54dc03ae658f72b7e5d891abd5abd7eb86ebafb3074340c8f5d3ef804169ee68：19state+42grain C++、19SQL用例713断言、31Bun/104expect，六artifact verifier、stockCLI40和既有MCP全部通过。新生产verifier接同downloaded artifact CI job，research verifier仍明确分开。证据：[控制汇总](research/ossie-req-001/r6-joined-control-results.json)、[生产双表](research/ossie-req-001/r6-joined-population-artifact-results.json)、[原单表回归](research/ossie-req-001/r6-joined-single-population-artifact-results.json)。旧报告/原样来源/proposed definitions/旧fixtures/submodules保持原样。
+
+当前本地功能里程碑通过既定门禁，下一动作本地提交保留，不推送。R6/P0整体未完成：生产两次捕获之间writer确定性注入尚未验证（旧host事务实验不能替代），并行native异常若再现须定位，峰值内存不受canonical预算严格约束；其余R3语言/时间、calendar、多期身份/更广ontology、population MCP、完整验收、remote CI/Ubuntu tidy仍为必要剩余。下一授权工作优先加强production capture/concurrency证据，不能以本包通过宣告所有R6能力或远端CI完成。

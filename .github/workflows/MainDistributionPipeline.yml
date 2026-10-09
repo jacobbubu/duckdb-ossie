@@ -115,15 +115,16 @@ jobs:
       - name: Install locked tooling dependencies
         run: bun install --frozen-lockfile
 
-      - name: Verify loader, population, expressions and dates against the same real artifact
+      - name: Verify all profiles and research controls against the same real artifact
         run: |
           mkdir -p quality-reports
           bun scripts/verify_loader_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/loader.json
           bun scripts/verify_population_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/population.json
           bun scripts/verify_expression_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/expression.json
           bun scripts/verify_date_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/date.json
-          # Existing core behavior and research preflight; joined population is not implemented.
+          # Existing core behavior and research preflight, separate from production controls.
           bun scripts/verify_join_research_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/join_research.json
+          bun scripts/verify_joined_population_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/joined_population.json
 
       - uses: actions/upload-artifact@v4
         if: always()

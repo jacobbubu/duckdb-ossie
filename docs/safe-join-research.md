@@ -1,9 +1,9 @@
-# R6 first safe-join contract: research result
+# R6 safe-join contract and production checkpoint
 
-The current artifact confirms a safe numeric baseline for six synthetic facts and
+The original research artifact confirmed a safe numeric baseline for six synthetic facts and
 four dimension rows, including one unreferenced dimension. It also demonstrates
-that declaration-based core joins accept unsafe data. This document specifies the
-next bounded population implementation; it does not claim that implementation exists.
+that declaration-based core joins accept unsafe data. The historical evidence below
+is separate from the new production implementation checkpoint.
 The existing `gaap-scalar-population-v1` still refuses multiple datasets and joins.
 
 ## What the artifact establishes
@@ -107,7 +107,7 @@ calls would still read live tables. A correct implementation must ensure its fin
 AST references only frozen collections and carries their dependencies. Source updates
 should become visible only after explicit reload, for both tables.
 
-## Evidence and remaining work
+## Historical research and prerequisite evidence
 
 The [artifact report](research/ossie-req-001/r6-join-research-artifact-results.json)
 records actual core results, separate research safety reasons, source/fixture hashes,
@@ -115,13 +115,12 @@ planner refusals and the native transaction experiment. The
 [control summary](research/ossie-req-001/r6-join-control-results.json) records local gates.
 The [existing issue](ossie-execution-research.md) and
 [existing plan](../ossie-duckdb-plan.md) own remaining work and authorization.
-The designated-grain prerequisite is now implemented as internal C++
+At the prerequisite checkpoint, the designated-grain API was implemented as internal C++
 RequireMetricGrain, sharing AnalyzeMetric with Compile. It has no public SQL
-entry and is not yet wired into a joined population profile. Its
+entry; integration had not yet begun at that checkpoint. Its
 [control evidence](research/ossie-req-001/r6-grain-control-results.json) covers 42
-C++ checks plus actual-artifact regressions. The next implementation package is
-the explicit frozen two-table profile and object/metric, reload/cancellation/lifetime
-controls. Those production behaviors are not yet implemented or verified.
+C++ checks plus actual-artifact regressions. The subsequent implementation checkpoint below records the explicit frozen two-table
+profile and object/metric, reload/cancellation/lifetime controls.
 
 The fixed [Ossie relationships schema](research/ossie-req-001/sources/apache-ossie/core-spec/spec.md)
 defines foreign/target columns without an INNER/LEFT selection. DuckDB's official
@@ -129,3 +128,62 @@ defines foreign/target columns without an INNER/LEFT selection. DuckDB's officia
 matching and outer-join behavior; its
 [transaction documentation](https://duckdb.org/docs/current/sql/statements/transactions)
 describes snapshot isolation. Runtime claims above use pinned 1.5.6 actual results.
+
+
+## Production checkpoint: fact-dimension-population-v1
+
+The separate profile now implements this bounded contract. A manifest adds an
+explicit `join` object to the same hash-bound `core`, `ontology` and `mapping`
+references:
+
+```json
+{
+  "profile": "fact-dimension-population-v1",
+  "join": {
+    "fact": "fact",
+    "dimension": "dimension",
+    "relationship": "fact_dimension",
+    "type": "INNER",
+    "missing": "reject"
+  }
+}
+```
+
+The complete executable [fixture manifest](../test/fixtures/joined-population/bundle.json)
+includes the required definition references. Dataset order does not select the fact.
+The loader captures two distinct committed native tables within one source transaction,
+compares their AttachedDatabase identities, and validates every captured key before
+filtering. It constructs one output row per fact through exact native INTEGER lookup,
+then rescans the actual frozen collection to compare fact identity sets and multiplicity.
+No source SQL JOIN remains in the execution model. Both definitions' fields are
+structurally mapped to distinct generated logical/physical namespaces, with original
+names used for mappings, filters, grouping and object output aliases.
+
+`ossie_concept_compile.execution_target` is JSON for this new profile. It reports the
+actual frozen target, fact metric grain, relationship and physical keys, INNER/reject
+policy, full input table row counts/hashes, mapping version and logical/physical
+provenance. The v1 target remains its original text. Diagnostic SQL still requires the
+AST dependency and cannot independently recreate the snapshot. `ossie_concepts.source`
+names both original sources; profile/snapshot/hash discovery describes the joined batch.
+
+Full ordered input schemas/data (including unused dimension rows), joined data,
+definition/manifest hashes and the provenance mapping contribute to the content hash.
+Hashing is row-order-sensitive; native scans are not promised to produce a stable order.
+Each input and the joined result has the existing row/column/canonical-byte bounds,
+and the joined schema is limited to 256 physical columns. These are acceptance budgets,
+not strict bounds on peak materialization memory. The shared diagnostic capability
+label now describes the bounded population profiles instead of hardcoding v1.
+
+Independent production controls cover exact fact-ID association, money/count/average,
+shared object/metric population, 24 whole-batch/definition refusals, empty tables,
+NULL nonkey attributes, generated-name collisions, quoted identifiers, computed fields,
+guarded ratios, successful and failed reload, source updates/deletion, running load
+cancellation and parent-alive database close. All failure/cancellation controls retain
+the prior snapshot. A prepared request keeps its previously bound snapshot across reload.
+The new verifier is separate from the earlier research verifier and wired into the same
+real-artifact CI job. Deterministic writer injection between the two production captures
+has not been tested; the earlier native transaction experiment remains supporting,
+not equivalent, evidence. Remote CI and cross-platform behavior remain unverified.
+Current validation reports and remaining necessities stay in the existing issue/plan.
+
+Production evidence: [joined controls](research/ossie-req-001/r6-joined-population-artifact-results.json) and [local gate summary](research/ossie-req-001/r6-joined-control-results.json). One earlier parallel verifier batch produced an unexplained native mutex error; subsequent runs passed. A proven fail-fast cleanup defect in the old verifier was corrected, but it has not been established as the common native-error cause. The summary preserves that incident.

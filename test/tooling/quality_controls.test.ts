@@ -266,6 +266,7 @@ test("CI uses frozen Bun tooling and the same artifact for all five verifiers", 
     "expression",
     "date",
     "join_research",
+    "joined_population",
   ])
     expect(artifact).toContain(
       `bun scripts/verify_${name}_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/${name}.json`,

@@ -2,13 +2,18 @@
 
 ## Current research checkpoint — 2026-10-09
 
-Latest local milestone: R6 safe-join research controls completed after NULLIF/guarded
-division and DATE boundaries. Local gates pass 661 SQL assertions, 19 C++ checks
-and 31 Bun controls. Actual core behavior and research preflight remain distinct;
-production joined population is not implemented. The shared designated fact-grain prerequisite now passes 42 dedicated C++ controls;
-it still requires strict expression validation and data checks. Next authorized
-implementation is a separate frozen two-table profile; P0 remains incomplete. Detailed current
-decisions and failures are in the checkpoints below and the existing research record.
+Current local milestone: the separate fact-dimension-population-v1 implementation now
+captures and validates two full native tables in one transaction, freezes exact INTEGER
+associations, preserves original provenance and rejects non-fact metric grains before
+flattening. Actual artifact controls cover shared object/metric membership, reload,
+source deletion, cancellation, prepared snapshot retention and database close. Final
+same-artifact gates pass 19 state and 42 grain C++ controls, 713 SQL assertions in
+19 cases, 31 Bun controls, all six stock artifact verifiers, CLI and MCP. Evidence
+is reconciled in OSSIE-REQ-001; an earlier intermittent native mutex incident is
+retained without an established common root cause. Remote CI and
+deterministic concurrent writer injection into production capture remain unverified.
+P0 and the wider R6 goal remain incomplete. This milestone is retained in local Git.
+Next authorized work strengthens production capture/concurrency evidence; no new push is authorized.
 The earlier package counts in this introduction remain historical evidence.
 
 The first research package is complete: pinned source evidence, an independent
