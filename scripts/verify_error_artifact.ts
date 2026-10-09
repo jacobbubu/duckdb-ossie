@@ -326,6 +326,49 @@ export async function verify(artifact: string) {
       checks.push(
         "unknown core property refuses without replacing frozen bundle",
       );
+      delete core.vendor_rule;
+      core.custom_extensions = [{ vendor_name: "custom", data: false }];
+      const rebindCore = () => {
+        writeFileSync(invalidCore, JSON.stringify(core));
+        writeFileSync(
+          invalid,
+          JSON.stringify({
+            ...manifest,
+            core: {
+              ...manifest.core,
+              path: invalidCore,
+              sha256: digest(invalidCore),
+            },
+          }),
+        );
+      };
+      rebindCore();
+      const badExtension = await refuse(
+        "malformed extension in hash-valid bundle",
+        "CALL ossie_bundle_load(?)",
+        [invalid],
+        "load",
+      );
+      assert.equal(badExtension.code, "LOAD_FAILED");
+      assert(badExtension.reason.includes("field 'data' must be a string"));
+      assert.deepEqual(await db.rows("SELECT * FROM ossie_concepts()"), before);
+      checks.push("malformed extension preserves frozen bundle");
+      delete core.custom_extensions;
+      core.datasets[0].fields[0].expression.dialects.unshift({
+        dialect: "ansi_sql",
+        expression: "invalid unused variant",
+      });
+      rebindCore();
+      const badDialect = await refuse(
+        "noncanonical dialect in hash-valid bundle",
+        "CALL ossie_bundle_load(?)",
+        [invalid],
+        "load",
+      );
+      assert.equal(badDialect.code, "LOAD_FAILED");
+      assert(badDialect.reason.includes("unsupported dialect name"));
+      assert.deepEqual(await db.rows("SELECT * FROM ossie_concepts()"), before);
+      checks.push("noncanonical dialect preserves frozen bundle");
       writeFileSync(invalid, "{invalid");
       await refuse(
         "document parse stage retained",

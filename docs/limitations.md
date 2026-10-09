@@ -44,8 +44,10 @@ relationship endpoints must be nonempty strings. Whitespace is not trimmed.
 Unknown properties in the core model, datasets, fields, metrics, relationships,
 dimension objects, expressions and dialect variants are refused. Property keys
 are case-sensitive and matched in full. AI context objects still permit and
-preserve additional descriptive properties. Custom-extension members and the
-complete dialect enum remain separate validation limitations.
+preserve additional descriptive properties. Custom extensions must be arrays
+of objects containing only the required string fields vendor_name and data.
+Both strings may be empty; data content is preserved without additional JSON
+content validation. Extensions are descriptive and do not execute vendor code.
 
 ## Grain
 
@@ -112,7 +114,9 @@ the top level, delete the wrapper, and split a multi-model file into one file pe
 **Two executable dialects.** An expression runs if it has an `OSSIE_SQL_2026` or an `ANSI_SQL`
 variant; when it has both, `OSSIE_SQL_2026` wins, since the spec defines what it means. A field or
 metric carrying only a `SNOWFLAKE`, `DATABRICKS` or `MDX` expression fails at load rather than
-being guessed at.
+being guessed at. Every variant must use an exact, case-sensitive name from
+the pinned eleven-name dialect enum, including unused variants. An unknown or
+noncanonical name refuses the document even if a valid fallback is present.
 
 **OSSIE_SQL_2026 constructs with no defined result.** The expression language
 (`core-spec/expression_language.md`) is lowered to DuckDB at load. Where it leaves a result

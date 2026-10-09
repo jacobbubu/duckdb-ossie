@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-09。状态：新格式 core、bounded 单表/双表执行、并发取消、MCP、实际 AST 说明、词汇发现与本轮受控边界的统一错误均已本地验证。现有 P0/R7 整体未完成，当前剩余和下一授权动作见文末 checkpoint；历史计数按当时包保留。
+日期：2026-10-10。状态：新格式 core、有界单表/双表执行、并发取消、MCP、实际 AST 说明、词汇发现、统一错误与 typed result 已本地验证；50字段对应和已发现的R2校验缺口已收口。整体P0仍待最终规则驱动A1–A8验收归档；下一授权动作见文末 checkpoint，历史计数按当时包保留。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -678,3 +678,19 @@ RequiredNonEmptyString 在五类 name、dataset source、relationship from/to �
 失败保留：首轮新增 field context 的 C++ quoted string 转义写错，formatter 接受并格式化错误 token，编译器拒绝；按 compiler diagnostic 修正一行后重新格式化/重建成功，最终全部功能门禁通过。没有修改 fixture 或规则以隐藏此构建错误，也未使用旧 artifact 冒充修复产物。
 
 本地工作包完成，只提交保留、不推送。R2 name minLength/closed core properties 偏离已补，尚待 custom_extensions 成员结构/字段检查与全部 dialect enum/大小写边界，再归档最终规则驱动 A1–A8；整体 R2/P0 未完成。下一已授权收口这两项规范检查，不改变 vendor 字符串自由取值或 AI 扩展许可，也不自行增加 extension.data JSON 内容验证（当前 schema 仅要求 string）。分页/P1/非目标与 remote CI/发布权限保持原范围。
+
+## R2 扩展/方言 checkpoint（2026-10-10，恢复）
+
+31d78c4 后本包沿 OSSIE-REQ-001 校验五种 scope 的 custom_extensions：缺省合法，出现则须 array；每个 member 为 object，仅 vendor_name/data 两字段且均为 required string。Vendor 为任意字符串，允许空串/自定义值；data 仅按 schema 校验 string，不新增 JSON 内容解析或单位推断。DialectExpression 每个 variant 的 dialect 须精确匹配固定十一项 enum，拒绝大小写变体/未知值（即使存在另一个可执行 variant）；仍仅执行 ANSI_SQL/OSSIE_SQL_2026，保留其他合法 variant 文本并确定选择。不扩大表达式执行子集或全 schema claim。更新旧接受 characterization，验证五种 scope/JSON/YAML/合法空扩展和字节保真/每次完整旧状态保持、hash-valid bundle 失败及同产物回归；历史报告不覆盖。本地提交不推送，最终 A1–A8 规则驱动归档仍必要。
+
+## R2 扩展/方言结果（2026-10-10）
+
+五种 core scope 的 custom_extensions 现在严格检查数组、成员对象、vendor_name/data 两个 required string 及 closed member properties。合法空数组、空字符串、自定义厂商名、非 JSON 的 data 文本和 core metadata 的 NUL 完整保留；AI additionalProperties=true 不收窄。全部 expression variants 的 dialect 必须精确匹配固定十一项 enum，包括未选中项；另有合法 fallback 也不允许非法名称。执行选择仍 OSSIE_SQL_2026 优先于 ANSI_SQL；其余九种合法方言仅保留描述，单独出现时拒绝执行。
+
+[365 个字段控制](research/ossie-req-001/r2-vocabulary-correspondence-artifact-results.json) 包含35接受/330拒绝，新增五种 scope 的140非法扩展、10合法扩展、全部方言保留/选择、field/metric 非法名称加合法 fallback、九种合法但不可执行方言和两个 YAML 对照。拒绝逐次比较完整旧 metadata。[54 个错误控制](research/ossie-req-001/r2-vocabulary-error-artifact-results.json) 证明 hash-valid malformed extension/noncanonical dialect 在实际 bundle 加载中得到 LOAD_FAILED/load，旧 frozen bundle 保持且后续查询恢复。
+
+回归发现并保留：旧 population descriptive 控制使用 vendor 键（应为 vendor_name），首次 stock population verifier 因 unknown field 拒绝而失败；旧 discovery 控制将扩展写成对象。原非法构造仍作为负例，不改原始规范或业务定义；合法对照采用规范成员并维持描述变化不改变对象/指标结果。新增负例第一次直接匹配未知 vendor 文本，因结构化错误 JSON 中引号已转义而断言失败；改用现有 populationError 解码器检查实际 code/stage/reason，重跑通过。该问题是验证器错误匹配，未放宽生产校验；旧证据报告不覆盖。
+
+最终 artifact SHA256 `4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307`。release、quality-local、19 state/42 grain/158 capture、840 SQL assertions/23 cases/0 skips、38 Bun tests/124 expects、11 stock artifact verifiers、population MCP330/106 refusals、core MCP 实际资源与 stock CLI40 PASS/0 FAIL/0 SKIP FAITHFUL 同产物通过。population47拒绝控制、discovery18控制包含保留的旧非法扩展；[控制汇总](research/ossie-req-001/r2-vocabulary-control-results.json) 绑定最终源码/报告/输入/50行对应表，20份固定来源哈希核对不变。remote CI/Ubuntu tidy 未运行；project API2.0.0与result-v1保持。
+
+[50行字段对应与偏离结论](core-field-correspondence.md) 已更新：已发现的数组/单值类型、字符串保真、minLength、unknown properties、extension成员和dialect enum/case缺口已补。表来源、最少数据集、空unique key拒绝、关系列非空/等宽、quoted ASCII case及有界执行profile仍为明确边界；不是完整JSON Schema/全表达式规范符合性承诺。本工作包本地完成，只提交保留、不推送。整体P0仍待最终规则驱动A1–A8验收归档，下一已授权动作是整理该验收结论与必要证据；分页只未来调研、P1/非目标和remote发布权限不变。

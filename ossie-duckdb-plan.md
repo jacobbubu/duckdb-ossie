@@ -1,6 +1,30 @@
 # duckdb_ossie — Implementation Plan
 
-## Current research checkpoint — 2026-10-09
+## Current research checkpoint — 2026-10-10
+
+Current local milestone: the core parser now validates custom-extension arrays,
+member objects, required vendor_name/data strings and closed member properties.
+All expression variants must use an exact, case-sensitive name from the pinned
+Ossie eleven-name dialect enum; executable selection still prefers OSSIE_SQL_2026
+then ANSI_SQL. Arbitrary vendor names/data string content and AI additional
+properties remain descriptive and preserved. Project API stays 2.0.0.
+The 50-property correspondence and known scalar/array/fidelity/nonempty/unknown-
+property/extension/dialect gaps have been addressed. This is a targeted validation
+conclusion, not full JSON Schema or expression-language conformance.
+Final same-artifact local verification: 365 field controls (35 accepted/330
+refused), 54 error controls, 19 state/42 grain/158 capture controls, 840 SQL
+assertions in 23 cases with no skips, 38 Bun tests/124 expects, eleven stock
+artifact verifiers, population MCP330/106 refusals, core MCP resources and stock
+CLI40/0/0 FAITHFUL. Legacy malformed descriptive-extension test inputs remain
+negative controls; legal metadata still leaves population values unchanged.
+Evidence and retained failures stay in OSSIE-REQ-001 and r2-vocabulary reports.
+This work package is complete locally. The next authorized necessity is the
+final rule-driven A1–A8 acceptance archive; overall P0 is not complete. Existing
+source/execution limitations, bounded profiles, P1/non-goals, future pagination
+research and unrun remote CI/Ubuntu tidy remain visible. Delivery is local
+commit only; no additional push, merge or publication authority.
+
+## Historical error/discovery milestones — 2026-10-09
 
 Current local milestone: population API 1.1.0 adds error schema v1 for recoverable
 callback and JSON-list failures. Errors retain object/stage/reason, expose coarse
@@ -697,3 +721,13 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 八个 required nonempty 位置与八种 closed core objects 已按固定 schema 校验；unknown/case/NUL 属性键拒绝且旧 metadata 保持，五种 AI context 自定义内容/empty optional/whitespace name 合法保留。193 字段控制、50 错误控制、最终同产物19/42/158 native、837 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP/CLI40/0/0通过。一次 quoted C++ context 编辑构建失败及修复、全部 hashes 归现 issue/r2-fields-*；API2.0.0不变。
 
 本包完成，本地提交、不推送。必要剩余 extension 成员结构/字段和 dialect enum/大小写，再最终 A1–A8 归档；整体R2/P0未完成。下一已授权优先这两项schema检查，不额外限制vendor自由字符串/AI追加属性或extension.data内容格式；分页/P1/远端验证及发布边界不变。
+
+### R2 扩展/方言 checkpoint（2026-10-10，恢复）
+
+本轮沿现 issue 实施 custom_extensions array/object/required strings/已知成员字段，vendor 自由字符串和 data 字符串内容不额外限制；全部 dialect variants 严格固定 enum/case，可执行范围保持两种方言。增加合法/拒绝/旧状态/bundle 回归，重建同产物门禁后本地提交。最终规则驱动验收尚须归档，分页/P1/remote CI/发布权限不变。
+
+### R2 扩展/方言本地交付 checkpoint（2026-10-10）
+
+五种custom_extensions严格成员校验、全部dialect精确enum/case已实现；任意vendor/data字符串、合法AI追加属性和方言执行子集保持。365字段控制35接受/330拒绝、54错误控制、population47拒绝/discovery18控制及旧非法扩展负例通过；中间fixture/转义匹配失败与修复归现issue。最终同产物19/42/158 native、840 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP/CLI40/0/0通过，证据r2-vocabulary-*。
+
+50字段对应与已发现校验偏离结论完成，声明执行限制保留，不称全schema/语言符合性。当前包本地提交保留、不推送；整体P0仍需最后A1–A8规则驱动验收归档。下一已授权动作是该归档；分页仅未来调研、P1/非目标、remote CI/Ubuntu tidy未跑与发布权限维持原范围。

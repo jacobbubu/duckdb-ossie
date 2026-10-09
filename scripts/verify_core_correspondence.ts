@@ -1,4 +1,4 @@
-/** Characterize the remaining core schema deviations; acceptance is not conformance. */
+/** Verify core field correspondence and targeted validation; no full schema conformance claim. */
 import { join, resolve } from "node:path";
 import { writeFileSync } from "node:fs";
 import {
@@ -112,19 +112,12 @@ export async function verify(artifact: string) {
         },
         "unknown field",
       );
-      await accepted(
+      await refused(
         "malformed-extension",
         (m) => {
           m.custom_extensions = { data: 123 };
         },
-        (rows) =>
-          assert.deepEqual(
-            JSON.parse(
-              String(rows.find((r) => r.kind === "model")!.custom_extensions),
-            ),
-            { data: 123 },
-          ),
-        "custom extension container/member schema not validated; raw descriptive value retained",
+        "field 'custom_extensions' must be an array",
       );
       await accepted(
         "ai-vendor-property",
@@ -140,19 +133,14 @@ export async function verify(artifact: string) {
           ),
         "valid additional AI properties preserved as descriptive JSON",
       );
-      await accepted(
+      await refused(
         "lowercase-dialect",
         (m) => {
           m.datasets[0].fields[0].expression.dialects = [
             { dialect: "ansi_sql", expression: "day" },
           ];
         },
-        (rows) => {
-          const row = rows.find((r) => r.kind === "field" && r.name === "day")!;
-          assert.equal(row.expression_dialect, "ANSI_SQL");
-          assert.deepEqual(row.available_dialects, ["ansi_sql"]);
-        },
-        "case-insensitive dialect acceptance extends exact schema enum",
+        "unsupported dialect name",
       );
       await refused(
         "numeric-expression",
@@ -664,6 +652,235 @@ export async function verify(artifact: string) {
           "AI additionalProperties=true remains legal and faithfully descriptive across all scopes",
         );
       }
+      const invalidExtensions: {
+        name: string;
+        value: unknown;
+        diagnostic: string;
+      }[] = [];
+      for (const [kind, value] of [
+        ["null", null],
+        ["boolean", true],
+        ["integer", 123],
+        ["string", "text"],
+        ["object", {}],
+      ] as const)
+        invalidExtensions.push({
+          name: `container-${kind}`,
+          value,
+          diagnostic: "field 'custom_extensions' must be an array",
+        });
+      for (const [kind, value] of [
+        ["null", null],
+        ["boolean", true],
+        ["integer", 123],
+        ["string", "text"],
+        ["array", []],
+      ] as const)
+        invalidExtensions.push({
+          name: `member-${kind}`,
+          value: [value],
+          diagnostic: "member at index 0 must be an object",
+        });
+      invalidExtensions.push(
+        {
+          name: "missing-vendor",
+          value: [{ data: "text" }],
+          diagnostic: "required string field 'vendor_name'",
+        },
+        {
+          name: "missing-data",
+          value: [{ vendor_name: "custom" }],
+          diagnostic: "required string field 'data'",
+        },
+      );
+      for (const key of ["vendor_name", "data"])
+        for (const [kind, value] of [
+          ["null", null],
+          ["boolean", true],
+          ["integer", 123],
+          ["real", 1.5],
+          ["object", {}],
+          ["array", []],
+        ] as const)
+          invalidExtensions.push({
+            name: `${key}-${kind}`,
+            value: [{ vendor_name: "custom", data: "text", [key]: value }],
+            diagnostic:
+              value === null
+                ? `required string field '${key}'`
+                : `field '${key}' must be a string`,
+          });
+      for (const [kind, key] of [
+        ["unknown", "vendor_rule"],
+        ["case", "Vendor_name"],
+        ["nul", "vendor_name\0suffix"],
+      ])
+        invalidExtensions.push({
+          name: `key-${kind}`,
+          value: [{ vendor_name: "custom", data: "text", [key!]: true }],
+          diagnostic: "unknown field",
+        });
+      invalidExtensions.push({
+        name: "second-member",
+        value: [
+          { vendor_name: "custom", data: "text" },
+          { vendor_name: "custom", data: false },
+        ],
+        diagnostic: "member at index 1 field 'data' must be a string",
+      });
+      for (const scope of [
+        "model",
+        "dataset",
+        "field",
+        "metric",
+        "relationship",
+      ]) {
+        function target(m: any) {
+          m.relationships = [
+            {
+              name: "self",
+              from: "facts",
+              to: "facts",
+              from_columns: ["amount"],
+              to_columns: ["amount"],
+            },
+          ];
+          return scope === "model"
+            ? m
+            : scope === "dataset"
+              ? m.datasets[0]
+              : scope === "field"
+                ? m.datasets[0].fields[7]
+                : scope === "metric"
+                  ? m.metrics[0]
+                  : m.relationships[0];
+        }
+        for (const test of invalidExtensions)
+          await refused(
+            `extension-${scope}-${test.name}`,
+            (m) => {
+              target(m).custom_extensions = test.value;
+            },
+            test.diagnostic,
+          );
+        for (const [kind, extensions] of [
+          ["empty", []],
+          [
+            "strings",
+            [
+              { vendor_name: "自定义\0厂商", data: 'not JSON\0中文\\"\n\t' },
+              { vendor_name: "", data: "" },
+            ],
+          ],
+        ] as const)
+          await accepted(
+            `extension-${scope}-${kind}`,
+            (m) => {
+              target(m).custom_extensions = extensions;
+            },
+            (rows) => {
+              const row = rows.find(
+                (r) =>
+                  r.kind === scope &&
+                  (scope !== "field" || r.name === "amount"),
+              )!;
+              assert.deepEqual(
+                JSON.parse(String(row.custom_extensions)),
+                extensions,
+              );
+            },
+            "valid extension strings preserved; free vendor/empty data accepted; no JSON-content constraint",
+          );
+      }
+      const vocabulary = schema.$defs.Dialect.enum as string[];
+      await accepted(
+        "all-standard-dialects",
+        (m) => {
+          m.datasets[0].fields[0].expression.dialects = vocabulary.map(
+            (dialect) => ({
+              dialect,
+              expression:
+                dialect === "ANSI_SQL" || dialect === "OSSIE_SQL_2026"
+                  ? "day"
+                  : "vendor syntax deliberately not parsed",
+            }),
+          );
+        },
+        (rows) => {
+          const row = rows.find((r) => r.kind === "field" && r.name === "day")!;
+          assert.deepEqual(row.available_dialects, vocabulary);
+          assert.equal(row.expression_dialect, "OSSIE_SQL_2026");
+        },
+        "all eleven enum names retained; only the chosen executable variant parsed; deterministic OSSIE precedence",
+      );
+      for (const scope of ["field", "metric"])
+        for (const [kind, dialect] of [
+          ["lowercase", "ansi_sql"],
+          ["mixedcase", "Ansi_SQL"],
+          ["unknown", "DUCKDB"],
+          ["empty", ""],
+          ["nul", "ANSI_SQL\0suffix"],
+        ])
+          await refused(
+            `dialect-${scope}-${kind}`,
+            (m) => {
+              const target =
+                scope === "field" ? m.datasets[0].fields[0] : m.metrics[0];
+              const expression =
+                scope === "field" ? "day" : "AVG(facts.amount)";
+              target.expression.dialects = [
+                { dialect, expression },
+                { dialect: "ANSI_SQL", expression },
+              ];
+            },
+            "unsupported dialect name",
+          );
+      for (const dialect of vocabulary.filter(
+        (d) => d !== "ANSI_SQL" && d !== "OSSIE_SQL_2026",
+      ))
+        await refused(
+          `valid-but-not-executable-${dialect}`,
+          (m) => {
+            m.datasets[0].fields[0].expression.dialects = [
+              { dialect, expression: "vendor syntax" },
+            ];
+          },
+          "no expression in a dialect this extension can",
+        );
+      for (const [kind, extra] of [
+        [
+          "extension",
+          "custom_extensions:\n  - vendor_name: custom\n    data: true\n",
+        ],
+        [
+          "dialect",
+          "datasets:\n  - name: facts\n    source: memory.main.facts\n    fields:\n      - name: amount\n        expression:\n          dialects:\n            - dialect: ansi_sql\n              expression: amount\n",
+        ],
+      ] as const) {
+        const text =
+          kind === "extension"
+            ? yamlBase + extra
+            : 'version: "0.2.0.dev0"\nname: "123"\n' + extra;
+        writeFileSync(yaml, text);
+        const prior = await db.records("SELECT * FROM ossie_metadata()");
+        await assert.rejects(
+          db.run("CALL ossie_load(?)", [yaml]),
+          kind === "extension"
+            ? /field 'data' must be a string/
+            : /unsupported dialect name/,
+        );
+        assert.deepEqual(
+          await db.records("SELECT * FROM ossie_metadata()"),
+          prior,
+        );
+        observations.push({
+          name: `yaml-${kind}`,
+          accepted: false,
+          classification:
+            "YAML extension/dialect schema check retains prior state",
+          input_sha256: digest(yaml),
+        });
+      }
       const emptyKey = json<any>(base);
       emptyKey.datasets[0].unique_keys = [[]];
       const emptyPath = join(directory, "empty-unique-key.json");
@@ -702,8 +919,8 @@ export async function verify(artifact: string) {
     ];
     return {
       scope:
-        "read-only characterization and complete schema property inventory, not approval of deviations or full conformance",
-      base_commit: "1312b23",
+        "targeted core validation and complete schema property inventory; not full JSON Schema conformance",
+      base_commit: "31d78c4",
       engine,
       artifact_sha256: digest(artifact),
       verifier_sha256: digest(import.meta.path),
@@ -724,9 +941,9 @@ export async function verify(artifact: string) {
       observations,
       production_changed: true,
       remaining: [
-        "final R2 acceptance still requires remaining validation deviation conclusion",
-        "extension/dialect validation deviations need explicit compatibility conclusion",
-        "final rule-driven P0 acceptance",
+        "final rule-driven A1-A8 acceptance archive remains",
+        "declared source/execution limitations and empty unique-key refusal remain; no full JSON Schema conformance claim",
+        "bounded execution profiles and remote verification remain separately scoped",
       ],
     };
   } finally {

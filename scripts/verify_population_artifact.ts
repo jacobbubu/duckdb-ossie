@@ -13,6 +13,7 @@ import {
   type Cell,
 } from "./artifact_helpers.ts";
 import { filesUnder } from "./check_architecture.ts";
+import { populationError } from "./population_error.ts";
 const EVIDENCE = join(ROOT, "docs/research/ossie-req-001"),
   DEFINITIONS = join(EVIDENCE, "proposed-definitions");
 const FILTERS = [
@@ -460,6 +461,31 @@ export async function verify(artifact: string) {
       descriptive[0].metrics[0].custom_extensions = [
         { vendor: "quality-control", data: JSON.stringify({ unit: "CNY" }) },
       ];
+      await assert.rejects(
+        load(con, bundleFiles(directory, descriptive)),
+        (error: Error) => {
+          const failure = populationError(error.message);
+          assert.equal(failure?.code, "LOAD_FAILED");
+          assert.equal(failure?.stage, "load");
+          assert(failure?.reason.includes('unknown field "vendor"'));
+          return true;
+        },
+      );
+      assert.deepEqual(await objects(con, []), beforeIds);
+      assert.deepEqual((await metric(con, []))[0], beforeValues);
+      rejected.push("legacy malformed vendor extension retains population");
+      descriptive[0].custom_extensions = [
+        {
+          vendor_name: "quality-control",
+          data: JSON.stringify({ unit: "CNY", scale: 1000 }),
+        },
+      ];
+      descriptive[0].metrics[0].custom_extensions = [
+        {
+          vendor_name: "quality-control",
+          data: JSON.stringify({ unit: "CNY" }),
+        },
+      ];
       const modified = await load(con, bundleFiles(directory, descriptive));
       assert.equal(modified[2], unchanged[2]);
       assert.deepEqual(await objects(con, []), beforeIds);
@@ -709,7 +735,7 @@ export async function verify(artifact: string) {
         [null],
       );
     });
-    assert.equal(rejected.length, 46);
+    assert.equal(rejected.length, 47);
     await assert.rejects(
       con.run("SELECT * FROM system.main._ossie_snapshot_rows()"),
       /internal frozen AST dependency required/,
@@ -836,6 +862,7 @@ export async function verify(artifact: string) {
         .sort()
         .map((name) => join(ROOT, "test/fixtures/population", name)),
       join(ROOT, "test/sql/ossie_population.test"),
+      join(ROOT, "scripts/population_error.ts"),
     ];
     return {
       scope:

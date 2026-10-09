@@ -265,6 +265,28 @@ export async function verify(artifact: string) {
       }
       const path = join(directory, "bundle.json");
       writeFileSync(path, JSON.stringify(manifest));
+      const beforeMalformed = await db.rows(
+        "SELECT * FROM ossie_population_fields() ORDER BY dataset,name",
+      );
+      await assert.rejects(
+        db.run("CALL ossie_bundle_load(?)", [path]),
+        /field 'custom_extensions' must be an array/,
+      );
+      assert.deepEqual(
+        await db.rows(
+          "SELECT * FROM ossie_population_fields() ORDER BY dataset,name",
+        ),
+        beforeMalformed,
+      );
+      checks.push(
+        "malformed descriptive extension refuses without changing discovery",
+      );
+      dim.fields.at(-1).custom_extensions = [
+        { vendor_name: "vendor.unit", data: "text" },
+      ];
+      writeFileSync(manifest.core.path, JSON.stringify(core));
+      manifest.core.sha256 = digest(manifest.core.path);
+      writeFileSync(path, JSON.stringify(manifest));
       await db.run("CALL ossie_bundle_load(?)", [path]);
       const synthetic = await discovery();
       const field = synthetic.fields.find((f) => f.name === 'display "label')!;
@@ -285,10 +307,9 @@ export async function verify(artifact: string) {
           JSON.parse(String(field.ai_context_json)).vendor,
           "retained",
         );
-        assert.equal(
-          JSON.parse(String(field.custom_extensions_json))["vendor.unit"],
-          "text",
-        );
+        assert.deepEqual(JSON.parse(String(field.custom_extensions_json)), [
+          { vendor_name: "vendor.unit", data: "text" },
+        ]);
       });
       assert.deepEqual(
         await db.rows("SELECT * FROM ossie_concept_query(?,?,?,[])", [

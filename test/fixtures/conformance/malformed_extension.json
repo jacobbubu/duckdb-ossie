@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "closed_contract",
+  "datasets": [
+    {
+      "name": "facts",
+      "source": "memory.main.facts",
+      "fields": [
+        {
+          "name": "amount",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "amount"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "custom_extensions": [
+    {
+      "vendor_name": "custom",
+      "data": false
+    }
+  ]
+}

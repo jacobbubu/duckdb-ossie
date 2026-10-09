@@ -138,6 +138,35 @@ void ValidateKnownFields(yyjson_val *obj, std::initializer_list<const char *> al
 	}
 }
 
+string ParseCustomExtensions(yyjson_val *parent, const string &context) {
+	auto extensions = Member(parent, "custom_extensions");
+	if (!extensions) {
+		return string();
+	}
+	if (!yyjson_is_arr(extensions)) {
+		throw InvalidInputException("ossie_load: %s field 'custom_extensions' must be an array", context);
+	}
+	size_t idx, max;
+	yyjson_val *item;
+	yyjson_arr_foreach(extensions, idx, max, item) {
+		auto member_context = context + " custom_extensions member at index " + to_string(idx);
+		ValidateKnownFields(item, {"vendor_name", "data"}, member_context);
+		RequiredString(item, "vendor_name", member_context);
+		RequiredString(item, "data", member_context);
+	}
+	return JSONText(extensions);
+}
+
+bool IsKnownDialect(const string &dialect) {
+	for (auto allowed : {"ANSI_SQL", "SNOWFLAKE", "MDX", "TABLEAU", "DATABRICKS", "MAQL", "BIGQUERY", "SIGMA",
+	                     "THOUGHTSPOT", "DAX", "OSSIE_SQL_2026"}) {
+		if (dialect == allowed) {
+			return true;
+		}
+	}
+	return false;
+}
+
 string ParseDatatype(yyjson_val *parent, const string &context) {
 	auto value = Member(parent, "datatype");
 	if (!value) {
@@ -203,6 +232,11 @@ ModelExpression ParseModelExpression(yyjson_val *parent, const string &context) 
 	yyjson_arr_foreach(dialects, idx, max, item) {
 		ValidateKnownFields(item, {"dialect", "expression"}, context + " dialect variant");
 		auto dialect = RequiredString(item, "dialect", context);
+		if (!IsKnownDialect(dialect)) {
+			throw InvalidInputException(
+			    "ossie_load: %s has an unsupported dialect name %s; use the exact Ossie dialect vocabulary", context,
+			    JSONText(Member(item, "dialect")));
+		}
 		auto sql = RequiredString(item, "expression", context);
 		// DuckDB's text parser stops at NUL; accepting a prefix would change the model formula.
 		if (sql.find('\0') != string::npos) {
@@ -214,7 +248,7 @@ ModelExpression ParseModelExpression(yyjson_val *parent, const string &context) 
 
 	for (auto executable : EXECUTABLE_DIALECTS) {
 		for (auto &variant : variants) {
-			if (result.dialect.empty() && StringUtil::CIEquals(variant.first, executable)) {
+			if (result.dialect.empty() && variant.first == executable) {
 				result.dialect = executable;
 				result.sql = variant.second;
 			}
@@ -271,7 +305,7 @@ Field ParseField(yyjson_val *field_obj, const string &dataset_name) {
 	result.label = OptionalString(field_obj, "label", context);
 	result.description = OptionalString(field_obj, "description", context);
 	result.ai_context = ParseAIContext(field_obj, context);
-	result.custom_extensions_json = JSONText(Member(field_obj, "custom_extensions"));
+	result.custom_extensions_json = ParseCustomExtensions(field_obj, context);
 
 	result.is_time = result.datatype == "Date" || result.datatype == "Time" || result.datatype == "DateTime" ||
 	                 result.datatype == "DateTimeTz";
@@ -419,7 +453,7 @@ Dataset ParseDataset(yyjson_val *dataset_obj, const RebindMap &rebind) {
 	result.unique_keys = ParseUniqueKeys(dataset_obj, context);
 	result.description = OptionalString(dataset_obj, "description", context);
 	result.ai_context = ParseAIContext(dataset_obj, context);
-	result.custom_extensions_json = JSONText(Member(dataset_obj, "custom_extensions"));
+	result.custom_extensions_json = ParseCustomExtensions(dataset_obj, context);
 
 	auto fields = Member(dataset_obj, "fields");
 	if (fields) {
@@ -454,7 +488,7 @@ Relationship ParseRelationship(yyjson_val *obj) {
 	result.from_columns = StringArray(obj, "from_columns", context);
 	result.to_columns = StringArray(obj, "to_columns", context);
 	result.ai_context = ParseAIContext(obj, context);
-	result.custom_extensions_json = JSONText(Member(obj, "custom_extensions"));
+	result.custom_extensions_json = ParseCustomExtensions(obj, context);
 
 	if (result.from_columns.empty() || result.to_columns.empty()) {
 		throw InvalidInputException("ossie_load: %s must declare both 'from_columns' and 'to_columns'", context);
@@ -536,7 +570,7 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 	auto context = StringUtil::Format("semantic model \"%s\"", result.name);
 	result.description = OptionalString(model_obj, "description", context);
 	result.ai_context = ParseAIContext(model_obj, context);
-	result.custom_extensions_json = JSONText(Member(model_obj, "custom_extensions"));
+	result.custom_extensions_json = ParseCustomExtensions(model_obj, context);
 
 	auto datasets = Member(model_obj, "datasets");
 	if (!datasets || !yyjson_is_arr(datasets) || yyjson_arr_size(datasets) == 0) {
@@ -578,7 +612,7 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 			metric.datatype = ParseDatatype(item, metric_context);
 			metric.description = OptionalString(item, "description", metric_context);
 			metric.ai_context = ParseAIContext(item, metric_context);
-			metric.custom_extensions_json = JSONText(Member(item, "custom_extensions"));
+			metric.custom_extensions_json = ParseCustomExtensions(item, metric_context);
 
 			if (result.metric_index.find(metric.name) != result.metric_index.end()) {
 				throw InvalidInputException("ossie_load: %s declares metric \"%s\" more than once", context,

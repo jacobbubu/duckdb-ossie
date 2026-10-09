@@ -314,3 +314,18 @@ query T
 SELECT name FROM ossie_metadata() WHERE kind='model';
 ----
 nul_metadata
+
+statement error
+CALL ossie_load('test/fixtures/conformance/malformed_extension.json');
+----
+field 'data' must be a string
+
+statement error
+CALL ossie_load('test/fixtures/conformance/lowercase_dialect.json');
+----
+has an unsupported dialect name
+
+query T
+SELECT name FROM ossie_metadata() WHERE kind='model';
+----
+nul_metadata
