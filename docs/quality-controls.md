@@ -207,3 +207,16 @@ by the actual server; its compile template enables trace projections. New SQL
 envelope/prepared controls avoid a JSON-extension dependency; full JSON parsing
 is performed in the stock Bun verifier. See [the plan contract](population-plan.md).
 This is generated-AST evidence, not a physical plan or remote CI result.
+
+## Population discovery checkpoint
+
+The same-download matrix also runs `verify_discovery_artifact.ts`. It checks
+actual load-preflight types, original field and metric vocabulary, project API
+version/capabilities, separate core state, prepared discovery across reload,
+failed loads and immutable definition files. GAAP is the primary requirement
+fixture; non-GAAP joined controls cover discovered requests, reversed datasets
+and computed/quoted names. The existing joined verifier additionally checks
+quoted dataset provenance. Actual MCP probes read all four discovery resources
+and construct queries from returned names; there remain exactly three tools.
+See [the discovery contract](population-discovery.md). Validation flags describe
+successful load binding, not execution or arbitrary combined-request success.

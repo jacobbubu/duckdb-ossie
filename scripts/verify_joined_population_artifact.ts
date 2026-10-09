@@ -523,6 +523,37 @@ await temporary("ossie-frozen-join-", async (directory) => {
     );
     assert.equal(quoteMeta.metric_grain, 'Fact "Sales');
     assert(quoteMeta.physical_columns.some((x: any) => x.column === 'key"a'));
+    const quotedFields = await db.records(
+      "SELECT * FROM ossie_population_fields()",
+    );
+    assert(
+      quotedFields.some(
+        (field) =>
+          field.dataset === 'Fact "Sales' &&
+          field.name === "dim_id" &&
+          field.bound_type === "INTEGER",
+      ),
+    );
+    assert(
+      quotedFields.some(
+        (field) =>
+          field.dataset === 'Dim"Region' &&
+          field.name === "id" &&
+          field.bound_type === "INTEGER",
+      ),
+    );
+    for (const field of quotedFields) {
+      const compiled = await db.one(
+        "SELECT plan_json FROM ossie_concept_compile('User',['record_count'],?,[])",
+        [[String(field.qualified_name)]],
+      );
+      assert.equal(
+        JSON.parse(String(compiled[0])).declared_fields.some(
+          (f: any) => f.dataset === field.dataset && f.name === field.name,
+        ),
+        true,
+      );
+    }
     const quotedPlan = JSON.parse(
       String(
         (
@@ -628,6 +659,7 @@ await temporary("ossie-frozen-join-", async (directory) => {
       quoted_sources_and_columns: true,
       computed_fields_and_ratio: true,
       plan_provenance_controls: { quoted: quotedPlan, computed: computedPlan },
+      discovery_quoted_fields: quotedFields,
       limits: "canonical input/result; not peak memory",
       concurrent_capture: "not deterministically injected by this verifier",
     });

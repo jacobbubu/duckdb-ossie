@@ -188,11 +188,13 @@ export async function verify(artifact: string) {
         }
         const resources = (await server.request(++id, "resources/list")).result
           ?.resources;
-        check(label + ": concepts URI", () =>
-          assert.deepEqual(
-            resources?.map((r) => r.uri),
-            ["ossie://population/concepts"],
-          ),
+        check(label + ": discovery URIs", () =>
+          assert.deepEqual(resources?.map((r) => r.uri).sort(), [
+            "ossie://population/capabilities",
+            "ossie://population/concepts",
+            "ossie://population/fields",
+            "ossie://population/metrics",
+          ]),
         );
         const read = await server.request(++id, "resources/read", {
           uri: "ossie://population/concepts",
@@ -206,6 +208,64 @@ export async function verify(artifact: string) {
             "ValidUser",
           ]),
         );
+        const vocabulary: Record<string, Row[]> = {};
+        for (const kind of ["metrics", "fields", "capabilities"]) {
+          const response = await server.request(++id, "resources/read", {
+            uri: "ossie://population/" + kind,
+          });
+          assert(
+            !response.error && !response.result?.isError,
+            JSON.stringify(response),
+          );
+          const content = response.result?.contents as { text: string }[];
+          vocabulary[kind] = JSON.parse(content[0].text);
+        }
+        check(label + ": actual versioned vocabulary content", () => {
+          const capability = vocabulary.capabilities![0]!;
+          assert.equal(capability.api_version, "1.0.0");
+          assert.equal(
+            capability.discovery_schema,
+            "ossie-population-discovery-v1",
+          );
+          assert.equal(capability.plan_schema, "ossie-population-plan-v1");
+          assert.equal(
+            JSON.parse(String(capability.capabilities_json)).uniform_errors,
+            false,
+          );
+          assert(
+            vocabulary.metrics!.length > 0 && vocabulary.fields!.length > 0,
+          );
+          for (const row of [...vocabulary.metrics!, ...vocabulary.fields!]) {
+            assert.equal(row.snapshot_id, concepts[0]!.snapshot_id);
+            assert.equal(row.core_sha256, concepts[0]!.core_sha256);
+            assert.equal(row.load_preflight_validated, true);
+            assert.equal(row.execution_verified, false);
+            assert.equal(typeof row.bound_type, "string");
+          }
+        });
+        const metric = vocabulary.metrics![0]!,
+          field = vocabulary.fields![0]!;
+        const generic = await rows("population_query", {
+          concept: concepts[0]!.concept,
+          metrics: JSON.stringify([metric.name]),
+          dimensions: JSON.stringify([field.qualified_name]),
+          filters: "[]",
+        });
+        check(label + ": resource-driven generic query", () => {
+          assert(generic.length > 0);
+          assert(
+            generic.every(
+              (row) =>
+                Object.hasOwn(row, String(metric.name)) &&
+                Object.hasOwn(row, String(field.qualified_name)),
+            ),
+          );
+          assert(
+            generic.every(
+              (row) => row._ossie_snapshot_id === concepts[0]!.snapshot_id,
+            ),
+          );
+        });
         for (const tool of [
           "query",
           "export",
@@ -223,7 +283,12 @@ export async function verify(artifact: string) {
           );
         }
         await action(server, call, rows);
-        cases.push({ label, server_info: hello.result!.serverInfo, concepts });
+        cases.push({
+          label,
+          server_info: hello.result!.serverInfo,
+          concepts,
+          vocabulary,
+        });
       } finally {
         await server.close();
       }

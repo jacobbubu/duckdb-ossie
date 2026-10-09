@@ -242,6 +242,8 @@ struct Bundle {
 	Model model;
 	// Parsed/lowered definition model, before replacing source names and flattening fields.
 	Model definition_model;
+	// Types come from the successful production load preflight, never from datatype labels.
+	case_insensitive_map_t<string> field_types, metric_types;
 	string ontology_name, ontology_version, mapping_name, mapping_version;
 	vector<CaptureEvidence> inputs;
 	string capture_join = "null";
@@ -1344,6 +1346,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 			Fail(dataset.fields[index].name, "bind",
 			     "logical datatype incompatible with bound physical expression type");
 		}
+		bundle->field_types[dataset.fields[index].name] = prepared->GetTypes()[index].ToString();
 	}
 	for (auto &field : dataset.fields)
 		BooleanContexts(*bundle, *FieldTree(*bundle, field.name));
@@ -1364,6 +1367,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 			Fail(metric.name, "bind", bound->GetError());
 		if (!Matches(metric.datatype, bound->GetTypes()[0]))
 			Fail(metric.name, "bind", "metric datatype incompatible with bound aggregate type");
+		bundle->metric_types[metric.name] = bound->GetTypes()[0].ToString();
 	}
 	CheckBoolean(*bundle, *bundle->rule);
 	for (auto &attribute : bundle->attributes) {
@@ -1584,6 +1588,7 @@ struct PopulationBind : TableFunctionData {
 	bool load = false;
 	bool compile = false;
 	bool discover = false;
+	string vocabulary;
 };
 
 struct PopulationScan : GlobalTableFunctionState {
@@ -1623,6 +1628,149 @@ unique_ptr<FunctionData> DiscoverBind(ClientContext &context, TableFunctionBindI
 	types = vector<LogicalType>(12, LogicalType::VARCHAR);
 	types.push_back(LogicalType::BIGINT);
 	return std::move(result);
+}
+
+// Versioned separately from the Ossie document and diagnostic plan schema.
+constexpr const char *POPULATION_API_VERSION = "1.0.0";
+
+unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBindInput &input,
+                                        vector<LogicalType> &types, vector<string> &names) {
+	auto result = make_uniq<PopulationBind>();
+	result->bundle = Current(context);
+	result->vocabulary = input.table_function.name;
+	if (result->vocabulary == "ossie_population_metrics") {
+		names = {"name",
+		         "datatype",
+		         "bound_type",
+		         "description",
+		         "expression",
+		         "selected_dialect",
+		         "available_dialects_json",
+		         "synonyms_json",
+		         "examples_json",
+		         "instructions",
+		         "ai_context_json",
+		         "custom_extensions_json",
+		         "load_preflight_validated",
+		         "execution_verified"};
+		types = vector<LogicalType>(12, LogicalType::VARCHAR);
+		types.push_back(LogicalType::BOOLEAN);
+		types.push_back(LogicalType::BOOLEAN);
+	} else if (result->vocabulary == "ossie_population_fields") {
+		names = {"dataset",
+		         "name",
+		         "qualified_name",
+		         "object_column",
+		         "datatype",
+		         "bound_type",
+		         "label",
+		         "description",
+		         "expression",
+		         "selected_dialect",
+		         "available_dialects_json",
+		         "synonyms_json",
+		         "examples_json",
+		         "instructions",
+		         "ai_context_json",
+		         "custom_extensions_json",
+		         "is_time",
+		         "is_time_explicit",
+		         "is_computed",
+		         "load_preflight_validated",
+		         "execution_verified"};
+		types = vector<LogicalType>(16, LogicalType::VARCHAR);
+		for (idx_t i = 0; i < 5; i++)
+			types.push_back(LogicalType::BOOLEAN);
+	} else {
+		names = {"api_version", "discovery_schema", "plan_schema", "ossie_spec_version", "capabilities_json"};
+		types = vector<LogicalType>(5, LogicalType::VARCHAR);
+	}
+	for (auto name : {"profile", "snapshot_id", "content_sha256", "core_sha256", "ontology_sha256", "mapping_sha256",
+	                  "manifest_sha256"}) {
+		names.push_back(name);
+		types.push_back(LogicalType::VARCHAR);
+	}
+	return std::move(result);
+}
+
+void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
+	auto &b = *data.bundle;
+	auto append = [&](vector<Value> row) {
+		for (auto value :
+		     {b.profile, b.snapshot_id, b.content_hash, b.core_hash, b.ontology_hash, b.mapping_hash, b.manifest_hash})
+			row.push_back(Value(value));
+		rows.push_back(std::move(row));
+	};
+	if (data.vocabulary == "ossie_population_metrics") {
+		for (auto &m : b.definition_model.metrics) {
+			append({Value(m.name), Value(m.datatype), Value(b.metric_types.at(m.name)), Value(m.description),
+			        Value(m.expression.sql), Value(m.expression.dialect),
+			        Value(JSONStrings(m.expression.available_dialects)), Value(JSONStrings(m.ai_context.synonyms)),
+			        Value(JSONStrings(m.ai_context.examples)), Value(m.ai_context.instructions),
+			        Value(m.ai_context.raw_json), Value(m.custom_extensions_json), Value::BOOLEAN(true),
+			        Value::BOOLEAN(false)});
+		}
+	} else if (data.vocabulary == "ossie_population_fields") {
+		for (auto &dataset : b.definition_model.datasets) {
+			for (auto &f : dataset.fields) {
+				auto qualified = make_uniq<ColumnRefExpression>(f.name, dataset.name)->ToString();
+				auto internal = LogicalField(b, qualified);
+				append({Value(dataset.name),
+				        Value(f.name),
+				        Value(qualified),
+				        Value(OriginalName(b, internal)),
+				        Value(f.datatype),
+				        Value(b.field_types.at(internal)),
+				        Value(f.label),
+				        Value(f.description),
+				        Value(f.expression.sql),
+				        Value(f.expression.dialect),
+				        Value(JSONStrings(f.expression.available_dialects)),
+				        Value(JSONStrings(f.ai_context.synonyms)),
+				        Value(JSONStrings(f.ai_context.examples)),
+				        Value(f.ai_context.instructions),
+				        Value(f.ai_context.raw_json),
+				        Value(f.custom_extensions_json),
+				        Value::BOOLEAN(f.is_time),
+				        Value::BOOLEAN(f.is_time_explicit),
+				        Value::BOOLEAN(f.is_computed),
+				        Value::BOOLEAN(true),
+				        Value::BOOLEAN(false)});
+			}
+		}
+	} else {
+		string capabilities =
+		    "{\"scope\":\"bound frozen bundle\",\"concepts\":" + JSONStrings({b.root, b.derived}) +
+		    ",\"engine\":{\"version\":" + JSONString(DuckDB::LibraryVersion()) +
+		    ",\"source_id\":" + JSONString(DuckDB::SourceID()) +
+		    "},"
+		    "\"supported_profiles\":[\"gaap-scalar-population-v1\",\"fact-dimension-population-v1\"],"
+		    "\"validation\":\"all declarations pass load AST/type/individual expression binding preflight; "
+		    "fields projected together; each metric without grouping; combined requests require separate binding\","
+		    "\"input_limits\":{\"rows_per_input\":" +
+		    to_string(MAX_ROWS) +
+		    ",\"physical_columns_per_input\":256,\"canonical_bytes_per_input_or_joined_result\":" +
+		    to_string(MAX_BYTES) +
+		    ",\"peak_memory_bound\":false},"
+		    "\"request_limits\":{\"metrics\":64,\"dimensions\":256,\"filters\":64},"
+		    "\"execution\":{\"source\":\"committed native DuckDB tables\",\"reload\":\"explicit operator reload\","
+		    "\"identity\":\"one observation per entity per batch\",\"filters\":\"strict scalar predicates narrow the "
+		    "concept rule\","
+		    "\"time\":\"DATE; no inferred range or calendar completion\",\"live_query_join\":false,"
+		    "\"capture_join\":" +
+		    b.capture_join +
+		    "},"
+		    "\"results\":{\"ordering\":\"unspecified\",\"groups\":\"sparse\",\"paging\":false,"
+		    "\"query_truncation\":false,\"empty_result_row_trace\":false},"
+		    "\"compile\":{\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"sql_replayable\":"
+		    "false},"
+		    "\"mcp_example\":{\"list_encoding\":\"JSON-encoded string "
+		    "arrays\",\"exact_numeric_transport_verified\":false,"
+		    "\"transport_size_and_truncation_verified\":\"fixed fixtures only\"},"
+		    "\"uniform_errors\":false,\"arbitrary_ontology_execution\":false,\"cross_call_reload_atomicity\":false}";
+		append({Value(POPULATION_API_VERSION), Value("ossie-population-discovery-v1"),
+		        Value("ossie-population-plan-v1"), Value(b.definition_model.spec_version), Value(capabilities)});
+	}
 }
 
 unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
@@ -1708,6 +1856,8 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 		if (context.IsInterrupted())
 			throw InterruptException();
 		PopulationState::Get(context).SetBundle(std::move(bundle));
+	} else if (!data.vocabulary.empty()) {
+		VocabularyRows(data, result->rows);
 	} else if (data.discover) {
 		auto &b = *data.bundle;
 		for (auto concept : {b.root, b.derived}) {
@@ -1774,6 +1924,14 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	                 "Discover the two executable concepts in the current frozen batch, with parent, identity, rule, "
 	                 "definition hashes, source and snapshot identity. Database-wide state is captured at binding.",
 	                 "SELECT * FROM ossie_concepts()");
+	for (auto name : {"ossie_population_metrics", "ossie_population_fields", "ossie_population_capabilities"}) {
+		RegisterDescribe(
+		    loader, TableFunction(name, {}, Scan, VocabularyBind, Init),
+		    "Discover the bound immutable population bundle vocabulary or project API capabilities. "
+		    "Original names/definitions and actual load-preflight types retain snapshot hashes; "
+		    "individual preflight does not guarantee arbitrary combined requests. Independent of core model state.",
+		    "SELECT * FROM " + string(name) + "()");
+	}
 	RegisterDescribe(loader,
 	                 traced(TableFunction("ossie_objects", {LogicalType::VARCHAR, list}, Scan, RequestBind, Init)),
 	                 "Return entity_id, record_id and every logical field for a concept in the bound immutable batch. "

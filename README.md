@@ -164,7 +164,10 @@ refused with *Tool not found*. `scripts/mcp_check.ts` asserts this on every push
 > a database you are willing to expose in full.
 
 The frozen population APIs have a separate [MCP server example](examples/population_server.sql)
-with concept discovery and object/query/compile tools. See [its calling contract](docs/population-mcp.md)
+with concept/metric/field/capability discovery and object/query/compile tools.
+The [population discovery contract](docs/population-discovery.md) separates declared
+types from actual load-preflight types and versions this project's API independently
+of the Ossie format. See [its calling contract](docs/population-mcp.md)
 for explicit JSON list encoding, trusted operator setup, trace, refusals and numeric transport limits.
 
 ## Building & Contributing

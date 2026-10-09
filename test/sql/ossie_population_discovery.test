@@ -1,0 +1,61 @@
+# name: test/sql/ossie_population_discovery.test
+# description: bound population vocabulary and project API version
+# group: [sql]
+
+require ossie
+
+statement error
+SELECT * FROM ossie_population_fields();
+----
+no bundle loaded
+
+statement ok
+CREATE TABLE dws_gaap_di(ds DATE, product VARCHAR, region VARCHAR, user_type VARCHAR, user_id VARCHAR, gaap_val DECIMAL(18,2), ytd_gaap DECIMAL(18,2));
+
+statement ok
+COPY dws_gaap_di FROM 'docs/research/ossie-req-001/gaap-boundary.csv' (HEADER);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population/bundle-10.json');
+
+query TTTII rowsort
+SELECT name,datatype,bound_type,load_preflight_validated::INTEGER,execution_verified::INTEGER FROM ossie_population_metrics();
+----
+gaap_sum	(empty)	DECIMAL(38,2)	1	0
+gaap_value_count	(empty)	BIGINT	1	0
+mean_gaap	Float	DOUBLE	1	0
+record_count	(empty)	BIGINT	1	0
+
+query TTTII
+SELECT qualified_name,object_column,bound_type,is_time::INTEGER,is_time_explicit::INTEGER FROM ossie_population_fields() WHERE name='ds';
+----
+dws_gaap_di.ds	dws_gaap_di.ds	DATE	1	0
+
+query TTTT
+SELECT api_version,discovery_schema,plan_schema,ossie_spec_version FROM ossie_population_capabilities();
+----
+1.0.0	ossie-population-discovery-v1	ossie-population-plan-v1	0.2.0.dev0
+
+query I
+SELECT count(DISTINCT snapshot_id) FROM (SELECT snapshot_id FROM ossie_population_metrics() UNION ALL SELECT snapshot_id FROM ossie_population_fields() UNION ALL SELECT snapshot_id FROM ossie_population_capabilities());
+----
+1
+
+statement ok
+CREATE TABLE old_manifest AS SELECT manifest_sha256 FROM ossie_population_capabilities();
+
+statement ok
+PREPARE old_discovery AS SELECT (current.manifest_sha256=old_manifest.manifest_sha256)::INTEGER FROM ossie_population_capabilities() current,old_manifest;
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population/bundle-20.json');
+
+query I
+SELECT (old_manifest.manifest_sha256 <> current.manifest_sha256)::INTEGER FROM old_manifest,ossie_population_capabilities() current;
+----
+1
+
+query I
+EXECUTE old_discovery;
+----
+1

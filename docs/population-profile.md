@@ -5,6 +5,10 @@ slice against pinned Ossie `0.2.0.dev0` and DuckDB 1.5.6. It provides one root
 EntityType and one derived EntityType with scalar attributes and a scalar
 membership rule. It does not represent full Ossie ontology conformance.
 
+[Population discovery](population-discovery.md) exposes the bound bundle's
+original metric/field names, successful load-preflight types, and versioned
+capabilities. It is separate from the core model discovery state.
+
 ## Load a definition bundle
 
 The implementation manifest is separate from the three standard documents:

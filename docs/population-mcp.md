@@ -1,7 +1,7 @@
 # Population over MCP
 
 [population_server.sql](../examples/population_server.sql) exposes the frozen
-population APIs through three separate tools and one readable concept resource.
+population APIs through three separate tools and four readable discovery resources.
 It imports the reviewed 475-row GAAP fixture and loads the threshold-10 manifest
 before starting stdio. The ordinary core-model server remains a separate example.
 
@@ -18,8 +18,8 @@ local build, copy the script and replace its `INSTALL ossie` / `LOAD ossie` line
 The actual-artifact verifier uses this path, without installing Ossie from the registry.
 
 The operator owns the marked setup block, manifest, physical import and allowed
-metric/dimension vocabulary. Replace those together for another profile; the demo
-query description names GAAP metrics and must be updated for a different model.
+metric/dimension vocabulary. Replace the setup and definitions for another profile;
+the tool templates discover vocabulary from the bound bundle without GAAP names.
 Loading a reviewed bundle is not authorization to serve unreviewed data or definitions.
 This example does not implement user identity, tenant permissions or a deployment.
 No tool imports, reloads or changes rules. Restart with another trusted setup to
@@ -31,7 +31,12 @@ three tool templates.
 Read `ossie://population/concepts` with `resources/read`. Its JSON content comes
 from `ossie_concepts()` and contains executable concepts, parent, original rule,
 identity, profile, original source and definition/data snapshot hashes. It is an
-operator-startup resource; it is not a metric/field discovery endpoint. The separate
+operator-startup resource. Also read `ossie://population/metrics`,
+`ossie://population/fields` and `ossie://population/capabilities`, backed by the
+three [population discovery functions](population-discovery.md). Use metric `name`
+and field `qualified_name` exactly; the latter includes SQL identifier quoting.
+`object_column` is the literal key in object results. Compare snapshot and
+definition hashes across resources and calls. The separate
 `ossie_metrics()` state is not the population bundle and is not published here.
 
 All tool arguments are required. `concept` is an exact discovered name; each list

@@ -397,6 +397,10 @@ R7验收差距回顾（沿现issue/计划，不另建backlog）：
 
 本工作包本地完成，下一动作提交保留、不推送。整体P0和完整A1–A8尚未完成。下一授权本地工作优先R7.2实际机器可读compile说明与同快照证明，继续复用shared生产AST；先核对既有模型方言/原表达式/展平provenance，再确定最小字段契约。后续时间/calendar/多期身份/更广ontology与remoteCI仍是显式剩余，不因本轮MCP通过扩大语义/发布范围。
 
+## R7 词汇发现与接口版本 checkpoint（2026-10-09，恢复）
+
+用户选择 GAAP 为主要验收用例、保留原 TPC-DS 示例，并授权继续本地开发。沿用 OSSIE-REQ-001：新增 bound bundle 的指标/字段发现及项目接口版本/能力说明；不复用另一套 core state 的 ossie_metrics/ossie_fields。发现保留原逻辑名字、定义表达式/方言、说明和时间角色，并关联实际快照/定义哈希。加载已经对所有字段及各指标做真实类型/AST/绑定预检；发现不得把单项预检宣称为任意组合请求可执行。计划复用该预检的实际类型，不执行新的业务查询。MCP 增加对应资源、移除说明中写死的 GAAP 词汇。验收包括 GAAP、非 GAAP/双表原 namespace、旧 prepared/reload/失败加载、不受独立 core load 影响、真实 MCP resource 内容和同产物验证。架构取舍使用现有只读 Advisor，requested Astra/high，effective backend/effort/usage/billing unknown。统一错误、精确数值 transport、超 fixture 截断/大小和整体 P0/A1–A8 仍是后续必要工作；本轮无 push/merge/发布授权。
+
 ## R7 实际编译说明 checkpoint（2026-10-09，恢复）
 
 e26f2df已本地提交，当前工作区干净。用户确认MCP业务接口为本项目契约后授权继续下一步。当前包补ossie_concept_compile机器可读plan_json，项目schema独立版本，非Ossie/MCP标准字段。须分原始definition provenance和最终production QueryAST；保留原模型方言/字段/时间角色/metric定义及经检查的join策略，final WHERE/projections/GROUP BY/from均取同一statement。阈值/root-无派生规则、大小写canonical名称、NULL/空集、single/joined、旧prepared跨reload、实际MCP输出验证。时间仅公布实际谓词和声明时间角色，不从OR等复杂表达式虚构单一区间；不宣称physical optimizer plan或compile已执行。原SQL/版本hash/目标字段及最终executed=false保持可识别；新增列为接口schema变化，消费者应按列名而非固定列数。范围为本地生产metadata及必要测试，不改业务公式、query semantics、core API、vendor或服务发布/推送授权。Advisor限定review粒度/方言/原始与展平来源准确性；requested Astra/high，有效backend/effort/usage/billing unknown。当前R7.5错误统一、完整population词汇发现及JSON精确数值/超fixture截断仍保留，不悄悄混入本包。
@@ -410,3 +414,17 @@ e26f2df已本地提交，当前工作区干净。用户确认MCP业务接口为�
 保留失败：首次手动stockprobe用relative LOAD被macOS hardened CLI拒绝，已用绝对path和-bail纠正；一次patch位置受formatter变动未命中，一次临时Python编辑脚本引号语法错误均未成功写入，之后按实际源码patch。首次新增SQL require命令未空行，测试parser报错；补空行后发现require json会使该用例skip（build tree不含json），移除依赖并以text envelope控制+stock完整JSON检查替代；新增comment空行formatter要求随后修正，最终20用例均实际执行。新verifier先误认为重复输出可直接执行，真实binder拒绝后改成“诊断ordinal保留+真实执行拒绝+正常执行对照”，不放宽生产binder。初次OR手算漏4月1日，核对原不可变CSV e11 productX/ytd20/gaap100后，正确三组为03-01 count2/sum10（e04 NULL仍计身份）、03-31 count1/sum50、04-01 count1/sum100；未更改query/fixture以迎合预期。Advisor一次架构建议+一次针对这两处语义失败的限定澄清，独立复核三组及physical_plan/range_inferred边界；Lead按源CSV检查并由真实运行通过。requested Astra/high，有效backend/effort/usage/billing unknown。
 
 当前本地编译说明工作包完成，下一动作提交保留、不推送。对比此前R7差距，下一授权本地工作优先完整population指标/字段词汇发现及接口版本，随后统一错误结构/剩余验收；编译不能保证最终绑定、MCP精确Decimal/大整数和超fixture size/truncation仍需明确处理。更广时间/calendar/多期身份/ontology和remoteCI为既有剩余，未因新说明扩大实现或发布权限。
+
+## R7 词汇发现与接口版本结果（2026-10-09）
+
+新增 ossie_population_metrics()/fields()/capabilities()，在 bind 一次捕获 Current bundle，不依赖独立 core state、不重读文件、不执行额外业务 query。指标/字段保留 original dataset/name、可直接用于 SQL 请求的 AST qualified_name、对象输出 literal object_column、声明表达式/方言/类型、说明/AI context/custom extensions 和显式/默认时间角色。实际 bound_type 在既有加载成功预检处保存，以 provenance 而非原 datasets 顺序映射展平字段。三个发现函数均带完整 snapshot/definition hashes；旧 prepared、失败加载、原定义文件改变和独立 ossie_load 不会改变 bound vocabulary。
+
+接口说明在 [population-discovery.md](population-discovery.md)：项目 population API 1.0.0 为当前契约基线，discovery v1/plan v1、Ossie document version、active/supported profile 和实际 engine version/source 分离。load_preflight_validated=true 仅为加载字段投影和单指标无分组绑定证据，execution_verified=false；重复输出等组合请求仍可能拒绝。不制造 unavailable-definition 状态，因为本 profile 未通过声明会拒绝整个 load。能力说明公开输入/请求限额、真实 checked capture join 和尚未实现/未验证边界，MCP encoding 仅是示例 adapter 契约，不宣称 SQL 环境已安装或运行 server。
+
+MCP 示例现在有四个可读资源（concepts/metrics/fields/capabilities）及原三个工具，移除描述中写死的 GAAP 名称。GAAP 继续需求主要验收用例，原 TPC-DS 示例保留；通用双表 amount/label、逆序 datasets、computed/quoted 名字以及 quoted dataset/物理 key 验证了原 provenance 和实际查询名称。实际 MCP 三个 session 均读新资源、比较 hashes 并从返回词汇构造聚合/分组查询，非 GAAP 无需改工具模板。既有概念/对象/指标/compile schema 未改；仅添加 SQL 函数和 MCP 资源，固定资源数量和函数数量的消费者需接受新增项。
+
+验证最终同一 artifact SHA256 f796426fbda316bc204988b82d4be4caed4c262150d4c851092aa0fb20d5db16：release 成功；quality-local、19 state/42 grain/138 capture、780 SQL assertions/21 cases/0 skips、31 Bun tests/107 expects 通过；八个 stock artifact verifier 全通过，新增 discovery 17 checks、实际 MCP 195 checks/106 refusals、core MCP actual resource 内容和 CLI 40 PASS/0 FAIL/0 SKIP FAITHFUL。CI 增加同下载 discovery probe，未运行远端 CI/Ubuntu tidy。新 [控制报告](research/ossie-req-001/r7-discovery-control-results.json) 描述范围、源哈希、失败和后续；[发现证据](research/ossie-req-001/r7-discovery-artifact-results.json)、[MCP 证据](research/ossie-req-001/r7-discovery-mcp-results.json) 保留真实内容，旧报告原样保留。
+
+保留失败：初版预期未加引号 dimension.label，实际 AST 为 dimension."label"；手动 CLI probe 把 .read 放入 -c SQL 被 parser 拒绝，之后用 actual stock binding 检查名字。新增 SQL 假设 gaap_sum/count 声明 datatype，原文件实际未声明，改为 (empty) 并独立核对真实 Decimal/BIGINT；mean_gaap 实际声明 Float，绑定 DOUBLE。旧函数 inventory 原 15 registrations/13 names 随新增三函数更新为 18/16。新增 verifier 初版误预期派生 label 有三组；原始行与规则证明只有 North/f1,f2,f5,f6/24.98，根概念另有 South/f3,f4/30.03，Unused 无 fact 不生成组；Lead 与 Advisor 独立复核后改完整 oracle，未改 source/formula。duplicate-column refusal regex 初版大小写不符、array equality 初版误用 equal 均为 harness 修正。一次文档 patch 无匹配 context 未写入，按实际 heading 修正。Advisor 一个只读架构 round 加一次针对失败的源证据澄清，无 nested delegation；requested Astra/high，effective backend/effort/usage/billing unknown。
+
+本地发现/接口版本工作包完成，当前动作提交保留、不推送。对比此前 R7.5 缺口，metric/field vocabulary 和 project API version 已补；下一本地包优先统一错误结构，再处理剩余验收与 MCP 数值/大小证据。ontology attribute vocabulary catalogue 尚未新增，概念规则/identity 仍通过 concepts 发现。compile 最终表输出绑定、精确 decimal/bigint transport、超 fixture size/truncation、更广时间/calendar/多期身份/ontology、remote CI 均继续可见，整体 R7/P0/A1–A8 不因此完成。

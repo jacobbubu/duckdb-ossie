@@ -25,6 +25,9 @@ CREATE MACRO ossie_mcp_strings(value) AS
     END;
 
 PRAGMA mcp_publish_query('SELECT * FROM ossie_concepts()', 'ossie://population/concepts', 'json', 0);
+PRAGMA mcp_publish_query('SELECT * FROM ossie_population_metrics()', 'ossie://population/metrics', 'json', 0);
+PRAGMA mcp_publish_query('SELECT * FROM ossie_population_fields()', 'ossie://population/fields', 'json', 0);
+PRAGMA mcp_publish_query('SELECT * FROM ossie_population_capabilities()', 'ossie://population/capabilities', 'json', 0);
 
 PRAGMA mcp_publish_tool(
     'population_objects',
@@ -36,7 +39,7 @@ PRAGMA mcp_publish_tool(
 );
 PRAGMA mcp_publish_tool(
     'population_query',
-    'Aggregate a discovered concept using operator-approved metric and dimension names. metrics, dimensions and filters are JSON-encoded string arrays. Use "[]" for no dimensions or filters. Nonempty results carry snapshot trace; sparse groups have no implicit calendar or order. Demo metrics: record_count, gaap_value_count, gaap_sum, mean_gaap; dimensions: dws_gaap_di.ds, dws_gaap_di.region, dws_gaap_di.user_type.',
+    'Aggregate a discovered concept. Read population metrics, fields and capabilities resources first; use metric name and field qualified_name exactly. Check snapshot hashes across resources and results. metrics, dimensions and filters are JSON-encoded string arrays. Use "[]" for no dimensions or filters. Load preflight validates individual expressions; combined requests bind separately. Nonempty results carry snapshot trace; sparse groups have no implicit calendar or order.',
     'SELECT * FROM ossie_concept_query($concept, ossie_mcp_strings($metrics), ossie_mcp_strings($dimensions), ossie_mcp_strings($filters), include_trace => true)',
     '{"concept":{"type":"string"},"metrics":{"type":"string","description":"JSON-encoded array of exact metric names"},"dimensions":{"type":"string","description":"JSON-encoded array of exact dimension names"},"filters":{"type":"string","description":"JSON-encoded array of predicate strings"}}',
     '["concept","metrics","dimensions","filters"]',

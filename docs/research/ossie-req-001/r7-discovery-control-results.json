@@ -1,0 +1,72 @@
+{
+  "scope": "Local bound population vocabulary and project API version; not full R7/P0 or remote CI",
+  "base_commit": "5d1a63a",
+  "artifact_sha256": "f796426fbda316bc204988b82d4be4caed4c262150d4c851092aa0fb20d5db16",
+  "source_sha256": {
+    "src/population/population.cpp": "6e3a15f85dc4c30926e41218983db0822bf6fdb5bb3af1763ae636faaeef658c",
+    "scripts/verify_discovery_artifact.ts": "aec91ec67288a3004df316c7a470a8f71d52be92b2fcd8362ac5161621545a64",
+    "scripts/verify_joined_population_artifact.ts": "688bc1ebad4d80fe9159f3e7ce703f2fe7f71dbcf9bbb62c0235ef4c8f0139e6",
+    "scripts/verify_population_mcp.ts": "42785a1bef3ebd485628e1c9c177974938cd3e246085745ebb5994ebeb27cc23",
+    "scripts/full_functionality_check.sh": "bf93a126ecd50b7f085f7da8b993a421f37150a2c9afadf3979a0407665adb81",
+    "examples/population_server.sql": "17c4452232975e3609b1c973c23fc7091f55814ab190c930315ad3cefa2c1043",
+    "test/sql/ossie_population_discovery.test": "fc620abd71fc3b21a1f4a6f9c8b9036fa8eda3a063399b30d4886136033c39ef",
+    "test/sql/ossie_function_metadata.test": "d39a67b6a4d42bfb79cc51dce5fa7816fdc127614b5830f21dcaa6ea8943f6ef",
+    ".github/workflows/MainDistributionPipeline.yml": "26eb7ce83ad8ce6919f0932885635690d52b693ce7a25dc9b9269dea086879c1"
+  },
+  "verification": {
+    "state": 19,
+    "grain": 42,
+    "capture": 138,
+    "sql_assertions": 780,
+    "sql_cases": 21,
+    "sql_skips": 0,
+    "bun_tests": 31,
+    "bun_expects": 107,
+    "stock_artifact_verifiers": 8,
+    "discovery_checks": 17,
+    "population_mcp_checks": 195,
+    "population_mcp_refusals": 106,
+    "core_mcp_actual_resource_reads": true,
+    "stock_cli_pass": 40,
+    "stock_cli_fail": 0,
+    "stock_cli_skip": 0
+  },
+  "reports": [
+    "r7-discovery-loader-artifact-results.json",
+    "r7-discovery-population-artifact-results.json",
+    "r7-discovery-expression-artifact-results.json",
+    "r7-discovery-date-artifact-results.json",
+    "r7-discovery-join_research-artifact-results.json",
+    "r7-discovery-joined_population-artifact-results.json",
+    "r7-discovery-plan-artifact-results.json",
+    "r7-discovery-artifact-results.json",
+    "r7-discovery-mcp-results.json"
+  ],
+  "retained_failures": [
+    "Initial expected unquoted dimension.label; actual AST emits dimension.\"label\". Corrected harness only.",
+    "Manual CLI probe incorrectly put .read inside -c SQL; parser refused. Actual stock binding used to inspect fields.",
+    "Initial SQL oracle filled absent logical datatype labels and existing function inventory expected old count; checked original source and changed tests to empty labels/18 registrations/16 names.",
+    "Initial new joined group oracle assumed three groups; independent source and Advisor check proves derived North 24.98 only; root also South 30.03. Source and calculation unchanged.",
+    "Duplicate-column refusal assertion used wrong case; regex corrected to observed error without relaxing refusal.",
+    "Synthetic array assertion used equal rather than deepEqual; corrected harness.",
+    "One documentation patch had missing context and wrote nothing; applied actual heading afterward."
+  ],
+  "advisor": {
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "scope": "one readonly architecture round and one source-oracle clarification; no children"
+  },
+  "compatibility": "Adds three SQL functions and three MCP resources, retains existing concept/query/compile schemas and three MCP tools. Establishes project population API 1.0.0 baseline, discovery v1, plan v1; read columns by name.",
+  "remaining": [
+    "uniform structured errors and remaining acceptance",
+    "compile does not guarantee final table output binding",
+    "lossless MCP decimal/bigint transport and size/truncation beyond fixtures",
+    "ontology attribute vocabulary catalogue and broader time/calendar/multiperiod identity/ontology",
+    "remote CI/Ubuntu tidy"
+  ],
+  "delivery": "local commit only; no push/merge/service publication"
+}

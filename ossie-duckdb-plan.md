@@ -2,7 +2,26 @@
 
 ## Current research checkpoint — 2026-10-09
 
-Current local milestone: compile now exposes project-versioned plan_json from the
+Current local milestone: frozen population bundles now expose original metric and
+field vocabulary, declared and actual load-preflight types, time/AI metadata,
+snapshot/definition hashes, and project API 1.0.0/discovery-v1 capabilities.
+The MCP example publishes four resources and retains three tools; names used by
+the generic query template are discovered rather than hardcoded GAAP vocabulary.
+GAAP remains the primary requirement fixture; non-GAAP fact/dimension, reversed
+datasets, computed/quoted names, separate core state, prepared discovery/reload
+and failed load controls pass. Successful individual load preflight does not
+promise arbitrary combined-request binding or execution.
+Final local gates pass 780 SQL assertions in 21 cases without skips, 19 state/42
+grain/138 capture native checks, 31 Bun controls, eight same-artifact stock
+verifiers, 195 actual population MCP checks (106 refusals), core MCP and 40
+FAITHFUL stock CLI checks. Source-bound reports and retained harness failures
+stay in OSSIE-REQ-001. This discovery package is locally complete; R7/P0 remain
+incomplete. Next local work is uniform structured errors, followed by remaining
+numeric transport/size and acceptance gaps; broader ontology/calendar/time and
+remote CI/Ubuntu tidy remain explicit later needs. No push, merge or external
+service publication is authorized.
+
+The preceding milestone: compile exposes project-versioned plan_json from the
 actual generated semantic SELECT AST, with immutable definition/dialect and input
 capture provenance, applied formal rule, final WHERE, ordered projections/groups,
 validated input grain/join policy, snapshot hashes and explicit stage limits.
@@ -14,11 +33,9 @@ Final local gates pass 741 SQL assertions in 20 cases without skips, 19 state/42
 grain/138 capture native checks, 31 Bun controls, seven same-artifact stock
 verifiers, 189 population MCP checks and CLI/core MCP. Retained failures and
 source-bound evidence stay in OSSIE-REQ-001; remote CI/Ubuntu tidy are unverified.
-This explanation package is locally complete; R7/P0 and the wider goal remain
-incomplete. Next authorized local work returns to population metric/field
-discovery and interface versioning, then uniform errors and remaining acceptance,
-before broader ontology/calendar/time scope. No new push, merge or external
-service publication is authorized.
+That explanation package was locally complete; its next metric/field discovery
+and interface-versioning package is now complete as described above. R7/P0 and
+the wider goal remain incomplete.
 The earlier package counts in this introduction remain historical evidence.
 
 The first research package is complete: pinned source evidence, an independent
