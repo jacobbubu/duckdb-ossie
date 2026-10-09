@@ -104,9 +104,7 @@ SELECT expression, description FROM ossie_fields() WHERE name = 'unicode';
 ----
 'héllo → wörld'	héllo → wörld
 
-# A bare number where the schema wants a string is rendered as its text rather than silently
-# dropped. `description: 1.5` is a float to YAML, and quoting is what would have made it a string --
-# nothing prompts an author to quote it. This previously read back as the empty string.
+# Numeric-looking text must be quoted; the JSON counterpart also contains a string.
 query T
 SELECT description FROM ossie_fields() WHERE name = 'numeric_desc';
 ----
@@ -130,6 +128,17 @@ query T
 SELECT len(synonyms) FROM ossie_fields() WHERE name = 'empty_syn';
 ----
 0
+
+# The previous unquoted number is now an explicit invalid model, rather than coerced text.
+statement error
+CALL ossie_load('test/fixtures/invalid/yaml_numeric_description.yaml');
+----
+field 'description' must be a string
+
+query T
+SELECT name FROM ossie_metadata() WHERE kind='model';
+----
+yaml_edge_cases
 
 # ---------------------------------------------------------------- malformed input
 statement error

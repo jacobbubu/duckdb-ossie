@@ -27,8 +27,11 @@ numeric or Boolean-looking text when it is intended as a string. `unique_keys`
 already rejects non-string column members. AI strings preserve their bytes,
 including control characters; this does not grant those characters permission
 in executable expressions or identifiers. The loader is not a full JSON Schema
-validator: single-value `RequiredString`/`OptionalString` paths retain their
-existing scalar conversion and other field-specific checks still apply.
+validator. Single-value string fields also require actual strings: required
+fields must be present, and optional fields may be omitted but cannot explicitly
+contain null, numbers, Booleans or containers. Quote numeric or Boolean-looking
+text in JSON/YAML. Missing optional values retain their existing empty or SQL
+NULL discovery representation; other field-specific checks still apply.
 
 Core descriptive strings and unique-key members are read using their actual
 length, so NUL does not truncate metadata. Model expression variants containing

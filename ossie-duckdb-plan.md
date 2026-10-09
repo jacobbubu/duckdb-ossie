@@ -677,3 +677,13 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 实际长度读取修复 scalar string/AI instructions/unique_keys，26 字段控制验证 raw/flattened/list 与五个 scope/说明/label/复合键。新增 model expression NUL 明确拒绝，防 DuckDB prefix parse 改公式；失败旧 metadata 保持，population NoNUL 边界保持。最终同产物 19/42/158 native、829 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、population MCP330/106、core MCP 与 CLI40/0/0 通过，证据/中间 prefix parse 发现归现 issue/r2-fidelity 报告。CI接新增 verifier，remote CI/Ubuntu tidy 未跑。
 
 本包完成，本地提交、不推送。整体 R2/P0 仍须单值 scalar/minLength/unknown properties/extension/dialect 校验偏离收口、最终 A1–A8 归档；下一已授权动作优先单值字符串类型校验。分页/P1/非目标及发布权限保持既有边界。
+
+### R2 单值字符串 checkpoint（2026-10-09，恢复）
+
+当前必要动作：仅接受实际 JSON/YAML string 的 RequiredString/OptionalString，optional 缺省保留空值，显式错误类型拒绝；保真修复保持。沿现 issue 覆盖实际调用 scope、失败旧 metadata/bundle 保持及正常合法字符串，重建同产物门禁后本地提交。minLength/unknown-property/extension/dialect 与最终规则驱动验收仍待收口，不扩分页/P1/发布权限。
+
+### R2 单值字符串本地交付 checkpoint（2026-10-09）
+
+仅接受 actual string 的 RequiredString/OptionalString 已落实；optional 缺省保留空值，显式 NULL/数字/Boolean/容器拒绝，合法长度保真/quoted text 保持。154 字段控制中120具名拒绝逐次完整旧 metadata 保持，hash-valid bad core 旧 bundle 保持与恢复；旧 YAML 裸1.5原样负例保留，正例quoted与JSON一致，首轮 SQL失败及纠正归现 issue。最终同产物19/42/158 native、834 SQL/23 cases/0 skips、38 Bun/124 expects、11 stock verifiers、MCP330/106、core MCP与CLI40/0/0通过，证据 r2-scalars-* 绑定最终文件。
+
+本包完成，本地提交、不推送。整体 R2/P0 仍需 minLength/unknown properties/extension/dialect 校验边界收口、最终A1–A8归档；下一已授权动作优先名称非空/未知core属性检查。分页/P1/非目标、remote CI/Ubuntu tidy 与发布权限维持原范围。

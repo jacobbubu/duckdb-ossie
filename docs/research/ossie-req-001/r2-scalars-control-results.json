@@ -1,0 +1,80 @@
+{
+  "scope": "strict RequiredString/OptionalString types; absent optional text remains empty; legal string bytes and existing expression/population NUL boundaries unchanged",
+  "base_commit": "9bb9622",
+  "artifact_sha256": "af5431eb7974ef81072c3716da329563711d76cdb0e8d21cd7529965c2f2a84d",
+  "source_sha256": {
+    "src/model/parser.cpp": "2dd9a8b28832f46758cb084a44de119c12fa4a082879187438725dd5187578a5",
+    "scripts/verify_core_correspondence.ts": "0a6568994bad24f2405632a15203d67c558dba6120ca2de2317ef58564969239",
+    "scripts/verify_error_artifact.ts": "5d78c07204290773b28c0bb63e18576fba5fadd7e62cd4d20ed2e43b84a2c6de",
+    "test/sql/ossie_loader_contract.test": "378de9f3dc3cf28966bd91686c501265dd94851601604e9c41b6722839d0fca3",
+    "test/fixtures/conformance/nul_metadata.json": "9ad523993fa37ed4b8e137c57afe8e0e194db128596bdef8beb0f22a9f00f6d7",
+    "test/fixtures/conformance/nul_expression.json": "897d4d1c0db060777fa119d6accde19440e04306a0a016e9db821b06e21c2a52",
+    "test/fixtures/conformance/scalar_name.json": "a8e4535c8763938298ab6258dbaad4aca97e89862e18ffbbcf932a9245ffd9d7",
+    "test/fixtures/conformance/null_description.json": "b2bf765b1e429703f3300eab0de3ee1e3bb1cc9cf3a3ada834bbbdb1a09e363c",
+    "test/fixtures/yaml_edge_cases.yaml": "f3e77c440256165a011c1ca5435bd85f98ac2c48fd20695810fecbcf85819767",
+    "test/fixtures/yaml_edge_cases.json": "ac59aae67eacc99b3a9863903ad7720c482c336efb3daece7f0a8bc2f4a52685",
+    "test/fixtures/invalid/yaml_numeric_description.yaml": "ea6e17d0799f7aecc307dbb7a4dbde69fb775e20170b0ca18943b04062e71071",
+    "test/sql/ossie_yaml.test": "2dea2a3bbfba3363da7d8f6cc4fa5b43711cf2d10cee13c650688960649c0baf",
+    ".github/workflows/MainDistributionPipeline.yml": "653d61b6ec6b6c02819c5e71ef06b23880ba5ae80b8a7a83180c6bbe20a5cb32"
+  },
+  "documentation_sha256": {
+    "docs/core-field-correspondence.md": "80c67a91a0d98c3d215e36850919af4fcfdcc478921b74e2d84c84a83f7e7488",
+    "docs/limitations.md": "3e2535c3d8640ceecae48db82dc98d28ca5e749e3216e6cba703e61fc6729363",
+    "docs/ossie-execution-research.md": "74c041b931648bd2e1453f68384b1872c76bfc380d532c0e9b31839c0d66b2f8",
+    "ossie-duckdb-plan.md": "e53b1fb3ce4e3b45f7731410ad81ed80898c96701e87bb15f1a61f68ed1b546d"
+  },
+  "reports": {
+    "docs/research/ossie-req-001/r2-scalars-loader-artifact-results.json": "944bf22f7e0d4b8b121c0138a1e30d9e3244e697b36ec50a3ce7848ce645140d",
+    "docs/research/ossie-req-001/r2-scalars-population-artifact-results.json": "3e329346d7992a174f57dcc21f4b499a6e0c935fc365216af3d068f7508b64aa",
+    "docs/research/ossie-req-001/r2-scalars-expression-artifact-results.json": "fcfcb94c186df1c8ad37b52b6c57c6b2c5a6a8bb746309eca666dfdfaef9131b",
+    "docs/research/ossie-req-001/r2-scalars-date-artifact-results.json": "6f8bd9c2ce359e1fa843a727f88198c2e63ac381b603075b7935e3d899e4b4a8",
+    "docs/research/ossie-req-001/r2-scalars-join_research-artifact-results.json": "f28165689df27ccd6563fce914481da9a54bc713f8b4008f0a8d1f4b5f8be92b",
+    "docs/research/ossie-req-001/r2-scalars-joined_population-artifact-results.json": "e34e332861af39367ea50eed7815584bc6881de0113dd345d15b8ba47312d82c",
+    "docs/research/ossie-req-001/r2-scalars-plan-artifact-results.json": "776a39fb0d6d096f096348d192af98159fd2bd71339d70322b7261036c633eac",
+    "docs/research/ossie-req-001/r2-scalars-discovery-artifact-results.json": "a74c9126b4079048aa819fb67a9133676e353dda6d6deacf026e0060848f4a9c",
+    "docs/research/ossie-req-001/r2-scalars-error-artifact-results.json": "c1bfb048b90b2acd2c0a874fddf500ada8856786a64a1153454062d86e20e7f2",
+    "docs/research/ossie-req-001/r2-scalars-typed_population-artifact-results.json": "27c4b8babdedf7428d2a919950688ced555bf2894759274c463931662607aeea",
+    "docs/research/ossie-req-001/r2-scalars-correspondence-artifact-results.json": "ed77a38107eb4d64043ba0ddcb2a8c556cdde03a02dc63aca6b0d721a2c75fcc",
+    "docs/research/ossie-req-001/r2-scalars-mcp-results.json": "7a59a8fff69354a49ea15271379ada9de2fc7ce77e7744aa85177d111dce9fd7"
+  },
+  "source_and_generated_input_hash_assertions": 183,
+  "matrix_property_rows": 50,
+  "verification": {
+    "release": true,
+    "quality_local": true,
+    "state": 19,
+    "grain": 42,
+    "capture": 158,
+    "sql_assertions": 834,
+    "sql_cases": 23,
+    "sql_skips": 0,
+    "bun_tests": 38,
+    "bun_expects": 124,
+    "stock_artifact_verifiers": 11,
+    "correspondence_controls": 154,
+    "error_controls": 48,
+    "population_mcp_checks": 330,
+    "population_mcp_refusals": 106,
+    "stock_cli_pass": 40,
+    "stock_cli_fail": 0,
+    "stock_cli_skip": 0,
+    "stock_cli_faithful": true,
+    "core_mcp_actual_resources": true,
+    "remote_ci": false,
+    "ubuntu_tidy": false
+  },
+  "local_log_sha256": {
+    "/tmp/ossie-scalars-build.log": "b1a1c069e753d420387b3b3090fd7f1b246742172f318fbda42d847d218efd0b",
+    "/tmp/ossie-scalars-gates-final.log": "3a9ada726487f44ec5604551840f7989d6781afa8d08684b0f9563edc85e2c88",
+    "/tmp/ossie-scalars-cli.log": "292689c49c1ecf919351381b62736842f844126d23eeb6513b6f5eb45c211510",
+    "/tmp/ossie-scalars-core-mcp.log": "d2432264f935c32cc555a71999dd97f9dad6647fb4fa3615441a560ffd9fd591"
+  },
+  "retained_failure": "First SQL gate depended on YAML bare 1.5 versus JSON string 1.5; copied the exact original YAML to an explicit invalid fixture, quoted positive value to agree with existing JSON, reran gates successfully. First gate: 811 assertions/1 failure; final gate: 834 assertions/0 failures.",
+  "compatibility": "API2.0.0/resultv1 retained; valid actual string fields preserve bytes; non-string required/optional values are refused, only absent optional fields map to existing empty/SQL NULL metadata. No business numeric/Boolean type restriction.",
+  "necessary_remaining": [
+    "R2 minLength/unknown-property/extension/dialect validation deviation conclusion; exceptions not yet accepted",
+    "final rule-driven A1-A8 P0 acceptance archive",
+    "pagination future research only; existing P1/non-goals and unrun remote CI/tidy"
+  ],
+  "delivery": "local commit only; no push/merge/publication"
+}

@@ -44,41 +44,59 @@ export async function verify(artifact: string) {
           metadata: rows,
         });
       }
-      await accepted(
+      await db.run("CALL ossie_load(?)", [base]);
+      async function refused(
+        name: string,
+        change: (model: any) => void,
+        diagnostic: string,
+      ) {
+        const model = json<any>(base);
+        change(model);
+        const path = join(directory, name + ".json");
+        writeFileSync(path, JSON.stringify(model));
+        const before = await db.records("SELECT * FROM ossie_metadata()");
+        await assert.rejects(
+          db.run("CALL ossie_load(?)", [path]),
+          (error: unknown) => {
+            assert(String(error).includes(diagnostic), String(error));
+            return true;
+          },
+        );
+        assert.deepEqual(
+          await db.records("SELECT * FROM ossie_metadata()"),
+          before,
+        );
+        observations.push({
+          name,
+          accepted: false,
+          classification:
+            "non-string scalar value rejected; full previous metadata preserved",
+          diagnostic,
+          input_sha256: digest(path),
+        });
+      }
+      await refused(
         "scalar-model-name",
         (m) => {
           m.name = 123;
         },
-        (rows) =>
-          assert.equal(rows.find((r) => r.kind === "model")!.name, "123"),
-        "invalid schema value converted to text",
+        "field 'name' must be a string",
       );
-      await accepted(
+      await refused(
         "scalar-description-label",
         (m) => {
           m.description = false;
           m.datasets[0].fields[7].label = 123;
         },
-        (rows) => {
-          assert.equal(
-            rows.find((r) => r.kind === "model")!.description,
-            "false",
-          );
-          assert.equal(rows.find((r) => r.name === "amount")!.label, "123");
-        },
-        "invalid schema value converted to text",
+        "field 'description' must be a string",
       );
-      await accepted(
+      await refused(
         "container-description-label",
         (m) => {
           m.description = {};
           m.datasets[0].fields[7].label = [];
         },
-        (rows) => {
-          assert.equal(rows.find((r) => r.kind === "model")!.description, "");
-          assert.equal(rows.find((r) => r.name === "amount")!.label, null);
-        },
-        "invalid optional values silently treated as absent/empty",
+        "field 'description' must be a string",
       );
       await accepted(
         "empty-model-name",
@@ -138,20 +156,14 @@ export async function verify(artifact: string) {
         },
         "case-insensitive dialect acceptance extends exact schema enum",
       );
-      await accepted(
+      await refused(
         "numeric-expression",
         (m) => {
           m.datasets[0].fields[0].expression.dialects = [
             { dialect: "ANSI_SQL", expression: 123 },
           ];
         },
-        async () => {
-          const [row] = await db.records(
-            "SELECT expression FROM ossie_fields() WHERE name='day'",
-          );
-          assert.equal(row!.expression, "123");
-        },
-        "invalid schema expression scalar converted and parsed as constant",
+        "field 'expression' must be a string",
       );
       await accepted(
         "nul-ai-string",
@@ -297,6 +309,217 @@ export async function verify(artifact: string) {
         classification: "SQL parser prefix truncation prevented before parsing",
         input_sha256: digest(malformed),
       });
+      const paths: {
+        scope: string;
+        path: (string | number)[];
+        required: boolean;
+        ai?: boolean;
+      }[] = [
+        { scope: "model.name", path: ["name"], required: true },
+        {
+          scope: "dataset.name",
+          path: ["datasets", 0, "name"],
+          required: true,
+        },
+        {
+          scope: "field.name",
+          path: ["datasets", 0, "fields", 7, "name"],
+          required: true,
+        },
+        { scope: "metric.name", path: ["metrics", 0, "name"], required: true },
+        {
+          scope: "relationship.name",
+          path: ["relationships", 0, "name"],
+          required: true,
+        },
+        {
+          scope: "dataset.source",
+          path: ["datasets", 0, "source"],
+          required: true,
+        },
+        {
+          scope: "relationship.from",
+          path: ["relationships", 0, "from"],
+          required: true,
+        },
+        {
+          scope: "relationship.to",
+          path: ["relationships", 0, "to"],
+          required: true,
+        },
+        {
+          scope: "variant.dialect",
+          path: [
+            "datasets",
+            0,
+            "fields",
+            7,
+            "expression",
+            "dialects",
+            0,
+            "dialect",
+          ],
+          required: true,
+        },
+        {
+          scope: "variant.expression",
+          path: [
+            "datasets",
+            0,
+            "fields",
+            7,
+            "expression",
+            "dialects",
+            0,
+            "expression",
+          ],
+          required: true,
+        },
+        { scope: "model.description", path: ["description"], required: false },
+        {
+          scope: "dataset.description",
+          path: ["datasets", 0, "description"],
+          required: false,
+        },
+        {
+          scope: "field.description",
+          path: ["datasets", 0, "fields", 7, "description"],
+          required: false,
+        },
+        {
+          scope: "metric.description",
+          path: ["metrics", 0, "description"],
+          required: false,
+        },
+        {
+          scope: "field.label",
+          path: ["datasets", 0, "fields", 7, "label"],
+          required: false,
+        },
+        ...[
+          ["model", []],
+          ["dataset", ["datasets", 0]],
+          ["field", ["datasets", 0, "fields", 7]],
+          ["metric", ["metrics", 0]],
+          ["relationship", ["relationships", 0]],
+        ].map(([scope, path]) => ({
+          scope: `${scope}.instructions`,
+          path: [
+            ...(path as (string | number)[]),
+            "ai_context",
+            "instructions",
+          ],
+          required: false,
+          ai: true,
+        })),
+      ];
+      for (const spec of paths)
+        for (const [kind, value] of [
+          ["integer", 123],
+          ["real", 1.5],
+          ["boolean", true],
+          ["null", null],
+          ["object", {}],
+          ["array", []],
+        ] as const) {
+          const key = String(spec.path.at(-1));
+          const diagnostic = spec.ai
+            ? "ai_context.instructions must be a string"
+            : value === null && spec.required
+              ? `required string field '${key}'`
+              : `field '${key}' must be a string`;
+          await refused(
+            `strict-${spec.scope}-${kind}`,
+            (m) => {
+              m.relationships = [
+                {
+                  name: "self",
+                  from: "facts",
+                  to: "facts",
+                  from_columns: ["amount"],
+                  to_columns: ["amount"],
+                },
+              ];
+              if (spec.ai) {
+                let target = m;
+                for (const part of spec.path.slice(0, -2))
+                  target = target[part];
+                target.ai_context = { instructions: "legal" };
+              }
+              let target = m;
+              for (const part of spec.path.slice(0, -1)) target = target[part];
+              target[spec.path.at(-1)!] = value;
+            },
+            diagnostic,
+          );
+        }
+      await accepted(
+        "quoted-scalar-text",
+        (m) => {
+          m.name = "123";
+          m.description = "true";
+          m.datasets[0].fields[7].label = "123";
+          m.datasets[0].fields[0].expression.dialects = [
+            { dialect: "ANSI_SQL", expression: "123" },
+          ];
+        },
+        async (rows) => {
+          const model = rows.find((r) => r.kind === "model")!;
+          assert.equal(model.name, "123");
+          assert.equal(model.description, "true");
+          assert.equal(rows.find((r) => r.name === "amount")!.label, "123");
+          const [field] = await db.records(
+            "SELECT expression FROM ossie_fields() WHERE name='day'",
+          );
+          assert.equal(field!.expression, "123");
+        },
+        "quoted scalar-looking strings remain valid without coercion",
+      );
+      await accepted(
+        "absent-optional-text",
+        (m) => {
+          delete m.description;
+          delete m.datasets[0].description;
+          delete m.datasets[0].fields[7].description;
+          delete m.datasets[0].fields[7].label;
+          delete m.metrics[0].description;
+        },
+        (rows) => {
+          assert.equal(rows.find((r) => r.kind === "model")!.description, "");
+          const amount = rows.find((r) => r.name === "amount")!;
+          assert.equal(amount.description, "");
+          assert.equal(amount.label, null);
+        },
+        "missing optional values preserve previous empty/SQL NULL discovery behavior",
+      );
+      const yaml = join(directory, "scalar.yaml");
+      const yamlBase =
+        'version: "0.2.0.dev0"\nname: "123"\ndatasets:\n  - name: facts\n    source: memory.main.facts\n    fields:\n      - name: amount\n        expression:\n          dialects:\n            - dialect: ANSI_SQL\n              expression: amount\n';
+      writeFileSync(yaml, yamlBase + 'description: "true"\n');
+      await db.run("CALL ossie_load(?)", [yaml]);
+      const yamlBefore = await db.records("SELECT * FROM ossie_metadata()");
+      assert.equal(
+        yamlBefore.find((r) => r.kind === "model")!.description,
+        "true",
+      );
+      for (const text of ["123", "1.5", "true", "null", "{}", "[]"]) {
+        writeFileSync(yaml, yamlBase + `description: ${text}\n`);
+        await assert.rejects(
+          db.run("CALL ossie_load(?)", [yaml]),
+          /field 'description' must be a string/,
+        );
+        assert.deepEqual(
+          await db.records("SELECT * FROM ossie_metadata()"),
+          yamlBefore,
+        );
+        observations.push({
+          name: `yaml.description.${text}`,
+          accepted: false,
+          classification:
+            "YAML actual scalar/container type refused; quoted text accepted; prior state preserved",
+          input_sha256: digest(yaml),
+        });
+      }
       const emptyKey = json<any>(base);
       emptyKey.datasets[0].unique_keys = [[]];
       const emptyPath = join(directory, "empty-unique-key.json");
@@ -336,7 +559,7 @@ export async function verify(artifact: string) {
     return {
       scope:
         "read-only characterization and complete schema property inventory, not approval of deviations or full conformance",
-      base_commit: "2470cff",
+      base_commit: "9bb9622",
       engine,
       artifact_sha256: digest(artifact),
       verifier_sha256: digest(import.meta.path),
@@ -358,7 +581,7 @@ export async function verify(artifact: string) {
       production_changed: true,
       remaining: [
         "final R2 acceptance still requires remaining validation deviation conclusion",
-        "scalar coercion/minLength/additionalProperties/extension validation deviations need explicit compatibility conclusion",
+        "minLength/additionalProperties/extension/dialect validation deviations need explicit compatibility conclusion",
         "final rule-driven P0 acceptance",
       ],
     };

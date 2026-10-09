@@ -284,3 +284,18 @@ query T
 SELECT name FROM ossie_metadata() WHERE kind='model';
 ----
 nul_metadata
+
+statement error
+CALL ossie_load('test/fixtures/conformance/scalar_name.json');
+----
+field 'name' must be a string
+
+statement error
+CALL ossie_load('test/fixtures/conformance/null_description.json');
+----
+field 'description' must be a string
+
+query T
+SELECT name FROM ossie_metadata() WHERE kind='model';
+----
+nul_metadata

@@ -47,61 +47,26 @@ yyjson_val *Member(yyjson_val *obj, const char *key) {
 	return yyjson_obj_get(obj, key);
 }
 
-//! Legacy single-value string conversion for RequiredString/OptionalString.
-//! String arrays use strict JSON string members instead. This helper is not a schema validator.
-bool ScalarText(yyjson_val *val, string &out) {
-	if (!val) {
-		return false;
-	}
-	if (yyjson_is_str(val)) {
-		out = string(yyjson_get_str(val), yyjson_get_len(val));
-		return true;
-	}
-	if (yyjson_is_bool(val)) {
-		out = yyjson_get_bool(val) ? "true" : "false";
-		return true;
-	}
-	if (yyjson_is_int(val)) {
-		out = to_string(yyjson_get_sint(val));
-		return true;
-	}
-	if (yyjson_is_uint(val)) {
-		out = to_string(yyjson_get_uint(val));
-		return true;
-	}
-	if (yyjson_is_real(val)) {
-		// %.17g round-trips a double exactly; trim the trailing zeros it can leave behind.
-		auto text = StringUtil::Format("%.17g", yyjson_get_real(val));
-		if (text.find('.') != string::npos && text.find('e') == string::npos && text.find('E') == string::npos) {
-			while (!text.empty() && text.back() == '0') {
-				text.pop_back();
-			}
-			if (!text.empty() && text.back() == '.') {
-				text.pop_back();
-			}
-		}
-		out = text;
-		return true;
-	}
-	return false;
-}
-
 string RequiredString(yyjson_val *obj, const char *key, const string &context) {
 	auto val = Member(obj, key);
-	string text;
 	if (!val || yyjson_is_null(val)) {
 		throw InvalidInputException("ossie_load: %s is missing required string field '%s'", context, key);
 	}
-	if (!ScalarText(val, text)) {
-		throw InvalidInputException("ossie_load: %s field '%s' must be a string, but is a %s", context, key,
-		                            yyjson_is_arr(val) ? "list" : "nested object");
+	if (!yyjson_is_str(val)) {
+		throw InvalidInputException("ossie_load: %s field '%s' must be a string", context, key);
 	}
-	return text;
+	return string(yyjson_get_str(val), yyjson_get_len(val));
 }
 
-string OptionalString(yyjson_val *obj, const char *key) {
-	string text;
-	return ScalarText(Member(obj, key), text) ? text : string();
+string OptionalString(yyjson_val *obj, const char *key, const string &context) {
+	auto val = Member(obj, key);
+	if (!val) {
+		return string();
+	}
+	if (!yyjson_is_str(val)) {
+		throw InvalidInputException("ossie_load: %s field '%s' must be a string", context, key);
+	}
+	return string(yyjson_get_str(val), yyjson_get_len(val));
 }
 
 vector<string> StringArray(yyjson_val *obj, const char *key, const string &context) {
@@ -180,7 +145,7 @@ AIContext ParseAIContext(yyjson_val *parent, const string &context) {
 	}
 	result.synonyms = StringArray(ai_context, "synonyms", context);
 	result.examples = StringArray(ai_context, "examples", context);
-	result.instructions = OptionalString(ai_context, "instructions");
+	result.instructions = OptionalString(ai_context, "instructions", context);
 	return result;
 }
 
@@ -266,8 +231,8 @@ Field ParseField(yyjson_val *field_obj, const string &dataset_name) {
 
 	result.expression = ParseModelExpression(field_obj, context);
 	result.datatype = ParseDatatype(field_obj, context);
-	result.label = OptionalString(field_obj, "label");
-	result.description = OptionalString(field_obj, "description");
+	result.label = OptionalString(field_obj, "label", context);
+	result.description = OptionalString(field_obj, "description", context);
 	result.ai_context = ParseAIContext(field_obj, context);
 	result.custom_extensions_json = JSONText(Member(field_obj, "custom_extensions"));
 
@@ -410,7 +375,7 @@ Dataset ParseDataset(yyjson_val *dataset_obj, const RebindMap &rebind) {
 
 	result.primary_key = StringArray(dataset_obj, "primary_key", context);
 	result.unique_keys = ParseUniqueKeys(dataset_obj, context);
-	result.description = OptionalString(dataset_obj, "description");
+	result.description = OptionalString(dataset_obj, "description", context);
 	result.ai_context = ParseAIContext(dataset_obj, context);
 	result.custom_extensions_json = JSONText(Member(dataset_obj, "custom_extensions"));
 
@@ -521,7 +486,7 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 	auto model_obj = root;
 	result.name = RequiredString(model_obj, "name", "the semantic model");
 	auto context = StringUtil::Format("semantic model \"%s\"", result.name);
-	result.description = OptionalString(model_obj, "description");
+	result.description = OptionalString(model_obj, "description", context);
 	result.ai_context = ParseAIContext(model_obj, context);
 	result.custom_extensions_json = JSONText(Member(model_obj, "custom_extensions"));
 
@@ -561,7 +526,7 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 			auto metric_context = StringUtil::Format("metric \"%s\"", metric.name);
 			metric.expression = ParseModelExpression(item, metric_context);
 			metric.datatype = ParseDatatype(item, metric_context);
-			metric.description = OptionalString(item, "description");
+			metric.description = OptionalString(item, "description", metric_context);
 			metric.ai_context = ParseAIContext(item, metric_context);
 			metric.custom_extensions_json = JSONText(Member(item, "custom_extensions"));
 

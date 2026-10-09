@@ -642,3 +642,21 @@ R2 保真包发现与范围补充：初次 length-aware 修复后的真实执行
 发现/纠正保留：初次仅改长度读取后，真实 ANSI_SQL `amount\u0000 + 100` probe 显示 metadata 完整而 Compile 实际生成 avg(facts.amount)，证明 parser 只用前缀；在本包增加显式表达式拒绝并重建后，最终 fixture/verifier 检查拒绝且旧模型完整保留。此中间产物不是最终通过证据。质量门禁未失败；最终哈希审计发现新增 CI verifier 后 plan/MCP 报告仍绑定旧 workflow hash，重新运行这两项同产物控制后通过，未手改报告哈希。既有 metadata 与 expression AST 的用途区别未改变。
 
 本地保真工作包完成，只提交保留、不推送。必要剩余为 R2 单值 scalar/minLength/unknown properties/custom extension/dialect 校验偏离的明确收口（尚未接受为兼容例外），之后最终 A1–A8 规则驱动验收归档；整体 R2/P0 未完成。下一已授权步骤优先收紧单值字符串类型容错，再核对其他校验边界。分页只作未来调研、P1/非目标和远端验证维持原范围。
+
+## R2 单值字符串 checkpoint（2026-10-09，恢复）
+
+9bb9622 保真包后，当前沿 OSSIE-REQ-001 收紧 RequiredString/OptionalString：规范字符串字段仅接受实际 string，optional 仅在字段缺省时给空值，显式 NULL/数字/Boolean/容器拒绝。名称/来源/端点/方言/表达式、description/label/AI instructions 的合法字符串继续 length-aware。只修类型容错，不扩大 minLength/unknown-property/extension/方言枚举或 full schema；原数字类型业务列不受影响。真实 JSON/YAML 控制覆盖 helper 调用范围和旧完整 metadata 保持，hash-valid malformed core 的 bundle 错误及旧快照保持；更新 characterization 的旧接受期望，历史报告不覆盖。重建最终同产物门禁、stock/MCP 回归后本地提交，不推送；其余校验偏离与 A1–A8 仍必要。
+
+R2 单值包回归发现：既有 YAML differential fixture 的 numeric_desc 在 YAML 是裸 1.5，但 JSON 对照已是字符串 "1.5"，旧测试依赖转换容错。首次 SQL gate 因该非法 description 拒绝而失败。原 YAML 原样保留为 invalid/yaml_numeric_description.yaml，并显式验证拒绝/旧模型保持；正例仅把该值加引号，与既有 JSON 对照的内容和类型一致，不改 1.5 的期望文本，也不改变业务数据/原始规范。其他 YAML 转义/anchor/block/comment 与全部 discovery differential 检查保留，重跑最终 SQL gate。
+
+## R2 单值字符串结果（2026-10-09）
+
+删除 ScalarText 容错转换。RequiredString 仅接受实际 string，缺省/NULL 必填值拒绝；OptionalString 在字段缺省时返回空值，显式 NULL、数字（integer/real）、Boolean、array/object 均拒绝并给出对象/字段诊断。所有 helper 字符串按实际长度读取；AI string/object 与 strict string arrays、metadata 保真、expression NUL 拒绝及 population NoNUL 边界保持。description/label 的缺省空值/SQL NULL 发现方式不变，合法 quoted 数字/Boolean 外观文本仍接受；此模型定义类型检查不禁止数据表的数字/Boolean 值。project API 仍 2.0.0，不扩为完整 JSON Schema validator。
+
+[154 个真实字段控制](research/ossie-req-001/r2-scalars-correspondence-artifact-results.json) 包含 120 个具名拒绝（20 个字段位置 × 六类非法值）：十个 required name/source/endpoint/dialect/expression 位置、四个 description + field label、五个 AI object instructions 位置。每次拒绝均比较完整旧 metadata，而非仅检查模型名字。另检查缺省 optional、quoted scalar text、YAML 六类非法 description 和已有保真/其他偏离控制；154 计数不是全部成功接受，接受 22、拒绝 132。旧 scalar 接受报告保留于前缀历史记录，新 characterization 已改为拒绝。新增 static SQL required-number/optional-NULL 拒绝与旧模型保持；YAML 原非法 fixture 原样留作拒绝控制，合法 differential 与已有 JSON string "1.5" 对齐。
+
+[48 个实际错误控制](research/ossie-req-001/r2-scalars-error-artifact-results.json) 包含 hash-valid bad core.description=false 的 LOAD_FAILED/load/source Invalid Input 和旧 frozen bundle 保持/后续查询恢复；未让 hash/NUL 检查提前替代本次类型拒绝。最终 artifact SHA256 `af5431eb7974ef81072c3716da329563711d76cdb0e8d21cd7529965c2f2a84d`。release、quality-local、19 state/42 grain/158 capture、834 SQL assertions/23 cases/0 skips、38 Bun tests/124 expects、11 个 stock artifact verifiers、population MCP330/106 refusals、core MCP 实际资源、stock CLI40 PASS/0 FAIL/0 SKIP FAITHFUL 均通过。最终 [控制记录](research/ossie-req-001/r2-scalars-control-results.json) 绑定源码/输入/报告/旧 YAML 原文 hashes；source hashes 全部一致，remote CI/Ubuntu tidy 未执行。既有 CI same-download verifier 会覆盖此次新增控制。
+
+保留失败：首轮 SQL gate 的 YAML differential fixture 裸 1.5 触发严格 description 拒绝（811 assertions/1 failure，不能作为最终通过），已如上保留原文负例、仅给正例加引号，与既有 JSON 对照类型/值一致；重跑所有 SQL/native 门禁后 834 断言通过。其他功能/工具门禁没有失败，原始业务来源/固定规范不改。
+
+本地单值字符串工作包完成，提交保留、不推送。R2 字符串 scalar 偏离已补；仍有 minLength、unknown properties、custom extension 成员结构和 dialect 大小写/enum 的明确校验偏离，未作为用户批准的兼容例外。下一已授权收口优先名称 minLength 与未知 core 属性检查，再处理 extension/dialect 并归档最终 A1–A8；整体 R2/P0 未完成。分页/P1/非目标/remote CI 与发布边界保持原范围。
