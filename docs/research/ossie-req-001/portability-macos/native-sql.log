@@ -1,0 +1,785 @@
+Makefile:33: warning: overriding commands for target `tidy-check'
+extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old commands for target `tidy-check'
+python3 duckdb/scripts/format.py --all --check --directories src test
+Checking all files
+src/compile/compile.cpp
+src/functions/compile.cpp
+src/functions/describe.cpp
+src/functions/load.cpp
+src/functions/query.cpp
+src/include/ossie/catalog.hpp
+src/include/ossie/compile.hpp
+src/include/ossie/describe_functions.hpp
+src/include/ossie/dialect.hpp
+src/include/ossie/functions.hpp
+src/include/ossie/graph.hpp
+src/include/ossie/model.hpp
+src/include/ossie/parser.hpp
+src/include/ossie/population_testing.hpp
+src/include/ossie/state.hpp
+src/include/ossie/validate.hpp
+src/include/ossie/yaml.hpp
+src/include/ossie_extension.hpp
+src/model/catalog.cpp
+src/model/dialect.cpp
+src/model/graph.cpp
+src/model/parser.cpp
+src/model/validate.cpp
+src/model/yaml.cpp
+src/ossie_extension.cpp
+src/population/population.cpp
+test/cpp/metric_grain_test.cpp
+test/cpp/population_capture_test.cpp
+test/cpp/state_snapshot_test.cpp
+test/sql/ossie.test
+test/sql/ossie_compile.test
+test/sql/ossie_conformance.test
+test/sql/ossie_describe.test
+test/sql/ossie_differential.test
+test/sql/ossie_field_expansion.test
+test/sql/ossie_function_metadata.test
+test/sql/ossie_grain.test
+test/sql/ossie_join_research.test
+test/sql/ossie_joined_population.test
+test/sql/ossie_load.test
+test/sql/ossie_loader_contract.test
+test/sql/ossie_population.test
+test/sql/ossie_population_dates.test
+test/sql/ossie_population_discovery.test
+test/sql/ossie_population_errors.test
+test/sql/ossie_population_expressions.test
+test/sql/ossie_population_plan.test
+test/sql/ossie_population_result.test
+test/sql/ossie_relationships.test
+test/sql/ossie_sql_2026.test
+test/sql/ossie_validate.test
+test/sql/ossie_yaml.test
+Passed format-check
+bun run format:check
+$ bun x --bun --no-install prettier --check scripts/*.ts test/tooling/*.ts package.json tsconfig.json
+Checking formatting...
+All matched files use Prettier code style!
+bun run typecheck
+$ bun x --bun --no-install tsc --noEmit
+bun run architecture
+$ bun scripts/check_architecture.ts
+{
+  "scope": "all project src C++ files; project include reachability and header cycles; direct runtime includes; no vendor expansion",
+  "source_files": 26,
+  "project_edges": 43,
+  "external_edges_unexpanded": 125,
+  "adapter_exceptions": {
+    "src/model/parser.cpp": [
+      "duckdb/common/file_system.hpp",
+      "duckdb/main/client_context.hpp"
+    ],
+    "src/model/catalog.cpp": [
+      "duckdb/catalog/catalog.hpp",
+      "duckdb/catalog/entry_lookup_info.hpp",
+      "duckdb/main/client_context.hpp"
+    ]
+  }
+}
+bun test test/tooling
+bun test v1.3.11 (af24e281)
+
+test/tooling/population_result.test.ts:
+(pass) decoder uses DuckDB ASCII case rules for output names [3.70ms]
+(pass) ordinary JSON decoding retains exact integer/Decimal strings [0.15ms]
+(pass) typed decoder refuses numeric cells and mismatched type/encoding [0.06ms]
+(pass) empty typed result keeps schema, snapshot and null cells stay null [0.50ms]
+(pass) typed decoder refuses malformed carrier, unknown schema and broken row width [1.14ms]
+
+test/tooling/quality_controls.test.ts:
+(pass) direct forbidden [28.47ms]
+(pass) indirect forbidden [35.13ms]
+(pass) model forbidden [34.53ms]
+(pass) header cycle [39.37ms]
+(pass) relative AST and comments [31.13ms]
+(pass) missing quoted reference [34.24ms]
+(pass) missing angle reference [33.65ms]
+(pass) indirect runtime [29.44ms]
+(pass) nonliteral reference [30.17ms]
+(pass) zero inputs [41.29ms]
+(pass) unscanned source [27.40ms]
+(pass) undeclared source [27.67ms]
+(pass) empty compiled inventory [27.81ms]
+(pass) compiler IO [35.69ms]
+(pass) precise parser adapter [68.08ms]
+(pass) parser exception cannot permit state [43.70ms]
+(pass) script formatting failure and recovery [541.60ms]
+(pass) state, grain and production capture runners required before SQL [21.51ms]
+(pass) actual CI gate fails closed for every dependency [86.55ms]
+(pass) current project graph scans nonzero inventory [13.25ms]
+(pass) strict typecheck rejects a runtime-valid type error and recovers [1564.48ms]
+(pass) CI uses frozen Bun tooling and the complete same-artifact acceptance runner [0.28ms]
+(pass) stock artifact CLI and all verifiers consume the downloaded artifact [0.06ms]
+
+test/tooling/population_error.test.ts:
+(pass) error framing respects quoted braces, escapes and marker text [0.37ms]
+(pass) external, incomplete and invalid-schema diagnostics stay unclassified [0.53ms]
+
+test/tooling/source_evidence.test.ts:
+(pass) fresh checkout verifies 20 sources and the original requirement without external paths [17.78ms]
+(pass) missing and single-byte changed source copies refuse [18.33ms]
+(pass) wrong manifest binding, duplicate, missing and unknown locators refuse [56.48ms]
+(pass) absolute, parent traversal and escaping symlink targets refuse [41.24ms]
+(pass) locator content hash cannot override the manifest's expected source hash [14.13ms]
+
+test/tooling/artifact_cli.test.ts:
+(pass) missing stock CLI fails instead of using build-tree engine [38.83ms]
+(pass) missing artifact fails before invoking the CLI [31.77ms]
+(pass) artifact loading failure is fatal and retains its diagnostic [408.05ms]
+(pass) relative artifact paths are normalized before stock CLI loading [294.70ms]
+
+test/tooling/artifact_values.test.ts:
+(pass) native DATE adapter preserves finite dates, infinity and NULL [0.40ms]
+
+test/tooling/mcp_transport.test.ts:
+(pass) MCP ignores banners, receives RPC, and cleans up child [44.32ms]
+(pass) silent MCP server hits a real read deadline and is terminated [35.03ms]
+(pass) server setup failure reaches reader with stderr [13.27ms]
+
+ 43 pass
+ 0 fail
+ 136 expect() calls
+Ran 43 tests across 7 files. [4.11s]
+cmake --build build/release --target ossie_state_test
+[  0%] Built target duckdb_expression_executor
+[  0%] Built target duckdb_execution
+[  0%] Built target duckdb_logging
+[  2%] Built target duckdb_vector_operations
+[  2%] Built target duckdb_nested_loop_join
+[  2%] Built target duckdb_csv_buffer_manager
+[  2%] Built target duckdb_operator_aggregate
+[  2%] Built target duckdb_csv_encode
+[  3%] Built target duckdb_csv_scanner
+[  3%] Built target duckdb_csv_state_machine
+[  3%] Built target duckdb_csv_sniffer
+[  3%] Built target duckdb_operator_csv_table_function
+[  3%] Built target duckdb_csv_util
+[  5%] Built target duckdb_operator_filter
+[  5%] Built target duckdb_operator_helper
+[  5%] Built target duckdb_operator_join
+[  5%] Built target duckdb_operator_order
+[  5%] Built target duckdb_operator_persistent
+[  5%] Built target duckdb_operator_projection
+[  6%] Built target duckdb_operator_scan
+[  6%] Built target duckdb_operator_set
+[  6%] Built target duckdb_operator_schema
+[  6%] Built target duckdb_physical_plan
+[  7%] Built target duckdb_execution_index
+[  7%] Built target duckdb_execution_index_art
+[  7%] Built target duckdb_sample
+[  7%] Built target duckdb_main
+[  7%] Built target duckdb_main_capi
+[  7%] Built target duckdb_main_capi_cast
+[  7%] Built target duckdb_common_http
+[  9%] Built target duckdb_main_extension
+[  9%] Built target duckdb_main_relation
+[  9%] Built target duckdb_main_secret
+[  9%] Built target duckdb_main_settings
+[  9%] Built target duckdb_main_buffered_data
+[ 10%] Built target duckdb_main_chunk_scan_state
+[ 10%] Built target duckdb_parallel
+[ 10%] Built target duckdb_storage
+[ 10%] Built target duckdb_storage_buffer
+[ 10%] Built target duckdb_storage_checkpoint
+[ 11%] Built target duckdb_storage_compression
+[ 11%] Built target duckdb_storage_compression_chimp
+[ 11%] Built target duckdb_storage_compression_alp
+[ 11%] Built target duckdb_storage_compression_dictionary
+[ 13%] Built target duckdb_storage_compression_roaring
+[ 13%] Built target duckdb_storage_compression_dict_fsst
+[ 13%] Built target duckdb_storage_metadata
+[ 13%] Built target duckdb_storage_statistics
+[ 13%] Built target duckdb_storage_serialization
+[ 13%] Built target duckdb_storage_table
+[ 13%] Built target duckdb_transaction
+[ 13%] Built target duckdb_storage_table_variant
+[ 15%] Built target duckdb_verification
+[ 15%] Built target duckdb_fastpforlib
+[ 15%] Built target duckdb_fmt
+[ 15%] Built target duckdb_fsst
+[ 15%] Built target duckdb_hyperloglog
+[ 17%] Built target duckdb_miniz
+[ 19%] Built target duckdb_pg_query
+[ 25%] Built target duckdb_mbedtls
+[ 25%] Built target duckdb_skiplistlib
+[ 26%] Built target duckdb_yyjson
+[ 32%] Built target duckdb_re2
+[ 32%] Built target duckdb_utf8proc
+[ 32%] Built target duckdb_optimizer_compressed_materialization
+[ 40%] Built target duckdb_zstd
+[ 40%] Built target duckdb_optimizer
+[ 42%] Built target duckdb_optimizer_join_order
+[ 42%] Built target duckdb_optimizer_pullup
+[ 42%] Built target duckdb_optimizer_matcher
+[ 42%] Built target duckdb_optimizer_pushdown
+[ 42%] Built target duckdb_optimizer_rules
+[ 42%] Built target duckdb_optimizer_statistics_expr
+[ 43%] Built target duckdb_planner
+[ 44%] Built target duckdb_optimizer_statistics_op
+[ 44%] Built target duckdb_planner_expression
+[ 44%] Built target duckdb_bind_statement
+[ 44%] Built target duckdb_bind_expression
+[ 44%] Built target duckdb_bind_query_node
+[ 46%] Built target duckdb_bind_tableref
+[ 46%] Built target duckdb_expression_binders
+[ 46%] Built target duckdb_planner_filter
+[ 46%] Built target duckdb_planner_subquery
+[ 46%] Built target duckdb_planner_operator
+[ 46%] Built target duckdb_parser
+[ 46%] Built target duckdb_constraints
+[ 46%] Built target duckdb_expression
+[ 46%] Built target duckdb_parsed_data
+[ 46%] Built target duckdb_query_node
+[ 46%] Built target duckdb_statement
+[ 46%] Built target duckdb_parser_tableref
+[ 46%] Built target duckdb_transformer_constraint
+[ 46%] Built target duckdb_transformer_helpers
+[ 46%] Built target duckdb_transformer_expression
+[ 46%] Built target duckdb_transformer_tableref
+[ 47%] Built target duckdb_transformer_statement
+[ 47%] Built target duckdb_function
+[ 48%] Built target duckdb_func_aggr
+[ 48%] Built target duckdb_aggr_distr
+[ 48%] Built target duckdb_func_cast
+[ 48%] Built target duckdb_union_cast
+[ 48%] Built target duckdb_variant_cast
+[ 48%] Built target duckdb_func_pragma
+[ 48%] Built target duckdb_func_scalar
+[ 48%] Built target duckdb_func_compressed_materialization
+[ 48%] Built target duckdb_func_date
+[ 48%] Built target duckdb_func_generic_main
+[ 50%] Built target duckdb_func_list_nested
+[ 50%] Built target duckdb_function_map
+[ 50%] Built target duckdb_func_seq
+[ 51%] Built target duckdb_func_string_main
+[ 51%] Built target duckdb_func_ops_main
+[ 51%] Built target duckdb_func_string_regexp
+[ 51%] Built target duckdb_func_system
+[ 51%] Built target duckdb_func_struct_main
+[ 52%] Built target duckdb_func_variant_main
+[ 52%] Built target duckdb_func_geometry
+[ 52%] Built target duckdb_func_table_version
+[ 52%] Built target duckdb_func_table
+[ 53%] Built target duckdb_table_func_system
+[ 53%] Built target duckdb_arrow_conversion
+[ 53%] Built target duckdb_func_window
+[ 53%] Built target duckdb_function_variant
+[ 53%] Built target duckdb_catalog
+[ 53%] Built target duckdb_catalog_entries
+[ 53%] Built target duckdb_catalog_entries_dependency
+[ 53%] Built target duckdb_catalog_default_entries
+[ 55%] Built target duckdb_common
+[ 55%] Built target duckdb_adbc
+[ 56%] Built target duckdb_adbc_nanoarrow
+[ 56%] Built target duckdb_common_allocator
+[ 56%] Built target duckdb_common_arrow
+[ 56%] Built target duckdb_common_arrow_appender
+[ 56%] Built target duckdb_common_crypto
+[ 57%] Built target duckdb_common_exception
+[ 57%] Built target duckdb_common_enums
+[ 57%] Built target duckdb_common_multi_file
+[ 57%] Built target duckdb_common_operators
+[ 59%] Built target duckdb_common_tree_renderer
+[ 59%] Built target duckdb_progress_bar
+[ 59%] Built target duckdb_row_operations
+[ 59%] Built target duckdb_common_serializer
+[ 59%] Built target duckdb_common_types
+[ 60%] Built target duckdb_sort
+[ 60%] Built target duckdb_common_types_column
+[ 60%] Built target duckdb_common_types_row
+[ 60%] Built target duckdb_common_variant
+[ 61%] Built target duckdb_value_operations
+[ 63%] Built target duckdb_generated_extension_loader
+[ 64%] Built target dsdgen
+[ 65%] Built target duckdb_core_functions_algebraic
+[ 77%] Built target dsdgen_c
+[ 77%] Built target duckdb_core_functions_distributive
+[ 77%] Built target duckdb_core_functions_holistic
+[ 77%] Built target duckdb_core_functions_nested
+[ 78%] Built target duckdb_core_functions_regression
+[ 78%] Built target duckdb_core_functions_array
+[ 78%] Built target duckdb_core_functions_bit
+[ 78%] Built target duckdb_core_functions_blob
+[ 78%] Built target duckdb_core_functions_date
+[ 80%] Built target duckdb_core_functions_debug
+[ 80%] Built target duckdb_core_functions_enum
+[ 80%] Built target duckdb_core_functions_generic
+[ 80%] Built target duckdb_core_functions_list
+[ 80%] Built target duckdb_core_functions_math
+[ 81%] Built target duckdb_core_functions_map
+[ 81%] Built target duckdb_core_functions_operators
+[ 81%] Built target duckdb_core_functions_random
+[ 81%] Built target duckdb_core_functions_string
+[ 81%] Built target duckdb_core_functions_struct
+[ 81%] Built target duckdb_core_functions_union
+[ 81%] Built target duckdb_parquet_reader_variant
+[ 81%] Built target duckdb_parquet_decoders
+[ 81%] Built target duckdb_parquet_readers
+[ 81%] Built target duckdb_parquet_writers
+[ 81%] Built target duckdb_static
+[ 82%] Built target duckdb_parquet_writer_variant
+[ 82%] Built target core_functions_extension
+[ 84%] Built target tpcds_extension
+[ 97%] Built target parquet_extension
+[100%] Built target ossie_extension
+[100%] Building CXX object extension/ossie/CMakeFiles/ossie_state_test.dir/test/cpp/state_snapshot_test.cpp.o
+[100%] Linking CXX executable ossie_state_test
+ld: warning: ignoring duplicate libraries: '../../src/libduckdb_static.a'
+ld: warning: search path '/usr/local/opt/libxml2/lib' not found
+[100%] Built target ossie_state_test
+./build/release/extension/ossie/ossie_state_test "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/"
+PASS: 19 checks; controlled publication, lifetime, compile behavior, cross-connection timing
+cmake --build build/release --target ossie_metric_grain_test
+[  0%] Built target duckdb_logging
+[  0%] Built target duckdb_expression_executor
+[  0%] Built target duckdb_execution
+[  2%] Built target duckdb_vector_operations
+[  2%] Built target duckdb_nested_loop_join
+[  2%] Built target duckdb_csv_buffer_manager
+[  2%] Built target duckdb_operator_aggregate
+[  2%] Built target duckdb_csv_encode
+[  3%] Built target duckdb_csv_scanner
+[  3%] Built target duckdb_csv_sniffer
+[  3%] Built target duckdb_csv_state_machine
+[  3%] Built target duckdb_operator_csv_table_function
+[  3%] Built target duckdb_csv_util
+[  5%] Built target duckdb_operator_filter
+[  5%] Built target duckdb_operator_helper
+[  5%] Built target duckdb_operator_join
+[  5%] Built target duckdb_operator_order
+[  5%] Built target duckdb_operator_persistent
+[  5%] Built target duckdb_operator_projection
+[  6%] Built target duckdb_operator_scan
+[  6%] Built target duckdb_operator_schema
+[  6%] Built target duckdb_operator_set
+[  6%] Built target duckdb_physical_plan
+[  7%] Built target duckdb_execution_index
+[  7%] Built target duckdb_execution_index_art
+[  7%] Built target duckdb_sample
+[  7%] Built target duckdb_main
+[  7%] Built target duckdb_main_capi
+[  7%] Built target duckdb_main_capi_cast
+[  9%] Built target duckdb_main_extension
+[  9%] Built target duckdb_common_http
+[  9%] Built target duckdb_main_relation
+[  9%] Built target duckdb_main_secret
+[  9%] Built target duckdb_main_buffered_data
+[  9%] Built target duckdb_main_settings
+[ 10%] Built target duckdb_main_chunk_scan_state
+[ 10%] Built target duckdb_parallel
+[ 10%] Built target duckdb_storage_buffer
+[ 10%] Built target duckdb_storage
+[ 10%] Built target duckdb_storage_checkpoint
+[ 11%] Built target duckdb_storage_compression
+[ 11%] Built target duckdb_storage_compression_alp
+[ 11%] Built target duckdb_storage_compression_chimp
+[ 13%] Built target duckdb_storage_compression_roaring
+[ 13%] Built target duckdb_storage_compression_dictionary
+[ 13%] Built target duckdb_storage_compression_dict_fsst
+[ 13%] Built target duckdb_storage_metadata
+[ 13%] Built target duckdb_storage_serialization
+[ 13%] Built target duckdb_storage_statistics
+[ 13%] Built target duckdb_storage_table
+[ 13%] Built target duckdb_storage_table_variant
+[ 13%] Built target duckdb_transaction
+[ 14%] Built target duckdb_fastpforlib
+[ 14%] Built target duckdb_fmt
+[ 15%] Built target duckdb_verification
+[ 15%] Built target duckdb_fsst
+[ 15%] Built target duckdb_hyperloglog
+[ 18%] Built target duckdb_pg_query
+[ 23%] Built target duckdb_mbedtls
+[ 25%] Built target duckdb_miniz
+[ 25%] Built target duckdb_skiplistlib
+[ 31%] Built target duckdb_re2
+[ 32%] Built target duckdb_yyjson
+[ 32%] Built target duckdb_utf8proc
+[ 32%] Built target duckdb_optimizer_compressed_materialization
+[ 40%] Built target duckdb_zstd
+[ 40%] Built target duckdb_optimizer
+[ 42%] Built target duckdb_optimizer_join_order
+[ 42%] Built target duckdb_optimizer_matcher
+[ 42%] Built target duckdb_optimizer_pullup
+[ 42%] Built target duckdb_optimizer_pushdown
+[ 42%] Built target duckdb_optimizer_rules
+[ 42%] Built target duckdb_optimizer_statistics_expr
+[ 44%] Built target duckdb_optimizer_statistics_op
+[ 44%] Built target duckdb_planner
+[ 44%] Built target duckdb_planner_expression
+[ 44%] Built target duckdb_bind_expression
+[ 44%] Built target duckdb_bind_query_node
+[ 44%] Built target duckdb_bind_statement
+[ 46%] Built target duckdb_bind_tableref
+[ 46%] Built target duckdb_expression_binders
+[ 46%] Built target duckdb_planner_filter
+[ 46%] Built target duckdb_planner_subquery
+[ 46%] Built target duckdb_planner_operator
+[ 46%] Built target duckdb_parser
+[ 46%] Built target duckdb_constraints
+[ 46%] Built target duckdb_expression
+[ 46%] Built target duckdb_parsed_data
+[ 46%] Built target duckdb_query_node
+[ 46%] Built target duckdb_statement
+[ 46%] Built target duckdb_transformer_constraint
+[ 46%] Built target duckdb_parser_tableref
+[ 46%] Built target duckdb_transformer_expression
+[ 46%] Built target duckdb_transformer_helpers
+[ 47%] Built target duckdb_transformer_statement
+[ 47%] Built target duckdb_transformer_tableref
+[ 47%] Built target duckdb_function
+[ 48%] Built target duckdb_func_aggr
+[ 48%] Built target duckdb_func_cast
+[ 48%] Built target duckdb_aggr_distr
+[ 48%] Built target duckdb_union_cast
+[ 48%] Built target duckdb_variant_cast
+[ 48%] Built target duckdb_func_pragma
+[ 48%] Built target duckdb_func_scalar
+[ 48%] Built target duckdb_func_compressed_materialization
+[ 48%] Built target duckdb_func_date
+[ 50%] Built target duckdb_func_list_nested
+[ 50%] Built target duckdb_func_generic_main
+[ 50%] Built target duckdb_func_ops_main
+[ 50%] Built target duckdb_function_map
+[ 51%] Built target duckdb_func_string_main
+[ 51%] Built target duckdb_func_seq
+[ 51%] Built target duckdb_func_string_regexp
+[ 51%] Built target duckdb_func_struct_main
+[ 52%] Built target duckdb_func_variant_main
+[ 52%] Built target duckdb_func_system
+[ 52%] Built target duckdb_func_geometry
+[ 52%] Built target duckdb_func_table
+[ 53%] Built target duckdb_table_func_system
+[ 53%] Built target duckdb_func_table_version
+[ 53%] Built target duckdb_arrow_conversion
+[ 53%] Built target duckdb_func_window
+[ 53%] Built target duckdb_function_variant
+[ 53%] Built target duckdb_catalog
+[ 53%] Built target duckdb_catalog_entries
+[ 53%] Built target duckdb_catalog_entries_dependency
+[ 53%] Built target duckdb_catalog_default_entries
+[ 55%] Built target duckdb_common
+[ 55%] Built target duckdb_adbc
+[ 56%] Built target duckdb_adbc_nanoarrow
+[ 56%] Built target duckdb_common_arrow_appender
+[ 56%] Built target duckdb_common_allocator
+[ 56%] Built target duckdb_common_arrow
+[ 56%] Built target duckdb_common_crypto
+[ 57%] Built target duckdb_common_exception
+[ 57%] Built target duckdb_common_multi_file
+[ 57%] Built target duckdb_common_enums
+[ 57%] Built target duckdb_common_operators
+[ 57%] Built target duckdb_progress_bar
+[ 57%] Built target duckdb_row_operations
+[ 59%] Built target duckdb_common_tree_renderer
+[ 59%] Built target duckdb_common_serializer
+[ 59%] Built target duckdb_common_types
+[ 60%] Built target duckdb_sort
+[ 60%] Built target duckdb_common_types_row
+[ 60%] Built target duckdb_common_types_column
+[ 61%] Built target duckdb_value_operations
+[ 61%] Built target duckdb_common_variant
+[ 63%] Built target duckdb_generated_extension_loader
+[ 64%] Built target dsdgen
+[ 65%] Built target duckdb_core_functions_algebraic
+[ 65%] Built target duckdb_core_functions_distributive
+[ 75%] Built target duckdb_core_functions_holistic
+[ 77%] Built target dsdgen_c
+[ 77%] Built target duckdb_core_functions_nested
+[ 77%] Built target duckdb_core_functions_bit
+[ 78%] Built target duckdb_core_functions_regression
+[ 78%] Built target duckdb_core_functions_array
+[ 78%] Built target duckdb_core_functions_blob
+[ 80%] Built target duckdb_core_functions_debug
+[ 80%] Built target duckdb_core_functions_date
+[ 80%] Built target duckdb_core_functions_enum
+[ 80%] Built target duckdb_core_functions_generic
+[ 81%] Built target duckdb_core_functions_map
+[ 81%] Built target duckdb_core_functions_math
+[ 81%] Built target duckdb_core_functions_list
+[ 81%] Built target duckdb_core_functions_operators
+[ 81%] Built target duckdb_core_functions_random
+[ 81%] Built target duckdb_core_functions_string
+[ 81%] Built target duckdb_core_functions_struct
+[ 81%] Built target duckdb_core_functions_union
+[ 81%] Built target duckdb_parquet_readers
+[ 81%] Built target duckdb_parquet_decoders
+[ 81%] Built target duckdb_parquet_reader_variant
+[ 81%] Built target duckdb_parquet_writers
+[ 81%] Built target duckdb_static
+[ 82%] Built target duckdb_parquet_writer_variant
+[ 84%] Built target tpcds_extension
+[ 84%] Built target core_functions_extension
+[ 86%] Built target ossie_extension
+[100%] Built target parquet_extension
+[100%] Building CXX object extension/ossie/CMakeFiles/ossie_metric_grain_test.dir/test/cpp/metric_grain_test.cpp.o
+[100%] Linking CXX executable ossie_metric_grain_test
+ld: warning: ignoring duplicate libraries: '../../src/libduckdb_static.a'
+ld: warning: search path '/usr/local/opt/libxml2/lib' not found
+[100%] Built target ossie_metric_grain_test
+./build/release/extension/ossie/ossie_metric_grain_test "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/"
+PASS: fact grain: amount_sum
+PASS: fact grain: amount_avg
+PASS: fact grain: value_count
+PASS: fact grain: record_count
+PASS: fact grain: eligible_amount
+PASS: fact grain: dimension_scalar
+PASS: fact grain: wrapped_fact
+PASS: fact grain: constant_field_sum
+PASS: fact grain: quoted_fact
+PASS: independent metrics all have designated fact grain
+PASS: case-insensitive declared metric and dataset
+PASS: core dimension metric independently compiles
+PASS: reject different/absent grain: dimension_count
+PASS: reject different/absent grain: dimension_distinct
+PASS: reject different/absent grain: mixed
+PASS: reject different/absent grain: wrapped_mixed
+PASS: reject different/absent grain: scalar
+PASS: reject different/absent grain: unknown_function
+PASS: reject grainless aggregate: star
+PASS: reject grainless aggregate: with_star
+PASS: reject grainless aggregate: one
+PASS: new checker does not infer standalone COUNT(*) grain from another metric
+PASS: existing core grainless inheritance retained
+PASS: existing core in-metric grainless inheritance retained
+PASS: window rejected by shared analysis
+PASS: unknown metric rejected
+PASS: unknown designated dataset rejected
+PASS: empty request rejected
+PASS: designated grain does not replace fan-out planning
+PASS: designated grain does not replace ambiguity planning
+PASS: validation leaves original model and SQL unchanged
+PASS: native binding fixture created
+PASS: nested aggregates still require physical binder refusal
+PASS: valid original query executes after grain checks
+PASS: group membership, totals and counts match independent hand-derived oracle
+PASS: all designated fact metrics execute
+PASS: exact fact metrics/CASE/constant field match hand oracle
+PASS: AVG and wrapped ratio match hand oracle
+PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: nested_star
+PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: hidden_sum_metric
+PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: hidden_window_metric
+PASS: unrecognized aggregate requires separate strict expression whitelist; binder alone is insufficient
+PASS: 42 designated-grain controls
+cmake --build build/release --target ossie_population_capture_test
+[  0%] Built target duckdb_execution
+[  0%] Built target duckdb_expression_executor
+[  0%] Built target duckdb_logging
+[  2%] Built target duckdb_vector_operations
+[  2%] Built target duckdb_nested_loop_join
+[  2%] Built target duckdb_csv_buffer_manager
+[  2%] Built target duckdb_operator_aggregate
+[  2%] Built target duckdb_csv_encode
+[  2%] Built target duckdb_csv_state_machine
+[  3%] Built target duckdb_csv_scanner
+[  3%] Built target duckdb_csv_sniffer
+[  3%] Built target duckdb_operator_csv_table_function
+[  3%] Built target duckdb_csv_util
+[  5%] Built target duckdb_operator_filter
+[  5%] Built target duckdb_operator_helper
+[  5%] Built target duckdb_operator_join
+[  5%] Built target duckdb_operator_order
+[  5%] Built target duckdb_operator_persistent
+[  5%] Built target duckdb_operator_projection
+[  6%] Built target duckdb_operator_scan
+[  6%] Built target duckdb_operator_schema
+[  6%] Built target duckdb_operator_set
+[  6%] Built target duckdb_physical_plan
+[  7%] Built target duckdb_execution_index
+[  7%] Built target duckdb_execution_index_art
+[  7%] Built target duckdb_sample
+[  7%] Built target duckdb_main
+[  7%] Built target duckdb_main_capi
+[  7%] Built target duckdb_main_capi_cast
+[  7%] Built target duckdb_common_http
+[  9%] Built target duckdb_main_extension
+[  9%] Built target duckdb_main_relation
+[  9%] Built target duckdb_main_secret
+[  9%] Built target duckdb_main_settings
+[  9%] Built target duckdb_main_buffered_data
+[ 10%] Built target duckdb_main_chunk_scan_state
+[ 10%] Built target duckdb_parallel
+[ 10%] Built target duckdb_storage
+[ 10%] Built target duckdb_storage_buffer
+[ 10%] Built target duckdb_storage_checkpoint
+[ 11%] Built target duckdb_storage_compression
+[ 11%] Built target duckdb_storage_compression_chimp
+[ 11%] Built target duckdb_storage_compression_alp
+[ 12%] Built target duckdb_storage_compression_roaring
+[ 12%] Built target duckdb_storage_compression_dictionary
+[ 12%] Built target duckdb_storage_compression_dict_fsst
+[ 12%] Built target duckdb_storage_metadata
+[ 12%] Built target duckdb_storage_serialization
+[ 12%] Built target duckdb_storage_statistics
+[ 12%] Built target duckdb_storage_table
+[ 12%] Built target duckdb_storage_table_variant
+[ 12%] Built target duckdb_transaction
+[ 14%] Built target duckdb_verification
+[ 15%] Built target duckdb_fastpforlib
+[ 15%] Built target duckdb_fmt
+[ 15%] Built target duckdb_fsst
+[ 15%] Built target duckdb_hyperloglog
+[ 23%] Built target duckdb_pg_query
+[ 23%] Built target duckdb_miniz
+[ 24%] Built target duckdb_mbedtls
+[ 24%] Built target duckdb_utf8proc
+[ 24%] Built target duckdb_skiplistlib
+[ 25%] Built target duckdb_yyjson
+[ 32%] Built target duckdb_re2
+[ 40%] Built target duckdb_zstd
+[ 40%] Built target duckdb_optimizer_compressed_materialization
+[ 40%] Built target duckdb_optimizer
+[ 41%] Built target duckdb_optimizer_join_order
+[ 41%] Built target duckdb_optimizer_pullup
+[ 41%] Built target duckdb_optimizer_matcher
+[ 41%] Built target duckdb_optimizer_pushdown
+[ 41%] Built target duckdb_optimizer_rules
+[ 41%] Built target duckdb_optimizer_statistics_expr
+[ 42%] Built target duckdb_optimizer_statistics_op
+[ 44%] Built target duckdb_planner
+[ 44%] Built target duckdb_planner_expression
+[ 44%] Built target duckdb_bind_expression
+[ 44%] Built target duckdb_bind_query_node
+[ 44%] Built target duckdb_bind_statement
+[ 45%] Built target duckdb_bind_tableref
+[ 45%] Built target duckdb_expression_binders
+[ 45%] Built target duckdb_planner_filter
+[ 45%] Built target duckdb_planner_operator
+[ 45%] Built target duckdb_planner_subquery
+[ 45%] Built target duckdb_parser
+[ 45%] Built target duckdb_constraints
+[ 45%] Built target duckdb_expression
+[ 45%] Built target duckdb_parsed_data
+[ 45%] Built target duckdb_query_node
+[ 45%] Built target duckdb_statement
+[ 45%] Built target duckdb_parser_tableref
+[ 45%] Built target duckdb_transformer_constraint
+[ 45%] Built target duckdb_transformer_expression
+[ 45%] Built target duckdb_transformer_helpers
+[ 46%] Built target duckdb_transformer_statement
+[ 46%] Built target duckdb_transformer_tableref
+[ 46%] Built target duckdb_function
+[ 48%] Built target duckdb_func_aggr
+[ 48%] Built target duckdb_aggr_distr
+[ 48%] Built target duckdb_func_cast
+[ 48%] Built target duckdb_union_cast
+[ 48%] Built target duckdb_variant_cast
+[ 48%] Built target duckdb_func_pragma
+[ 48%] Built target duckdb_func_scalar
+[ 48%] Built target duckdb_func_compressed_materialization
+[ 48%] Built target duckdb_func_date
+[ 48%] Built target duckdb_func_generic_main
+[ 49%] Built target duckdb_func_list_nested
+[ 49%] Built target duckdb_function_map
+[ 49%] Built target duckdb_func_ops_main
+[ 49%] Built target duckdb_func_seq
+[ 50%] Built target duckdb_func_string_main
+[ 50%] Built target duckdb_func_struct_main
+[ 50%] Built target duckdb_func_string_regexp
+[ 51%] Built target duckdb_func_variant_main
+[ 51%] Built target duckdb_func_geometry
+[ 51%] Built target duckdb_func_system
+[ 51%] Built target duckdb_func_table
+[ 53%] Built target duckdb_table_func_system
+[ 53%] Built target duckdb_func_table_version
+[ 53%] Built target duckdb_arrow_conversion
+[ 53%] Built target duckdb_func_window
+[ 53%] Built target duckdb_function_variant
+[ 53%] Built target duckdb_catalog
+[ 53%] Built target duckdb_catalog_entries
+[ 53%] Built target duckdb_catalog_entries_dependency
+[ 53%] Built target duckdb_catalog_default_entries
+[ 53%] Built target duckdb_adbc
+[ 54%] Built target duckdb_adbc_nanoarrow
+[ 55%] Built target duckdb_common
+[ 55%] Built target duckdb_common_allocator
+[ 55%] Built target duckdb_common_arrow
+[ 55%] Built target duckdb_common_crypto
+[ 55%] Built target duckdb_common_arrow_appender
+[ 55%] Built target duckdb_common_enums
+[ 57%] Built target duckdb_common_exception
+[ 57%] Built target duckdb_common_operators
+[ 57%] Built target duckdb_common_multi_file
+[ 57%] Built target duckdb_progress_bar
+[ 58%] Built target duckdb_common_tree_renderer
+[ 58%] Built target duckdb_row_operations
+[ 58%] Built target duckdb_common_serializer
+[ 59%] Built target duckdb_sort
+[ 59%] Built target duckdb_common_types_column
+[ 59%] Built target duckdb_common_types
+[ 59%] Built target duckdb_common_types_row
+[ 59%] Built target duckdb_common_variant
+[ 61%] Built target duckdb_value_operations
+[ 62%] Built target duckdb_generated_extension_loader
+[ 63%] Built target dsdgen
+[ 75%] Built target dsdgen_c
+[ 76%] Built target duckdb_core_functions_algebraic
+[ 76%] Built target duckdb_core_functions_distributive
+[ 76%] Built target duckdb_core_functions_holistic
+[ 76%] Built target duckdb_core_functions_nested
+[ 77%] Built target duckdb_core_functions_regression
+[ 77%] Built target duckdb_core_functions_array
+[ 77%] Built target duckdb_core_functions_bit
+[ 77%] Built target duckdb_core_functions_blob
+[ 79%] Built target duckdb_core_functions_debug
+[ 79%] Built target duckdb_core_functions_date
+[ 79%] Built target duckdb_core_functions_enum
+[ 79%] Built target duckdb_core_functions_generic
+[ 79%] Built target duckdb_core_functions_list
+[ 80%] Built target duckdb_core_functions_map
+[ 80%] Built target duckdb_core_functions_math
+[ 80%] Built target duckdb_core_functions_operators
+[ 80%] Built target duckdb_core_functions_random
+[ 80%] Built target duckdb_core_functions_string
+[ 80%] Built target duckdb_core_functions_struct
+[ 80%] Built target duckdb_core_functions_union
+[ 80%] Built target duckdb_parquet_decoders
+[ 80%] Built target duckdb_parquet_readers
+[ 80%] Built target duckdb_parquet_writers
+[ 80%] Built target duckdb_parquet_reader_variant
+[ 81%] Built target duckdb_parquet_writer_variant
+[ 81%] Built target duckdb_static
+[ 83%] Built target tpcds_extension
+[ 83%] Built target core_functions_extension
+[ 85%] Built target ossie_extension
+[ 98%] Built target parquet_extension
+[100%] Building CXX object extension/ossie/CMakeFiles/ossie_population_capture_test.dir/test/cpp/population_capture_test.cpp.o
+[100%] Linking CXX executable ossie_population_capture_test
+ld: warning: ignoring duplicate libraries: '../../src/libduckdb_static.a'
+ld: warning: search path '/usr/local/opt/libxml2/lib' not found
+[100%] Built target ossie_population_capture_test
+./build/release/extension/ossie/ossie_population_capture_test "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/"
+PASS: 158 checks; deterministic production capture, capture/prepublish cancel, callback failure; threads=4/1
+./build/release/"/test/unittest" ""test/"*"
+Filters: test/*
+
+[0/23] (0%): test/sql/ossie_join_research.test
+[1/23] (4%): test/sql/ossie_field_expansion.test
+[2/23] (8%): test/sql/ossie_describe.test
+[3/23] (13%): test/sql/ossie_loader_contract.test
+[4/23] (17%): test/sql/ossie_relationships.test
+[5/23] (21%): test/sql/ossie_population_expressions.test
+[6/23] (26%): test/sql/ossie_population.test
+[7/23] (30%): test/sql/ossie_population_result.test
+[8/23] (34%): test/sql/ossie_population_discovery.test
+[9/23] (39%): test/sql/ossie_population_errors.test
+[10/23] (43%): test/sql/ossie_sql_2026.test
+[11/23] (47%): test/sql/ossie_yaml.test
+[12/23] (52%): test/sql/ossie_population_plan.test
+[13/23] (56%): test/sql/ossie_differential.test
+[14/23] (60%): test/sql/ossie_function_metadata.test
+[15/23] (65%): test/sql/ossie_conformance.test
+[16/23] (69%): test/sql/ossie_population_dates.test
+[17/23] (73%): test/sql/ossie_compile.test
+[18/23] (78%): test/sql/ossie_joined_population.test
+[19/23] (82%): test/sql/ossie_grain.test
+[20/23] (86%): test/sql/ossie_load.test
+[21/23] (91%): test/sql/ossie.test
+[22/23] (95%): test/sql/ossie_validate.test
+[23/23] (100%): test/sql/ossie_validate.test
+===============================================================================
+All tests passed (840 assertions in 23 test cases)
+

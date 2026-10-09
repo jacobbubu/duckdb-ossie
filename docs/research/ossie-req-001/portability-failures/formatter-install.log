@@ -1,0 +1,10 @@
+Collecting clang-format==11.0.1
+  Downloading clang-format-11.0.1.tar.gz (8.0 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: clang-format
+  Building wheel for clang-format (pyproject.toml): started

@@ -64,8 +64,9 @@ Python formatter/tidy scripts remain engine tooling. There are no active
 project-maintained Python gates or artifact verifiers. Historical Python research
 sources and reports remain immutable. Upstream format tools retain Black 24.x,
 clang-format 11.0.1 and cmake-format 0.6.13; the root `.clang-format` remains
-identical to the pinned DuckDB file. Local clang-tidy is unavailable; its authoritative
-Ubuntu job has not been run locally. No new global naming/coverage threshold is imposed.
+identical to the pinned DuckDB file. Local Ubuntu ARM64 clang-tidy is checked separately in the
+[cross-environment package](linux-reproduction.md); the remote Ubuntu AMD64 job
+is still unverified. No new global naming/coverage threshold is imposed.
 
 ## Bounded dependency rules
 
@@ -102,9 +103,13 @@ required job, and confirms nonzero status. Another checks Make's state runner is
 scheduled before the SQL runner. An actual missing-fixture state invocation was
 also confirmed to propagate failure through Make.
 
-The existing Linux/macOS `artifact-load` matrix now runs the loader, population, expression and DATE
-verifiers against the same downloaded extension in stock DuckDB Node bindings 1.5.6 (client 1.5.6-r.1),
-checking source ID `069cc9f9b5` and unsigned file loading without static fallback.
+The existing Linux/macOS `artifact-load` matrix invokes the same-artifact Bun
+acceptance runner against the downloaded extension. It runs all eleven stock
+verifiers, real population/core MCP, independent-process population replay and
+stock CLI checks. It uses DuckDB Node bindings 1.5.6 (client 1.5.6-r.1), checks
+source ID `069cc9f9b5` and unsigned file loading without static fallback. The runner
+prepares signed duckdb_mcp/tpcds CLI dependencies before execution; its source
+audit reads hash-bound repository copies, including the original requirement.
 Evidence is uploaded per architecture. The loader checks its required eight entry
 names and query overloads, tolerating unrelated additional functions; its metadata
 checks remain intact. The population verifier retains its independent numeric and
@@ -232,4 +237,5 @@ draining and frozen-query recovery controls remain mandatory. Actual MCP probes
 parse versioned envelopes for callback failures and explicitly retain external
 missing-argument/unknown-tool errors. Quote-aware framing has dedicated Bun
 controls. See [the error contract](population-errors.md). This is local evidence;
-remote CI/Ubuntu tidy and wider product acceptance remain unverified.
+remote CI and wider product acceptance remain unverified. Local Ubuntu ARM64
+quality is documented separately in the [cross-environment package](linux-reproduction.md).

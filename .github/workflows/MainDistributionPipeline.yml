@@ -113,32 +113,14 @@ jobs:
           curl -fsSL https://install.duckdb.org | sh
           echo "$HOME/.duckdb/cli/$DUCKDB_VERSION" >> "$GITHUB_PATH"
 
-      - name: Run the functionality check against the artifact
-        env:
-          OSSIE_EXTENSION: downloaded/ossie.duckdb_extension
-        run: ./scripts/full_functionality_check.sh
-
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.3.11'
       - name: Install locked tooling dependencies
         run: bun install --frozen-lockfile
 
-      - name: Verify all profiles and research controls against the same real artifact
-        run: |
-          mkdir -p quality-reports
-          bun scripts/verify_loader_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/loader.json
-          bun scripts/verify_core_correspondence.ts downloaded/ossie.duckdb_extension --output quality-reports/core-correspondence.json
-          bun scripts/verify_population_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/population.json
-          bun scripts/verify_expression_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/expression.json
-          bun scripts/verify_date_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/date.json
-          # Existing core behavior and research preflight, separate from production controls.
-          bun scripts/verify_join_research_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/join_research.json
-          bun scripts/verify_joined_population_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/joined_population.json
-          bun scripts/verify_plan_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/plan.json
-          bun scripts/verify_discovery_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/discovery.json
-          bun scripts/verify_error_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/errors.json
-          bun scripts/verify_typed_population_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/typed-result.json
+      - name: Reproduce complete bounded acceptance against the same artifact
+        run: bun scripts/run_p0_acceptance.ts downloaded/ossie.duckdb_extension quality-reports
 
       - uses: actions/upload-artifact@v4
         if: always()

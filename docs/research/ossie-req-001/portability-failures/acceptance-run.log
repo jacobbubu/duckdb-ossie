@@ -1,0 +1,28 @@
+cli-dependencies
+loader
+population
+expression
+date
+join_research
+joined_population
+42 |     exit = await child.exited;
+43 |   } finally {
+44 |     closeSync(fd);
+45 |   }
+46 |   logs[logPath] = digest(logPath);
+47 |   assert.equal(exit, 0, `${name} failed; diagnostic retained in ${logPath}`);
+              ^
+AssertionError: joined_population failed; diagnostic retained in /evidence/linux-acceptance/joined_population.log
+
+1 !== 0
+
+ generatedMessage: false,
+     actual: 1,
+   expected: 0,
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at run (/workspace/scripts/run_p0_acceptance.ts:47:10)
+      at processTicksAndRejections (native:7:39)
+
+Bun v1.3.11 (Linux arm64)

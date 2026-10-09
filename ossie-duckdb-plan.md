@@ -1,26 +1,29 @@
 # duckdb_ossie — Implementation Plan
 
-## Current research checkpoint — 2026-10-10, five rounds complete
+## Current research checkpoint — 2026-10-10, portability package complete
 
-The adjusted A1–A8 local rule-driven acceptance is complete for the two reviewed
-bounded profiles jointly covering relevant cases. This is not a full-spec/P1,
-autonomous Agent or remote CI claim. Core targets the pinned new 0.2.0.dev0 shape;
-project API 2.0.0, result-v1, typed numeric and declared execution restrictions remain.
-Complete original GAAP objects/daily/groups/drilldown, threshold-only definition
-changes, independent oracles, boundary/safe joins, actual AST/capture/definition
-provenance, source/failure/prepared controls and separate-process replay are saved.
-Final native/SQL evidence: 19 state/42 grain/158 capture, 840 assertions/23 cases/0
-skips. Final quality-local: 38 Bun/124 expects, format/typecheck/architecture pass.
-Eleven stock verifiers, 365 field controls, 54 error controls, MCP 330/106 refusals,
-core MCP resources and CLI 40/0/0 FAITHFUL pass. The persistent Bun reproduction
-runner was actually executed and separately audits reports; failures are retained.
-The artifact SHA256 is 4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307.
-See [final acceptance](docs/p0-acceptance.md) and existing OSSIE-REQ-001 for details.
-The five authorized local rounds are complete. No push/merge/publication occurred.
-Future pagination research, calendar/multi-period/general ontology/mixed grains/
-windows remain independently scoped P1 needs; remote CI/Ubuntu tidy and autonomous
-Agent validation remain unrun. No additional implementation or remote action is
-implicitly authorized by this bounded acceptance conclusion.
+The adjusted A1–A8 acceptance for the two bounded profiles now reproduces on
+macOS ARM64 and independently built Ubuntu 24.04 ARM64. Both pass 19 state/42
+grain/158 capture, 840 SQL assertions/23 cases/0 skips, 43 Bun tests/136 expects,
+eleven stock verifiers, real MCP/replay/core resources and CLI 40/0/0 FAITHFUL.
+Complete fixed GAAP results agree across environments (20 comparisons); this does
+not establish universal determinism, arbitrary arithmetic or autonomous Agents.
+Local Ubuntu ARM64 distro clang-tidy 18.1.3 passes over the 13 project translation
+units, including root registration. Pinned C++ formatting passes on macOS and
+separate Ubuntu AMD64; full quality-local was not run on ARM64. Fixes address
+actual population.cpp tidy diagnostics and the stock cancellation harness;
+strict negative assertions and deterministic native barriers remain.
+Source audit checks 20 immutable sources plus the original requirement from
+hash-bound repository copies; original paths are labels only. Original manifest
+and historical reports are unchanged. Final binaries are platform-specific:
+macOS 13d5317fb860f9ad81437a0a86cb8c996d7742a026f927f7b503c0fadf340c95;
+Linux 4926122b73590b3724e6b46d561c5ae88a330f15f2ce32b80181ab2e8c612dd6.
+See [acceptance](docs/p0-acceptance.md), [Linux reproduction](docs/linux-reproduction.md)
+and [portability controls](docs/research/ossie-req-001/portability-control-results.json).
+This authorized local package is complete; local commit only. Remote Linux AMD64/
+macOS CI remains unrun, with no push/merge/publication authority for this package.
+P1, pagination research and real autonomous Agent validation remain separately
+scoped needs; no further capability implementation starts from this completion.
 
 ## Historical error/discovery milestones — 2026-10-09
 
@@ -769,3 +772,19 @@ StringArray 不再转换数字/Boolean，合法文本按长度保留。35 具名
 ### 自动第5轮完成：最终交付
 
 调整范围A1–A8验收归档及实际单命令复现完成，source/fixture/report绑定和最终quality-local通过；前四轮支持/拒绝路径证据已共同收口。Bun runner的stderr类型/import错误和修复保留，Advisor限定反证与Lead实测分开。五轮均本地提交，无推送/合并/发布。当前已授权验收目标完成；P1/分页/remote CI/自主Agent等独立后续范围不自动启动。
+
+### 跨环境复现/Linux质量 checkpoint（2026-10-10，用户授权）
+
+用户选择先补跨环境复现与Linux质量验证。沿现OSSIE-REQ-001解决来源审计的Mac原始xlsx/docx绝对路径、补原需求raw核对；保持raw和原manifest字节不变，研究hash-bound相对副本locator与严格missing/tamper拒绝，不降低fidelity。复现入口与CI局部source hash核对需覆盖新增依赖；Ubuntu24.04/Linux ARM64 Docker实际构建、clang-tidy、TS/原生/SQL/stock验收按可用环境验证。与远端Linux AMD64 CI分开，不推送/修改远端规则/发布，不扩P1。Advisor一轮只读审阅来源契约，Lead负责实现和证据。
+
+### Linux clang-tidy 发现与修复 checkpoint（2026-10-10）
+
+Ubuntu18.1.3 clang-tidy已在population.cpp发现137处大括号、4处range-copy、2处乘法widening、2处BIGINT narrowing、using namespace和非const全局atomic诊断（当前147项，完整门禁尚未结束）。本包按原质量范围修复这些实际诊断：仅让clang对大括号生成fix，其他显式using/宽类型常量/局部static原子/const引用/受10000行预算约束的转换由Lead审核；不关闭检查或扩大业务能力。C++变更使旧二进制/报告不能代表最终源码，须重建Mac/Linux并重跑原生/SQL/完整stock/MCP及最终hash核对。初次tidy失败原日志保留，formatter安装主动终止与AMD64格式检查单独记录。
+
+### Linux运行验证发现 checkpoint（2026-10-10）
+
+修复后Mac原生/SQL/43 Bun和完整stock/MCP通过；Linux原生capture因standalone Git自动缩写8位source ID拒绝，stock双表verifier一次2ms interrupt未产生预期拒绝。前者完整DuckDB commit已核对，按上游CMake接口显式传入真实commit再重建，保留严格10位身份检查。后者调查Node API参数化执行先异步prepare的时序，拟明确prepare/bind后反复interrupt并要求timer实际运行、严格拒绝/旧bundle恢复，不隐藏重试/放宽失败；复用只读Advisor限定反证该控制，Lead实现和实测。确定性取消阶段证明仍来自native屏障，stock timer控制不作阶段确定性声明。失败日志/failure.json及当时产物hash保留，最终Linux原生/完整验收仍必要。
+
+### 跨环境复现/Linux质量本地交付 checkpoint（2026-10-10）
+
+两端同最终源码独立产物通过19/42/158 native、840 SQL/23 cases/0 skips、43 Bun/136 expects、11 stock verifiers、真实MCP330/106、独立进程replay、core资源与CLI40/0/0。LinuxARM64全量clang-tidy18.1.3通过，13独立TU/26compdb项含root注册；成功调用在上游runner中静默，inventory并非运行trace。固定11.0.1格式门禁在Mac及独立UbuntuAMD64通过，ARM64不称完整quality-local。20项跨环境完整GAAP结果对照通过；20+1原始来源哈希核对和严格locator负例通过，历史20文件审计不追溯补称原需求已查。修复实际tidy诊断与prepare/cancel测试竞态，保留各次失败，取消具体阶段仍由native屏障证明。证据与复现指向上方current checkpoint。本包完成、本地提交，不推送；remote AMD64/MacCI及Agent仍未跑，P1/分页不启动，下一交付核验只核对最终文档/报告hash和本地提交。

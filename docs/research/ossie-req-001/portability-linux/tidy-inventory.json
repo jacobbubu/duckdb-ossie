@@ -1,0 +1,27 @@
+{
+  "scope": "matching compile database inventory and verified upstream runner control flow; successful invocations are silent, not a runtime trace",
+  "source_files": [
+    "/workspace/src/compile/compile.cpp",
+    "/workspace/src/functions/compile.cpp",
+    "/workspace/src/functions/describe.cpp",
+    "/workspace/src/functions/load.cpp",
+    "/workspace/src/functions/query.cpp",
+    "/workspace/src/model/catalog.cpp",
+    "/workspace/src/model/dialect.cpp",
+    "/workspace/src/model/graph.cpp",
+    "/workspace/src/model/parser.cpp",
+    "/workspace/src/model/validate.cpp",
+    "/workspace/src/model/yaml.cpp",
+    "/workspace/src/ossie_extension.cpp",
+    "/workspace/src/population/population.cpp"
+  ],
+  "matching_compilation_entries": 26,
+  "unique_translation_units": 13,
+  "includes_root_extension": true,
+  "runner_sha256": "b3a57f9c8b64e1d5276ab42034c40ac1168afc5359f08f671bb2f97bac375a94",
+  "tidy_config_sha256": "bbdff27d2aae6abb891a623285e870ebd606b910162a2cc921d4b3eb0a2db1f0",
+  "make_sha256": "d1605b1f12e0fa64e00571ca0b41b01e0f78a1eb5855fdc4af488ca500f1e808",
+  "exit_code": 0,
+  "command": "GEN=ninja TIDY_THREADS=4 make tidy-check",
+  "clang_tidy": "Ubuntu LLVM 18.1.3"
+}

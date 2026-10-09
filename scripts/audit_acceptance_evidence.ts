@@ -3,6 +3,8 @@ import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { assert, digest, emitReport, json, ROOT } from "./artifact_helpers.ts";
 
+import { verifySourceEvidence } from "./source_evidence.ts";
+
 export const EVIDENCE = "docs/research/ossie-req-001";
 export const VERIFIERS = [
   "loader",
@@ -28,13 +30,9 @@ export function auditEvidence(
     assert.equal(digest(resolve(ROOT, path)), expected, `${carrier}: ${path}`);
     checked.push({ path, sha256: expected, carrier });
   }
-  const manifestPath = join(EVIDENCE, "sources/manifest.json");
-  const manifest = json<{
-    spec_commit: string;
-    files: { saved_path?: string; source_path: string; sha256: string }[];
-  }>(join(ROOT, manifestPath));
-  for (const file of manifest.files)
-    check(file.saved_path || file.source_path, file.sha256, manifestPath);
+  const sourceEvidence = verifySourceEvidence();
+  for (const source of sourceEvidence.sources)
+    check(source.saved_path, source.sha256, sourceEvidence.manifest_path);
   const reports: Record<string, string> = {};
   for (const tag of [...VERIFIERS, "mcp"] as const) {
     const path = join(
@@ -118,7 +116,8 @@ export function auditEvidence(
     scope:
       "documentary evidence audit; not a functional rerun or full P0 acceptance",
     artifact_sha256: artifactHash,
-    spec_commit: manifest.spec_commit,
+    spec_commit: sourceEvidence.spec_commit,
+    source_evidence: sourceEvidence,
     verifier_sha256: digest(import.meta.path),
     requirements,
     acceptance,
@@ -134,8 +133,8 @@ export function auditEvidence(
       ].map((p) => [p, digest(join(ROOT, p))]),
     ),
     remaining: [
-      "final rule-driven acceptance archive",
-      "remote CI/Ubuntu tidy unrun; no autonomous Agent proof",
+      "source consistency does not prove functional conformance",
+      "remote CI unrun; native/tidy quality is separate; no autonomous Agent proof",
     ],
   };
 }

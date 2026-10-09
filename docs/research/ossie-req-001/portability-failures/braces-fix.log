@@ -1,0 +1,1384 @@
+1727 warnings generated.
+3454 warnings generated.
+/workspace/src/population/population.cpp:61:28: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+   61 |         if (stage == "capability")
+      |                                   ^
+      |                                    {
+   62 |                 return "UNSUPPORTED_CAPABILITY";
+      |                                                 
+/workspace/src/population/population.cpp:61:28: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:62:35: note: FIX-IT applied suggested code changes
+   62 |                 return "UNSUPPORTED_CAPABILITY";
+      |                                                 ^
+/workspace/src/population/population.cpp:63:26: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+   63 |         if (stage == "identity")
+      |                                 ^
+      |                                  {
+   64 |                 return "IDENTITY_VIOLATION";
+      |                                             
+/workspace/src/population/population.cpp:63:26: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:64:31: note: FIX-IT applied suggested code changes
+   64 |                 return "IDENTITY_VIOLATION";
+      |                                             ^
+/workspace/src/population/population.cpp:65:25: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+   65 |         if (stage == "execute")
+      |                                ^
+      |                                 {
+   66 |                 return "EXECUTION_FAILED";
+      |                                           
+/workspace/src/population/population.cpp:65:25: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:66:29: note: FIX-IT applied suggested code changes
+   66 |                 return "EXECUTION_FAILED";
+      |                                           ^
+/workspace/src/population/population.cpp:67:22: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+   67 |         if (stage == "load")
+      |                             ^
+      |                              {
+   68 |                 return "LOAD_FAILED";
+      |                                      
+/workspace/src/population/population.cpp:67:22: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:68:24: note: FIX-IT applied suggested code changes
+   68 |                 return "LOAD_FAILED";
+      |                                      ^
+/workspace/src/population/population.cpp:69:26: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+   69 |         if (stage == "snapshot")
+      |                                 ^
+      |                                  {
+   70 |                 return "SNAPSHOT_REJECTED";
+      |                                            
+/workspace/src/population/population.cpp:69:26: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:70:30: note: FIX-IT applied suggested code changes
+   70 |                 return "SNAPSHOT_REJECTED";
+      |                                            ^
+/workspace/src/population/population.cpp:71:25: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+   71 |         if (stage == "mapping")
+      |                                ^
+      |                                 {
+   72 |                 return "MAPPING_INVALID";
+      |                                          
+/workspace/src/population/population.cpp:71:25: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:72:28: note: FIX-IT applied suggested code changes
+   72 |                 return "MAPPING_INVALID";
+      |                                          ^
+/workspace/src/population/population.cpp:73:22: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+   73 |         if (stage == "rule")
+      |                             ^
+      |                              {
+   74 |                 return "RULE_REJECTED";
+      |                                        
+/workspace/src/population/population.cpp:73:22: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:74:26: note: FIX-IT applied suggested code changes
+   74 |                 return "RULE_REJECTED";
+      |                                        ^
+/workspace/src/population/population.cpp:75:23: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+   75 |         if (stage == "parse")
+      |                              ^
+      |                               {
+   76 |                 return "DEFINITION_INVALID";
+      |                                             
+/workspace/src/population/population.cpp:75:23: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:76:31: note: FIX-IT applied suggested code changes
+   76 |                 return "DEFINITION_INVALID";
+      |                                             ^
+/workspace/src/population/population.cpp:77:22: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+   77 |         if (stage == "hash")
+      |                             ^
+      |                              {
+   78 |                 return "DEFINITION_HASH_MISMATCH";
+      |                                                   
+/workspace/src/population/population.cpp:77:22: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:78:37: note: FIX-IT applied suggested code changes
+   78 |                 return "DEFINITION_HASH_MISMATCH";
+      |                                                   ^
+/workspace/src/population/population.cpp:122:38: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  122 |         if (!RecoverableError(error.Type()))
+      |                                             ^
+      |                                              {
+  123 |                 error.Throw();
+      |                               
+/workspace/src/population/population.cpp:122:38: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:123:17: note: FIX-IT applied suggested code changes
+  123 |                 error.Throw();
+      |                               ^
+/workspace/src/population/population.cpp:132:11: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  132 |                 if (doc)
+      |                         ^
+      |                          {
+  133 |                         yyjson_doc_free(doc);
+      |                                              
+/workspace/src/population/population.cpp:132:11: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:133:25: note: FIX-IT applied suggested code changes
+  133 |                         yyjson_doc_free(doc);
+      |                                              ^
+/workspace/src/population/population.cpp:134:13: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  134 |                 if (valid)
+      |                           ^
+      |                            {
+  135 |                         error.Throw();
+      |                                       
+/workspace/src/population/population.cpp:134:13: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:135:18: note: FIX-IT applied suggested code changes
+  135 |                         error.Throw();
+      |                                       ^
+/workspace/src/population/population.cpp:158:38: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  158 |                 if (!RecoverableError(data.Type()))
+      |                                                    ^
+      |                                                     {
+  159 |                         throw;
+      |                               
+/workspace/src/population/population.cpp:158:38: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:159:10: note: FIX-IT applied suggested code changes
+  159 |                         throw;
+      |                               ^
+/workspace/src/population/population.cpp:244:112: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  244 |                         if (yyjson_is_str(value) && string(yyjson_get_str(value), yyjson_get_len(value)).find('\0') != string::npos)
+      |                                                                                                                                     ^
+      |                                                                                                                                      {
+  245 |                                 Fail("definition", "parse", "NUL-containing strings prohibited in this profile");
+      |                                                                                                                  
+/workspace/src/population/population.cpp:244:112: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:245:86: note: FIX-IT applied suggested code changes
+  245 |                                 Fail("definition", "parse", "NUL-containing strings prohibited in this profile");
+      |                                                                                                                  ^
+/workspace/src/population/population.cpp:378:16: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  378 |         if (!database)
+      |                       ^
+      |                        {
+  379 |                 Fail("bundle", "execute", "containing database has closed");
+      |                                                                             
+/workspace/src/population/population.cpp:378:16: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:379:63: note: FIX-IT applied suggested code changes
+  379 |                 Fail("bundle", "execute", "containing database has closed");
+      |                                                                             ^
+/workspace/src/population/population.cpp:413:67: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  413 |         if (expression.GetExpressionClass() != ExpressionClass::FUNCTION)
+      |                                                                          ^
+      |                                                                           {
+  414 |                 return false;
+      |                              
+/workspace/src/population/population.cpp:413:67: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:414:16: note: FIX-IT applied suggested code changes
+  414 |                 return false;
+      |                              ^
+/workspace/src/population/population.cpp:417:95: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  417 |             !StringUtil::CIEquals(function.function_name, "nullif") || function.children.size() != 2)
+      |                                                                                                      ^
+      |                                                                                                       {
+  418 |                 return false;
+      |                              
+/workspace/src/population/population.cpp:417:95: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:418:16: note: FIX-IT applied suggested code changes
+  418 |                 return false;
+      |                              ^
+/workspace/src/population/population.cpp:420:61: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  420 |         if (zero.GetExpressionClass() != ExpressionClass::CONSTANT)
+      |                                                                    ^
+      |                                                                     {
+  421 |                 return false;
+      |                              
+/workspace/src/population/population.cpp:420:61: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:421:16: note: FIX-IT applied suggested code changes
+  421 |                 return false;
+      |                              ^
+/workspace/src/population/population.cpp:430:15: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  430 |         if (!visited)
+      |                      ^
+      |                       {
+  431 |                 visited = &nodes;
+      |                                  
+/workspace/src/population/population.cpp:430:15: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:431:20: note: FIX-IT applied suggested code changes
+  431 |                 visited = &nodes;
+      |                                  ^
+/workspace/src/population/population.cpp:432:40: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  432 |         if (++(*visited) > 1024 || depth > 32)
+      |                                               ^
+      |                                                {
+  433 |                 Fail(expression.ToString(), "rule", "expression exceeds 1024 nodes or depth 32");
+      |                                                                                                  
+/workspace/src/population/population.cpp:432:40: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:433:84: note: FIX-IT applied suggested code changes
+  433 |                 Fail(expression.ToString(), "rule", "expression exceeds 1024 nodes or depth 32");
+      |                                                                                                  ^
+/workspace/src/population/population.cpp:447:64: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  447 |                         if (!type.GetCatalog().empty() || !type.GetSchema().empty())
+      |                                                                                     ^
+      |                                                                                      {
+  448 |                                 Fail(expression.ToString(), "rule", "qualified casts not supported");
+      |                                                                                                      
+/workspace/src/population/population.cpp:447:64: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:448:74: note: FIX-IT applied suggested code changes
+  448 |                                 Fail(expression.ToString(), "rule", "qualified casts not supported");
+      |                                                                                                      ^
+/workspace/src/population/population.cpp:480:103: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  480 |                 if (division && (function.children.size() != 2 || !ZeroProtectedDenominator(*function.children[1])))
+      |                                                                                                                     ^
+      |                                                                                                                      {
+  481 |                         Fail(expression.ToString(), "rule",
+  482 |                              "division requires a direct NULLIF(expr, numeric zero constant) denominator");
+      |                                                                                                            
+/workspace/src/population/population.cpp:480:103: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:482:87: note: FIX-IT applied suggested code changes
+  482 |                              "division requires a direct NULLIF(expr, numeric zero constant) denominator");
+      |                                                                                                            ^
+/workspace/src/population/population.cpp:499:57: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  499 |                 if (name == "sum" || name == "count" || name == "avg")
+      |                                                                       ^
+      |                                                                        {
+  500 |                         return true;
+      |                                     
+/workspace/src/population/population.cpp:499:57: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:500:16: note: FIX-IT applied suggested code changes
+  500 |                         return true;
+      |                                     ^
+/workspace/src/population/population.cpp:509:52: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  509 |         if (sql.empty() || sql.find('\0') != string::npos)
+      |                                                           ^
+      |                                                            {
+  510 |                 Fail("expression", "rule", "nonempty SQL without NUL required");
+      |                                                                                 
+/workspace/src/population/population.cpp:509:52: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:510:67: note: FIX-IT applied suggested code changes
+  510 |                 Fail("expression", "rule", "nonempty SQL without NUL required");
+      |                                                                                 ^
+/workspace/src/population/population.cpp:511:25: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  511 |         if (sql.size() > 16384)
+      |                                ^
+      |                                 {
+  512 |                 Fail("expression", "rule", "request/rule exceeds 16 KiB SQL limit");
+      |                                                                                     
+/workspace/src/population/population.cpp:511:25: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:512:71: note: FIX-IT applied suggested code changes
+  512 |                 Fail("expression", "rule", "request/rule exceeds 16 KiB SQL limit");
+      |                                                                                     ^
+/workspace/src/population/population.cpp:555:55: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  555 |                             StringUtil::CIEquals(names[1], entry.first[1]))
+      |                                                                            ^
+      |                                                                             {
+  556 |                                 return entry.second;
+      |                                                     
+/workspace/src/population/population.cpp:555:55: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:556:25: note: FIX-IT applied suggested code changes
+  556 |                                 return entry.second;
+      |                                                     ^
+/workspace/src/population/population.cpp:561:52: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  561 |             !bundle.model.datasets[0].FindField(names[1]))
+      |                                                           ^
+      |                                                            {
+  562 |                 Fail("reference", "bind", "mapping must reference a declared field in the single root dataset");
+      |                                                                                                                 
+/workspace/src/population/population.cpp:561:52: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:562:99: note: FIX-IT applied suggested code changes
+  562 |                 Fail("reference", "bind", "mapping must reference a declared field in the single root dataset");
+      |                                                                                                                 ^
+/workspace/src/population/population.cpp:568:29: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  568 |                 if (entry.second == field)
+      |                                           ^
+      |                                            {
+  569 |                         return entry.first[0] + "." + entry.first[1];
+      |                                                                      
+/workspace/src/population/population.cpp:568:29: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:569:49: note: FIX-IT applied suggested code changes
+  569 |                         return entry.first[0] + "." + entry.first[1];
+      |                                                                      ^
+/workspace/src/population/population.cpp:806:27: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  806 |         if (datatype == "String")
+      |                                  ^
+      |                                   {
+  807 |                 return id == LogicalTypeId::VARCHAR;
+      |                                                     
+/workspace/src/population/population.cpp:806:27: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:807:39: note: FIX-IT applied suggested code changes
+  807 |                 return id == LogicalTypeId::VARCHAR;
+      |                                                     ^
+/workspace/src/population/population.cpp:808:28: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  808 |         if (datatype == "Boolean")
+      |                                   ^
+      |                                    {
+  809 |                 return id == LogicalTypeId::BOOLEAN;
+      |                                                     
+/workspace/src/population/population.cpp:808:28: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:809:39: note: FIX-IT applied suggested code changes
+  809 |                 return id == LogicalTypeId::BOOLEAN;
+      |                                                     ^
+/workspace/src/population/population.cpp:810:25: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  810 |         if (datatype == "Date")
+      |                                ^
+      |                                 {
+  811 |                 return id == LogicalTypeId::DATE;
+      |                                                  
+/workspace/src/population/population.cpp:810:25: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:811:36: note: FIX-IT applied suggested code changes
+  811 |                 return id == LogicalTypeId::DATE;
+      |                                                  ^
+/workspace/src/population/population.cpp:812:28: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  812 |         if (datatype == "Decimal")
+      |                                   ^
+      |                                    {
+  813 |                 return id == LogicalTypeId::DECIMAL;
+      |                                                     
+/workspace/src/population/population.cpp:812:28: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:813:39: note: FIX-IT applied suggested code changes
+  813 |                 return id == LogicalTypeId::DECIMAL;
+      |                                                     ^
+/workspace/src/population/population.cpp:814:26: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  814 |         if (datatype == "Float")
+      |                                 ^
+      |                                  {
+  815 |                 return id == LogicalTypeId::FLOAT || id == LogicalTypeId::DOUBLE;
+      |                                                                                  
+/workspace/src/population/population.cpp:814:26: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:815:68: note: FIX-IT applied suggested code changes
+  815 |                 return id == LogicalTypeId::FLOAT || id == LogicalTypeId::DOUBLE;
+      |                                                                                  ^
+/workspace/src/population/population.cpp:851:18: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  851 |         if (!dependency)
+      |                         ^
+      |                          {
+  852 |                 Fail("_ossie_snapshot_rows", "bind",
+  853 |                      "internal frozen AST dependency required; rendered SQL is diagnostic only");
+      |                                                                                                  
+/workspace/src/population/population.cpp:851:18: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:853:84: note: FIX-IT applied suggested code changes
+  853 |                      "internal frozen AST dependency required; rendered SQL is diagnostic only");
+      |                                                                                                  ^
+/workspace/src/population/population.cpp:892:45: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  892 |         for (auto &expression : select.select_list)
+      |                                                    ^
+      |                                                     {
+  893 |                 EngineFunctions(*expression);
+      |                                              
+/workspace/src/population/population.cpp:892:45: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:893:32: note: FIX-IT applied suggested code changes
+  893 |                 EngineFunctions(*expression);
+      |                                              ^
+/workspace/src/population/population.cpp:961:50: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  961 |                 if (StringUtil::CIEquals(table.names[i], name))
+      |                                                                ^
+      |                                                                 {
+  962 |                         return i;
+      |                                  
+/workspace/src/population/population.cpp:961:50: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:962:13: note: FIX-IT applied suggested code changes
+  962 |                         return i;
+      |                                  ^
+/workspace/src/population/population.cpp:970:24: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  970 |         if (parts.size() != 3)
+      |                               ^
+      |                                {
+  971 |                 Fail(dataset.name, "snapshot", "fully qualified catalog.schema.table source required");
+      |                                                                                                        
+/workspace/src/population/population.cpp:970:24: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:971:90: note: FIX-IT applied suggested code changes
+  971 |                 Fail(dataset.name, "snapshot", "fully qualified catalog.schema.table source required");
+      |                                                                                                        ^
+/workspace/src/population/population.cpp:975:54: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  975 |             !entry->Cast<TableCatalogEntry>().IsDuckTable())
+      |                                                             ^
+      |                                                              {
+  976 |                 Fail(dataset.name, "snapshot", "only committed native tables supported; TEMP/view/external source refused");
+      |                                                                                                                             
+/workspace/src/population/population.cpp:975:54: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:976:111: note: FIX-IT applied suggested code changes
+  976 |                 Fail(dataset.name, "snapshot", "only committed native tables supported; TEMP/view/external source refused");
+      |                                                                                                                             ^
+/workspace/src/population/population.cpp:977:82: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  977 |         if (catalog && &catalog->GetAttached() != &entry->ParentCatalog().GetAttached())
+      |                                                                                         ^
+      |                                                                                          {
+  978 |                 Fail(dataset.name, "snapshot", "both sources must belong to the same underlying database");
+      |                                                                                                            
+/workspace/src/population/population.cpp:977:82: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:978:94: note: FIX-IT applied suggested code changes
+  978 |                 Fail(dataset.name, "snapshot", "both sources must belong to the same underlying database");
+      |                                                                                                            ^
+/workspace/src/population/population.cpp:979:24: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  979 |         if (previous == entry)
+      |                               ^
+      |                                {
+  980 |                 Fail(dataset.name, "snapshot", "two distinct native source tables required");
+      |                                                                                              
+/workspace/src/population/population.cpp:979:24: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:980:80: note: FIX-IT applied suggested code changes
+  980 |                 Fail(dataset.name, "snapshot", "two distinct native source tables required");
+      |                                                                                              ^
+/workspace/src/population/population.cpp:984:26: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  984 |                 if (column.Generated())
+      |                                        ^
+      |                                         {
+  985 |                         Fail(dataset.name, "snapshot", "generated source columns not supported");
+      |                                                                                                  
+/workspace/src/population/population.cpp:984:26: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:985:77: note: FIX-IT applied suggested code changes
+  985 |                         Fail(dataset.name, "snapshot", "generated source columns not supported");
+      |                                                                                                  ^
+/workspace/src/population/population.cpp:994:78: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+  994 |         if (count > MAX_ROWS || capture.types.empty() || capture.types.size() > 256)
+      |                                                                                     ^
+      |                                                                                      {
+  995 |                 Fail(dataset.name, "snapshot", "batch exceeds 10000 rows or 256 physical columns; no truncation performed");
+      |                                                                                                                             
+/workspace/src/population/population.cpp:994:78: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:995:111: note: FIX-IT applied suggested code changes
+  995 |                 Fail(dataset.name, "snapshot", "batch exceeds 10000 rows or 256 physical columns; no truncation performed");
+      |                                                                                                                             ^
+/workspace/src/population/population.cpp:1002:112: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1002 |                     (capture.types[c].id() == LogicalTypeId::VARCHAR && !StringType::GetCollation(capture.types[c]).empty()))
+      |                                                                                                                              ^
+      |                                                                                                                               {
+ 1003 |                         Fail(capture.names[c], "snapshot", "unsupported physical column type or collation");
+      |                                                                                                             
+/workspace/src/population/population.cpp:1002:112: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1003:88: note: FIX-IT applied suggested code changes
+ 1003 |                         Fail(capture.names[c], "snapshot", "unsupported physical column type or collation");
+      |                                                                                                             ^
+/workspace/src/population/population.cpp:1009:32: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1009 |                         if (context.IsInterrupted())
+      |                                                     ^
+      |                                                      {
+ 1010 |                                 throw InterruptException();
+      |                                                            
+/workspace/src/population/population.cpp:1009:32: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1010:32: note: FIX-IT applied suggested code changes
+ 1010 |                                 throw InterruptException();
+      |                                                            ^
+/workspace/src/population/population.cpp:1015:46: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1015 |                                 if (capture.canonical.size() > MAX_BYTES)
+      |                                                                          ^
+      |                                                                           {
+ 1016 |                                         Fail(dataset.name, "snapshot", "batch exceeds 16 MiB canonical value limit");
+      |                                                                                                                      
+/workspace/src/population/population.cpp:1015:46: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1016:83: note: FIX-IT applied suggested code changes
+ 1016 |                                         Fail(dataset.name, "snapshot", "batch exceeds 16 MiB canonical value limit");
+      |                                                                                                                      ^
+/workspace/src/population/population.cpp:1030:14: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1030 |                 if (!field)
+      |                            ^
+      |                             {
+ 1031 |                         Fail(expression->ToString(), "metric", "qualified original logical field required");
+      |                                                                                                             
+/workspace/src/population/population.cpp:1030:14: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1031:88: note: FIX-IT applied suggested code changes
+ 1031 |                         Fail(expression->ToString(), "metric", "qualified original logical field required");
+      |                                                                                                             ^
+/workspace/src/population/population.cpp:1045:113: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1045 |                 if (names.empty() || names.size() > 2 || (names.size() == 2 && !StringUtil::CIEquals(names[0], dataset.name)))
+      |                                                                                                                               ^
+      |                                                                                                                                {
+ 1046 |                         Fail(expression->ToString(), "bind", "physical reference crosses dataset");
+      |                                                                                                    
+/workspace/src/population/population.cpp:1045:113: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1046:79: note: FIX-IT applied suggested code changes
+ 1046 |                         Fail(expression->ToString(), "bind", "physical reference crosses dataset");
+      |                                                                                                    ^
+/workspace/src/population/population.cpp:1068:15: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1068 |         if (observer)
+      |                      ^
+      |                       {
+ 1069 |                 observer->Observe(checkpoint);
+      |                                               
+/workspace/src/population/population.cpp:1068:15: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1069:33: note: FIX-IT applied suggested code changes
+ 1069 |                 observer->Observe(checkpoint);
+      |                                               ^
+/workspace/src/population/population.cpp:1075:77: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1075 |         if (Text(policy, "type") != "INNER" || Text(policy, "missing") != "reject")
+      |                                                                                    ^
+      |                                                                                     {
+ 1076 |                 Fail("join", "capability", "explicit INNER/reject complete-match policy required");
+      |                                                                                                    
+/workspace/src/population/population.cpp:1075:77: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1076:86: note: FIX-IT applied suggested code changes
+ 1076 |                 Fail("join", "capability", "explicit INNER/reject complete-match policy required");
+      |                                                                                                    ^
+/workspace/src/population/population.cpp:1078:74: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1078 |         if (original.datasets.size() != 2 || original.relationships.size() != 1)
+      |                                                                                 ^
+      |                                                                                  {
+ 1079 |                 Fail("join", "capability", "exactly two datasets and one relationship required");
+      |                                                                                                  
+/workspace/src/population/population.cpp:1078:74: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1079:84: note: FIX-IT applied suggested code changes
+ 1079 |                 Fail("join", "capability", "exactly two datasets and one relationship required");
+      |                                                                                                  ^
+/workspace/src/population/population.cpp:1087:108: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1087 |             (relation.cardinality != Cardinality::MANY_TO_ONE && relation.cardinality != Cardinality::ONE_TO_ONE))
+      |                                                                                                                   ^
+      |                                                                                                                    {
+ 1088 |                 Fail("join", "capability", "one forward single-column fact-to-unique-dimension relationship required");
+      |                                                                                                                        
+/workspace/src/population/population.cpp:1087:108: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1088:106: note: FIX-IT applied suggested code changes
+ 1088 |                 Fail("join", "capability", "one forward single-column fact-to-unique-dimension relationship required");
+      |                                                                                                                        ^
+/workspace/src/population/population.cpp:1089:36: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1089 |         if (fact->primary_key.size() != 1)
+      |                                           ^
+      |                                            {
+ 1090 |                 Fail(fact->name, "identity", "plain single-column fact primary key required");
+      |                                                                                               
+/workspace/src/population/population.cpp:1089:36: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1090:81: note: FIX-IT applied suggested code changes
+ 1090 |                 Fail(fact->name, "identity", "plain single-column fact primary key required");
+      |                                                                                               ^
+/workspace/src/population/population.cpp:1094:54: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1094 |                 if (dataset.name.empty() || dataset.fields.empty())
+      |                                                                    ^
+      |                                                                     {
+ 1095 |                         Fail(dataset.name, "capability", "nonempty datasets and declared fields required");
+      |                                                                                                            
+/workspace/src/population/population.cpp:1094:54: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1095:87: note: FIX-IT applied suggested code changes
+ 1095 |                         Fail(dataset.name, "capability", "nonempty datasets and declared fields required");
+      |                                                                                                            ^
+/workspace/src/population/population.cpp:1097:27: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1097 |                         if (field.name.empty())
+      |                                                ^
+      |                                                 {
+ 1098 |                                 Fail(dataset.name, "bind", "empty field name");
+      |                                                                                
+/workspace/src/population/population.cpp:1097:27: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1098:52: note: FIX-IT applied suggested code changes
+ 1098 |                                 Fail(dataset.name, "bind", "empty field name");
+      |                                                                                ^
+/workspace/src/population/population.cpp:1104:79: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1104 |         if (fields > 256 || original.metrics.empty() || original.metrics.size() > 64)
+      |                                                                                      ^
+      |                                                                                       {
+ 1105 |                 Fail("join", "capability", "require at most 256 fields and 1..64 metrics");
+      |                                                                                            
+/workspace/src/population/population.cpp:1104:79: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1105:78: note: FIX-IT applied suggested code changes
+ 1105 |                 Fail("join", "capability", "require at most 256 fields and 1..64 metrics");
+      |                                                                                            ^
+/workspace/src/population/population.cpp:1107:96: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1107 |                 if (metric.name.empty() || StringUtil::StartsWith(StringUtil::Lower(metric.name), "_ossie_"))
+      |                                                                                                              ^
+      |                                                                                                               {
+ 1108 |                         Fail(metric.name, "bind", "empty or reserved metric name");
+      |                                                                                    
+/workspace/src/population/population.cpp:1107:96: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1108:63: note: FIX-IT applied suggested code changes
+ 1108 |                         Fail(metric.name, "bind", "empty or reserved metric name");
+      |                                                                                    ^
+/workspace/src/population/population.cpp:1124:51: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1124 |         if (facts.types.size() + dims.types.size() > 256)
+      |                                                          ^
+      |                                                           {
+ 1125 |                 Fail("join", "snapshot", "joined batch exceeds 256 physical columns");
+      |                                                                                       
+/workspace/src/population/population.cpp:1124:51: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1125:73: note: FIX-IT applied suggested code changes
+ 1125 |                 Fail("join", "snapshot", "joined batch exceeds 256 physical columns");
+      |                                                                                       ^
+/workspace/src/population/population.cpp:1129:88: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1129 |         if (facts.types[fk] != LogicalType::INTEGER || dims.types[dk] != LogicalType::INTEGER)
+      |                                                                                               ^
+      |                                                                                                {
+ 1130 |                 Fail("join", "identity", "both join keys must be native INTEGER; coercion refused");
+      |                                                                                                     
+/workspace/src/population/population.cpp:1129:88: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1130:87: note: FIX-IT applied suggested code changes
+ 1130 |                 Fail("join", "identity", "both join keys must be native INTEGER; coercion refused");
+      |                                                                                                     ^
+/workspace/src/population/population.cpp:1131:46: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1131 |         if (facts.types[id] != LogicalType::VARCHAR)
+      |                                                     ^
+      |                                                      {
+ 1132 |                 Fail("join", "identity", "fact identity must be native uncollated String");
+      |                                                                                            
+/workspace/src/population/population.cpp:1131:46: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1132:78: note: FIX-IT applied suggested code changes
+ 1132 |                 Fail("join", "identity", "fact identity must be native uncollated String");
+      |                                                                                            ^
+/workspace/src/population/population.cpp:1135:31: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1135 |                 if (context.IsInterrupted())
+      |                                             ^
+      |                                              {
+ 1136 |                         throw InterruptException();
+      |                                                    
+/workspace/src/population/population.cpp:1135:31: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1136:31: note: FIX-IT applied suggested code changes
+ 1136 |                         throw InterruptException();
+      |                                                    ^
+/workspace/src/population/population.cpp:1138:74: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1138 |                 if (key.IsNull() || !lookup.emplace(key.GetValue<int32_t>(), r).second)
+      |                                                                                        ^
+      |                                                                                         {
+ 1139 |                         Fail(dimension->name, "identity", "entire dimension batch requires nonnull unique key");
+      |                                                                                                                 
+/workspace/src/population/population.cpp:1138:74: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1139:92: note: FIX-IT applied suggested code changes
+ 1139 |                         Fail(dimension->name, "identity", "entire dimension batch requires nonnull unique key");
+      |                                                                                                                 ^
+/workspace/src/population/population.cpp:1144:31: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1144 |                 if (context.IsInterrupted())
+      |                                             ^
+      |                                              {
+ 1145 |                         throw InterruptException();
+      |                                                    
+/workspace/src/population/population.cpp:1144:31: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1145:31: note: FIX-IT applied suggested code changes
+ 1145 |                         throw InterruptException();
+      |                                                    ^
+/workspace/src/population/population.cpp:1146:81: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1146 |                 if (row[id].IsNull() || !identities.insert(row[id].GetValue<string>()).second)
+      |                                                                                               ^
+      |                                                                                                {
+ 1147 |                         Fail(fact->name, "identity", "entire fact batch requires nonnull unique identity");
+      |                                                                                                            
+/workspace/src/population/population.cpp:1146:81: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1147:87: note: FIX-IT applied suggested code changes
+ 1147 |                         Fail(fact->name, "identity", "entire fact batch requires nonnull unique identity");
+      |                                                                                                            ^
+/workspace/src/population/population.cpp:1148:24: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1148 |                 if (row[fk].IsNull())
+      |                                      ^
+      |                                       {
+ 1149 |                         Fail(fact->name, "identity", "nonnull fact foreign key required before filtering");
+      |                                                                                                            
+/workspace/src/population/population.cpp:1148:24: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1149:87: note: FIX-IT applied suggested code changes
+ 1149 |                         Fail(fact->name, "identity", "nonnull fact foreign key required before filtering");
+      |                                                                                                            ^
+/workspace/src/population/population.cpp:1151:29: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1151 |                 if (found == lookup.end())
+      |                                           ^
+      |                                            {
+ 1152 |                         Fail(fact->name, "identity", "every fact foreign key must match a dimension before filtering");
+      |                                                                                                                        
+/workspace/src/population/population.cpp:1151:29: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1152:99: note: FIX-IT applied suggested code changes
+ 1152 |                         Fail(fact->name, "identity", "every fact foreign key must match a dimension before filtering");
+      |                                                                                                                        ^
+/workspace/src/population/population.cpp:1162:31: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1162 |                 if (context.IsInterrupted())
+      |                                             ^
+      |                                              {
+ 1163 |                         throw InterruptException();
+      |                                                    
+/workspace/src/population/population.cpp:1162:31: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1163:31: note: FIX-IT applied suggested code changes
+ 1163 |                         throw InterruptException();
+      |                                                    ^
+/workspace/src/population/population.cpp:1169:34: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1169 |                         if (joined.size() > MAX_BYTES)
+      |                                                       ^
+      |                                                        {
+ 1170 |                                 Fail("join", "snapshot", "joined batch exceeds 16 MiB canonical value limit");
+      |                                                                                                               
+/workspace/src/population/population.cpp:1169:34: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1170:83: note: FIX-IT applied suggested code changes
+ 1170 |                                 Fail("join", "snapshot", "joined batch exceeds 16 MiB canonical value limit");
+      |                                                                                                               ^
+/workspace/src/population/population.cpp:1179:96: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1179 |         if (bundle.collection->Count() != facts.rows.size() || identities.size() != facts.rows.size())
+      |                                                                                                       ^
+      |                                                                                                        {
+ 1180 |                 Fail("join", "identity", "joined fact identity multiset differs from captured facts");
+      |                                                                                                       
+/workspace/src/population/population.cpp:1179:96: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1180:89: note: FIX-IT applied suggested code changes
+ 1180 |                 Fail("join", "identity", "joined fact identity multiset differs from captured facts");
+      |                                                                                                       ^
+/workspace/src/population/population.cpp:1187:31: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1187 |                 if (context.IsInterrupted())
+      |                                             ^
+      |                                              {
+ 1188 |                         throw InterruptException();
+      |                                                    
+/workspace/src/population/population.cpp:1187:31: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1188:31: note: FIX-IT applied suggested code changes
+ 1188 |                         throw InterruptException();
+      |                                                    ^
+/workspace/src/population/population.cpp:1191:85: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1191 |                         if (value.IsNull() || !joined_identities.insert(value.GetValue<string>()).second)
+      |                                                                                                          ^
+      |                                                                                                           {
+ 1192 |                                 Fail("join", "identity", "joined identity multiplicity is not one");
+      |                                                                                                     
+/workspace/src/population/population.cpp:1191:85: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1192:73: note: FIX-IT applied suggested code changes
+ 1192 |                                 Fail("join", "identity", "joined identity multiplicity is not one");
+      |                                                                                                     ^
+/workspace/src/population/population.cpp:1195:38: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1195 |         if (identities != joined_identities)
+      |                                             ^
+      |                                              {
+ 1196 |                 Fail("join", "identity", "joined identity set differs from captured facts");
+      |                                                                                             
+/workspace/src/population/population.cpp:1195:38: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1196:79: note: FIX-IT applied suggested code changes
+ 1196 |                 Fail("join", "identity", "joined identity set differs from captured facts");
+      |                                                                                             ^
+/workspace/src/population/population.cpp:1225:42: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1225 |         for (idx_t c = 0; c < types.size(); c++)
+      |                                                 ^
+      |                                                  {
+ 1226 |                 bundle.physical_names.push_back("_ossie_column_" + to_string(c));
+      |                                                                                  
+/workspace/src/population/population.cpp:1225:42: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1226:68: note: FIX-IT applied suggested code changes
+ 1226 |                 bundle.physical_names.push_back("_ossie_column_" + to_string(c));
+      |                                                                                  ^
+/workspace/src/population/population.cpp:1231:91: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1231 |               Hash(engine, facts.canonical), Hash(engine, dims.canonical), Hash(engine, joined)})
+      |                                                                                                  ^
+      |                                                                                                   {
+ 1232 |                 Frame(evidence, value);
+      |                                        
+/workspace/src/population/population.cpp:1231:91: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1232:26: note: FIX-IT applied suggested code changes
+ 1232 |                 Frame(evidence, value);
+      |                                        ^
+/workspace/src/population/population.cpp:1249:28: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1249 |                 if (dataset == dimension)
+      |                                          ^
+      |                                           {
+ 1250 |                         bundle.execution_target += ",";
+      |                                                        
+/workspace/src/population/population.cpp:1249:28: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1250:35: note: FIX-IT applied suggested code changes
+ 1250 |                         bundle.execution_target += ",";
+      |                                                        ^
+/workspace/src/population/population.cpp:1259:9: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1259 |                 if (i)
+      |                       ^
+      |                        {
+ 1260 |                         bundle.execution_target += ",";
+      |                                                        
+/workspace/src/population/population.cpp:1259:9: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1260:35: note: FIX-IT applied suggested code changes
+ 1260 |                         bundle.execution_target += ",";
+      |                                                        ^
+/workspace/src/population/population.cpp:1270:14: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1270 |                         if (index)
+      |                                   ^
+      |                                    {
+ 1271 |                                 bundle.execution_target += ",";
+      |                                                                
+/workspace/src/population/population.cpp:1270:14: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1271:36: note: FIX-IT applied suggested code changes
+ 1271 |                                 bundle.execution_target += ",";
+      |                                                                ^
+/workspace/src/population/population.cpp:1339:38: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1339 |         if (bundle->profile == JOIN_PROFILE)
+      |                                             ^
+      |                                              {
+ 1340 |                 FreezeJoin(context, *bundle, Member(root, "join"), *engine);
+      |                                                                             
+/workspace/src/population/population.cpp:1339:38: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1340:63: note: FIX-IT applied suggested code changes
+ 1340 |                 FreezeJoin(context, *bundle, Member(root, "join"), *engine);
+      |                                                                             ^
+/workspace/src/population/population.cpp:1349:26: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1349 |                 if (field.name.empty())
+      |                                        ^
+      |                                         {
+ 1350 |                         Fail(dataset.name, "bind", "empty field name");
+      |                                                                        
+/workspace/src/population/population.cpp:1349:26: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1350:51: note: FIX-IT applied suggested code changes
+ 1350 |                         Fail(dataset.name, "bind", "empty field name");
+      |                                                                        ^
+/workspace/src/population/population.cpp:1353:73: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1353 |         if (bundle->model.metrics.empty() || bundle->model.metrics.size() > 64)
+      |                                                                                ^
+      |                                                                                 {
+ 1354 |                 Fail("metrics", "capability", "require 1..64 metrics");
+      |                                                                        
+/workspace/src/population/population.cpp:1353:73: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1354:58: note: FIX-IT applied suggested code changes
+ 1354 |                 Fail("metrics", "capability", "require 1..64 metrics");
+      |                                                                        ^
+/workspace/src/population/population.cpp:1356:96: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1356 |                 if (metric.name.empty() || StringUtil::StartsWith(StringUtil::Lower(metric.name), "_ossie_"))
+      |                                                                                                              ^
+      |                                                                                                               {
+ 1357 |                         Fail(metric.name, "bind", "empty or reserved metric name");
+      |                                                                                    
+/workspace/src/population/population.cpp:1356:96: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1357:63: note: FIX-IT applied suggested code changes
+ 1357 |                         Fail(metric.name, "bind", "empty or reserved metric name");
+      |                                                                                    ^
+/workspace/src/population/population.cpp:1362:32: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1362 |                 if (!HasAggregate(*expanded))
+      |                                              ^
+      |                                               {
+ 1363 |                         Fail(metric.name, "capability", "metric requires SUM, COUNT or AVG aggregation");
+      |                                                                                                          
+/workspace/src/population/population.cpp:1362:32: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1363:85: note: FIX-IT applied suggested code changes
+ 1363 |                         Fail(metric.name, "capability", "metric requires SUM, COUNT or AVG aggregation");
+      |                                                                                                          ^
+/workspace/src/population/population.cpp:1373:115: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1373 |                 if (StringUtil::CIEquals(entry.first[0], bundle->root) || StringUtil::CIEquals(entry.first[0], bundle->derived))
+      |                                                                                                                                 ^
+      |                                                                                                                                  {
+ 1374 |                         Fail(entry.first[0], "bind", "dataset and concept namespaces must be distinct");
+      |                                                                                                         
+/workspace/src/population/population.cpp:1373:115: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1374:84: note: FIX-IT applied suggested code changes
+ 1374 |                         Fail(entry.first[0], "bind", "dataset and concept namespaces must be distinct");
+      |                                                                                                         ^
+/workspace/src/population/population.cpp:1379:33: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1379 |         if (bundle->profile == PROFILE)
+      |                                        ^
+      |                                         {
+ 1380 |                 bundle->original_source = dataset.source_bound;
+      |                                                                
+/workspace/src/population/population.cpp:1379:33: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1380:50: note: FIX-IT applied suggested code changes
+ 1380 |                 bundle->original_source = dataset.source_bound;
+      |                                                                ^
+/workspace/src/population/population.cpp:1424:32: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1424 |                         if (context.IsInterrupted())
+      |                                                     ^
+      |                                                      {
+ 1425 |                                 throw InterruptException();
+      |                                                            
+/workspace/src/population/population.cpp:1424:32: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1425:32: note: FIX-IT applied suggested code changes
+ 1425 |                                 throw InterruptException();
+      |                                                            ^
+/workspace/src/population/population.cpp:1443:13: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1443 |                 if (index)
+      |                           ^
+      |                            {
+ 1444 |                         projection += ", ";
+      |                                            
+/workspace/src/population/population.cpp:1443:13: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1444:23: note: FIX-IT applied suggested code changes
+ 1444 |                         projection += ", ";
+      |                                            ^
+/workspace/src/population/population.cpp:1449:27: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1449 |         if (prepared->HasError())
+      |                                  ^
+      |                                   {
+ 1450 |                 NormalizeError(prepared->GetErrorObject(), dataset.name, "bind", ExceptionType::INVALID_INPUT);
+      |                                                                                                                
+/workspace/src/population/population.cpp:1449:27: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1450:98: note: FIX-IT applied suggested code changes
+ 1450 |                 NormalizeError(prepared->GetErrorObject(), dataset.name, "bind", ExceptionType::INVALID_INPUT);
+      |                                                                                                                ^
+/workspace/src/population/population.cpp:1458:36: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1458 |         for (auto &field : dataset.fields)
+      |                                           ^
+      |                                            {
+ 1459 |                 BooleanContexts(*bundle, *FieldTree(*bundle, field.name));
+      |                                                                           
+/workspace/src/population/population.cpp:1458:36: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1459:61: note: FIX-IT applied suggested code changes
+ 1459 |                 BooleanContexts(*bundle, *FieldTree(*bundle, field.name));
+      |                                                                           ^
+/workspace/src/population/population.cpp:1470:75: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1470 |                 for (auto &expression : statement->node->Cast<SelectNode>().select_list)
+      |                                                                                         ^
+      |                                                                                          {
+ 1471 |                         EngineFunctions(*expression);
+      |                                                      
+/workspace/src/population/population.cpp:1470:75: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1471:33: note: FIX-IT applied suggested code changes
+ 1471 |                         EngineFunctions(*expression);
+      |                                                      ^
+/workspace/src/population/population.cpp:1473:25: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1473 |                 if (bound->HasError())
+      |                                       ^
+      |                                        {
+ 1474 |                         NormalizeError(bound->GetErrorObject(), metric.name, "bind", ExceptionType::INVALID_INPUT);
+      |                                                                                                                    
+/workspace/src/population/population.cpp:1473:25: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1474:95: note: FIX-IT applied suggested code changes
+ 1474 |                         NormalizeError(bound->GetErrorObject(), metric.name, "bind", ExceptionType::INVALID_INPUT);
+      |                                                                                                                    ^
+/workspace/src/population/population.cpp:1475:55: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1475 |                 if (!Matches(metric.datatype, bound->GetTypes()[0]))
+      |                                                                     ^
+      |                                                                      {
+ 1476 |                         Fail(metric.name, "bind", "metric datatype incompatible with bound aggregate type");
+      |                                                                                                             
+/workspace/src/population/population.cpp:1475:55: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1476:88: note: FIX-IT applied suggested code changes
+ 1476 |                         Fail(metric.name, "bind", "metric datatype incompatible with bound aggregate type");
+      |                                                                                                             ^
+/workspace/src/population/population.cpp:1499:32: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1499 |         if (concept == bundle.derived)
+      |                                       ^
+      |                                        {
+ 1500 |                 predicate = bundle.rule->Copy();
+      |                                                 
+/workspace/src/population/population.cpp:1499:32: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1500:35: note: FIX-IT applied suggested code changes
+ 1500 |                 predicate = bundle.rule->Copy();
+      |                                                 ^
+/workspace/src/population/population.cpp:1501:26: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1501 |         if (filters.size() > 64)
+      |                                 ^
+      |                                  {
+ 1502 |                 Fail(concept, "capability", "at most 64 request filters supported");
+      |                                                                                     
+/workspace/src/population/population.cpp:1501:26: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1502:71: note: FIX-IT applied suggested code changes
+ 1502 |                 Fail(concept, "capability", "at most 64 request filters supported");
+      |                                                                                     ^
+/workspace/src/population/population.cpp:1529:34: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1529 |                         if (bundle.provenance.empty())
+      |                                                       ^
+      |                                                        {
+ 1530 |                                 translated.push_back(dimension);
+ 1531 |                         else
+      |                         } 
+/workspace/src/population/population.cpp:1529:34: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1531:4: note: FIX-IT applied suggested code changes
+ 1531 |                         else
+      |                         ^
+/workspace/src/population/population.cpp:1531:8: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1531 |                         else
+      |                             ^
+      |                              {
+ 1532 |                                 translated.push_back(
+ 1533 |                                     make_uniq<ColumnRefExpression>(LogicalField(bundle, dimension), bundle.model.datasets[0].name)
+ 1534 |                                         ->ToString());
+      |                                                       
+/workspace/src/population/population.cpp:1531:8: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1534:27: note: FIX-IT applied suggested code changes
+ 1534 |                                         ->ToString());
+      |                                                       ^
+/workspace/src/population/population.cpp:1539:49: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1539 |                         for (idx_t i = 0; i < dimensions.size(); i++)
+      |                                                                      ^
+      |                                                                       {
+ 1540 |                                 select.select_list[i]->SetAlias(dimensions[i]);
+      |                                                                                
+/workspace/src/population/population.cpp:1539:49: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1540:52: note: FIX-IT applied suggested code changes
+ 1540 |                                 select.select_list[i]->SetAlias(dimensions[i]);
+      |                                                                                ^
+/workspace/src/population/population.cpp:1565:9: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1565 |                 if (i)
+      |                       ^
+      |                        {
+ 1566 |                         result += ",";
+      |                                       
+/workspace/src/population/population.cpp:1565:9: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1566:18: note: FIX-IT applied suggested code changes
+ 1566 |                         result += ",";
+      |                                       ^
+/workspace/src/population/population.cpp:1596:21: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1596 |         if (!input_dataset)
+      |                            ^
+      |                             {
+ 1597 |                 Fail("grain", "explain", "population input lacks definition provenance");
+      |                                                                                          
+/workspace/src/population/population.cpp:1596:21: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1597:76: note: FIX-IT applied suggested code changes
+ 1597 |                 Fail("grain", "explain", "population input lacks definition provenance");
+      |                                                                                          ^
+/workspace/src/population/population.cpp:1632:9: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1632 |                 if (i)
+      |                       ^
+      |                        {
+ 1633 |                         result += ",";
+      |                                       
+/workspace/src/population/population.cpp:1632:9: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1633:18: note: FIX-IT applied suggested code changes
+ 1633 |                         result += ",";
+      |                                       ^
+/workspace/src/population/population.cpp:1640:15: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1640 |                 if (!metric)
+      |                             ^
+      |                              {
+ 1641 |                         Fail(metrics[i], "explain", "compiled metric lacks definition provenance");
+      |                                                                                                    
+/workspace/src/population/population.cpp:1640:15: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1641:79: note: FIX-IT applied suggested code changes
+ 1641 |                         Fail(metrics[i], "explain", "compiled metric lacks definition provenance");
+      |                                                                                                    ^
+/workspace/src/population/population.cpp:1642:9: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1642 |                 if (i)
+      |                       ^
+      |                        {
+ 1643 |                         result += ",";
+      |                                       
+/workspace/src/population/population.cpp:1642:9: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1643:18: note: FIX-IT applied suggested code changes
+ 1643 |                         result += ",";
+      |                                       ^
+/workspace/src/population/population.cpp:1651:22: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1651 |                         if (field_index++)
+      |                                           ^
+      |                                            {
+ 1652 |                                 result += ",";
+      |                                               
+/workspace/src/population/population.cpp:1651:22: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1652:19: note: FIX-IT applied suggested code changes
+ 1652 |                                 result += ",";
+      |                                               ^
+/workspace/src/population/population.cpp:1669:9: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1669 |                 if (i)
+      |                       ^
+      |                        {
+ 1670 |                         result += ",";
+      |                                       
+/workspace/src/population/population.cpp:1669:9: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1670:18: note: FIX-IT applied suggested code changes
+ 1670 |                         result += ",";
+      |                                       ^
+/workspace/src/population/population.cpp:1675:58: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1675 |         for (auto &expression : select.groups.group_expressions)
+      |                                                                 ^
+      |                                                                  {
+ 1676 |                 groups.push_back(expression->ToString());
+      |                                                          
+/workspace/src/population/population.cpp:1675:58: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1676:44: note: FIX-IT applied suggested code changes
+ 1676 |                 groups.push_back(expression->ToString());
+      |                                                          ^
+/workspace/src/population/population.cpp:1715:14: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1715 |         if (!bundle)
+      |                     ^
+      |                      {
+ 1716 |                 Fail("bundle", "bind", "no bundle loaded; call ossie_bundle_load");
+      |                                                                                    
+/workspace/src/population/population.cpp:1715:14: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1716:70: note: FIX-IT applied suggested code changes
+ 1716 |                 Fail("bundle", "bind", "no bundle loaded; call ossie_bundle_load");
+      |                                                                                    ^
+/workspace/src/population/population.cpp:1723:31: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1723 |         if (input.inputs[0].IsNull())
+      |                                      ^
+      |                                       {
+ 1724 |                 Fail("bundle", "load", "manifest path required");
+      |                                                                  
+/workspace/src/population/population.cpp:1723:31: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1724:52: note: FIX-IT applied suggested code changes
+ 1724 |                 Fail("bundle", "load", "manifest path required");
+      |                                                                  ^
+/workspace/src/population/population.cpp:1794:32: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1794 |                 for (idx_t i = 0; i < 5; i++)
+      |                                              ^
+      |                                               {
+ 1795 |                         types.push_back(LogicalType::BOOLEAN);
+      |                                                               
+/workspace/src/population/population.cpp:1794:32: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1795:42: note: FIX-IT applied suggested code changes
+ 1795 |                         types.push_back(LogicalType::BOOLEAN);
+      |                                                               ^
+/workspace/src/population/population.cpp:1812:114: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1812 |                      {b.profile, b.snapshot_id, b.content_hash, b.core_hash, b.ontology_hash, b.mapping_hash, b.manifest_hash})
+      |                                                                                                                                ^
+      |                                                                                                                                 {
+ 1813 |                         row.push_back(Value(value));
+      |                                                     
+/workspace/src/population/population.cpp:1812:114: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1813:32: note: FIX-IT applied suggested code changes
+ 1813 |                         row.push_back(Value(value));
+      |                                                     ^
+/workspace/src/population/population.cpp:1898:31: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1898 |         if (input.inputs[0].IsNull())
+      |                                      ^
+      |                                       {
+ 1899 |                 Fail("concept", "bind", "concept required");
+      |                                                             
+/workspace/src/population/population.cpp:1898:31: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1899:47: note: FIX-IT applied suggested code changes
+ 1899 |                 Fail("concept", "bind", "concept required");
+      |                                                             ^
+/workspace/src/population/population.cpp:1906:53: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1906 |         if (metrics.size() > 64 || dimensions.size() > 256)
+      |                                                            ^
+      |                                                             {
+ 1907 |                 Fail(concept, "capability", "request exceeds 64 metrics or 256 dimensions");
+      |                                                                                             
+/workspace/src/population/population.cpp:1906:53: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1907:79: note: FIX-IT applied suggested code changes
+ 1907 |                 Fail(concept, "capability", "request exceeds 64 metrics or 256 dimensions");
+      |                                                                                             ^
+/workspace/src/population/population.cpp:1914:37: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1914 |         if (objects && !dimensions.empty())
+      |                                            ^
+      |                                             {
+ 1915 |                 Fail(concept, "bind", "object compile does not accept dimensions");
+      |                                                                                    
+/workspace/src/population/population.cpp:1914:37: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1915:70: note: FIX-IT applied suggested code changes
+ 1915 |                 Fail(concept, "bind", "object compile does not accept dimensions");
+      |                                                                                    ^
+/workspace/src/population/population.cpp:1930:44: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1930 |         for (auto &expression : query.select_list)
+      |                                                   ^
+      |                                                    {
+ 1931 |                 EngineFunctions(*expression);
+      |                                              
+/workspace/src/population/population.cpp:1930:44: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1931:32: note: FIX-IT applied suggested code changes
+ 1931 |                 EngineFunctions(*expression);
+      |                                              ^
+/workspace/src/population/population.cpp:1932:57: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1932 |         for (auto &expression : query.groups.group_expressions)
+      |                                                                ^
+      |                                                                 {
+ 1933 |                 EngineFunctions(*expression);
+      |                                              
+/workspace/src/population/population.cpp:1932:57: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1933:32: note: FIX-IT applied suggested code changes
+ 1933 |                 EngineFunctions(*expression);
+      |                                              ^
+/workspace/src/population/population.cpp:1934:25: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1934 |         if (query.where_clause)
+      |                                ^
+      |                                 {
+ 1935 |                 EngineFunctions(*query.where_clause);
+      |                                                      
+/workspace/src/population/population.cpp:1934:25: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1935:40: note: FIX-IT applied suggested code changes
+ 1935 |                 EngineFunctions(*query.where_clause);
+      |                                                      ^
+/workspace/src/population/population.cpp:1955:28: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1955 |                 if (prepared->HasError())
+      |                                          ^
+      |                                           {
+ 1956 |                         NormalizeError(prepared->GetErrorObject(), concept, "bind", ExceptionType::INVALID_INPUT);
+      |                                                                                                                   
+/workspace/src/population/population.cpp:1955:28: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1956:94: note: FIX-IT applied suggested code changes
+ 1956 |                         NormalizeError(prepared->GetErrorObject(), concept, "bind", ExceptionType::INVALID_INPUT);
+      |                                                                                                                   ^
+/workspace/src/population/population.cpp:1962:43: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1962 |                                 if (!unique_names.insert(name).second)
+      |                                                                       ^
+      |                                                                        {
+ 1963 |                                         Fail(name, "bind", "duplicate column name in typed JSON result");
+      |                                                                                                          
+/workspace/src/population/population.cpp:1962:43: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:1963:71: note: FIX-IT applied suggested code changes
+ 1963 |                                         Fail(name, "bind", "duplicate column name in typed JSON result");
+      |                                                                                                          ^
+/workspace/src/population/population.cpp:1999:75: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 1999 |         if (query.types != data.result_types || query.names != data.result_names)
+      |                                                                                  ^
+      |                                                                                   {
+ 2000 |                 Fail("query", "execute", "typed JSON result schema differs from the bound schema");
+      |                                                                                                    
+/workspace/src/population/population.cpp:1999:75: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2000:86: note: FIX-IT applied suggested code changes
+ 2000 |                 Fail("query", "execute", "typed JSON result schema differs from the bound schema");
+      |                                                                                                    ^
+/workspace/src/population/population.cpp:2011:11: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2011 |                 if (col)
+      |                         ^
+      |                          {
+ 2012 |                         json += ",";
+      |                                     
+/workspace/src/population/population.cpp:2011:11: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2012:16: note: FIX-IT applied suggested code changes
+ 2012 |                         json += ",";
+      |                                     ^
+/workspace/src/population/population.cpp:2020:50: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2020 |                 if (chunk->ColumnCount() != query.types.size())
+      |                                                                ^
+      |                                                                 {
+ 2021 |                         Fail("query", "execute", "typed JSON chunk width differs from the bound schema");
+      |                                                                                                          
+/workspace/src/population/population.cpp:2020:50: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2021:85: note: FIX-IT applied suggested code changes
+ 2021 |                         Fail("query", "execute", "typed JSON chunk width differs from the bound schema");
+      |                                                                                                          ^
+/workspace/src/population/population.cpp:2023:32: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2023 |                         if (context.IsInterrupted())
+      |                                                     ^
+      |                                                      {
+ 2024 |                                 throw InterruptException();
+      |                                                            
+/workspace/src/population/population.cpp:2023:32: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2024:32: note: FIX-IT applied suggested code changes
+ 2024 |                                 throw InterruptException();
+      |                                                            ^
+/workspace/src/population/population.cpp:2025:16: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2025 |                         if (count++)
+      |                                     ^
+      |                                      {
+ 2026 |                                 json += ",";
+      |                                             
+/workspace/src/population/population.cpp:2025:16: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2026:17: note: FIX-IT applied suggested code changes
+ 2026 |                                 json += ",";
+      |                                             ^
+/workspace/src/population/population.cpp:2029:13: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2029 |                                 if (col)
+      |                                         ^
+      |                                          {
+ 2030 |                                         json += ",";
+      |                                                     
+/workspace/src/population/population.cpp:2029:13: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2030:18: note: FIX-IT applied suggested code changes
+ 2030 |                                         json += ",";
+      |                                                     ^
+/workspace/src/population/population.cpp:2032:24: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2032 |                                 if (value.IsNull())
+      |                                                    ^
+      |                                                     {
+ 2033 |                                         json += "null";
+ 2034 |                                 else if (value.type().id() == LogicalTypeId::BOOLEAN)
+      |                                 } 
+/workspace/src/population/population.cpp:2032:24: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2034:5: note: FIX-IT applied suggested code changes
+ 2034 |                                 else if (value.type().id() == LogicalTypeId::BOOLEAN)
+      |                                 ^
+/workspace/src/population/population.cpp:2034:58: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2034 |                                 else if (value.type().id() == LogicalTypeId::BOOLEAN)
+      |                                                                                      ^
+      |                                                                                       {
+ 2035 |                                         json += value.GetValue<bool>() ? "true" : "false";
+ 2036 |                                 else if (value.type().id() == LogicalTypeId::FLOAT || value.type().id() == LogicalTypeId::DOUBLE) {
+      |                                 } 
+/workspace/src/population/population.cpp:2034:58: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2036:5: note: FIX-IT applied suggested code changes
+ 2036 |                                 else if (value.type().id() == LogicalTypeId::FLOAT || value.type().id() == LogicalTypeId::DOUBLE) {
+      |                                 ^
+/workspace/src/population/population.cpp:2043:11: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2043 |                                 } else
+      |                                       ^
+      |                                        {
+ 2044 |                                         json += JSONString(value.type().id() == LogicalTypeId::VARCHAR ? value.GetValue<string>()
+ 2045 |                                                                                                        : value.ToString());
+      |                                                                                                                            
+/workspace/src/population/population.cpp:2043:11: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2045:89: note: FIX-IT applied suggested code changes
+ 2045 |                                                                                                        : value.ToString());
+      |                                                                                                                            ^
+/workspace/src/population/population.cpp:2050:23: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2050 |         if (query.HasError())
+      |                              ^
+      |                               {
+ 2051 |                 NormalizeError(query.GetErrorObject(), "query", "execute", ExceptionType::INVALID_INPUT);
+      |                                                                                                          
+/workspace/src/population/population.cpp:2050:23: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2051:92: note: FIX-IT applied suggested code changes
+ 2051 |                 NormalizeError(query.GetErrorObject(), "query", "execute", ExceptionType::INVALID_INPUT);
+      |                                                                                                          ^
+/workspace/src/population/population.cpp:2052:30: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2052 |         if (context.IsInterrupted())
+      |                                     ^
+      |                                      {
+ 2053 |                 throw InterruptException();
+      |                                            
+/workspace/src/population/population.cpp:2052:30: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2053:30: note: FIX-IT applied suggested code changes
+ 2053 |                 throw InterruptException();
+      |                                            ^
+/workspace/src/population/population.cpp:2066:31: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2066 |                 if (context.IsInterrupted())
+      |                                             ^
+      |                                              {
+ 2067 |                         throw InterruptException();
+      |                                                    
+/workspace/src/population/population.cpp:2066:31: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2067:31: note: FIX-IT applied suggested code changes
+ 2067 |                         throw InterruptException();
+      |                                                    ^
+/workspace/src/population/population.cpp:2104:42: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2104 |                 if (state.chunk && state.chunk->size())
+      |                                                        ^
+      |                                                         {
+ 2105 |                         output.Reference(*state.chunk);
+      |                                                        
+/workspace/src/population/population.cpp:2104:42: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2105:35: note: FIX-IT applied suggested code changes
+ 2105 |                         output.Reference(*state.chunk);
+      |                                                        ^
+/workspace/src/population/population.cpp:2111:47: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2111 |                 for (idx_t col = 0; col < row.size(); col++)
+      |                                                             ^
+      |                                                              {
+ 2112 |                         output.SetValue(col, count, row[col]);
+      |                                                               
+/workspace/src/population/population.cpp:2111:47: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2112:42: note: FIX-IT applied suggested code changes
+ 2112 |                         output.SetValue(col, count, row[col]);
+      |                                                               ^
+/workspace/src/population/population.cpp:2122:107: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2122 |         if (!input.inputs.empty() && !input.inputs[0].IsNull() && input.inputs[0].type() == LogicalType::VARCHAR)
+      |                                                                                                                  ^
+      |                                                                                                                   {
+ 2123 |                 object = input.inputs[0].GetValue<string>();
+      |                                                             
+/workspace/src/population/population.cpp:2122:107: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2123:47: note: FIX-IT applied suggested code changes
+ 2123 |                 object = input.inputs[0].GetValue<string>();
+      |                                                             ^
+/workspace/src/population/population.cpp:2125:35: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2125 |                 if (name == "ossie_bundle_load")
+      |                                                 ^
+      |                                                  {
+ 2126 |                         return LoadBind(context, input, types, names);
+      |                                                                       
+/workspace/src/population/population.cpp:2125:35: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2126:50: note: FIX-IT applied suggested code changes
+ 2126 |                         return LoadBind(context, input, types, names);
+      |                                                                       ^
+/workspace/src/population/population.cpp:2127:32: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2127 |                 if (name == "ossie_concepts")
+      |                                              ^
+      |                                               {
+ 2128 |                         return DiscoverBind(context, input, types, names);
+      |                                                                           
+/workspace/src/population/population.cpp:2127:32: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2128:54: note: FIX-IT applied suggested code changes
+ 2128 |                         return DiscoverBind(context, input, types, names);
+      |                                                                           ^
+/workspace/src/population/population.cpp:2130:47: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2130 |                     name == "ossie_population_capabilities")
+      |                                                             ^
+      |                                                              {
+ 2131 |                         return VocabularyBind(context, input, types, names);
+      |                                                                             
+/workspace/src/population/population.cpp:2130:47: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2131:56: note: FIX-IT applied suggested code changes
+ 2131 |                         return VocabularyBind(context, input, types, names);
+      |                                                                             ^
+/workspace/src/population/population.cpp:2149:22: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2149 |                 if (value.IsNull())
+      |                                    ^
+      |                                     {
+ 2150 |                         Fail("list", "arguments", "population MCP: list argument required");
+      |                                                                                             
+/workspace/src/population/population.cpp:2149:22: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2150:72: note: FIX-IT applied suggested code changes
+ 2150 |                         Fail("list", "arguments", "population MCP: list argument required");
+      |                                                                                             ^
+/workspace/src/population/population.cpp:2153:12: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2153 |                 if (!doc)
+      |                          ^
+      |                           {
+ 2154 |                         Fail("list", "arguments", "population MCP: malformed JSON; JSON array of strings required");
+      |                                                                                                                     
+/workspace/src/population/population.cpp:2153:12: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2154:96: note: FIX-IT applied suggested code changes
+ 2154 |                         Fail("list", "arguments", "population MCP: malformed JSON; JSON array of strings required");
+      |                                                                                                                     ^
+/workspace/src/population/population.cpp:2157:28: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2157 |                 if (!yyjson_is_arr(root))
+      |                                          ^
+      |                                           {
+ 2158 |                         Fail("list", "arguments", "population MCP: JSON array of strings required");
+      |                                                                                                     
+/workspace/src/population/population.cpp:2157:28: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2158:80: note: FIX-IT applied suggested code changes
+ 2158 |                         Fail("list", "arguments", "population MCP: JSON array of strings required");
+      |                                                                                                     ^
+/workspace/src/population/population.cpp:2163:29: error: statement should be inside braces [readability-braces-around-statements,-warnings-as-errors]
+ 2163 |                         if (!yyjson_is_str(item))
+      |                                                  ^
+      |                                                   {
+ 2164 |                                 Fail("list[" + to_string(index) + "]", "arguments", "population MCP: JSON array of strings required");
+      |                                                                                                                                       
+/workspace/src/population/population.cpp:2163:29: note: FIX-IT applied suggested code changes
+/workspace/src/population/population.cpp:2164:107: note: FIX-IT applied suggested code changes
+ 2164 |                                 Fail("list[" + to_string(index) + "]", "arguments", "population MCP: JSON array of strings required");
+      |                                                                                                                                       ^
+clang-tidy applied 274 of 274 suggested fixes.
+Suppressed 3180 warnings (3180 in non-user code).
+Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+137 warnings treated as errors

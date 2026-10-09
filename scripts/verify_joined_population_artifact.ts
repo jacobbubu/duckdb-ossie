@@ -456,20 +456,43 @@ await temporary("ossie-frozen-join-", async (directory) => {
     await db.run(
       "DELETE FROM r6_fact; INSERT INTO r6_fact SELECT 'cancel'||i,1,1,true FROM range(9000) t(i); UPDATE r6_dimension SET label=repeat('x',1024) WHERE id=1",
     );
-    const cancelled = load();
-    const timer = setTimeout(() => db.connection.interrupt(), 2);
-    try {
-      await assert.rejects(() => cancelled, /interrupt/i);
-    } finally {
-      clearTimeout(timer);
-    }
-    assert.deepEqual(
-      await db.rows(
-        "SELECT snapshot_id,content_sha256 FROM ossie_concepts() ORDER BY concept",
-      ),
-      beforeCancel,
+    // Complete async prepare/bind before cancelling this one native execution.
+    // A single timer can interrupt prepare and be cleared when execution starts.
+    const cancelLoad = await db.connection.prepare(
+      "SELECT * FROM ossie_bundle_load(?)",
     );
-    assert.deepEqual(await total(), [6, 5, "55.01", 11.002]);
+    cancelLoad.bindVarchar(1, manifest);
+    let interrupts = 0;
+    let cancellationDiagnostic = "";
+    try {
+      const cancelled = cancelLoad.runAndReadAll();
+      const timer = setInterval(() => {
+        interrupts++;
+        db.connection.interrupt();
+      }, 1);
+      try {
+        await assert.rejects(async () => {
+          try {
+            await cancelled;
+          } catch (error) {
+            cancellationDiagnostic = String(error);
+            throw error;
+          }
+        }, /interrupt/i);
+      } finally {
+        clearInterval(timer);
+      }
+    } finally {
+      // assert.rejects awaits settlement before the statement is destroyed.
+      cancelLoad.destroySync();
+    }
+    assert(interrupts > 0, "timer never ran during native load");
+    const afterCancel = await db.rows(
+      "SELECT snapshot_id,content_sha256 FROM ossie_concepts() ORDER BY concept",
+    );
+    assert.deepEqual(afterCancel, beforeCancel);
+    const cancellationRecoveryTotal = await total();
+    assert.deepEqual(cancellationRecoveryTotal, [6, 5, "55.01", 11.002]);
     await reset();
     const quoted = bundle(([core, , mapping], policy) => {
       core.datasets[0]!.name = 'Fact "Sales';
@@ -656,6 +679,14 @@ await temporary("ossie-frozen-join-", async (directory) => {
       unused_dimension_hash: true,
       parent_alive_close: true,
       cancellation_preserves_bundle: true,
+      cancellation_evidence: {
+        native_interrupt_calls: interrupts,
+        diagnostic: cancellationDiagnostic,
+        before: beforeCancel,
+        after: afterCancel,
+        recovery_total: cancellationRecoveryTotal,
+        phase: "not deterministically injected by this stock verifier",
+      },
       quoted_sources_and_columns: true,
       computed_fields_and_ratio: true,
       plan_provenance_controls: { quoted: quotedPlan, computed: computedPlan },

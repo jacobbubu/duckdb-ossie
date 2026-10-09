@@ -1,0 +1,146 @@
+Makefile:33: warning: overriding commands for target `tidy-check'
+extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old commands for target `tidy-check'
+python3 duckdb/scripts/format.py --all --check --directories src test
+Checking all files
+src/compile/compile.cpp
+src/functions/compile.cpp
+src/functions/describe.cpp
+src/functions/load.cpp
+src/functions/query.cpp
+src/include/ossie/catalog.hpp
+src/include/ossie/compile.hpp
+src/include/ossie/describe_functions.hpp
+src/include/ossie/dialect.hpp
+src/include/ossie/functions.hpp
+src/include/ossie/graph.hpp
+src/include/ossie/model.hpp
+src/include/ossie/parser.hpp
+src/include/ossie/population_testing.hpp
+src/include/ossie/state.hpp
+src/include/ossie/validate.hpp
+src/include/ossie/yaml.hpp
+src/include/ossie_extension.hpp
+src/model/catalog.cpp
+src/model/dialect.cpp
+src/model/graph.cpp
+src/model/parser.cpp
+src/model/validate.cpp
+src/model/yaml.cpp
+src/ossie_extension.cpp
+src/population/population.cpp
+test/cpp/metric_grain_test.cpp
+test/cpp/population_capture_test.cpp
+test/cpp/state_snapshot_test.cpp
+test/sql/ossie.test
+test/sql/ossie_compile.test
+test/sql/ossie_conformance.test
+test/sql/ossie_describe.test
+test/sql/ossie_differential.test
+test/sql/ossie_field_expansion.test
+test/sql/ossie_function_metadata.test
+test/sql/ossie_grain.test
+test/sql/ossie_join_research.test
+test/sql/ossie_joined_population.test
+test/sql/ossie_load.test
+test/sql/ossie_loader_contract.test
+test/sql/ossie_population.test
+test/sql/ossie_population_dates.test
+test/sql/ossie_population_discovery.test
+test/sql/ossie_population_errors.test
+test/sql/ossie_population_expressions.test
+test/sql/ossie_population_plan.test
+test/sql/ossie_population_result.test
+test/sql/ossie_relationships.test
+test/sql/ossie_sql_2026.test
+test/sql/ossie_validate.test
+test/sql/ossie_yaml.test
+Passed format-check
+bun run format:check
+$ bun x --bun --no-install prettier --check scripts/*.ts test/tooling/*.ts package.json tsconfig.json
+Checking formatting...
+All matched files use Prettier code style!
+bun run typecheck
+$ bun x --bun --no-install tsc --noEmit
+bun run architecture
+$ bun scripts/check_architecture.ts
+{
+  "scope": "all project src C++ files; project include reachability and header cycles; direct runtime includes; no vendor expansion",
+  "source_files": 26,
+  "project_edges": 43,
+  "external_edges_unexpanded": 125,
+  "adapter_exceptions": {
+    "src/model/parser.cpp": [
+      "duckdb/common/file_system.hpp",
+      "duckdb/main/client_context.hpp"
+    ],
+    "src/model/catalog.cpp": [
+      "duckdb/catalog/catalog.hpp",
+      "duckdb/catalog/entry_lookup_info.hpp",
+      "duckdb/main/client_context.hpp"
+    ]
+  }
+}
+bun test test/tooling
+bun test v1.3.11 (af24e281)
+
+test/tooling/population_result.test.ts:
+(pass) decoder uses DuckDB ASCII case rules for output names [3.52ms]
+(pass) ordinary JSON decoding retains exact integer/Decimal strings [0.28ms]
+(pass) typed decoder refuses numeric cells and mismatched type/encoding [0.23ms]
+(pass) empty typed result keeps schema, snapshot and null cells stay null [0.37ms]
+(pass) typed decoder refuses malformed carrier, unknown schema and broken row width [0.43ms]
+
+test/tooling/quality_controls.test.ts:
+(pass) direct forbidden [29.21ms]
+(pass) indirect forbidden [23.01ms]
+(pass) model forbidden [21.30ms]
+(pass) header cycle [24.64ms]
+(pass) relative AST and comments [26.15ms]
+(pass) missing quoted reference [22.32ms]
+(pass) missing angle reference [21.65ms]
+(pass) indirect runtime [26.86ms]
+(pass) nonliteral reference [23.78ms]
+(pass) zero inputs [31.18ms]
+(pass) unscanned source [22.24ms]
+(pass) undeclared source [26.28ms]
+(pass) empty compiled inventory [23.03ms]
+(pass) compiler IO [24.31ms]
+(pass) precise parser adapter [50.04ms]
+(pass) parser exception cannot permit state [24.98ms]
+(pass) script formatting failure and recovery [484.04ms]
+(pass) state, grain and production capture runners required before SQL [19.95ms]
+(pass) actual CI gate fails closed for every dependency [85.44ms]
+(pass) current project graph scans nonzero inventory [14.08ms]
+(pass) strict typecheck rejects a runtime-valid type error and recovers [1531.54ms]
+(pass) CI uses frozen Bun tooling and the complete same-artifact acceptance runner [0.26ms]
+(pass) stock artifact CLI and all verifiers consume the downloaded artifact [0.13ms]
+
+test/tooling/population_error.test.ts:
+(pass) error framing respects quoted braces, escapes and marker text [0.34ms]
+(pass) external, incomplete and invalid-schema diagnostics stay unclassified [0.40ms]
+
+test/tooling/source_evidence.test.ts:
+(pass) fresh checkout verifies 20 sources and the original requirement without external paths [14.42ms]
+(pass) missing and single-byte changed source copies refuse [20.49ms]
+(pass) wrong manifest binding, duplicate, missing and unknown locators refuse [39.01ms]
+(pass) absolute, parent traversal and escaping symlink targets refuse [26.34ms]
+(pass) locator content hash cannot override the manifest's expected source hash [9.35ms]
+
+test/tooling/artifact_cli.test.ts:
+(pass) missing stock CLI fails instead of using build-tree engine [23.34ms]
+(pass) missing artifact fails before invoking the CLI [16.69ms]
+(pass) artifact loading failure is fatal and retains its diagnostic [548.44ms]
+(pass) relative artifact paths are normalized before stock CLI loading [293.35ms]
+
+test/tooling/artifact_values.test.ts:
+(pass) native DATE adapter preserves finite dates, infinity and NULL [0.42ms]
+
+test/tooling/mcp_transport.test.ts:
+(pass) MCP ignores banners, receives RPC, and cleans up child [41.15ms]
+(pass) silent MCP server hits a real read deadline and is terminated [34.74ms]
+(pass) server setup failure reaches reader with stderr [13.91ms]
+
+ 43 pass
+ 0 fail
+ 136 expect() calls
+Ran 43 tests across 7 files. [3.93s]

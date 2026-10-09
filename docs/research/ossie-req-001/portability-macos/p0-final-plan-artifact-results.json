@@ -1,0 +1,2607 @@
+{
+  "scope": "Generated semantic SELECT AST and immutable definition/capture provenance; not physical plans or full R7/P0",
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "13d5317fb860f9ad81437a0a86cb8c996d7742a026f927f7b503c0fadf340c95",
+  "source_sha256": {
+    "src/population/population.cpp": "7848e8b0fcb7fd0855ea3f89c68d85633839eb7bfd13da05ab801e01ad8616e8",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "test/sql/ossie_population_plan.test": "079b44703b9733b83293e23d18c28787ac96fa11132c6463e51e4a98f22c2870",
+    "docs/research/ossie-req-001/gaap-boundary.csv": "93aabea30c8f94246e44e1c7d4d7c1ddb2b4650cd347c5c57edbbf4e8abcb6b1",
+    ".github/workflows/MainDistributionPipeline.yml": "9ba04e2e1f9528a2321ee11542f653796e003799d897c7c160d6341a4b818c11",
+    "scripts/verify_plan_artifact.ts": "7abe2bd8a37897cc53b74a18465570d6d770b9b772420eb909d275b8d49aecc5",
+    "test/fixtures/population/bundle-10.json": "61498fe419af6bace141492be85d8296d378fbba8205695efce9056a6f61964a",
+    "test/fixtures/population/bundle-20.json": "0f87d33a6c6a7d0b4558a75414728c976b705ac0a1ed83b69495606ebdc089aa",
+    "test/fixtures/population-expressions/core.json": "e5ee6a7a0d3adf4a3c59df970f28290a3a8c4ae0135f99e50a7c56364359c247",
+    "test/fixtures/population-expressions/rows.sql": "06c004bee67511a0e9d759480a8e4d26c04913418914302e4bb01649bcbafd4b",
+    "test/fixtures/joined-population/bundle.json": "4af4f7bed9a5d179e849d1ff68ebd82f276c584e96cb1b0d5520c2b073289890",
+    "test/fixtures/safe-join-research/rows.sql": "ea9ac378b27a6638090d269f770eeb711f6ec2d7a0bba02d2ef935cc3f8078fa"
+  },
+  "checks": [
+    "versioned actual AST envelope",
+    "statement parts and ordered output",
+    "root objects have no formal restriction",
+    "versioned actual AST envelope",
+    "statement parts and ordered output",
+    "derived rule, canonical metrics and disjoint time predicate",
+    "duplicate diagnostic projections do not imply executable table schema",
+    "versioned actual AST envelope",
+    "statement parts and ordered output",
+    "actual output matches plan ordinals",
+    "hand-derived disjoint groups",
+    "definition dialect and default time role retained",
+    "versioned actual AST envelope",
+    "statement parts and ordered output",
+    "prepared plan pins old definition and snapshot",
+    "prepared statement remains immutable across reload",
+    "versioned actual AST envelope",
+    "statement parts and ordered output",
+    "failed load keeps plan exactly",
+    "versioned actual AST envelope",
+    "statement parts and ordered output",
+    "selected dialect differs from unused variant; explicit time opt-out",
+    "versioned actual AST envelope",
+    "statement parts and ordered output",
+    "explanation never rereads modified definition files",
+    "versioned actual AST envelope",
+    "statement parts and ordered output",
+    "empty capture makes no filtered-count claim",
+    "versioned actual AST envelope",
+    "statement parts and ordered output",
+    "NULLIF division/DISTINCT/computed field provenance",
+    "versioned actual AST envelope",
+    "statement parts and ordered output",
+    "validated join inputs and original identity grain",
+    "original expressions and flattened final references are separate",
+    "independent joined query on actual population"
+  ],
+  "observations": [
+    {
+      "sql": "SELECT dws_gaap_di.user_id AS entity_id, dws_gaap_di.user_id AS record_id, dws_gaap_di.ds AS \"dws_gaap_di.ds\", dws_gaap_di.product AS \"dws_gaap_di.product\", dws_gaap_di.region AS \"dws_gaap_di.region\", dws_gaap_di.user_type AS \"dws_gaap_di.user_type\", dws_gaap_di.user_id AS \"dws_gaap_di.user_id\", dws_gaap_di.gaap_val AS \"dws_gaap_di.gaap_val\", dws_gaap_di.ytd_gaap AS \"dws_gaap_di.ytd_gaap\" FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+      "plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "objects",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807"
+          },
+          "manifest_sha256": "61498fe419af6bace141492be85d8296d378fbba8205695efce9056a6f61964a"
+        },
+        "snapshot": {
+          "id": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:1",
+          "content_sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+          "captured_population_rows": 11,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "User",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": false,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ytd_gaap >= 10",
+            "resolved_definition_sql": "(dws_gaap_di.ytd_gaap >= 10)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 11,
+            "sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817"
+          }
+        ],
+        "metrics": [],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": true,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [],
+          "effective_where_sql": null
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "entity_id",
+              "sql": "dws_gaap_di.user_id"
+            },
+            {
+              "ordinal": 2,
+              "alias": "record_id",
+              "sql": "dws_gaap_di.user_id"
+            },
+            {
+              "ordinal": 3,
+              "alias": "dws_gaap_di.ds",
+              "sql": "dws_gaap_di.ds"
+            },
+            {
+              "ordinal": 4,
+              "alias": "dws_gaap_di.product",
+              "sql": "dws_gaap_di.product"
+            },
+            {
+              "ordinal": 5,
+              "alias": "dws_gaap_di.region",
+              "sql": "dws_gaap_di.region"
+            },
+            {
+              "ordinal": 6,
+              "alias": "dws_gaap_di.user_type",
+              "sql": "dws_gaap_di.user_type"
+            },
+            {
+              "ordinal": 7,
+              "alias": "dws_gaap_di.user_id",
+              "sql": "dws_gaap_di.user_id"
+            },
+            {
+              "ordinal": 8,
+              "alias": "dws_gaap_di.gaap_val",
+              "sql": "dws_gaap_di.gaap_val"
+            },
+            {
+              "ordinal": 9,
+              "alias": "dws_gaap_di.ytd_gaap",
+              "sql": "dws_gaap_di.ytd_gaap"
+            }
+          ],
+          "group_by_sql": []
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      }
+    },
+    {
+      "sql": "SELECT dws_gaap_di.ds AS \"dws_gaap_di.ds\", \"system\".main.sum(dws_gaap_di.gaap_val) AS gaap_sum, \"system\".main.count(dws_gaap_di.user_id) AS record_count, \"system\".main.sum(dws_gaap_di.gaap_val) AS gaap_sum, 'd4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:1' AS _ossie_snapshot_id, 'd4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817' AS _ossie_content_sha256, '7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc' AS _ossie_ontology_sha256 FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di WHERE ((dws_gaap_di.ytd_gaap >= 10) AND (dws_gaap_di.product = 'X') AND ((dws_gaap_di.ds < CAST('2026-03-02' AS \"DATE\")) OR (dws_gaap_di.ds >= CAST('2026-03-31' AS \"DATE\")))) GROUP BY dws_gaap_di.ds",
+      "plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807"
+          },
+          "manifest_sha256": "61498fe419af6bace141492be85d8296d378fbba8205695efce9056a6f61964a"
+        },
+        "snapshot": {
+          "id": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:1",
+          "content_sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+          "captured_population_rows": 11,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "ValidUser",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": true,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ytd_gaap >= 10",
+            "resolved_definition_sql": "(dws_gaap_di.ytd_gaap >= 10)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 11,
+            "sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "gaap_sum",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "sum(dws_gaap_di.gaap_val)"
+            }
+          },
+          {
+            "name": "record_count",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "COUNT(dws_gaap_di.user_id)",
+              "parsed_lowered_sql": "count(dws_gaap_di.user_id)"
+            }
+          },
+          {
+            "name": "gaap_sum",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "sum(dws_gaap_di.gaap_val)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": true,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [
+            "User.product = 'X'",
+            "User.date < DATE '2026-03-02' OR User.date >= DATE '2026-03-31'"
+          ],
+          "effective_where_sql": "((dws_gaap_di.ytd_gaap >= 10) AND (dws_gaap_di.product = 'X') AND ((dws_gaap_di.ds < CAST('2026-03-02' AS \"DATE\")) OR (dws_gaap_di.ds >= CAST('2026-03-31' AS \"DATE\"))))"
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "dws_gaap_di.ds",
+              "sql": "dws_gaap_di.ds"
+            },
+            {
+              "ordinal": 2,
+              "alias": "gaap_sum",
+              "sql": "\"system\".main.sum(dws_gaap_di.gaap_val)"
+            },
+            {
+              "ordinal": 3,
+              "alias": "record_count",
+              "sql": "\"system\".main.count(dws_gaap_di.user_id)"
+            },
+            {
+              "ordinal": 4,
+              "alias": "gaap_sum",
+              "sql": "\"system\".main.sum(dws_gaap_di.gaap_val)"
+            },
+            {
+              "ordinal": 5,
+              "alias": "_ossie_snapshot_id",
+              "sql": "'d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:1'"
+            },
+            {
+              "ordinal": 6,
+              "alias": "_ossie_content_sha256",
+              "sql": "'d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817'"
+            },
+            {
+              "ordinal": 7,
+              "alias": "_ossie_ontology_sha256",
+              "sql": "'7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc'"
+            }
+          ],
+          "group_by_sql": [
+            "dws_gaap_di.ds"
+          ]
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      }
+    },
+    {
+      "sql": "SELECT dws_gaap_di.ds AS \"dws_gaap_di.ds\", \"system\".main.sum(dws_gaap_di.gaap_val) AS gaap_sum, \"system\".main.count(dws_gaap_di.user_id) AS record_count, 'd4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:1' AS _ossie_snapshot_id, 'd4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817' AS _ossie_content_sha256, '7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc' AS _ossie_ontology_sha256 FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di WHERE ((dws_gaap_di.ytd_gaap >= 10) AND (dws_gaap_di.product = 'X') AND ((dws_gaap_di.ds < CAST('2026-03-02' AS \"DATE\")) OR (dws_gaap_di.ds >= CAST('2026-03-31' AS \"DATE\")))) GROUP BY dws_gaap_di.ds",
+      "plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807"
+          },
+          "manifest_sha256": "61498fe419af6bace141492be85d8296d378fbba8205695efce9056a6f61964a"
+        },
+        "snapshot": {
+          "id": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:1",
+          "content_sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+          "captured_population_rows": 11,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "ValidUser",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": true,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ytd_gaap >= 10",
+            "resolved_definition_sql": "(dws_gaap_di.ytd_gaap >= 10)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 11,
+            "sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "gaap_sum",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "sum(dws_gaap_di.gaap_val)"
+            }
+          },
+          {
+            "name": "record_count",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "COUNT(dws_gaap_di.user_id)",
+              "parsed_lowered_sql": "count(dws_gaap_di.user_id)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": true,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [
+            "User.product = 'X'",
+            "User.date < DATE '2026-03-02' OR User.date >= DATE '2026-03-31'"
+          ],
+          "effective_where_sql": "((dws_gaap_di.ytd_gaap >= 10) AND (dws_gaap_di.product = 'X') AND ((dws_gaap_di.ds < CAST('2026-03-02' AS \"DATE\")) OR (dws_gaap_di.ds >= CAST('2026-03-31' AS \"DATE\"))))"
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "dws_gaap_di.ds",
+              "sql": "dws_gaap_di.ds"
+            },
+            {
+              "ordinal": 2,
+              "alias": "gaap_sum",
+              "sql": "\"system\".main.sum(dws_gaap_di.gaap_val)"
+            },
+            {
+              "ordinal": 3,
+              "alias": "record_count",
+              "sql": "\"system\".main.count(dws_gaap_di.user_id)"
+            },
+            {
+              "ordinal": 4,
+              "alias": "_ossie_snapshot_id",
+              "sql": "'d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:1'"
+            },
+            {
+              "ordinal": 5,
+              "alias": "_ossie_content_sha256",
+              "sql": "'d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817'"
+            },
+            {
+              "ordinal": 6,
+              "alias": "_ossie_ontology_sha256",
+              "sql": "'7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc'"
+            }
+          ],
+          "group_by_sql": [
+            "dws_gaap_di.ds"
+          ]
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      }
+    },
+    {
+      "sql": "SELECT \"system\".main.sum(dws_gaap_di.gaap_val) AS gaap_sum FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di WHERE (dws_gaap_di.ytd_gaap >= 20)",
+      "plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807"
+          },
+          "manifest_sha256": "0f87d33a6c6a7d0b4558a75414728c976b705ac0a1ed83b69495606ebdc089aa"
+        },
+        "snapshot": {
+          "id": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:2",
+          "content_sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+          "captured_population_rows": 11,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "ValidUser",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": true,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ytd_gaap >= 20",
+            "resolved_definition_sql": "(dws_gaap_di.ytd_gaap >= 20)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 11,
+            "sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "gaap_sum",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "sum(dws_gaap_di.gaap_val)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": true,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [],
+          "effective_where_sql": "(dws_gaap_di.ytd_gaap >= 20)"
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "gaap_sum",
+              "sql": "\"system\".main.sum(dws_gaap_di.gaap_val)"
+            }
+          ],
+          "group_by_sql": []
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      }
+    },
+    {
+      "sql": "SELECT \"system\".main.sum(dws_gaap_di.gaap_val) AS gaap_sum FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di WHERE (dws_gaap_di.ytd_gaap >= 20)",
+      "plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807"
+          },
+          "manifest_sha256": "0f87d33a6c6a7d0b4558a75414728c976b705ac0a1ed83b69495606ebdc089aa"
+        },
+        "snapshot": {
+          "id": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:2",
+          "content_sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+          "captured_population_rows": 11,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "ValidUser",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": true,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ytd_gaap >= 20",
+            "resolved_definition_sql": "(dws_gaap_di.ytd_gaap >= 20)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 11,
+            "sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "gaap_sum",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "sum(dws_gaap_di.gaap_val)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": true,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [],
+          "effective_where_sql": "(dws_gaap_di.ytd_gaap >= 20)"
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "gaap_sum",
+              "sql": "\"system\".main.sum(dws_gaap_di.gaap_val)"
+            }
+          ],
+          "group_by_sql": []
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      }
+    },
+    {
+      "sql": "SELECT \"system\".main.sum(dws_gaap_di.gaap_val) AS gaap_sum FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di WHERE (dws_gaap_di.ytd_gaap >= 10)",
+      "plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "a0cae8db3391f0e63c3c0045d0ab19832254d2c40070f6e53aa1a5fe087ac8e6"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "06e2193498f5139b317c48ac865334334a350df5fdbb1fdbc48ef559180a2d24"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "b83cbecd58591533cf08ee42cdfbce678ab65e77347839aa12ed0fc9ce938754"
+          },
+          "manifest_sha256": "d1679f1a09f843beb8b5bf778a072a7b07d7ba3ac83c6e08dc03e1fc74e735c6"
+        },
+        "snapshot": {
+          "id": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:3",
+          "content_sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+          "captured_population_rows": 11,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "ValidUser",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": true,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ytd_gaap >= 10",
+            "resolved_definition_sql": "(dws_gaap_di.ytd_gaap >= 10)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 11,
+            "sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "gaap_sum",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "ANSI_SQL",
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "sum(dws_gaap_di.gaap_val)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": false,
+            "is_time_explicit": true,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [],
+          "effective_where_sql": "(dws_gaap_di.ytd_gaap >= 10)"
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "gaap_sum",
+              "sql": "\"system\".main.sum(dws_gaap_di.gaap_val)"
+            }
+          ],
+          "group_by_sql": []
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      }
+    },
+    {
+      "sql": "SELECT \"system\".main.sum(dws_gaap_di.gaap_val) AS gaap_sum FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di WHERE (dws_gaap_di.ytd_gaap >= 10)",
+      "plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "a0cae8db3391f0e63c3c0045d0ab19832254d2c40070f6e53aa1a5fe087ac8e6"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "06e2193498f5139b317c48ac865334334a350df5fdbb1fdbc48ef559180a2d24"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "b83cbecd58591533cf08ee42cdfbce678ab65e77347839aa12ed0fc9ce938754"
+          },
+          "manifest_sha256": "d1679f1a09f843beb8b5bf778a072a7b07d7ba3ac83c6e08dc03e1fc74e735c6"
+        },
+        "snapshot": {
+          "id": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817:3",
+          "content_sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817",
+          "captured_population_rows": 11,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "ValidUser",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": true,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ytd_gaap >= 10",
+            "resolved_definition_sql": "(dws_gaap_di.ytd_gaap >= 10)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 11,
+            "sha256": "d4ed62d075b1a16a7e30d1255ea1af2f359a19616659a1a21350577d700ed817"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "gaap_sum",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "ANSI_SQL",
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.gaap_val)",
+              "parsed_lowered_sql": "sum(dws_gaap_di.gaap_val)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": false,
+            "is_time_explicit": true,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [],
+          "effective_where_sql": "(dws_gaap_di.ytd_gaap >= 10)"
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "gaap_sum",
+              "sql": "\"system\".main.sum(dws_gaap_di.gaap_val)"
+            }
+          ],
+          "group_by_sql": []
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      }
+    },
+    {
+      "sql": "SELECT \"system\".main.count(dws_gaap_di.user_id) AS record_count FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di WHERE (dws_gaap_di.ytd_gaap >= 20)",
+      "plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807"
+          },
+          "manifest_sha256": "0f87d33a6c6a7d0b4558a75414728c976b705ac0a1ed83b69495606ebdc089aa"
+        },
+        "snapshot": {
+          "id": "db063e30f2e6c6f1d7522af14252a46c59f104e56b1f6618bd15ecd818e5feb0:4",
+          "content_sha256": "db063e30f2e6c6f1d7522af14252a46c59f104e56b1f6618bd15ecd818e5feb0",
+          "captured_population_rows": 0,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "ValidUser",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": true,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ytd_gaap >= 20",
+            "resolved_definition_sql": "(dws_gaap_di.ytd_gaap >= 20)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 0,
+            "sha256": "db063e30f2e6c6f1d7522af14252a46c59f104e56b1f6618bd15ecd818e5feb0"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "record_count",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "COUNT(dws_gaap_di.user_id)",
+              "parsed_lowered_sql": "count(dws_gaap_di.user_id)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": true,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [],
+          "effective_where_sql": "(dws_gaap_di.ytd_gaap >= 20)"
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "record_count",
+              "sql": "\"system\".main.count(dws_gaap_di.user_id)"
+            }
+          ],
+          "group_by_sql": []
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      }
+    },
+    {
+      "sql": "SELECT (\"system\".main.sum(dws_gaap_di.gaap_val) / \"system\".main.\"nullif\"(\"system\".main.sum(dws_gaap_di.ytd_gaap), 0)) AS ratio_of_sums, \"system\".main.count(DISTINCT dws_gaap_di.region) AS distinct_region, \"system\".main.sum((dws_gaap_di.gaap_val / \"system\".main.\"nullif\"(dws_gaap_di.ytd_gaap, 0))) AS sum_ratio FROM \"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+      "plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "gaap-scalar-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "gaap_demo",
+            "version": "0.2.0.dev0",
+            "sha256": "e5ee6a7a0d3adf4a3c59df970f28290a3a8c4ae0135f99e50a7c56364359c247"
+          },
+          "ontology": {
+            "name": "gaap_population",
+            "version": "0.2.0.dev0",
+            "sha256": "88f6e6eb2e360c860fdc1caab0cc5b764daadf975528b2e3b6c900ef7d57d6da"
+          },
+          "mapping": {
+            "name": "gaap_binding",
+            "version": "0.2.0.dev0",
+            "sha256": "621f6b1d41289b1c6bf19ac94afaa54a651f4fcfd2113e5188eacc4cacc9ec7a"
+          },
+          "manifest_sha256": "da3fd772535ab0b76dad1c9488d8ce687040ae24e6b7150a00b0078b99393148"
+        },
+        "snapshot": {
+          "id": "2c07729bd1e5597178b73759ef6dfd11cf9cb69e6242cde0bc1fbb44836e8a38:5",
+          "content_sha256": "2c07729bd1e5597178b73759ef6dfd11cf9cb69e6242cde0bc1fbb44836e8a38",
+          "captured_population_rows": 8,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "User",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": false,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.ratio > 0",
+            "resolved_definition_sql": "((dws_gaap_di.gaap_val / \"system\".main.\"nullif\"(dws_gaap_di.ytd_gaap, 0)) > 0)"
+          }
+        },
+        "identity": {
+          "field": "dws_gaap_di.user_id",
+          "dataset": "dws_gaap_di",
+          "logical_field": "user_id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "dws_gaap_di",
+          "declared_primary_key": [
+            "user_id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated sole source dataset"
+        },
+        "capture_join": null,
+        "inputs": [
+          {
+            "dataset": "dws_gaap_di",
+            "source": "memory.main.dws_gaap_di",
+            "captured_rows": 8,
+            "sha256": "2c07729bd1e5597178b73759ef6dfd11cf9cb69e6242cde0bc1fbb44836e8a38"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "ratio_of_sums",
+            "declared_datatype": "Float",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.gaap_val) / NULLIF(SUM(dws_gaap_di.ytd_gaap), 0)",
+              "parsed_lowered_sql": "(sum(dws_gaap_di.gaap_val) / \"nullif\"(sum(dws_gaap_di.ytd_gaap), 0))"
+            }
+          },
+          {
+            "name": "distinct_region",
+            "declared_datatype": "Integer",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "COUNT(DISTINCT dws_gaap_di.region)",
+              "parsed_lowered_sql": "count(DISTINCT dws_gaap_di.region)"
+            }
+          },
+          {
+            "name": "sum_ratio",
+            "declared_datatype": "Float",
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "SUM(dws_gaap_di.ratio)",
+              "parsed_lowered_sql": "sum(dws_gaap_di.ratio)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ds",
+            "declared_datatype": "Date",
+            "is_time": true,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ds",
+              "parsed_lowered_sql": "ds"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "product",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "product",
+              "parsed_lowered_sql": "product"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "region",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "region",
+              "parsed_lowered_sql": "region"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_type",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_type",
+              "parsed_lowered_sql": "user_type"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "user_id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "user_id",
+              "parsed_lowered_sql": "user_id"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "gaap_val",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val",
+              "parsed_lowered_sql": "gaap_val"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ytd_gaap",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "ytd_gaap",
+              "parsed_lowered_sql": "ytd_gaap"
+            }
+          },
+          {
+            "dataset": "dws_gaap_di",
+            "name": "ratio",
+            "declared_datatype": "Float",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "OSSIE_SQL_2026",
+              "available_dialects": [
+                "OSSIE_SQL_2026"
+              ],
+              "declared_sql": "gaap_val / NULLIF(ytd_gaap, 0)",
+              "parsed_lowered_sql": "(gaap_val / \"nullif\"(ytd_gaap, 0))"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [],
+          "effective_where_sql": null
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS dws_gaap_di",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "ratio_of_sums",
+              "sql": "(\"system\".main.sum(dws_gaap_di.gaap_val) / \"system\".main.\"nullif\"(\"system\".main.sum(dws_gaap_di.ytd_gaap), 0))"
+            },
+            {
+              "ordinal": 2,
+              "alias": "distinct_region",
+              "sql": "\"system\".main.count(DISTINCT dws_gaap_di.region)"
+            },
+            {
+              "ordinal": 3,
+              "alias": "sum_ratio",
+              "sql": "\"system\".main.sum((dws_gaap_di.gaap_val / \"system\".main.\"nullif\"(dws_gaap_di.ytd_gaap, 0)))"
+            }
+          ],
+          "group_by_sql": []
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      }
+    },
+    {
+      "sql": "SELECT fact._ossie_column_5 AS \"dimension.label\", \"system\".main.sum(fact._ossie_column_2) AS amount_sum FROM \"system\".main._ossie_snapshot_rows() AS fact WHERE (fact._ossie_column_3 AND fact._ossie_column_6 AND (fact._ossie_column_5 = 'North')) GROUP BY fact._ossie_column_5",
+      "plan": {
+        "schema_version": "ossie-population-plan-v1",
+        "phase": "generated semantic SELECT AST",
+        "executed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "request_kind": "metrics",
+        "profile": "fact-dimension-population-v1",
+        "engine": {
+          "dialect": "DUCKDB",
+          "version": "v1.5.6",
+          "source_id": "069cc9f9b5"
+        },
+        "definitions": {
+          "core": {
+            "name": "joined_population",
+            "version": "0.2.0.dev0",
+            "sha256": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878"
+          },
+          "ontology": {
+            "name": "joined_ontology",
+            "version": "0.2.0.dev0",
+            "sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613"
+          },
+          "mapping": {
+            "name": "joined_mapping",
+            "version": "0.2.0.dev0",
+            "sha256": "fede2d077986e8c46162973f87b750afcd1420e8229d480d175a6c7acee4dcfd"
+          },
+          "manifest_sha256": "4af4f7bed9a5d179e849d1ff68ebd82f276c584e96cb1b0d5520c2b073289890"
+        },
+        "snapshot": {
+          "id": "d77db4cbcae958531475340a6150fd95e92baf5aa26af0bb4f15b13bd8a947ef:6",
+          "content_sha256": "d77db4cbcae958531475340a6150fd95e92baf5aa26af0bb4f15b13bd8a947ef",
+          "captured_population_rows": 6,
+          "row_order_sensitive": true,
+          "filtered_rows_computed": false
+        },
+        "concept": {
+          "name": "ValidUser",
+          "root": "User",
+          "formal_rule": {
+            "owner": "ValidUser",
+            "applied": true,
+            "input_language": "profile scalar SQL subset (no core dialect lowering)",
+            "declared_sql": "User.active AND User.eligible",
+            "resolved_definition_sql": "(fact._ossie_column_3 AND fact._ossie_column_6)"
+          }
+        },
+        "identity": {
+          "field": "fact.id",
+          "dataset": "fact",
+          "logical_field": "id",
+          "entity_equals_record": true,
+          "scope": "one observation per identity in captured batch"
+        },
+        "grain": {
+          "population_input_dataset": "fact",
+          "declared_primary_key": [
+            "id"
+          ],
+          "aggregation_scope": "effective WHERE before GROUP BY",
+          "basis": "validated fact grain before flattening"
+        },
+        "capture_join": {
+          "relationship": "fact_dimension",
+          "from_dataset": "fact",
+          "to_dataset": "dimension",
+          "from_column": "dim_id",
+          "to_column": "id",
+          "type": "INNER",
+          "missing": "reject",
+          "validation_scope": "entire captured inputs before request filters",
+          "execution_stage": "load-time frozen lookup; no live query join"
+        },
+        "inputs": [
+          {
+            "dataset": "fact",
+            "source": "memory.main.r6_fact",
+            "captured_rows": 6,
+            "sha256": "0d52313773e86796abaf4b433a835adf5446862bf54e559ea99f21a0318e335e"
+          },
+          {
+            "dataset": "dimension",
+            "source": "memory.main.r6_dimension",
+            "captured_rows": 4,
+            "sha256": "4a79235280ea3dacbeb7f6ee6376e9b26ab39995a93015824600ac1db21be196"
+          }
+        ],
+        "metrics": [
+          {
+            "name": "amount_sum",
+            "declared_datatype": "",
+            "expression": {
+              "selected_dialect": "ANSI_SQL",
+              "available_dialects": [
+                "ANSI_SQL"
+              ],
+              "declared_sql": "SUM(fact.amount)",
+              "parsed_lowered_sql": "sum(fact.amount)"
+            }
+          }
+        ],
+        "declared_fields": [
+          {
+            "dataset": "fact",
+            "name": "id",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "ANSI_SQL",
+              "available_dialects": [
+                "ANSI_SQL"
+              ],
+              "declared_sql": "id",
+              "parsed_lowered_sql": "id"
+            }
+          },
+          {
+            "dataset": "fact",
+            "name": "dim_id",
+            "declared_datatype": "Integer",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "ANSI_SQL",
+              "available_dialects": [
+                "ANSI_SQL"
+              ],
+              "declared_sql": "dim_id",
+              "parsed_lowered_sql": "dim_id"
+            }
+          },
+          {
+            "dataset": "fact",
+            "name": "amount",
+            "declared_datatype": "Decimal",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "ANSI_SQL",
+              "available_dialects": [
+                "ANSI_SQL"
+              ],
+              "declared_sql": "amount",
+              "parsed_lowered_sql": "amount"
+            }
+          },
+          {
+            "dataset": "fact",
+            "name": "active",
+            "declared_datatype": "Boolean",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "ANSI_SQL",
+              "available_dialects": [
+                "ANSI_SQL"
+              ],
+              "declared_sql": "active",
+              "parsed_lowered_sql": "active"
+            }
+          },
+          {
+            "dataset": "dimension",
+            "name": "id",
+            "declared_datatype": "Integer",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "ANSI_SQL",
+              "available_dialects": [
+                "ANSI_SQL"
+              ],
+              "declared_sql": "id",
+              "parsed_lowered_sql": "id"
+            }
+          },
+          {
+            "dataset": "dimension",
+            "name": "label",
+            "declared_datatype": "String",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "ANSI_SQL",
+              "available_dialects": [
+                "ANSI_SQL"
+              ],
+              "declared_sql": "label",
+              "parsed_lowered_sql": "\"label\""
+            }
+          },
+          {
+            "dataset": "dimension",
+            "name": "eligible",
+            "declared_datatype": "Boolean",
+            "is_time": false,
+            "is_time_explicit": false,
+            "expression": {
+              "selected_dialect": "ANSI_SQL",
+              "available_dialects": [
+                "ANSI_SQL"
+              ],
+              "declared_sql": "eligible",
+              "parsed_lowered_sql": "eligible"
+            }
+          }
+        ],
+        "filters": {
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "requested_sql": [
+            "User.label = 'North'"
+          ],
+          "effective_where_sql": "(fact._ossie_column_3 AND fact._ossie_column_6 AND (fact._ossie_column_5 = 'North'))"
+        },
+        "time": {
+          "range_inferred": false,
+          "basis": "effective WHERE and declared time roles only"
+        },
+        "generated_ast": {
+          "from_sql": "\"system\".main._ossie_snapshot_rows() AS fact",
+          "projections": [
+            {
+              "ordinal": 1,
+              "alias": "dimension.label",
+              "sql": "fact._ossie_column_5"
+            },
+            {
+              "ordinal": 2,
+              "alias": "amount_sum",
+              "sql": "\"system\".main.sum(fact._ossie_column_2)"
+            }
+          ],
+          "group_by_sql": [
+            "fact._ossie_column_5"
+          ]
+        },
+        "result_contract": {
+          "ordering": "unspecified",
+          "groups": "sparse",
+          "query_paging": false,
+          "query_truncation": false,
+          "calendar_completion": false,
+          "empty_ungrouped_count": 0,
+          "empty_ungrouped_sum_avg": null
+        },
+        "limitations": [
+          "Parser AST explanation, not a bound physical or optimizer plan",
+          "Captured row counts do not measure filtered population, groups or aggregate denominators",
+          "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+          "Separate compile/query calls may bind different snapshots after reload",
+          "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+        ]
+      }
+    }
+  ]
+}

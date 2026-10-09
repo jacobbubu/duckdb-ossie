@@ -47,6 +47,12 @@ async function run(name: string, command: string[]) {
   assert.equal(exit, 0, `${name} failed; diagnostic retained in ${logPath}`);
 }
 try {
+  await run("cli-dependencies", [
+    "duckdb",
+    "-bail",
+    "-c",
+    "INSTALL duckdb_mcp FROM community; INSTALL tpcds;",
+  ]);
   for (const tag of VERIFIERS) {
     const script =
       tag === "correspondence"

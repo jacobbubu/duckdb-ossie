@@ -1,0 +1,18 @@
+{
+  "schema_version": "ossie-source-locations-v1",
+  "manifest_sha256": "9450ced5bfaec4ccc3f65ca21c4b5abc605f76572f544fb8ab8164a334bcd5ca",
+  "locations": [
+    {
+      "original_path": "/Users/rongshen/github/QwenPaw-Data/examples/demo_semantic_config.xlsx",
+      "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo_semantic_config.xlsx"
+    },
+    {
+      "original_path": "/Users/rongshen/github/QwenPaw-Data/examples/demo_kg_doc.docx",
+      "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo_kg_doc.docx"
+    },
+    {
+      "original_path": "/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md",
+      "saved_path": "docs/research/ossie-req-001/sources/requirements.original.md"
+    }
+  ]
+}

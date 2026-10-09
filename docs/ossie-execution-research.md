@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-10。状态：用户授权的五轮已完成；两个有界profile共同覆盖的调整范围A1–A8本地规则驱动验收通过，完整查询/边界/追溯与实际复现已归档。不是全规范、真实自主Agent或远端CI通过；分页/P1仍独立后续范围。历史计数按当时包保留，最终结论见[验收入口](p0-acceptance.md)。
+日期：2026-10-10。状态：五轮调整范围验收后，用户授权的跨环境复现/Linux质量工作包已完成。macOS ARM64与独立Ubuntu24.04 ARM64最终产物通过原生/SQL/43 Bun/完整stock/MCP，Ubuntu ARM64 clang-tidy及独立Ubuntu AMD64固定格式门禁通过；20项完整GAAP跨环境结果一致，20来源+1原需求仓库副本核对通过。证据见[跨环境控制](research/ossie-req-001/portability-control-results.json)及[复现说明](linux-reproduction.md)。不是全规范、真实自主Agent或远端CI通过；本轮只本地提交，不推送。历史计数按当时包保留，调整范围语义结论见[验收入口](p0-acceptance.md)。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -743,3 +743,27 @@ RequiredNonEmptyString 在五类 name、dataset source、relationship from/to �
 Advisor复用既有只读身份、无children/写入，一轮反证未发现限定语义结论的新阻塞；核对165个现存文件路径hash不是功能重跑。建议明确两个profile共同覆盖相关场景、manual来源冲突不等于任意NL自动检测、research join文字不覆盖生产证据，并分清归档核对与实际重跑。Lead分别以完整实际报告、runner退出0和最终source audit核实。requested Astra/high，effective backend/effort/usage/billing未知；建议不替代测试。
 
 最终结论：按用户仅新格式/YTD分类/SQL NULL与分组契约调整后的范围，两个有界profile共同覆盖的A1–A8支持/拒绝路径通过本地规则驱动验收。50字段对应与声明偏离已明确；不称全量P0/全规范、真实自主Agent或远程CI完成。五轮本地提交完成，不推送/合并/发布。此已授权验收工作完成；分页、calendar/多期身份/一般ontology/混合grain/窗口等仍为独立后续需求，remote CI/Ubuntu tidy及自主Agent为未验证证据，后续启动须按具体范围与动作授权。
+
+### 跨环境复现/Linux质量 checkpoint（2026-10-10，用户授权）
+
+用户选择先补跨环境复现与Linux质量验证。沿现OSSIE-REQ-001解决来源审计的Mac原始xlsx/docx绝对路径、补原需求raw核对；保持raw和原manifest字节不变，研究hash-bound相对副本locator与严格missing/tamper拒绝，不降低fidelity。复现入口与CI局部source hash核对需覆盖新增依赖；Ubuntu24.04/Linux ARM64 Docker实际构建、clang-tidy、TS/原生/SQL/stock验收按可用环境验证。与远端Linux AMD64 CI分开，不推送/修改远端规则/发布，不扩P1。Advisor一轮只读审阅来源契约，Lead负责实现和证据。
+
+### Linux clang-tidy 发现与修复 checkpoint（2026-10-10）
+
+Ubuntu18.1.3 clang-tidy已在population.cpp发现137处大括号、4处range-copy、2处乘法widening、2处BIGINT narrowing、using namespace和非const全局atomic诊断（当前147项，完整门禁尚未结束）。本包按原质量范围修复这些实际诊断：仅让clang对大括号生成fix，其他显式using/宽类型常量/局部static原子/const引用/受10000行预算约束的转换由Lead审核；不关闭检查或扩大业务能力。C++变更使旧二进制/报告不能代表最终源码，须重建Mac/Linux并重跑原生/SQL/完整stock/MCP及最终hash核对。初次tidy失败原日志保留，formatter安装主动终止与AMD64格式检查单独记录。
+
+### Linux运行验证发现 checkpoint（2026-10-10）
+
+修复后Mac原生/SQL/43 Bun和完整stock/MCP通过；Linux原生capture因standalone Git自动缩写8位source ID拒绝，stock双表verifier一次2ms interrupt未产生预期拒绝。前者完整DuckDB commit已核对，按上游CMake接口显式传入真实commit再重建，保留严格10位身份检查。后者调查Node API参数化执行先异步prepare的时序，拟明确prepare/bind后反复interrupt并要求timer实际运行、严格拒绝/旧bundle恢复，不隐藏重试/放宽失败；复用只读Advisor限定反证该控制，Lead实现和实测。确定性取消阶段证明仍来自native屏障，stock timer控制不作阶段确定性声明。失败日志/failure.json及当时产物hash保留，最终Linux原生/完整验收仍必要。
+
+### 跨环境复现/Linux质量结果（2026-10-10）
+
+[Mac实际复现](research/ossie-req-001/portability-macos/acceptance.json)与[Linux实际复现](research/ossie-req-001/portability-linux/acceptance.json)分别绑定最终产物13d5317f…与4926122b…；两端19 state/42 grain/158 capture、840 SQL/23 cases/0 skips、43 Bun/136 expects、11 stock verifiers、365字段/54错误、MCP330/106、独立进程replay、core资源及CLI40/0/0 FAITHFUL通过。[跨环境完整结果](research/ossie-req-001/portability-cross-environment.json)20项对照完整对象、聚合、每日/分组/下钻、规则/content/SQL、边界和空结果；共享验证器相等不替代各自独立bigint cents oracle，也不称通用确定性。
+
+UbuntuARM64 clang-tidy18.1.3全门禁退出0，13独立TU/26compdb项含root注册；[inventory](research/ossie-req-001/portability-linux/tidy-inventory.json)区分匹配清单与实际trace，上游成功调用静默。固定clang-format11.0.1在Mac和独立UbuntuAMD64只读checkout通过，ARM64未执行完整quality-local。原始20文件manifest和raw不改，新locator只补三条映射；原需求首次纳入内容校验，不能追溯称历史已查21份。5项source控制/14断言明确缺失、篡改、错误绑定、duplicate/unknown/missing、越界及manifest预期hash不能被locator覆盖。QwenPaw许可证实读为Apache-2.0，Advisor初始packet曾误写MIT，后由Lead核对并补NOTICE；原license不改。
+
+[失败记录](research/ossie-req-001/portability-failures/)保留旧CI字面测试失败（修为完整runner接线控制）、首轮tidy诊断（同TU重复项；第二次因已补braces而只有其余10项）、ARM formatter源码安装主动终止、原生8位source ID拒绝、stock双表一次2ms取消未拒绝。clang只自动补137处braces，Lead审核explicit using、宽类型常量、函数local static原子、const引用及10000预算下BIGINT cast。严格检查不关闭。原生完整commit核对后传真实GIT_COMMIT_HASH，运行时确认v1.5.6:069cc9f9b5；不放宽identity。stock取消先prepare/bind再反复interrupt，最终Mac1次/Linux2次调用均得Interrupt，旧snapshot/content/6-5-55.01-11.002恢复；精确取消阶段没有注入。
+
+Advisor沿原只读身份补一次限定取消反证：Node参数化执行异步prepare及执行时清interrupt有源码依据，原失败具体时点没有采样；建议只修harness，不接受成功/隐式retry/跳过，必须settle后销毁prepared。Lead采纳并在两端实际核验；requested Astra/high，effective backend/effort/usage/billing未知。来源反证和取消反证均不替代实测。
+
+本包本地完成，最终文档/报告核对后提交保留，不推送/合并/发布。远端LinuxAMD64/macOS CI、真实自主Agent仍未验证；P1/calendar/一般ontology/多期身份/窗口/混合grain与分页调研仍为独立后续范围，本包不启动。历史p0-final/r2证据不覆盖；新归档保留运行时路径标签并在control中列明副本映射。

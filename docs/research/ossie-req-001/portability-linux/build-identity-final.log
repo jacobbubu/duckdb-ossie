@@ -1,0 +1,52 @@
+mkdir -p build/release
+Makefile:33: warning: overriding recipe for target 'tidy-check'
+extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old recipe for target 'tidy-check'
+cmake -G "Ninja" -DFORCE_COLORED_OUTPUT=1 -DEXTENSION_STATIC_BUILD=1  -DDUCKDB_EXTENSION_CONFIGS='/workspace/extension_config.cmake' -DGIT_COMMIT_HASH=069cc9f9b5be802405797faecc284961b07c70ef  -DOSX_BUILD_ARCH=   -DDUCKDB_EXPLICIT_PLATFORM='' -DCUSTOM_LINKER= -DOVERRIDE_GIT_DESCRIBE="" -DUNITTEST_ROOT_DIRECTORY="/workspace/" -DBENCHMARK_ROOT_DIRECTORY="/workspace/" -DENABLE_UNITTEST_CPP_TESTS=FALSE -DENABLE_EXTENSION_AUTOLOADING=0 -DENABLE_EXTENSION_AUTOINSTALL=0 -DBUILD_EXTENSION_TEST_DEPS=default   -DCMAKE_BUILD_TYPE=Release -S "./duckdb/" -B build/release
+-- GIT_COMMIT_HASH has length 40 different than the expected 10
+-- git hash 069cc9f9b5, version v1.5.6, extension folder v1.5.6
+-- Build workers: compile=4 link_release=4 link_non_release=2
+-- Extensions will be deployed to: /workspace/build/release/repository
+-- Load extension 'ossie' from '/workspace' @ 1b6011c
+-- Load extension 'tpcds' from '/workspace/duckdb/extensions' @ v1.5.6
+-- Load extension 'core_functions' from '/workspace/duckdb/extensions' @ v1.5.6
+-- Load extension 'parquet' from '/workspace/duckdb/extensions' @ v1.5.6
+CMake Warning at extension/extension_build_tools.cmake:597 (message):
+  Extension 'ossie' has a vcpkg.json, but build was not run with VCPKG.  If
+  build fails, check out VCPKG build instructions in
+  'duckdb/extension/README.md' or try manually installing the dependencies in
+  /workspace/vcpkg.json
+Call Stack (most recent call first):
+  CMakeLists.txt:855 (include)
+
+
+-- Extensions linked into DuckDB: [ossie, tpcds, core_functions, parquet]
+-- Configuring done (1.5s)
+-- Generating done (0.2s)
+-- Build files have been written to: /workspace/build/release
+cmake --build build/release --config Release
+[1/26] Updating .cache/clangd (release)
+[2/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/ossie_extension.cpp.o
+[3/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/graph.cpp.o
+[4/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/validate.cpp.o
+[5/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/dialect.cpp.o
+[6/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/parser.cpp.o
+[7/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/catalog.cpp.o
+[8/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/yaml.cpp.o
+[9/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/compile.cpp.o
+[10/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/compile/compile.cpp.o
+[11/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/load.cpp.o
+[12/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/describe.cpp.o
+[13/26] Building CXX object src/function/table/version/CMakeFiles/duckdb_func_table_version.dir/ub_duckdb_func_table_version.cpp.o
+[14/26] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/query.cpp.o
+[15/26] Linking CXX static library src/libduckdb_static.a
+[16/26] Linking CXX shared library extension/tpcds/tpcds.duckdb_extension
+[17/26] Linking CXX shared library extension/core_functions/core_functions.duckdb_extension
+[18/26] Linking CXX shared library extension/ossie/ossie.duckdb_extension
+[19/26] Linking CXX shared library extension/parquet/parquet.duckdb_extension
+[20/26] Linking CXX shared library src/libduckdb.so
+[21/26] Linking CXX executable tools/plan_serializer
+[22/26] Linking CXX executable duckdb
+[23/26] Linking CXX shared library test/extension/loadable_extension_demo.duckdb_extension
+[24/26] Linking CXX executable test/unittest
+[25/26] Linking CXX shared library test/extension/loadable_extension_optimizer_demo.duckdb_extension
+[26/26] repository

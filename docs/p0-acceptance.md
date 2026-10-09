@@ -52,7 +52,7 @@ bun scripts/verify_population_artifact.ts build/release/extension/ossie/ossie.du
 
 [typed控制](research/ossie-req-001/p0-final-typed_population-artifact-results.json) 和 [实际MCP](research/ossie-req-001/p0-final-mcp-results.json) 验证24、330控制及106拒绝。INTEGER/HUGEINT/DECIMAL文本不先经JavaScript Number，实际绑定类型/有序columns与rows、SQL NULL/Boolean、非有限Float/DATE和空结果schema明确保留。API2.0.0/result-v1是本项目契约，Float仍近似，类型化传输不承诺调用方任意计算正确。
 
-10,000对象、17列的完整typed响应实测wire为63,181,123 bytes；10,000分组wire为2,749,800 bytes，核对完整ID/组集合。不是任意大小或输出/峰值内存上界；输入限额不等于输出限额。分页尚未设计，仍待将来调研。MCP资源/工具在固定operator启动下运行，不允许tool换规则/导入/reload；真实自主Agent未测试，remote CI与Ubuntu tidy未运行。
+10,000对象、17列的完整typed响应实测wire为63,181,123 bytes；10,000分组wire为2,749,800 bytes，核对完整ID/组集合。不是任意大小或输出/峰值内存上界；输入限额不等于输出限额。分页尚未设计，仍待将来调研。MCP资源/工具在固定operator启动下运行，不允许tool换规则/导入/reload；真实自主Agent未测试；五轮验收时remote CI与Ubuntu tidy未运行，后续本地Linux质量证据单独记录。
 
 本轮core MCP实际读取资源通过；stock CLI为40 PASS/0 FAIL/0 SKIP，使用真实loadable artifact（FAITHFUL）。这些是实际本地协议/功能测试，不证明远端发布或服务授权。
 
@@ -66,7 +66,7 @@ bun scripts/verify_population_artifact.ts build/release/extension/ossie/ossie.du
 bun scripts/run_p0_acceptance.ts build/release/extension/ossie/ossie.duckdb_extension /tmp/ossie-p0-new-run
 ```
 
-来源核对还会读取固定清单记录路径中的原始xlsx/docx；迁移环境需要这些固定哈希文件，本入口不宣称脱离原始来源资产的自包含复现。输出目录须新建或为空。命令实际启动11个独立产物verifiers、population MCP、另一个独立进程population replay、core MCP及stock CLI，写出报告、日志和 `acceptance.json`。失败时停止、保留部分报告及 `failure.json`；不会覆盖仓库历史证据。MCP依赖使用本机已安装/可安装的duckdb_mcp，报告保存实际版本/hash，并非本项目固定的上游API规范。
+来源核对读取仓库内的不可变副本，原始绝对路径只作来源标签。原清单保持不变，新locator绑定清单哈希，为xlsx/docx与原需求指定相对副本；预期内容哈希仍来自原清单。核对20份来源及1份原需求，缺失、篡改或越界路径均拒绝。历史五轮审计只查了20份来源，不能据此声称此前已查原需求。输出目录须新建或为空。命令实际启动11个独立产物verifiers、population MCP、另一个独立进程population replay、core MCP及stock CLI，写出报告、日志和 `acceptance.json`。失败时停止、保留部分报告及 `failure.json`；不会覆盖仓库历史证据。入口先通过stock CLI安装duckdb_mcp和tpcds，首次安装需网络与可写的DuckDB扩展缓存；安装失败保留日志并终止。报告保存实际duckdb_mcp版本/hash，并非本项目固定的上游API规范。QwenPaw来源副本沿用仓库保存的Apache-2.0许可证。
 
 原生与工具质量门禁另行运行，实际重跑入口不冒充已执行这些门禁：
 
@@ -74,12 +74,16 @@ bun scripts/run_p0_acceptance.ts build/release/extension/ossie/ossie.duckdb_exte
 make quality-local test
 ```
 
-只核对仓库现有归档（需要stock CLI在PATH以比对其hash，不重跑功能）：
+只核对本包Mac归档（需要本包同一产物及stock CLI在PATH以比对其hash，不重跑功能；其他环境应先生成该环境的新报告）：
 
 ```sh
-bun scripts/verify_p0_acceptance.ts build/release/extension/ossie/ossie.duckdb_extension --output /tmp/ossie-p0-archive-audit.json
+bun -e 'import {verifyAcceptance} from "./scripts/verify_p0_acceptance.ts"; console.log(JSON.stringify(verifyAcceptance("build/release/extension/ossie/ossie.duckdb_extension", "docs/research/ossie-req-001/portability-macos"),null,2));' > /tmp/ossie-p0-archive-audit.json
 ```
 
-最终本地证据包括840 SQL断言/23用例/0 skips，19 state/42 grain/158 capture，38 Bun tests/124 expects，365字段与54错误控制，真实MCP330检查/106拒绝和CLI40/0/0。实际单命令复现同样通过；C++产物未在五轮中修改，SHA256为 `4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307`。
+历史p0-final/r2报告保留原样，不能拿当前源码/新产物重写其hash或称它们刚刚重跑；当前核对入口显式选择本包目录。
 
-五轮均本地提交，没有推送/合并/发布。此次调整范围的本地验收工作完成；后续分页、calendar/多期身份、一般ontology、混合粒度/窗口等P1仍需独立启动。remote CI/Ubuntu tidy和真实自主Agent仍是未验证的独立证据，不能以本地成功替代。
+五轮历史本地证据包括840 SQL断言/23用例/0 skips，19 state/42 grain/158 capture，38 Bun tests/124 expects，365字段与54错误控制，真实MCP330检查/106拒绝和CLI40/0/0。实际单命令复现同样通过；C++产物未在五轮中修改，SHA256为 `4e3b2de0f88aed0ac9ff880e9e2fa0f3002ead3a8127f9f0e6c42667d6ff1307`。
+
+后续跨环境工作包已在Mac ARM64与独立Ubuntu ARM64重建并复现：两端43 Bun/136 expects、19/42/158 native、840 SQL/23用例和完整stock/MCP/CLI通过；Ubuntu ARM64 clang-tidy、Mac及独立Ubuntu AMD64固定格式检查通过。最终产物分别为Mac `13d5317fb860f9ad81437a0a86cb8c996d7742a026f927f7b503c0fadf340c95`、Linux `4926122b73590b3724e6b46d561c5ae88a330f15f2ce32b80181ab2e8c612dd6`。完整结果20项跨环境比对一致，仍限固定fixture；[新控制记录](research/ossie-req-001/portability-control-results.json)保留失败和各环境实际报告。
+
+五轮均本地提交，没有推送/合并/发布。此次调整范围的本地验收工作完成；后续分页、calendar/多期身份、一般ontology、混合粒度/窗口等P1仍需独立启动。remote CI和真实自主Agent仍是未验证的独立证据，不能以本地成功替代。本地Ubuntu ARM64构建及质量验证见[跨环境复现说明](linux-reproduction.md)，与五轮历史证据分开。

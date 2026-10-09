@@ -1,0 +1,661 @@
+mkdir -p build/release
+Makefile:33: warning: overriding recipe for target 'tidy-check'
+extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old recipe for target 'tidy-check'
+cmake -G "Ninja" -DFORCE_COLORED_OUTPUT=1 -DEXTENSION_STATIC_BUILD=1  -DDUCKDB_EXTENSION_CONFIGS='/workspace/extension_config.cmake'   -DOSX_BUILD_ARCH=   -DDUCKDB_EXPLICIT_PLATFORM='' -DCUSTOM_LINKER= -DOVERRIDE_GIT_DESCRIBE="" -DUNITTEST_ROOT_DIRECTORY="/workspace/" -DBENCHMARK_ROOT_DIRECTORY="/workspace/" -DENABLE_UNITTEST_CPP_TESTS=FALSE -DENABLE_EXTENSION_AUTOLOADING=0 -DENABLE_EXTENSION_AUTOINSTALL=0 -DBUILD_EXTENSION_TEST_DEPS=default   -DCMAKE_BUILD_TYPE=Release -S "./duckdb/" -B build/release
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Found Git: /usr/bin/git (found version "2.43.0") 
+-- GIT_COMMIT_HASH has length 8 different than the expected 10
+-- git hash 069cc9f9, version v1.5.6, extension folder v1.5.6
+-- Build workers: compile=4 link_release=4 link_non_release=2
+-- Extensions will be deployed to: /workspace/build/release/repository
+-- Load extension 'ossie' from '/workspace' @ 1b6011c
+-- Load extension 'tpcds' from '/workspace/duckdb/extensions' @ v1.5.6
+-- Load extension 'core_functions' from '/workspace/duckdb/extensions' @ v1.5.6
+-- Load extension 'parquet' from '/workspace/duckdb/extensions' @ v1.5.6
+CMake Warning at extension/extension_build_tools.cmake:597 (message):
+  Extension 'ossie' has a vcpkg.json, but build was not run with VCPKG.  If
+  build fails, check out VCPKG build instructions in
+  'duckdb/extension/README.md' or try manually installing the dependencies in
+  /workspace/vcpkg.json
+Call Stack (most recent call first):
+  CMakeLists.txt:855 (include)
+
+
+-- Extensions linked into DuckDB: [ossie, tpcds, core_functions, parquet]
+-- Configuring done (1.7s)
+-- Generating done (0.2s)
+-- Build files have been written to: /workspace/build/release
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    BENCHMARK_ROOT_DIRECTORY
+    BUILD_EXTENSION_TEST_DEPS
+    CUSTOM_LINKER
+
+
+cmake --build build/release --config Release
+[1/610] Updating .cache/clangd (release)
+[2/610] Building CXX object CMakeFiles/duckdb_platform_binary.dir/tools/utils/test_platform.cpp.o
+[3/610] Linking CXX executable duckdb_platform_binary
+[4/610] Generating duckdb_platform_out
+[5/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/ossie_extension.cpp.o
+[6/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/validate.cpp.o
+[7/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/graph.cpp.o
+[8/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/dialect.cpp.o
+[9/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/parser.cpp.o
+[10/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/catalog.cpp.o
+[11/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/yaml.cpp.o
+[12/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/compile.cpp.o
+[13/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/compile/compile.cpp.o
+[14/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/load.cpp.o
+[15/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/describe.cpp.o
+[16/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/ossie_extension.cpp.o
+[17/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/query.cpp.o
+[18/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/validate.cpp.o
+[19/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/graph.cpp.o
+[20/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/parser.cpp.o
+[21/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/dialect.cpp.o
+[22/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/catalog.cpp.o
+[23/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/yaml.cpp.o
+[24/610] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/population/population.cpp.o
+[25/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/compile/compile.cpp.o
+[26/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/load.cpp.o
+[27/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/compile.cpp.o
+[28/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/describe.cpp.o
+[29/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/query.cpp.o
+[30/610] Building CXX object extension/tpcds/CMakeFiles/tpcds_extension.dir/tpcds_extension.cpp.o
+[31/610] Building CXX object extension/tpcds/CMakeFiles/tpcds_loadable_extension.dir/tpcds_extension.cpp.o
+[32/610] Building CXX object extension/tpcds/dsdgen/CMakeFiles/dsdgen.dir/append_info-c.cpp.o
+[33/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/skip_days.cpp.o
+[34/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/address.cpp.o
+[35/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/build_support.cpp.o
+[36/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/date.cpp.o
+[37/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/dbgen_version.cpp.o
+[38/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/decimal.cpp.o
+[39/610] Building CXX object extension/tpcds/dsdgen/CMakeFiles/dsdgen.dir/dsdgen_helpers.cpp.o
+[40/610] Building CXX object extension/tpcds/dsdgen/CMakeFiles/dsdgen.dir/dsdgen.cpp.o
+[41/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/error_msg.cpp.o
+[42/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/init.cpp.o
+[43/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/dist.cpp.o
+[44/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/list.cpp.o
+[45/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/join.cpp.o
+[46/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/genrand.cpp.o
+[47/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/load.cpp.o
+[48/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/nulls.cpp.o
+[49/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/parallel.cpp.o
+[50/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/misc.cpp.o
+[51/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/permute.cpp.o
+[52/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/release.cpp.o
+[53/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/pricing.cpp.o
+[54/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/r_params.cpp.o
+[55/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/scd.cpp.o
+[56/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/sparse.cpp.o
+[57/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/scaling.cpp.o
+[58/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/tdef_functions.cpp.o
+[59/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/StringBuffer.cpp.o
+[60/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/tdefs.cpp.o
+[61/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/text.cpp.o
+[62/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_call_center.cpp.o
+[63/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_catalog_page.cpp.o
+[64/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_catalog_returns.cpp.o
+[65/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_customer.cpp.o
+[66/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_catalog_sales.cpp.o
+[67/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_customer_address.cpp.o
+[68/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_customer_demographics.cpp.o
+[69/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_household_demographics.cpp.o
+[70/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_datetbl.cpp.o
+[71/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_income_band.cpp.o
+[72/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_inventory.cpp.o
+[73/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_item.cpp.o
+[74/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_promotion.cpp.o
+[75/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_reason.cpp.o
+[76/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_ship_mode.cpp.o
+[77/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_store_returns.cpp.o
+[78/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_store.cpp.o
+[79/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_store_sales.cpp.o
+[80/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_timetbl.cpp.o
+[81/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_warehouse.cpp.o
+[82/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_web_page.cpp.o
+[83/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_web_returns.cpp.o
+[84/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_web_sales.cpp.o
+[85/610] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_web_site.cpp.o
+[86/610] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/population/population.cpp.o
+[87/610] Building CXX object extension/core_functions/CMakeFiles/core_functions_extension.dir/core_functions_extension.cpp.o
+[88/610] Building CXX object extension/core_functions/CMakeFiles/core_functions_extension.dir/function_list.cpp.o
+[89/610] Building CXX object extension/core_functions/CMakeFiles/core_functions_extension.dir/lambda_functions.cpp.o
+[90/610] Building CXX object extension/core_functions/CMakeFiles/core_functions_loadable_extension.dir/core_functions_extension.cpp.o
+[91/610] Building CXX object extension/core_functions/CMakeFiles/core_functions_loadable_extension.dir/function_list.cpp.o
+[92/610] Building CXX object extension/core_functions/CMakeFiles/core_functions_loadable_extension.dir/lambda_functions.cpp.o
+[93/610] Building CXX object extension/core_functions/aggregate/algebraic/CMakeFiles/duckdb_core_functions_algebraic.dir/ub_duckdb_core_functions_algebraic.cpp.o
+[94/610] Building CXX object extension/core_functions/aggregate/regression/CMakeFiles/duckdb_core_functions_regression.dir/ub_duckdb_core_functions_regression.cpp.o
+[95/610] Building CXX object extension/core_functions/scalar/array/CMakeFiles/duckdb_core_functions_array.dir/ub_duckdb_core_functions_array.cpp.o
+[96/610] Building CXX object extension/core_functions/scalar/bit/CMakeFiles/duckdb_core_functions_bit.dir/ub_duckdb_core_functions_bit.cpp.o
+[97/610] Building CXX object extension/core_functions/aggregate/nested/CMakeFiles/duckdb_core_functions_nested.dir/ub_duckdb_core_functions_nested.cpp.o
+[98/610] Building CXX object extension/core_functions/scalar/blob/CMakeFiles/duckdb_core_functions_blob.dir/ub_duckdb_core_functions_blob.cpp.o
+[99/610] Building CXX object extension/core_functions/scalar/debug/CMakeFiles/duckdb_core_functions_debug.dir/ub_duckdb_core_functions_debug.cpp.o
+[100/610] Building CXX object extension/core_functions/scalar/enum/CMakeFiles/duckdb_core_functions_enum.dir/ub_duckdb_core_functions_enum.cpp.o
+[101/610] Building CXX object extension/core_functions/scalar/generic/CMakeFiles/duckdb_core_functions_generic.dir/ub_duckdb_core_functions_generic.cpp.o
+[102/610] Building CXX object extension/core_functions/scalar/list/CMakeFiles/duckdb_core_functions_list.dir/ub_duckdb_core_functions_list.cpp.o
+[103/610] Building CXX object extension/core_functions/aggregate/holistic/CMakeFiles/duckdb_core_functions_holistic.dir/ub_duckdb_core_functions_holistic.cpp.o
+[104/610] Building CXX object extension/core_functions/scalar/map/CMakeFiles/duckdb_core_functions_map.dir/ub_duckdb_core_functions_map.cpp.o
+[105/610] Building CXX object extension/core_functions/aggregate/distributive/CMakeFiles/duckdb_core_functions_distributive.dir/ub_duckdb_core_functions_distributive.cpp.o
+[106/610] Building CXX object extension/core_functions/scalar/date/CMakeFiles/duckdb_core_functions_date.dir/ub_duckdb_core_functions_date.cpp.o
+[107/610] Building CXX object extension/core_functions/scalar/random/CMakeFiles/duckdb_core_functions_random.dir/ub_duckdb_core_functions_random.cpp.o
+[108/610] Building CXX object extension/core_functions/scalar/struct/CMakeFiles/duckdb_core_functions_struct.dir/ub_duckdb_core_functions_struct.cpp.o
+[109/610] Building CXX object extension/core_functions/scalar/operators/CMakeFiles/duckdb_core_functions_operators.dir/ub_duckdb_core_functions_operators.cpp.o
+[110/610] Building CXX object extension/core_functions/scalar/math/CMakeFiles/duckdb_core_functions_math.dir/ub_duckdb_core_functions_math.cpp.o
+[111/610] Building CXX object extension/core_functions/scalar/union/CMakeFiles/duckdb_core_functions_union.dir/ub_duckdb_core_functions_union.cpp.o
+[112/610] Building CXX object extension/core_functions/scalar/string/CMakeFiles/duckdb_core_functions_string.dir/ub_duckdb_core_functions_string.cpp.o
+[113/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_crypto.cpp.o
+[114/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/column_reader.cpp.o
+[115/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_float16.cpp.o
+[116/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_file_metadata_cache.cpp.o
+[117/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_extension.cpp.o
+[118/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/column_writer.cpp.o
+[119/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_field_id.cpp.o
+[120/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_metadata.cpp.o
+[121/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_multi_file_info.cpp.o
+[122/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_statistics.cpp.o
+[123/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_shredding.cpp.o
+[124/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_reader.cpp.o
+[125/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_timestamp.cpp.o
+[126/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_column_schema.cpp.o
+[127/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_geometry.cpp.o
+[128/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/serialize_parquet.cpp.o
+[129/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/thrift/thrift/protocol/TProtocol.cpp.o
+[130/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/thrift/thrift/transport/TTransportException.cpp.o
+[131/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_writer.cpp.o
+[132/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/thrift/thrift/transport/TBufferTransports.cpp.o
+[133/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/snappy/snappy-sinksource.cc.o
+[134/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/snappy/snappy.cc.o
+[135/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/dictionary_hash.cpp.o
+[136/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/lz4/lz4.cpp.o
+[137/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/histogram.cpp.o
+[138/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/memory.cpp.o
+[139/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/zstd_file_system.cpp.o
+[140/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/entropy_encode.cpp.o
+[141/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/compound_dictionary.cpp.o
+[142/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/backward_references_hq.cpp.o
+[143/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/command.cpp.o
+[144/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/block_splitter.cpp.o
+[145/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/compress_fragment_two_pass.cpp.o
+[146/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/encoder_dict.cpp.o
+[147/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/cluster.cpp.o
+[148/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/utf8_util.cpp.o
+[149/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/encode.cpp.o
+[150/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/fast_log.cpp.o
+[151/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/brotli_bit_stream.cpp.o
+[152/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/compress_fragment.cpp.o
+[153/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/bit_cost.cpp.o
+[154/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/literal_cost.cpp.o
+[155/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/static_dict.cpp.o
+[156/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/dictionary.cpp.o
+[157/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/constants.cpp.o
+[158/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/transform.cpp.o
+[159/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/platform.cpp.o
+[160/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/shared_dictionary.cpp.o
+[161/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/context.cpp.o
+[162/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/metablock.cpp.o
+[163/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/dec/state.cpp.o
+[164/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/dec/huffman.cpp.o
+[165/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/dec/bit_reader.cpp.o
+[166/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/dec/decode.cpp.o
+[167/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/parquet/parquet_types.cpp.o
+[168/610] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/backward_references.cpp.o
+[169/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_crypto.cpp.o
+[170/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/column_reader.cpp.o
+[171/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_file_metadata_cache.cpp.o
+[172/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_extension.cpp.o
+[173/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_float16.cpp.o
+[174/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/column_writer.cpp.o
+[175/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_field_id.cpp.o
+[176/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_metadata.cpp.o
+[177/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_multi_file_info.cpp.o
+[178/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_statistics.cpp.o
+[179/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_reader.cpp.o
+[180/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_shredding.cpp.o
+[181/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_timestamp.cpp.o
+[182/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_column_schema.cpp.o
+[183/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_geometry.cpp.o
+[184/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/serialize_parquet.cpp.o
+[185/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/thrift/thrift/protocol/TProtocol.cpp.o
+[186/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/thrift/thrift/transport/TTransportException.cpp.o
+[187/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/thrift/thrift/transport/TBufferTransports.cpp.o
+[188/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_writer.cpp.o
+[189/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/snappy/snappy-sinksource.cc.o
+[190/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/zstd_file_system.cpp.o
+[191/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/lz4/lz4.cpp.o
+[192/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/snappy/snappy.cc.o
+[193/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/dictionary_hash.cpp.o
+[194/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/memory.cpp.o
+[195/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/histogram.cpp.o
+[196/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/entropy_encode.cpp.o
+[197/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/compound_dictionary.cpp.o
+[198/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/backward_references_hq.cpp.o
+[199/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/command.cpp.o
+[200/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/block_splitter.cpp.o
+[201/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/compress_fragment_two_pass.cpp.o
+[202/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/encoder_dict.cpp.o
+[203/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/cluster.cpp.o
+[204/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/encode.cpp.o
+[205/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/utf8_util.cpp.o
+[206/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/fast_log.cpp.o
+[207/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/brotli_bit_stream.cpp.o
+[208/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/compress_fragment.cpp.o
+[209/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/bit_cost.cpp.o
+[210/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/literal_cost.cpp.o
+[211/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/static_dict.cpp.o
+[212/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/dictionary.cpp.o
+[213/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/constants.cpp.o
+[214/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/transform.cpp.o
+[215/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/platform.cpp.o
+[216/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/shared_dictionary.cpp.o
+[217/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/context.cpp.o
+[218/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/metablock.cpp.o
+[219/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/dec/state.cpp.o
+[220/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/dec/huffman.cpp.o
+[221/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/dec/bit_reader.cpp.o
+[222/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/dec/decode.cpp.o
+[223/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/parquet/parquet_types.cpp.o
+[224/610] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/backward_references.cpp.o
+[225/610] Building CXX object extension/parquet/decoder/CMakeFiles/duckdb_parquet_decoders.dir/ub_duckdb_parquet_decoders.cpp.o
+[226/610] Building CXX object extension/parquet/reader/CMakeFiles/duckdb_parquet_readers.dir/ub_duckdb_parquet_readers.cpp.o
+[227/610] Building CXX object extension/parquet/reader/variant/CMakeFiles/duckdb_parquet_reader_variant.dir/ub_duckdb_parquet_reader_variant.cpp.o
+[228/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/arena.c.o
+[229/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/background_thread.c.o
+[230/610] Building CXX object extension/parquet/writer/CMakeFiles/duckdb_parquet_writers.dir/ub_duckdb_parquet_writers.cpp.o
+[231/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/batcher.c.o
+[232/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/base.c.o
+[233/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/bin.c.o
+[234/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/bin_info.c.o
+[235/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/jemalloc.c.o
+[236/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/bitmap.c.o
+[237/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/cache_bin.c.o
+[238/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/buf_writer.c.o
+[239/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/counter.c.o
+[240/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/decay.c.o
+[241/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/ckh.c.o
+[242/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/div.c.o
+[243/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/ecache.c.o
+[244/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/edata_cache.c.o
+[245/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/edata.c.o
+[246/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/ehooks.c.o
+[247/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/emap.c.o
+[248/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/eset.c.o
+[249/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/exp_grow.c.o
+[250/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/extent_dss.c.o
+[251/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/extent.c.o
+[252/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/extent_mmap.c.o
+[253/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/fxp.c.o
+[254/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/san.c.o
+[255/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/san_bump.c.o
+[256/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/hook.c.o
+[257/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/hpa.c.o
+[258/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/hpa_hooks.c.o
+[259/610] Building CXX object extension/parquet/writer/variant/CMakeFiles/duckdb_parquet_writer_variant.dir/ub_duckdb_parquet_writer_variant.cpp.o
+[260/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/inspect.c.o
+[261/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/hpdata.c.o
+[262/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/ctl.c.o
+[263/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/log.c.o
+[264/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/mutex.c.o
+[265/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/large.c.o
+[266/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/nstime.c.o
+[267/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/malloc_io.c.o
+[268/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/pa_extra.c.o
+[269/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/pa.c.o
+[270/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/pai.c.o
+[271/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/pac.c.o
+[272/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/peak_event.c.o
+[273/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/prof.c.o
+[274/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/pages.c.o
+[275/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/prof_log.c.o
+[276/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/prof_stats.c.o
+[277/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/prof_recent.c.o
+[278/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/prof_data.c.o
+[279/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/prof_sys.c.o
+[280/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/safety_check.c.o
+[281/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/rtree.c.o
+[282/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/psset.c.o
+[283/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/sc.c.o
+[284/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/sz.c.o
+[285/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/test_hooks.c.o
+[286/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/sec.c.o
+[287/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/ticker.c.o
+[288/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/thread_event.c.o
+[289/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/tsd.c.o
+[290/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/util.c.o
+[291/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/tcache.c.o
+[292/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/witness.c.o
+[293/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/zone.c.o
+[294/610] Building C object third_party/jemalloc/CMakeFiles/duckdb_jemalloc.dir/src/stats.c.o
+[295/610] Linking C static library third_party/jemalloc/libduckdb_jemalloc.a
+[296/610] Building CXX object src/optimizer/compressed_materialization/CMakeFiles/duckdb_optimizer_compressed_materialization.dir/ub_duckdb_optimizer_compressed_materialization.cpp.o
+[297/610] Building CXX object src/optimizer/matcher/CMakeFiles/duckdb_optimizer_matcher.dir/ub_duckdb_optimizer_matcher.cpp.o
+[298/610] Building CXX object src/optimizer/pullup/CMakeFiles/duckdb_optimizer_pullup.dir/ub_duckdb_optimizer_pullup.cpp.o
+[299/610] Building CXX object src/optimizer/pushdown/CMakeFiles/duckdb_optimizer_pushdown.dir/ub_duckdb_optimizer_pushdown.cpp.o
+[300/610] Building CXX object src/optimizer/rule/CMakeFiles/duckdb_optimizer_rules.dir/ub_duckdb_optimizer_rules.cpp.o
+[301/610] Building CXX object src/optimizer/join_order/CMakeFiles/duckdb_optimizer_join_order.dir/ub_duckdb_optimizer_join_order.cpp.o
+[302/610] Building CXX object src/optimizer/statistics/expression/CMakeFiles/duckdb_optimizer_statistics_expr.dir/ub_duckdb_optimizer_statistics_expr.cpp.o
+[303/610] Building CXX object src/optimizer/statistics/operator/CMakeFiles/duckdb_optimizer_statistics_op.dir/ub_duckdb_optimizer_statistics_op.cpp.o
+[304/610] Building CXX object src/planner/expression/CMakeFiles/duckdb_planner_expression.dir/ub_duckdb_planner_expression.cpp.o
+[305/610] Building CXX object src/planner/CMakeFiles/duckdb_planner.dir/ub_duckdb_planner.cpp.o
+[306/610] Building CXX object src/optimizer/CMakeFiles/duckdb_optimizer.dir/ub_duckdb_optimizer.cpp.o
+[307/610] Building CXX object src/planner/binder/expression/CMakeFiles/duckdb_bind_expression.dir/ub_duckdb_bind_expression.cpp.o
+[308/610] Building CXX object src/planner/binder/query_node/CMakeFiles/duckdb_bind_query_node.dir/ub_duckdb_bind_query_node.cpp.o
+[309/610] Building CXX object src/planner/expression_binder/CMakeFiles/duckdb_expression_binders.dir/ub_duckdb_expression_binders.cpp.o
+[310/610] Building CXX object src/planner/filter/CMakeFiles/duckdb_planner_filter.dir/ub_duckdb_planner_filter.cpp.o
+[311/610] Building CXX object src/planner/binder/tableref/CMakeFiles/duckdb_bind_tableref.dir/ub_duckdb_bind_tableref.cpp.o
+[312/610] Building CXX object src/planner/subquery/CMakeFiles/duckdb_planner_subquery.dir/ub_duckdb_planner_subquery.cpp.o
+[313/610] Building CXX object src/parser/constraints/CMakeFiles/duckdb_constraints.dir/ub_duckdb_constraints.cpp.o
+[314/610] Building CXX object src/planner/operator/CMakeFiles/duckdb_planner_operator.dir/ub_duckdb_planner_operator.cpp.o
+[315/610] Building CXX object src/planner/binder/statement/CMakeFiles/duckdb_bind_statement.dir/ub_duckdb_bind_statement.cpp.o
+[316/610] Building CXX object src/parser/CMakeFiles/duckdb_parser.dir/ub_duckdb_parser.cpp.o
+[317/610] Building CXX object src/parser/query_node/CMakeFiles/duckdb_query_node.dir/ub_duckdb_query_node.cpp.o
+[318/610] Building CXX object src/parser/expression/CMakeFiles/duckdb_expression.dir/ub_duckdb_expression.cpp.o
+[319/610] Building CXX object src/parser/parsed_data/CMakeFiles/duckdb_parsed_data.dir/ub_duckdb_parsed_data.cpp.o
+[320/610] Building CXX object src/parser/transform/constraint/CMakeFiles/duckdb_transformer_constraint.dir/ub_duckdb_transformer_constraint.cpp.o
+[321/610] Building CXX object src/parser/statement/CMakeFiles/duckdb_statement.dir/ub_duckdb_statement.cpp.o
+[322/610] Building CXX object src/parser/tableref/CMakeFiles/duckdb_parser_tableref.dir/ub_duckdb_parser_tableref.cpp.o
+[323/610] Building CXX object src/parser/transform/helpers/CMakeFiles/duckdb_transformer_helpers.dir/ub_duckdb_transformer_helpers.cpp.o
+[324/610] Building CXX object src/parser/transform/tableref/CMakeFiles/duckdb_transformer_tableref.dir/ub_duckdb_transformer_tableref.cpp.o
+[325/610] Building CXX object src/parser/transform/expression/CMakeFiles/duckdb_transformer_expression.dir/ub_duckdb_transformer_expression.cpp.o
+[326/610] Building CXX object src/function/aggregate/CMakeFiles/duckdb_func_aggr.dir/ub_duckdb_func_aggr.cpp.o
+[327/610] Building CXX object src/parser/transform/statement/CMakeFiles/duckdb_transformer_statement.dir/ub_duckdb_transformer_statement.cpp.o
+[328/610] Building CXX object src/function/cast/union/CMakeFiles/duckdb_union_cast.dir/ub_duckdb_union_cast.cpp.o
+[329/610] Building CXX object src/function/CMakeFiles/duckdb_function.dir/ub_duckdb_function.cpp.o
+[330/610] Building CXX object src/function/aggregate/distributive/CMakeFiles/duckdb_aggr_distr.dir/ub_duckdb_aggr_distr.cpp.o
+[331/610] Building CXX object src/function/pragma/CMakeFiles/duckdb_func_pragma.dir/ub_duckdb_func_pragma.cpp.o
+[332/610] Building CXX object src/function/cast/variant/CMakeFiles/duckdb_variant_cast.dir/ub_duckdb_variant_cast.cpp.o
+[333/610] Building CXX object src/function/scalar/date/CMakeFiles/duckdb_func_date.dir/ub_duckdb_func_date.cpp.o
+[334/610] Building CXX object src/function/scalar/CMakeFiles/duckdb_func_scalar.dir/ub_duckdb_func_scalar.cpp.o
+[335/610] Building CXX object src/function/scalar/compressed_materialization/CMakeFiles/duckdb_func_compressed_materialization.dir/ub_duckdb_func_compressed_materialization.cpp.o
+[336/610] Building CXX object src/function/scalar/generic/CMakeFiles/duckdb_func_generic_main.dir/ub_duckdb_func_generic_main.cpp.o
+[337/610] Building CXX object src/function/scalar/map/CMakeFiles/duckdb_function_map.dir/ub_duckdb_function_map.cpp.o
+[338/610] Building CXX object src/function/scalar/list/CMakeFiles/duckdb_func_list_nested.dir/ub_duckdb_func_list_nested.cpp.o
+[339/610] Building CXX object src/function/scalar/sequence/CMakeFiles/duckdb_func_seq.dir/ub_duckdb_func_seq.cpp.o
+[340/610] Building CXX object src/function/scalar/string/regexp/CMakeFiles/duckdb_func_string_regexp.dir/ub_duckdb_func_string_regexp.cpp.o
+[341/610] Building CXX object src/function/scalar/string/CMakeFiles/duckdb_func_string_main.dir/ub_duckdb_func_string_main.cpp.o
+[342/610] Building CXX object src/function/scalar/struct/CMakeFiles/duckdb_func_struct_main.dir/ub_duckdb_func_struct_main.cpp.o
+[343/610] Building CXX object src/function/scalar/variant/CMakeFiles/duckdb_func_variant_main.dir/ub_duckdb_func_variant_main.cpp.o
+[344/610] Building CXX object src/function/cast/CMakeFiles/duckdb_func_cast.dir/ub_duckdb_func_cast.cpp.o
+[345/610] Building CXX object src/function/scalar/geometry/CMakeFiles/duckdb_func_geometry.dir/ub_duckdb_func_geometry.cpp.o
+[346/610] Building CXX object src/function/scalar/system/CMakeFiles/duckdb_func_system.dir/ub_duckdb_func_system.cpp.o
+[347/610] Building CXX object src/function/table/version/CMakeFiles/duckdb_func_table_version.dir/ub_duckdb_func_table_version.cpp.o
+[348/610] Building CXX object src/function/scalar/operator/CMakeFiles/duckdb_func_ops_main.dir/ub_duckdb_func_ops_main.cpp.o
+[349/610] Building CXX object src/function/table/arrow/CMakeFiles/duckdb_arrow_conversion.dir/ub_duckdb_arrow_conversion.cpp.o
+[350/610] Building CXX object src/function/variant/CMakeFiles/duckdb_function_variant.dir/ub_duckdb_function_variant.cpp.o
+[351/610] Building CXX object src/function/table/system/CMakeFiles/duckdb_table_func_system.dir/ub_duckdb_table_func_system.cpp.o
+[352/610] Building CXX object src/function/window/CMakeFiles/duckdb_func_window.dir/ub_duckdb_func_window.cpp.o
+[353/610] Building CXX object src/catalog/catalog_entry/dependency/CMakeFiles/duckdb_catalog_entries_dependency.dir/ub_duckdb_catalog_entries_dependency.cpp.o
+[354/610] Building CXX object src/function/table/CMakeFiles/duckdb_func_table.dir/ub_duckdb_func_table.cpp.o
+[355/610] Building CXX object src/catalog/CMakeFiles/duckdb_catalog.dir/ub_duckdb_catalog.cpp.o
+[356/610] Building CXX object src/catalog/default/CMakeFiles/duckdb_catalog_default_entries.dir/ub_duckdb_catalog_default_entries.cpp.o
+[357/610] Building CXX object src/common/adbc/CMakeFiles/duckdb_adbc.dir/ub_duckdb_adbc.cpp.o
+[358/610] Building CXX object src/common/adbc/nanoarrow/CMakeFiles/duckdb_adbc_nanoarrow.dir/ub_duckdb_adbc_nanoarrow.cpp.o
+[359/610] Building CXX object src/common/allocator/CMakeFiles/duckdb_common_allocator.dir/ub_duckdb_common_allocator.cpp.o
+[360/610] Building CXX object src/catalog/catalog_entry/CMakeFiles/duckdb_catalog_entries.dir/ub_duckdb_catalog_entries.cpp.o
+[361/610] Building CXX object src/common/arrow/appender/CMakeFiles/duckdb_common_arrow_appender.dir/ub_duckdb_common_arrow_appender.cpp.o
+[362/610] Building CXX object src/common/crypto/CMakeFiles/duckdb_common_crypto.dir/ub_duckdb_common_crypto.cpp.o
+[363/610] Building CXX object src/common/exception/CMakeFiles/duckdb_common_exception.dir/ub_duckdb_common_exception.cpp.o
+[364/610] Building CXX object src/common/enums/CMakeFiles/duckdb_common_enums.dir/ub_duckdb_common_enums.cpp.o
+[365/610] Building CXX object src/common/arrow/CMakeFiles/duckdb_common_arrow.dir/ub_duckdb_common_arrow.cpp.o
+[366/610] Building CXX object src/common/progress_bar/CMakeFiles/duckdb_progress_bar.dir/ub_duckdb_progress_bar.cpp.o
+[367/610] Building CXX object src/common/multi_file/CMakeFiles/duckdb_common_multi_file.dir/ub_duckdb_common_multi_file.cpp.o
+[368/610] Building CXX object src/common/tree_renderer/CMakeFiles/duckdb_common_tree_renderer.dir/ub_duckdb_common_tree_renderer.cpp.o
+[369/610] Building CXX object src/common/operator/CMakeFiles/duckdb_common_operators.dir/ub_duckdb_common_operators.cpp.o
+[370/610] Building CXX object src/common/serializer/CMakeFiles/duckdb_common_serializer.dir/ub_duckdb_common_serializer.cpp.o
+[371/610] Building CXX object src/common/CMakeFiles/duckdb_common.dir/ub_duckdb_common.cpp.o
+[372/610] Building CXX object src/common/row_operations/CMakeFiles/duckdb_row_operations.dir/ub_duckdb_row_operations.cpp.o
+[373/610] Building CXX object src/common/types/column/CMakeFiles/duckdb_common_types_column.dir/ub_duckdb_common_types_column.cpp.o
+[374/610] Building CXX object src/common/types/variant/CMakeFiles/duckdb_common_variant.dir/ub_duckdb_common_variant.cpp.o
+[375/610] Building CXX object src/common/value_operations/CMakeFiles/duckdb_value_operations.dir/ub_duckdb_value_operations.cpp.o
+[376/610] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/boolean_operators.cpp.o
+[377/610] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/vector_cast.cpp.o
+[378/610] Building CXX object src/common/types/row/CMakeFiles/duckdb_common_types_row.dir/ub_duckdb_common_types_row.cpp.o
+[379/610] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/vector_copy.cpp.o
+[380/610] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/generators.cpp.o
+[381/610] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/comparison_operators.cpp.o
+[382/610] Building CXX object src/common/types/CMakeFiles/duckdb_common_types.dir/ub_duckdb_common_types.cpp.o
+[383/610] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/vector_storage.cpp.o
+[384/610] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/null_operations.cpp.o
+[385/610] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/numeric_inplace_operators.cpp.o
+[386/610] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/vector_hash.cpp.o
+[387/610] Building CXX object src/common/sort/CMakeFiles/duckdb_sort.dir/ub_duckdb_sort.cpp.o
+[388/610] Building CXX object src/logging/CMakeFiles/duckdb_logging.dir/ub_duckdb_logging.cpp.o
+[389/610] Building CXX object src/execution/CMakeFiles/duckdb_execution.dir/ub_duckdb_execution.cpp.o
+[390/610] Building CXX object src/execution/nested_loop_join/CMakeFiles/duckdb_nested_loop_join.dir/ub_duckdb_nested_loop_join.cpp.o
+[391/610] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/is_distinct_from.cpp.o
+[392/610] Building CXX object src/execution/operator/csv_scanner/buffer_manager/CMakeFiles/duckdb_csv_buffer_manager.dir/ub_duckdb_csv_buffer_manager.cpp.o
+[393/610] Building CXX object src/execution/operator/csv_scanner/encode/CMakeFiles/duckdb_csv_encode.dir/ub_duckdb_csv_encode.cpp.o
+[394/610] Building CXX object src/execution/operator/aggregate/CMakeFiles/duckdb_operator_aggregate.dir/ub_duckdb_operator_aggregate.cpp.o
+[395/610] Building CXX object src/execution/operator/csv_scanner/state_machine/CMakeFiles/duckdb_csv_state_machine.dir/ub_duckdb_csv_state_machine.cpp.o
+[396/610] Building CXX object src/execution/operator/csv_scanner/scanner/CMakeFiles/duckdb_csv_scanner.dir/ub_duckdb_csv_scanner.cpp.o
+[397/610] Building CXX object src/execution/expression_executor/CMakeFiles/duckdb_expression_executor.dir/ub_duckdb_expression_executor.cpp.o
+[398/610] Building CXX object src/execution/operator/csv_scanner/sniffer/CMakeFiles/duckdb_csv_sniffer.dir/ub_duckdb_csv_sniffer.cpp.o
+[399/610] Building CXX object src/execution/operator/filter/CMakeFiles/duckdb_operator_filter.dir/ub_duckdb_operator_filter.cpp.o
+[400/610] Building CXX object src/execution/operator/csv_scanner/table_function/CMakeFiles/duckdb_operator_csv_table_function.dir/ub_duckdb_operator_csv_table_function.cpp.o
+[401/610] Building CXX object src/execution/operator/csv_scanner/util/CMakeFiles/duckdb_csv_util.dir/ub_duckdb_csv_util.cpp.o
+[402/610] Building CXX object src/execution/operator/order/CMakeFiles/duckdb_operator_order.dir/ub_duckdb_operator_order.cpp.o
+[403/610] Building CXX object src/execution/operator/helper/CMakeFiles/duckdb_operator_helper.dir/ub_duckdb_operator_helper.cpp.o
+[404/610] Building CXX object src/execution/operator/projection/CMakeFiles/duckdb_operator_projection.dir/ub_duckdb_operator_projection.cpp.o
+[405/610] Building CXX object src/execution/operator/scan/CMakeFiles/duckdb_operator_scan.dir/ub_duckdb_operator_scan.cpp.o
+[406/610] Building CXX object src/execution/operator/schema/CMakeFiles/duckdb_operator_schema.dir/ub_duckdb_operator_schema.cpp.o
+[407/610] Building CXX object src/execution/operator/join/CMakeFiles/duckdb_operator_join.dir/ub_duckdb_operator_join.cpp.o
+[408/610] Building CXX object src/execution/operator/set/CMakeFiles/duckdb_operator_set.dir/ub_duckdb_operator_set.cpp.o
+[409/610] Building CXX object src/execution/operator/persistent/CMakeFiles/duckdb_operator_persistent.dir/ub_duckdb_operator_persistent.cpp.o
+[410/610] Building CXX object src/execution/sample/CMakeFiles/duckdb_sample.dir/ub_duckdb_sample.cpp.o
+[411/610] Building CXX object src/execution/index/CMakeFiles/duckdb_execution_index.dir/ub_duckdb_execution_index.cpp.o
+[412/610] Building CXX object src/execution/index/art/CMakeFiles/duckdb_execution_index_art.dir/ub_duckdb_execution_index_art.cpp.o
+[413/610] Building CXX object src/execution/physical_plan/CMakeFiles/duckdb_physical_plan.dir/ub_duckdb_physical_plan.cpp.o
+[414/610] Building CXX object src/main/capi/cast/CMakeFiles/duckdb_main_capi_cast.dir/ub_duckdb_main_capi_cast.cpp.o
+[415/610] Building CXX object src/main/extension/CMakeFiles/duckdb_main_extension.dir/extension_alias.cpp.o
+[416/610] Building CXX object src/main/extension/CMakeFiles/duckdb_main_extension.dir/extension_helper.cpp.o
+[417/610] Building CXX object src/main/capi/CMakeFiles/duckdb_main_capi.dir/ub_duckdb_main_capi.cpp.o
+[418/610] Building CXX object src/main/extension/CMakeFiles/duckdb_main_extension.dir/extension_install.cpp.o
+[419/610] Building CXX object src/main/extension/CMakeFiles/duckdb_main_extension.dir/extension_load.cpp.o
+[420/610] Building CXX object src/main/extension/CMakeFiles/duckdb_main_extension.dir/extension_loader.cpp.o
+[421/610] Building CXX object src/main/http/CMakeFiles/duckdb_common_http.dir/ub_duckdb_common_http.cpp.o
+[422/610] Building CXX object src/main/secret/CMakeFiles/duckdb_main_secret.dir/ub_duckdb_main_secret.cpp.o
+[423/610] Building CXX object src/main/relation/CMakeFiles/duckdb_main_relation.dir/ub_duckdb_main_relation.cpp.o
+[424/610] Building CXX object src/main/chunk_scan_state/CMakeFiles/duckdb_main_chunk_scan_state.dir/ub_duckdb_main_chunk_scan_state.cpp.o
+[425/610] Building CXX object src/main/buffered_data/CMakeFiles/duckdb_main_buffered_data.dir/ub_duckdb_main_buffered_data.cpp.o
+[426/610] Building CXX object src/main/CMakeFiles/duckdb_main.dir/ub_duckdb_main.cpp.o
+[427/610] Building CXX object src/main/settings/CMakeFiles/duckdb_main_settings.dir/ub_duckdb_main_settings.cpp.o
+[428/610] Building CXX object src/storage/buffer/CMakeFiles/duckdb_storage_buffer.dir/ub_duckdb_storage_buffer.cpp.o
+[429/610] Building CXX object src/storage/checkpoint/CMakeFiles/duckdb_storage_checkpoint.dir/ub_duckdb_storage_checkpoint.cpp.o
+[430/610] Building CXX object src/parallel/CMakeFiles/duckdb_parallel.dir/ub_duckdb_parallel.cpp.o
+[431/610] Building CXX object src/storage/compression/chimp/CMakeFiles/duckdb_storage_compression_chimp.dir/ub_duckdb_storage_compression_chimp.cpp.o
+[432/610] Building CXX object src/storage/compression/alp/CMakeFiles/duckdb_storage_compression_alp.dir/ub_duckdb_storage_compression_alp.cpp.o
+[433/610] Building CXX object src/storage/compression/roaring/CMakeFiles/duckdb_storage_compression_roaring.dir/ub_duckdb_storage_compression_roaring.cpp.o
+[434/610] Building CXX object src/storage/compression/dictionary/CMakeFiles/duckdb_storage_compression_dictionary.dir/ub_duckdb_storage_compression_dictionary.cpp.o
+[435/610] Building CXX object src/storage/compression/dict_fsst/CMakeFiles/duckdb_storage_compression_dict_fsst.dir/ub_duckdb_storage_compression_dict_fsst.cpp.o
+[436/610] Building CXX object src/storage/metadata/CMakeFiles/duckdb_storage_metadata.dir/ub_duckdb_storage_metadata.cpp.o
+[437/610] Building CXX object src/storage/CMakeFiles/duckdb_storage.dir/ub_duckdb_storage.cpp.o
+[438/610] Building CXX object src/storage/compression/CMakeFiles/duckdb_storage_compression.dir/ub_duckdb_storage_compression.cpp.o
+[439/610] Building CXX object src/storage/statistics/CMakeFiles/duckdb_storage_statistics.dir/ub_duckdb_storage_statistics.cpp.o
+[440/610] Building CXX object src/storage/table/variant/CMakeFiles/duckdb_storage_table_variant.dir/ub_duckdb_storage_table_variant.cpp.o
+[441/610] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/copied_statement_verifier.cpp.o
+[442/610] Building CXX object src/transaction/CMakeFiles/duckdb_transaction.dir/ub_duckdb_transaction.cpp.o
+[443/610] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/external_statement_verifier.cpp.o
+[444/610] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/fetch_row_verifier.cpp.o
+[445/610] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/prepared_statement_verifier.cpp.o
+[446/610] Building CXX object src/storage/serialization/CMakeFiles/duckdb_storage_serialization.dir/ub_duckdb_storage_serialization.cpp.o
+[447/610] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/deserialized_statement_verifier.cpp.o
+[448/610] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/explain_statement_verifier.cpp.o
+[449/610] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/statement_verifier.cpp.o
+[450/610] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/parsed_statement_verifier.cpp.o
+[451/610] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/no_operator_caching_verifier.cpp.o
+[452/610] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/unoptimized_statement_verifier.cpp.o
+[453/610] Building CXX object tools/CMakeFiles/plan_serializer.dir/utils/plan_serializer.cpp.o
+[454/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_command_line_option.cpp.o
+[455/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_extension.cpp.o
+[456/610] Building CXX object src/storage/table/CMakeFiles/duckdb_storage_table.dir/ub_duckdb_storage_table.cpp.o
+[457/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_helpers.cpp.o
+[458/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_prompt.cpp.o
+[459/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell.cpp.o
+[460/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_metadata_command.cpp.o
+[461/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_renderer.cpp.o
+[462/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_windows.cpp.o
+[463/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_progress_bar.cpp.o
+[464/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_highlight.cpp.o
+[465/610] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_render_table_metadata.cpp.o
+[466/610] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/highlighting.cpp.o
+[467/610] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/history.cpp.o
+[468/610] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/terminal.cpp.o
+[469/610] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/linenoise.cpp.o
+[470/610] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/linenoise-c.cpp.o
+[471/610] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/rendering.cpp.o
+[472/610] Building CXX object extension/CMakeFiles/dummy_static_extension_loader.dir/loader/dummy_static_extension_loader.cpp.o
+[473/610] Linking CXX static library extension/libdummy_static_extension_loader.a
+[474/610] Building CXX object extension/CMakeFiles/duckdb_generated_extension_loader.dir/__/codegen/src/generated_extension_loader.cpp.o
+[475/610] Linking CXX static library extension/libduckdb_generated_extension_loader.a
+[476/610] Building CXX object third_party/fsst/CMakeFiles/duckdb_fsst.dir/libfsst.cpp.o
+[477/610] Linking CXX static library third_party/fsst/libduckdb_fsst.a
+[478/610] Building CXX object third_party/hyperloglog/CMakeFiles/duckdb_hyperloglog.dir/hyperloglog.cpp.o
+[479/610] Building CXX object third_party/hyperloglog/CMakeFiles/duckdb_hyperloglog.dir/sds.cpp.o
+[480/610] Linking CXX static library third_party/hyperloglog/libduckdb_hyperloglog.a
+[481/610] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/pg_functions.cpp.o
+[482/610] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/postgres_parser.cpp.o
+[483/610] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_parser_parser.cpp.o
+[484/610] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_nodes_list.cpp.o
+[485/610] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_parser_scansup.cpp.o
+[486/610] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_nodes_makefuncs.cpp.o
+[487/610] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_nodes_value.cpp.o
+[488/610] Building CXX object third_party/fastpforlib/CMakeFiles/duckdb_fastpforlib.dir/bitpacking.cpp.o
+[489/610] Linking CXX static library third_party/fastpforlib/libduckdb_fastpforlib.a
+[490/610] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_common_keywords.cpp.o
+[491/610] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_parser_scan.cpp.o
+[492/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/aes.cpp.o
+[493/610] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_parser_gram.cpp.o
+[494/610] Linking CXX static library third_party/libpg_query/libduckdb_pg_query.a
+[495/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/asn1parse.cpp.o
+[496/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/base64.cpp.o
+[497/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/asn1write.cpp.o
+[498/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/bignum_core.cpp.o
+[499/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/bignum.cpp.o
+[500/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/cipher.cpp.o
+[501/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/cipher_wrap.cpp.o
+[502/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/constant_time.cpp.o
+[503/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/mbedtls_wrapper.cpp.o
+[504/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/gcm.cpp.o
+[505/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/md.cpp.o
+[506/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/oid.cpp.o
+[507/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/pem.cpp.o
+[508/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/pk.cpp.o
+[509/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/pk_wrap.cpp.o
+[510/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/pkparse.cpp.o
+[511/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/platform.cpp.o
+[512/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/platform_util.cpp.o
+[513/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/rsa_alt_helpers.cpp.o
+[514/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/rsa.cpp.o
+[515/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/sha1.cpp.o
+[516/610] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/sha256.cpp.o
+[517/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/bitmap256.cc.o
+[518/610] Linking CXX static library third_party/mbedtls/libduckdb_mbedtls.a
+[519/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/bitstate.cc.o
+[520/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/compile.cc.o
+[521/610] Building CXX object third_party/fmt/CMakeFiles/duckdb_fmt.dir/format.cc.o
+[522/610] Building CXX object third_party/miniz/CMakeFiles/duckdb_miniz.dir/miniz.cpp.o
+[523/610] Linking CXX static library third_party/fmt/libduckdb_fmt.a
+[524/610] Linking CXX static library third_party/miniz/libduckdb_miniz.a
+[525/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/filtered_re2.cc.o
+[526/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/mimics_pcre.cc.o
+[527/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/onepass.cc.o
+[528/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/nfa.cc.o
+[529/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/perl_groups.cc.o
+[530/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/dfa.cc.o
+[531/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/prefilter.cc.o
+[532/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/parse.cc.o
+[533/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/prefilter_tree.cc.o
+[534/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/prog.cc.o
+[535/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/re2.cc.o
+[536/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/stringpiece.cc.o
+[537/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/simplify.cc.o
+[538/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/unicode_casefold.cc.o
+[539/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/set.cc.o
+[540/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/unicode_groups.cc.o
+[541/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/util/rune.cc.o
+[542/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/regexp.cc.o
+[543/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/util/strutil.cc.o
+[544/610] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/tostring.cc.o
+[545/610] Building CXX object third_party/skiplist/CMakeFiles/duckdb_skiplistlib.dir/SkipList.cpp.o
+[546/610] Linking CXX static library third_party/skiplist/libduckdb_skiplistlib.a
+[547/610] Linking CXX static library third_party/re2/libduckdb_re2.a
+[548/610] Building CXX object third_party/utf8proc/CMakeFiles/duckdb_utf8proc.dir/utf8proc.cpp.o
+[549/610] Building CXX object third_party/utf8proc/CMakeFiles/duckdb_utf8proc.dir/utf8proc_wrapper.cpp.o
+[550/610] Linking CXX static library third_party/utf8proc/libduckdb_utf8proc.a
+[551/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_compress_superblock.cpp.o
+[552/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstdmt_compress.cpp.o
+[553/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_compress_sequences.cpp.o
+[554/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_ldm.cpp.o
+[555/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/hist.cpp.o
+[556/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_fast.cpp.o
+[557/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_double_fast.cpp.o
+[558/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_compress_literals.cpp.o
+[559/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/huf_compress.cpp.o
+[560/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_compress.cpp.o
+[561/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/fse_compress.cpp.o
+[562/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/decompress/zstd_ddict.cpp.o
+[563/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_opt.cpp.o
+[564/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/decompress/huf_decompress.cpp.o
+[565/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/decompress/zstd_decompress.cpp.o
+[566/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/entropy_common.cpp.o
+[567/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/fse_decompress.cpp.o
+[568/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/debug.cpp.o
+[569/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/decompress/zstd_decompress_block.cpp.o
+[570/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/xxhash.cpp.o
+[571/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/threading.cpp.o
+[572/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/pool.cpp.o
+[573/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/zstd_common.cpp.o
+[574/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/error_private.cpp.o
+[575/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/dict/cover.cpp.o
+[576/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/dict/divsufsort.cpp.o
+[577/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/dict/fastcover.cpp.o
+[578/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/deprecated/zbuff_common.cpp.o
+[579/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/deprecated/zbuff_decompress.cpp.o
+[580/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/deprecated/zbuff_compress.cpp.o
+[581/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/dict/zdict.cpp.o
+[582/610] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_lazy.cpp.o
+[583/610] Linking CXX static library third_party/zstd/libduckdb_zstd.a
+[584/610] Building CXX object third_party/yyjson/CMakeFiles/duckdb_yyjson.dir/yyjson.cpp.o
+[585/610] Linking CXX static library third_party/yyjson/libduckdb_yyjson.a
+[586/610] Linking CXX static library src/libduckdb_static.a
+[587/610] Linking CXX static library extension/ossie/libossie_extension.a
+[588/610] Linking CXX shared library extension/ossie/ossie.duckdb_extension
+[589/610] Linking CXX static library extension/tpcds/libtpcds_extension.a
+[590/610] Building CXX object test/extension/CMakeFiles/loadable_extension_optimizer_demo_loadable_extension.dir/loadable_extension_optimizer_demo.cpp.o
+[591/610] Linking CXX static library extension/core_functions/libcore_functions_extension.a
+[592/610] Linking CXX shared library extension/tpcds/tpcds.duckdb_extension
+[593/610] Linking CXX static library extension/parquet/libparquet_extension.a
+[594/610] Linking CXX shared library extension/core_functions/core_functions.duckdb_extension
+[595/610] Building CXX object test/extension/CMakeFiles/loadable_extension_demo_loadable_extension.dir/loadable_extension_demo.cpp.o
+[596/610] Linking CXX shared library extension/parquet/parquet.duckdb_extension
+[597/610] Linking CXX shared library src/libduckdb.so
+[598/610] Linking CXX executable tools/plan_serializer
+[599/610] Linking CXX executable duckdb
+[600/610] Linking CXX shared library test/extension/loadable_extension_demo.duckdb_extension
+[601/610] Linking CXX shared library test/extension/loadable_extension_optimizer_demo.duckdb_extension
+[602/610] repository
+[603/610] Building CXX object test/helpers/CMakeFiles/test_helpers.dir/pid.cpp.o
+[604/610] Building CXX object test/helpers/CMakeFiles/test_helpers.dir/test_helpers.cpp.o
+[605/610] Building CXX object test/helpers/CMakeFiles/test_helpers.dir/capi_tester.cpp.o
+[606/610] Building CXX object test/helpers/CMakeFiles/test_helpers.dir/test_config.cpp.o
+[607/610] Linking CXX static library test/helpers/libtest_helpers.a
+[608/610] Building CXX object test/CMakeFiles/unittest.dir/unittest.cpp.o
+[609/610] Building CXX object test/sqlite/CMakeFiles/test_sqlite.dir/ub_test_sqlite.cpp.o
+[610/610] Linking CXX executable test/unittest

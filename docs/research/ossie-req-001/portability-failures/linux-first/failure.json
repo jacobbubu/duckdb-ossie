@@ -1,0 +1,14 @@
+{
+  "status": "FAIL",
+  "artifact_sha256": "d5d19cc40ee88a378a90193dc20fd11da9c0435aff1d56df6df0fa3ba6f97291",
+  "reason": "AssertionError [ERR_ASSERTION]: joined_population failed; diagnostic retained in /evidence/linux-acceptance/joined_population.log\n\n1 !== 0\n",
+  "run_log_sha256": {
+    "/evidence/linux-acceptance/cli-dependencies.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/evidence/linux-acceptance/loader.log": "19f001b50412099be0dc2c46f5aeb1381dd68319d44b9d17ba5d38c5eae2b802",
+    "/evidence/linux-acceptance/population.log": "7b24a847c4d35998acbb4530c1c6ae7e86ddd9e54675d1f5300fe53b6c43808e",
+    "/evidence/linux-acceptance/expression.log": "9ad0a189a75beeab237c8e84f218435e9114af025d3036b9bff1b0f54b0b463d",
+    "/evidence/linux-acceptance/date.log": "35fec7a47a87e3d01f8865eadf246a029d5cd21ad351bdf2069e751fd5f82e06",
+    "/evidence/linux-acceptance/join_research.log": "2ab3df452c3429ed4ed3109e94061f872887e0202d2e0ef71c6954df7733ffaf",
+    "/evidence/linux-acceptance/joined_population.log": "5a41e570552b0f0d392ec5afb512790ebc02949a4beb0f1e9bff3a268ed79924"
+  }
+}

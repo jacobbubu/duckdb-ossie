@@ -143,6 +143,7 @@ export function verifyAcceptance(
     verifier_dependencies_sha256: Object.fromEntries(
       [
         "scripts/audit_acceptance_evidence.ts",
+        "scripts/source_evidence.ts",
         "scripts/verify_acceptance_replay.ts",
         "scripts/artifact_helpers.ts",
       ].map((path) => [path, digest(join(ROOT, path))]),
@@ -159,7 +160,7 @@ export function verifyAcceptance(
     audit,
     replay,
     remaining: [
-      "remote CI/Ubuntu tidy not run",
+      "remote CI not run; native tests and clang-tidy are separate quality evidence",
       "real autonomous Agent not tested",
       "pagination future research only",
       "P1/calendar/multi-period/general ontology/mixed grain/windows remain outside this acceptance",

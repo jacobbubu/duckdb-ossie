@@ -1,0 +1,43 @@
+{
+  "scope": "fixed GAAP fixture across macOS ARM64 and independently built Ubuntu ARM64; no universal determinism or Agent proof",
+  "status": "PASS",
+  "reports": [
+    {
+      "path": "/tmp/ossie-portability-mac-delivery/p0-final-population-artifact-results.json",
+      "sha256": "f0ef409a1fffb63fe466fb0175c1f1200c26ccca74619c0f2236c179a005a32a"
+    },
+    {
+      "path": "/tmp/ossie-linux-portability/logs/linux-delivery/p0-final-population-artifact-results.json",
+      "sha256": "c4a346e28a022439604792ebbe2ef4bcf5cbeadfdaf965738b850615cec1a324"
+    }
+  ],
+  "verifier_sha256": "ac65e20502cb5542b5a881e8f997cd5a1d8f0766880e23965f06894dd121cc32",
+  "artifact_sha256": {
+    "macos": "13d5317fb860f9ad81437a0a86cb8c996d7742a026f927f7b503c0fadf340c95",
+    "linux": "4926122b73590b3724e6b46d561c5ae88a330f15f2ce32b80181ab2e8c612dd6"
+  },
+  "checks": [
+    "10: query",
+    "10: object_ids",
+    "10: aggregate",
+    "10: content_sha256",
+    "10: ontology_sha256",
+    "10: sql",
+    "10: complete daily_results multiset",
+    "10: complete grouped_results multiset",
+    "10: complete drilldown_objects multiset",
+    "20: query",
+    "20: object_ids",
+    "20: aggregate",
+    "20: content_sha256",
+    "20: ontology_sha256",
+    "20: sql",
+    "20: complete daily_results multiset",
+    "20: complete grouped_results multiset",
+    "20: complete drilldown_objects multiset",
+    "boundary_cases",
+    "empty_results"
+  ],
+  "result_order": "unspecified SQL row order; complete row multisets compared",
+  "float": "exact repeated fixture values observed here; general Float remains approximate"
+}

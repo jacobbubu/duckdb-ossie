@@ -43,14 +43,27 @@
 
 namespace duckdb {
 namespace ossie {
-using namespace duckdb_yyjson;
+using duckdb_yyjson::yyjson_doc;
+using duckdb_yyjson::yyjson_doc_free;
+using duckdb_yyjson::yyjson_doc_get_root;
+using duckdb_yyjson::yyjson_get_len;
+using duckdb_yyjson::yyjson_get_str;
+using duckdb_yyjson::yyjson_is_arr;
+using duckdb_yyjson::yyjson_is_obj;
+using duckdb_yyjson::yyjson_is_str;
+using duckdb_yyjson::yyjson_obj_get;
+using duckdb_yyjson::yyjson_read;
+using duckdb_yyjson::yyjson_val;
 namespace {
 
 constexpr const char *PROFILE = "gaap-scalar-population-v1";
 constexpr const char *JOIN_PROFILE = "fact-dimension-population-v1";
 constexpr idx_t MAX_ROWS = 10000;
-constexpr idx_t MAX_BYTES = 16 * 1024 * 1024;
-std::atomic<uint64_t> batch_sequence {0};
+constexpr idx_t MAX_BYTES = idx_t(16) * 1024 * 1024;
+uint64_t NextBatchSequence() {
+	static std::atomic<uint64_t> sequence {0};
+	return ++sequence;
+}
 
 string JSONString(const string &value);
 constexpr const char *ERROR_SCHEMA = "ossie-population-error-v1";
@@ -58,24 +71,33 @@ constexpr const char *ERROR_MARKER = "ossie_population_error_v1: ";
 constexpr const char *ERROR_INFO = "ossie_population_error_json";
 
 string ErrorCode(const string &stage) {
-	if (stage == "capability")
+	if (stage == "capability") {
 		return "UNSUPPORTED_CAPABILITY";
-	if (stage == "identity")
+	}
+	if (stage == "identity") {
 		return "IDENTITY_VIOLATION";
-	if (stage == "execute")
+	}
+	if (stage == "execute") {
 		return "EXECUTION_FAILED";
-	if (stage == "load")
+	}
+	if (stage == "load") {
 		return "LOAD_FAILED";
-	if (stage == "snapshot")
+	}
+	if (stage == "snapshot") {
 		return "SNAPSHOT_REJECTED";
-	if (stage == "mapping")
+	}
+	if (stage == "mapping") {
 		return "MAPPING_INVALID";
-	if (stage == "rule")
+	}
+	if (stage == "rule") {
 		return "RULE_REJECTED";
-	if (stage == "parse")
+	}
+	if (stage == "parse") {
 		return "DEFINITION_INVALID";
-	if (stage == "hash")
+	}
+	if (stage == "hash") {
 		return "DEFINITION_HASH_MISMATCH";
+	}
 	return "INVALID_REQUEST";
 }
 
@@ -119,8 +141,9 @@ bool RecoverableError(ExceptionType type) {
 
 [[noreturn]] void NormalizeError(const ErrorData &error, const string &object, const string &stage,
                                  ExceptionType reported_type) {
-	if (!RecoverableError(error.Type()))
+	if (!RecoverableError(error.Type())) {
 		error.Throw();
+	}
 	auto own = error.ExtraInfo().find(ERROR_INFO);
 	if (own != error.ExtraInfo().end()) {
 		auto doc = yyjson_read(own->second.data(), own->second.size(), 0);
@@ -129,10 +152,12 @@ bool RecoverableError(ExceptionType type) {
 			auto schema = yyjson_obj_get(yyjson_doc_get_root(doc), "schema_version");
 			valid = yyjson_is_str(schema) && string(yyjson_get_str(schema), yyjson_get_len(schema)) == ERROR_SCHEMA;
 		}
-		if (doc)
+		if (doc) {
 			yyjson_doc_free(doc);
-		if (valid)
+		}
+		if (valid) {
 			error.Throw();
+		}
 	}
 	PopulationError(object, stage, error.Message(), reported_type, Exception::ExceptionTypeToString(error.Type()),
 	                error.ExtraInfo());
@@ -155,8 +180,9 @@ auto ErrorBoundary(const string &object, const string &stage, WORK work,
 		}
 		// Avoid relying on class RTTI across the extension/host boundary.
 		// Unknown standard exceptions, interrupts and serious failures retain their original exception.
-		if (!RecoverableError(data.Type()))
+		if (!RecoverableError(data.Type())) {
 			throw;
+		}
 		NormalizeError(data, object, stage, translated_type == ExceptionType::INVALID ? data.Type() : translated_type);
 	}
 }
@@ -210,7 +236,7 @@ string Read(ClientContext &context, const string &path) {
 	}
 	auto handle = FileSystem::GetFileSystem(context).OpenFile(path, FileFlags::FILE_FLAGS_READ);
 	auto size = handle->GetFileSize();
-	if (size > 1024 * 1024) {
+	if (size > idx_t(1024) * 1024) {
 		Fail(path, "load", "definition exceeds 1 MiB limit");
 	}
 	string bytes(size, '\0');
@@ -241,8 +267,10 @@ struct Document {
 		while (!pending.empty()) {
 			auto value = pending.back();
 			pending.pop_back();
-			if (yyjson_is_str(value) && string(yyjson_get_str(value), yyjson_get_len(value)).find('\0') != string::npos)
+			if (yyjson_is_str(value) &&
+			    string(yyjson_get_str(value), yyjson_get_len(value)).find('\0') != string::npos) {
 				Fail("definition", "parse", "NUL-containing strings prohibited in this profile");
+			}
 			size_t index, max;
 			yyjson_val *child, *key;
 			if (yyjson_is_arr(value)) {
@@ -375,8 +403,9 @@ struct Bundle {
 // Each operation owns a short-lived connection; collection lifetime follows the caller DB.
 unique_ptr<Connection> Engine(Bundle &bundle) {
 	auto database = bundle.database.lock();
-	if (!database)
+	if (!database) {
 		Fail("bundle", "execute", "containing database has closed");
+	}
 	return make_uniq<Connection>(*database);
 }
 
@@ -410,15 +439,18 @@ private:
 
 // A syntactic guard, not a guarantee of exact or finite floating-point results.
 bool ZeroProtectedDenominator(const ParsedExpression &expression) {
-	if (expression.GetExpressionClass() != ExpressionClass::FUNCTION)
+	if (expression.GetExpressionClass() != ExpressionClass::FUNCTION) {
 		return false;
+	}
 	auto &function = expression.Cast<FunctionExpression>();
 	if (function.is_operator || !function.catalog.empty() || !function.schema.empty() ||
-	    !StringUtil::CIEquals(function.function_name, "nullif") || function.children.size() != 2)
+	    !StringUtil::CIEquals(function.function_name, "nullif") || function.children.size() != 2) {
 		return false;
+	}
 	auto &zero = *function.children[1];
-	if (zero.GetExpressionClass() != ExpressionClass::CONSTANT)
+	if (zero.GetExpressionClass() != ExpressionClass::CONSTANT) {
 		return false;
+	}
 	auto &value = zero.Cast<ConstantExpression>().value;
 	return !value.IsNull() && value.type().IsNumeric() && value == Value::INTEGER(0);
 }
@@ -427,10 +459,12 @@ bool ZeroProtectedDenominator(const ParsedExpression &expression) {
 void Strict(const ParsedExpression &expression, bool aggregates = false, bool inside_aggregate = false, idx_t depth = 0,
             idx_t *visited = nullptr) {
 	idx_t nodes = 0;
-	if (!visited)
+	if (!visited) {
 		visited = &nodes;
-	if (++(*visited) > 1024 || depth > 32)
+	}
+	if (++(*visited) > 1024 || depth > 32) {
 		Fail(expression.ToString(), "rule", "expression exceeds 1024 nodes or depth 32");
+	}
 	switch (expression.GetExpressionClass()) {
 	case ExpressionClass::COLUMN_REF:
 	case ExpressionClass::CONSTANT:
@@ -444,8 +478,9 @@ void Strict(const ParsedExpression &expression, bool aggregates = false, bool in
 		auto target = cast.cast_type;
 		if (target.IsUnbound()) {
 			auto &type = UnboundType::GetTypeExpression(target)->Cast<TypeExpression>();
-			if (!type.GetCatalog().empty() || !type.GetSchema().empty())
+			if (!type.GetCatalog().empty() || !type.GetSchema().empty()) {
 				Fail(expression.ToString(), "rule", "qualified casts not supported");
+			}
 			target = UnboundType::TryDefaultBind(target);
 		}
 		auto id = target.id();
@@ -477,9 +512,10 @@ void Strict(const ParsedExpression &expression, bool aggregates = false, bool in
 		    (!aggregate && function.distinct) || (aggregate && function.children.size() != 1)) {
 			Fail(expression.ToString(), "rule", "unsupported function or aggregate in scalar population");
 		}
-		if (division && (function.children.size() != 2 || !ZeroProtectedDenominator(*function.children[1])))
+		if (division && (function.children.size() != 2 || !ZeroProtectedDenominator(*function.children[1]))) {
 			Fail(expression.ToString(), "rule",
 			     "division requires a direct NULLIF(expr, numeric zero constant) denominator");
+		}
 		for (auto &child : function.children) {
 			Strict(*child, aggregates, inside_aggregate || aggregate, depth + 1, visited);
 		}
@@ -496,8 +532,9 @@ void Strict(const ParsedExpression &expression, bool aggregates = false, bool in
 bool HasAggregate(const ParsedExpression &expression) {
 	if (expression.GetExpressionClass() == ExpressionClass::FUNCTION) {
 		auto name = StringUtil::Lower(expression.Cast<FunctionExpression>().function_name);
-		if (name == "sum" || name == "count" || name == "avg")
+		if (name == "sum" || name == "count" || name == "avg") {
 			return true;
+		}
 	}
 	bool found = false;
 	ParsedExpressionIterator::EnumerateChildren(
@@ -506,10 +543,12 @@ bool HasAggregate(const ParsedExpression &expression) {
 }
 
 unique_ptr<ParsedExpression> Parse(const string &sql) {
-	if (sql.empty() || sql.find('\0') != string::npos)
+	if (sql.empty() || sql.find('\0') != string::npos) {
 		Fail("expression", "rule", "nonempty SQL without NUL required");
-	if (sql.size() > 16384)
+	}
+	if (sql.size() > 16384) {
 		Fail("expression", "rule", "request/rule exceeds 16 KiB SQL limit");
+	}
 	vector<unique_ptr<ParsedExpression>> expressions;
 	try {
 		expressions = Parser::ParseExpressionList(sql);
@@ -552,21 +591,24 @@ string LogicalName(const Bundle &bundle, const vector<string> &names) {
 	if (!bundle.provenance.empty()) {
 		for (auto &entry : bundle.provenance) {
 			if (names.size() == 2 && StringUtil::CIEquals(names[0], entry.first[0]) &&
-			    StringUtil::CIEquals(names[1], entry.first[1]))
+			    StringUtil::CIEquals(names[1], entry.first[1])) {
 				return entry.second;
+			}
 		}
 		Fail("reference", "bind", "unknown original dataset.field");
 	}
 	if (names.size() != 2 || !StringUtil::CIEquals(names[0], bundle.model.datasets[0].name) ||
-	    !bundle.model.datasets[0].FindField(names[1]))
+	    !bundle.model.datasets[0].FindField(names[1])) {
 		Fail("reference", "bind", "mapping must reference a declared field in the single root dataset");
+	}
 	return bundle.model.datasets[0].FindField(names[1])->name;
 }
 
 string OriginalName(const Bundle &bundle, const string &field) {
 	for (auto &entry : bundle.provenance) {
-		if (entry.second == field)
+		if (entry.second == field) {
 			return entry.first[0] + "." + entry.first[1];
+		}
 	}
 	return bundle.model.datasets[0].name + "." + field;
 }
@@ -803,16 +845,21 @@ bool Matches(const string &datatype, const LogicalType &type) {
 		return Portable(type) || type.id() == LogicalTypeId::HUGEINT;
 	}
 	auto id = type.id();
-	if (datatype == "String")
+	if (datatype == "String") {
 		return id == LogicalTypeId::VARCHAR;
-	if (datatype == "Boolean")
+	}
+	if (datatype == "Boolean") {
 		return id == LogicalTypeId::BOOLEAN;
-	if (datatype == "Date")
+	}
+	if (datatype == "Date") {
 		return id == LogicalTypeId::DATE;
-	if (datatype == "Decimal")
+	}
+	if (datatype == "Decimal") {
 		return id == LogicalTypeId::DECIMAL;
-	if (datatype == "Float")
+	}
+	if (datatype == "Float") {
 		return id == LogicalTypeId::FLOAT || id == LogicalTypeId::DOUBLE;
+	}
 	if (datatype == "Integer") {
 		return id == LogicalTypeId::TINYINT || id == LogicalTypeId::SMALLINT || id == LogicalTypeId::INTEGER ||
 		       id == LogicalTypeId::BIGINT || id == LogicalTypeId::HUGEINT;
@@ -848,9 +895,10 @@ unique_ptr<FunctionData> FrozenBindFunction(ClientContext &, TableFunctionBindIn
                                             vector<string> &names) {
 	auto dependency =
 	    input.ref.external_dependency ? input.ref.external_dependency->GetDependency("ossie_batch") : nullptr;
-	if (!dependency)
+	if (!dependency) {
 		Fail("_ossie_snapshot_rows", "bind",
 		     "internal frozen AST dependency required; rendered SQL is diagnostic only");
+	}
 	auto result = make_uniq<FrozenBind>();
 	result->bundle = dependency->Cast<SnapshotDependency>().bundle;
 	types = result->bundle->collection->Types();
@@ -889,8 +937,9 @@ unique_ptr<SQLStatement> FrozenSQL(Bundle &bundle, const string &sql) {
 	auto statement = std::move(parser.statements[0]);
 	auto &select = statement->Cast<SelectStatement>().node->Cast<SelectNode>();
 	select.from_table = SnapshotTable(bundle);
-	for (auto &expression : select.select_list)
+	for (auto &expression : select.select_list) {
 		EngineFunctions(*expression);
+	}
 	return statement;
 }
 
@@ -958,8 +1007,9 @@ string JSONString(const string &value) {
 
 idx_t PhysicalColumn(const CapturedTable &table, const string &name) {
 	for (idx_t i = 0; i < table.names.size(); i++) {
-		if (StringUtil::CIEquals(table.names[i], name))
+		if (StringUtil::CIEquals(table.names[i], name)) {
 			return i;
+		}
 	}
 	Fail(name, "snapshot", "undeclared physical column in captured source");
 }
@@ -967,22 +1017,27 @@ idx_t PhysicalColumn(const CapturedTable &table, const string &name) {
 CapturedTable CaptureTable(ClientContext &context, Connection &source, const Dataset &dataset,
                            optional_ptr<Catalog> &catalog, optional_ptr<CatalogEntry> &previous) {
 	auto parts = QualifiedName::ParseComponents(dataset.source_bound);
-	if (parts.size() != 3)
+	if (parts.size() != 3) {
 		Fail(dataset.name, "snapshot", "fully qualified catalog.schema.table source required");
+	}
 	auto entry = Catalog::GetEntry(*source.context, parts[0], parts[1],
 	                               EntryLookupInfo(CatalogType::TABLE_ENTRY, parts[2]), OnEntryNotFound::RETURN_NULL);
 	if (!entry || entry->type != CatalogType::TABLE_ENTRY || entry->temporary ||
-	    !entry->Cast<TableCatalogEntry>().IsDuckTable())
+	    !entry->Cast<TableCatalogEntry>().IsDuckTable()) {
 		Fail(dataset.name, "snapshot", "only committed native tables supported; TEMP/view/external source refused");
-	if (catalog && &catalog->GetAttached() != &entry->ParentCatalog().GetAttached())
+	}
+	if (catalog && &catalog->GetAttached() != &entry->ParentCatalog().GetAttached()) {
 		Fail(dataset.name, "snapshot", "both sources must belong to the same underlying database");
-	if (previous == entry)
+	}
+	if (previous == entry) {
 		Fail(dataset.name, "snapshot", "two distinct native source tables required");
+	}
 	previous = entry;
 	catalog = entry->ParentCatalog();
 	for (auto &column : entry->Cast<TableCatalogEntry>().GetColumns().Logical()) {
-		if (column.Generated())
+		if (column.Generated()) {
 			Fail(dataset.name, "snapshot", "generated source columns not supported");
+		}
 	}
 	auto result = Run(context, source,
 	                  "SELECT * FROM " + Quote(parts[0]) + "." + Quote(parts[1]) + "." + Quote(parts[2]) + " LIMIT " +
@@ -991,29 +1046,33 @@ CapturedTable CaptureTable(ClientContext &context, Connection &source, const Dat
 	capture.names = result->names;
 	capture.types = result->types;
 	auto count = result->Cast<MaterializedQueryResult>().RowCount();
-	if (count > MAX_ROWS || capture.types.empty() || capture.types.size() > 256)
+	if (count > MAX_ROWS || capture.types.empty() || capture.types.size() > 256) {
 		Fail(dataset.name, "snapshot", "batch exceeds 10000 rows or 256 physical columns; no truncation performed");
+	}
 	capture.canonical = "ossie-join-input-v1:";
 	Frame(capture.canonical, dataset.name);
 	Frame(capture.canonical, dataset.source_bound);
 	Frame(capture.canonical, to_string(count));
 	for (idx_t c = 0; c < capture.types.size(); c++) {
 		if (!Portable(capture.types[c]) ||
-		    (capture.types[c].id() == LogicalTypeId::VARCHAR && !StringType::GetCollation(capture.types[c]).empty()))
+		    (capture.types[c].id() == LogicalTypeId::VARCHAR && !StringType::GetCollation(capture.types[c]).empty())) {
 			Fail(capture.names[c], "snapshot", "unsupported physical column type or collation");
+		}
 		Frame(capture.canonical, capture.names[c]);
 		Frame(capture.canonical, capture.types[c].ToString());
 	}
 	while (auto chunk = result->Fetch()) {
 		for (idx_t r = 0; r < chunk->size(); r++) {
-			if (context.IsInterrupted())
+			if (context.IsInterrupted()) {
 				throw InterruptException();
+			}
 			vector<Value> row;
 			for (idx_t c = 0; c < chunk->ColumnCount(); c++) {
 				auto value = chunk->GetValue(c, r);
 				Frame(capture.canonical, value.ToSQLString());
-				if (capture.canonical.size() > MAX_BYTES)
+				if (capture.canonical.size() > MAX_BYTES) {
 					Fail(dataset.name, "snapshot", "batch exceeds 16 MiB canonical value limit");
+				}
 				row.push_back(std::move(value));
 			}
 			capture.rows.push_back(std::move(row));
@@ -1027,8 +1086,9 @@ void ExpandOriginal(const Model &model, unique_ptr<ParsedExpression> &expression
 		auto names = expression->Cast<ColumnRefExpression>().column_names;
 		auto dataset = names.size() == 2 ? model.FindDataset(names[0]) : nullptr;
 		auto field = dataset ? dataset->FindField(names[1]) : nullptr;
-		if (!field)
+		if (!field) {
 			Fail(expression->ToString(), "metric", "qualified original logical field required");
+		}
 		expression = field->expression.tree->Copy();
 		Strict(*expression);
 		Qualify(expression, dataset->name);
@@ -1042,8 +1102,9 @@ void FlattenPhysical(unique_ptr<ParsedExpression> &expression, const Dataset &da
                      idx_t offset, const string &root) {
 	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
 		auto names = expression->Cast<ColumnRefExpression>().column_names;
-		if (names.empty() || names.size() > 2 || (names.size() == 2 && !StringUtil::CIEquals(names[0], dataset.name)))
+		if (names.empty() || names.size() > 2 || (names.size() == 2 && !StringUtil::CIEquals(names[0], dataset.name))) {
 			Fail(expression->ToString(), "bind", "physical reference crosses dataset");
+		}
 		auto index = PhysicalColumn(capture, names.back()) + offset;
 		expression = make_uniq<ColumnRefExpression>("_ossie_column_" + to_string(index), root);
 		return;
@@ -1065,18 +1126,21 @@ void FlattenLogical(const Bundle &bundle, unique_ptr<ParsedExpression> &expressi
 
 void ObserveLoad(ClientContext &context, PopulationLoadCheckpoint checkpoint) {
 	auto observer = context.registered_state->Get<PopulationLoadObserver>(PopulationLoadObserver::KEY);
-	if (observer)
+	if (observer) {
 		observer->Observe(checkpoint);
+	}
 }
 
 // Capture and validation use original datasets. Only the published execution model is flattened.
 void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Connection &engine) {
 	Keys(policy, {"fact", "dimension", "relationship", "type", "missing"}, "join policy");
-	if (Text(policy, "type") != "INNER" || Text(policy, "missing") != "reject")
+	if (Text(policy, "type") != "INNER" || Text(policy, "missing") != "reject") {
 		Fail("join", "capability", "explicit INNER/reject complete-match policy required");
+	}
 	const auto &original = bundle.definition_model;
-	if (original.datasets.size() != 2 || original.relationships.size() != 1)
+	if (original.datasets.size() != 2 || original.relationships.size() != 1) {
 		Fail("join", "capability", "exactly two datasets and one relationship required");
+	}
 	auto fact = original.FindDataset(Text(policy, "fact"));
 	auto dimension = original.FindDataset(Text(policy, "dimension"));
 	auto &relation = original.relationships[0];
@@ -1084,28 +1148,34 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 	    !StringUtil::CIEquals(relation.from_dataset, fact->name) ||
 	    !StringUtil::CIEquals(relation.to_dataset, dimension->name) || relation.from_columns.size() != 1 ||
 	    relation.to_columns.size() != 1 ||
-	    (relation.cardinality != Cardinality::MANY_TO_ONE && relation.cardinality != Cardinality::ONE_TO_ONE))
+	    (relation.cardinality != Cardinality::MANY_TO_ONE && relation.cardinality != Cardinality::ONE_TO_ONE)) {
 		Fail("join", "capability", "one forward single-column fact-to-unique-dimension relationship required");
-	if (fact->primary_key.size() != 1)
+	}
+	if (fact->primary_key.size() != 1) {
 		Fail(fact->name, "identity", "plain single-column fact primary key required");
+	}
 	idx_t fields = 0;
 	for (auto &dataset : original.datasets) {
 		fields += dataset.fields.size();
-		if (dataset.name.empty() || dataset.fields.empty())
+		if (dataset.name.empty() || dataset.fields.empty()) {
 			Fail(dataset.name, "capability", "nonempty datasets and declared fields required");
+		}
 		for (auto &field : dataset.fields) {
-			if (field.name.empty())
+			if (field.name.empty()) {
 				Fail(dataset.name, "bind", "empty field name");
+			}
 			Strict(*field.expression.tree);
 			auto expression = field.expression.tree->Copy();
 			Qualify(expression, dataset.name);
 		}
 	}
-	if (fields > 256 || original.metrics.empty() || original.metrics.size() > 64)
+	if (fields > 256 || original.metrics.empty() || original.metrics.size() > 64) {
 		Fail("join", "capability", "require at most 256 fields and 1..64 metrics");
+	}
 	for (auto &metric : original.metrics) {
-		if (metric.name.empty() || StringUtil::StartsWith(StringUtil::Lower(metric.name), "_ossie_"))
+		if (metric.name.empty() || StringUtil::StartsWith(StringUtil::Lower(metric.name), "_ossie_")) {
 			Fail(metric.name, "bind", "empty or reserved metric name");
+		}
 		Strict(*metric.expression.tree, true);
 		auto expanded = metric.expression.tree->Copy();
 		ExpandOriginal(original, expanded);
@@ -1121,35 +1191,44 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 	ObserveLoad(context, PopulationLoadCheckpoint::AFTER_FACT_CAPTURE);
 	auto dims = CaptureTable(context, source, *dimension, catalog, previous);
 	Run(context, source, "COMMIT");
-	if (facts.types.size() + dims.types.size() > 256)
+	if (facts.types.size() + dims.types.size() > 256) {
 		Fail("join", "snapshot", "joined batch exceeds 256 physical columns");
+	}
 	auto fk = PhysicalColumn(facts, relation.from_columns[0]);
 	auto dk = PhysicalColumn(dims, relation.to_columns[0]);
 	auto id = PhysicalColumn(facts, fact->primary_key[0]);
-	if (facts.types[fk] != LogicalType::INTEGER || dims.types[dk] != LogicalType::INTEGER)
+	if (facts.types[fk] != LogicalType::INTEGER || dims.types[dk] != LogicalType::INTEGER) {
 		Fail("join", "identity", "both join keys must be native INTEGER; coercion refused");
-	if (facts.types[id] != LogicalType::VARCHAR)
+	}
+	if (facts.types[id] != LogicalType::VARCHAR) {
 		Fail("join", "identity", "fact identity must be native uncollated String");
+	}
 	unordered_map<int32_t, idx_t> lookup;
 	for (idx_t r = 0; r < dims.rows.size(); r++) {
-		if (context.IsInterrupted())
+		if (context.IsInterrupted()) {
 			throw InterruptException();
+		}
 		auto &key = dims.rows[r][dk];
-		if (key.IsNull() || !lookup.emplace(key.GetValue<int32_t>(), r).second)
+		if (key.IsNull() || !lookup.emplace(key.GetValue<int32_t>(), r).second) {
 			Fail(dimension->name, "identity", "entire dimension batch requires nonnull unique key");
+		}
 	}
 	unordered_set<string> identities;
 	vector<idx_t> matches;
 	for (auto &row : facts.rows) {
-		if (context.IsInterrupted())
+		if (context.IsInterrupted()) {
 			throw InterruptException();
-		if (row[id].IsNull() || !identities.insert(row[id].GetValue<string>()).second)
+		}
+		if (row[id].IsNull() || !identities.insert(row[id].GetValue<string>()).second) {
 			Fail(fact->name, "identity", "entire fact batch requires nonnull unique identity");
-		if (row[fk].IsNull())
+		}
+		if (row[fk].IsNull()) {
 			Fail(fact->name, "identity", "nonnull fact foreign key required before filtering");
+		}
 		auto found = lookup.find(row[fk].GetValue<int32_t>());
-		if (found == lookup.end())
+		if (found == lookup.end()) {
 			Fail(fact->name, "identity", "every fact foreign key must match a dimension before filtering");
+		}
 		matches.push_back(found->second);
 	}
 	vector<LogicalType> types = facts.types;
@@ -1159,15 +1238,17 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 	chunk.Initialize(Allocator::Get(context), types);
 	string joined = "ossie-join-result-v1:";
 	for (idx_t r = 0; r < facts.rows.size(); r++) {
-		if (context.IsInterrupted())
+		if (context.IsInterrupted()) {
 			throw InterruptException();
+		}
 		idx_t slot = r % STANDARD_VECTOR_SIZE;
 		for (idx_t c = 0; c < types.size(); c++) {
 			auto &value = c < facts.types.size() ? facts.rows[r][c] : dims.rows[matches[r]][c - facts.types.size()];
 			chunk.SetValue(c, slot, value);
 			Frame(joined, value.ToSQLString());
-			if (joined.size() > MAX_BYTES)
+			if (joined.size() > MAX_BYTES) {
 				Fail("join", "snapshot", "joined batch exceeds 16 MiB canonical value limit");
+			}
 		}
 		chunk.SetCardinality(slot + 1);
 		if (slot + 1 == STANDARD_VECTOR_SIZE || r + 1 == facts.rows.size()) {
@@ -1176,24 +1257,28 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 		}
 	}
 	// Construction appends one row for every unique fact identity, with no filtering or fan-out.
-	if (bundle.collection->Count() != facts.rows.size() || identities.size() != facts.rows.size())
+	if (bundle.collection->Count() != facts.rows.size() || identities.size() != facts.rows.size()) {
 		Fail("join", "identity", "joined fact identity multiset differs from captured facts");
+	}
 	unordered_set<string> joined_identities;
 	ColumnDataScanState scan;
 	bundle.collection->InitializeScan(scan);
 	DataChunk verification;
 	bundle.collection->InitializeScanChunk(verification);
 	while (bundle.collection->Scan(scan, verification)) {
-		if (context.IsInterrupted())
+		if (context.IsInterrupted()) {
 			throw InterruptException();
+		}
 		for (idx_t r = 0; r < verification.size(); r++) {
 			auto value = verification.GetValue(id, r);
-			if (value.IsNull() || !joined_identities.insert(value.GetValue<string>()).second)
+			if (value.IsNull() || !joined_identities.insert(value.GetValue<string>()).second) {
 				Fail("join", "identity", "joined identity multiplicity is not one");
+			}
 		}
 	}
-	if (identities != joined_identities)
+	if (identities != joined_identities) {
 		Fail("join", "identity", "joined identity set differs from captured facts");
+	}
 	bundle.rows = facts.rows.size();
 	Dataset flattened = *fact;
 	flattened.fields.clear();
@@ -1222,21 +1307,23 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 		FlattenLogical(bundle, metric.expression.tree);
 		metric.expression.sql = metric.expression.tree->ToString();
 	}
-	for (idx_t c = 0; c < types.size(); c++)
+	for (idx_t c = 0; c < types.size(); c++) {
 		bundle.physical_names.push_back("_ossie_column_" + to_string(c));
+	}
 	bundle.original_source = fact->source_bound + " INNER " + dimension->source_bound;
 	string evidence = "ossie-frozen-join-v1:";
-	for (auto value :
+	for (const auto &value :
 	     {bundle.profile, bundle.manifest_hash, bundle.core_hash, bundle.ontology_hash, bundle.mapping_hash,
-	      Hash(engine, facts.canonical), Hash(engine, dims.canonical), Hash(engine, joined)})
+	      Hash(engine, facts.canonical), Hash(engine, dims.canonical), Hash(engine, joined)}) {
 		Frame(evidence, value);
+	}
 	for (auto &entry : bundle.provenance) {
 		Frame(evidence, entry.first[0]);
 		Frame(evidence, entry.first[1]);
 		Frame(evidence, entry.second);
 	}
 	bundle.content_hash = Hash(engine, evidence);
-	bundle.snapshot_id = bundle.content_hash + ":" + to_string(++batch_sequence);
+	bundle.snapshot_id = bundle.content_hash + ":" + to_string(NextBatchSequence());
 	bundle.execution_target = "{\"target\":\"frozen fact-dimension batch (AST dependency required)\","
 	                          "\"join_policy\":\"INNER/reject\",\"mapping_version\":1,\"row_order_sensitive\":true,"
 	                          "\"metric_grain\":" +
@@ -1246,8 +1333,9 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 	                          ",\"fact_identity_column\":" + JSONString(fact->primary_key[0]) + ",\"inputs\":[";
 	for (auto dataset : {fact, dimension}) {
 		auto &capture = dataset == fact ? facts : dims;
-		if (dataset == dimension)
+		if (dataset == dimension) {
 			bundle.execution_target += ",";
+		}
 		bundle.execution_target += "{\"dataset\":" + JSONString(dataset->name) +
 		                           ",\"source\":" + JSONString(dataset->source_bound) +
 		                           ",\"rows\":" + to_string(capture.rows.size()) +
@@ -1256,8 +1344,9 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 	bundle.execution_target += "],\"logical_fields\":[";
 	for (idx_t i = 0; i < bundle.provenance.size(); i++) {
 		auto &entry = bundle.provenance[i];
-		if (i)
+		if (i) {
 			bundle.execution_target += ",";
+		}
 		bundle.execution_target += "{\"dataset\":" + JSONString(entry.first[0]) +
 		                           ",\"field\":" + JSONString(entry.first[1]) +
 		                           ",\"frozen_field\":" + JSONString(entry.second) + "}";
@@ -1267,8 +1356,9 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 	for (auto dataset : {fact, dimension}) {
 		auto &capture = dataset == fact ? facts : dims;
 		for (auto &name : capture.names) {
-			if (index)
+			if (index) {
 				bundle.execution_target += ",";
+			}
 			bundle.execution_target += "{\"dataset\":" + JSONString(dataset->name) + ",\"column\":" + JSONString(name) +
 			                           ",\"frozen_column\":" + JSONString(bundle.physical_names[index++]) + "}";
 		}
@@ -1336,8 +1426,9 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	auto mapping_bytes = read_definition("mapping", bundle->mapping_hash);
 	bundle->model = ParseModel(LooksLikeYaml(core_bytes) ? YamlToJson(core_bytes, "core") : core_bytes, RebindMap());
 	bundle->definition_model = bundle->model;
-	if (bundle->profile == JOIN_PROFILE)
+	if (bundle->profile == JOIN_PROFILE) {
 		FreezeJoin(context, *bundle, Member(root, "join"), *engine);
+	}
 	if (bundle->model.datasets.size() != 1 || !bundle->model.relationships.empty()) {
 		Fail(bundle->model.name, "capability", "profile supports exactly one dataset and no core joins");
 	}
@@ -1346,21 +1437,25 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		Fail(dataset.name, "capability", "require 1..256 declared fields");
 	}
 	for (auto &field : dataset.fields) {
-		if (field.name.empty())
+		if (field.name.empty()) {
 			Fail(dataset.name, "bind", "empty field name");
+		}
 		Strict(*field.expression.tree);
 	}
-	if (bundle->model.metrics.empty() || bundle->model.metrics.size() > 64)
+	if (bundle->model.metrics.empty() || bundle->model.metrics.size() > 64) {
 		Fail("metrics", "capability", "require 1..64 metrics");
+	}
 	for (auto &metric : bundle->model.metrics) {
-		if (metric.name.empty() || StringUtil::StartsWith(StringUtil::Lower(metric.name), "_ossie_"))
+		if (metric.name.empty() || StringUtil::StartsWith(StringUtil::Lower(metric.name), "_ossie_")) {
 			Fail(metric.name, "bind", "empty or reserved metric name");
+		}
 		auto expanded = metric.expression.tree->Copy();
 		Strict(*expanded, true);
 		ExpandMetric(*bundle, expanded);
 		Strict(*expanded, true);
-		if (!HasAggregate(*expanded))
+		if (!HasAggregate(*expanded)) {
 			Fail(metric.name, "capability", "metric requires SUM, COUNT or AVG aggregation");
+		}
 		CompileToSQL(bundle->model, {metric.name}, {}, {}, CompileOptions());
 	}
 	Document ontology(ontology_bytes), mapping(mapping_bytes);
@@ -1370,14 +1465,17 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	bundle->mapping_name = Text(mapping.Root(), "name");
 	bundle->mapping_version = Text(mapping.Root(), "version");
 	for (auto &entry : bundle->provenance) {
-		if (StringUtil::CIEquals(entry.first[0], bundle->root) || StringUtil::CIEquals(entry.first[0], bundle->derived))
+		if (StringUtil::CIEquals(entry.first[0], bundle->root) ||
+		    StringUtil::CIEquals(entry.first[0], bundle->derived)) {
 			Fail(entry.first[0], "bind", "dataset and concept namespaces must be distinct");
+		}
 	}
 	if (StringUtil::CIEquals(dataset.name, bundle->root) || StringUtil::CIEquals(dataset.name, bundle->derived)) {
 		Fail(dataset.name, "bind", "dataset and concept namespaces must be distinct");
 	}
-	if (bundle->profile == PROFILE)
+	if (bundle->profile == PROFILE) {
 		bundle->original_source = dataset.source_bound;
+	}
 	if (bundle->profile == PROFILE) {
 		auto parts = QualifiedName::ParseComponents(dataset.source_bound);
 		if (parts.size() != 3) {
@@ -1421,8 +1519,9 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 			frame(capture->types[col].ToString());
 		}
 		while (auto chunk = capture->Fetch()) {
-			if (context.IsInterrupted())
+			if (context.IsInterrupted()) {
 				throw InterruptException();
+			}
 			for (idx_t row = 0; row < chunk->size(); row++) {
 				for (idx_t col = 0; col < chunk->ColumnCount(); col++) {
 					frame(chunk->GetValue(col, row).ToSQLString());
@@ -1434,20 +1533,22 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		}
 		bundle->collection = materialized.TakeCollection();
 		bundle->content_hash = Hash(*engine, content);
-		bundle->snapshot_id = bundle->content_hash + ":" + to_string(++batch_sequence);
+		bundle->snapshot_id = bundle->content_hash + ":" + to_string(NextBatchSequence());
 		bundle->inputs.push_back({dataset.name, bundle->original_source, bundle->content_hash, bundle->rows});
 	}
 	dataset.source_bound = "memory.main.ossie_snapshot";
 	string projection = "SELECT ";
 	for (idx_t index = 0; index < dataset.fields.size(); index++) {
-		if (index)
+		if (index) {
 			projection += ", ";
+		}
 		projection += FieldTree(*bundle, dataset.fields[index].name)->ToString();
 	}
 	projection += " FROM main.ossie_snapshot AS " + Quote(dataset.name);
 	auto prepared = engine->Prepare(FrozenSQL(*bundle, projection));
-	if (prepared->HasError())
+	if (prepared->HasError()) {
 		NormalizeError(prepared->GetErrorObject(), dataset.name, "bind", ExceptionType::INVALID_INPUT);
+	}
 	for (idx_t index = 0; index < dataset.fields.size(); index++) {
 		if (!Matches(dataset.fields[index].datatype, prepared->GetTypes()[index])) {
 			Fail(dataset.fields[index].name, "bind",
@@ -1455,8 +1556,9 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		}
 		bundle->field_types[dataset.fields[index].name] = prepared->GetTypes()[index].ToString();
 	}
-	for (auto &field : dataset.fields)
+	for (auto &field : dataset.fields) {
 		BooleanContexts(*bundle, *FieldTree(*bundle, field.name));
+	}
 	for (auto &metric : bundle->model.metrics) {
 		auto expanded = metric.expression.tree->Copy();
 		ExpandMetric(*bundle, expanded);
@@ -1467,13 +1569,16 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		CompileOptions options;
 		options.population_source = source_ref.get();
 		auto statement = Compile(bundle->model, {metric.name}, {}, {}, options);
-		for (auto &expression : statement->node->Cast<SelectNode>().select_list)
+		for (auto &expression : statement->node->Cast<SelectNode>().select_list) {
 			EngineFunctions(*expression);
+		}
 		auto bound = engine->Prepare(std::move(statement));
-		if (bound->HasError())
+		if (bound->HasError()) {
 			NormalizeError(bound->GetErrorObject(), metric.name, "bind", ExceptionType::INVALID_INPUT);
-		if (!Matches(metric.datatype, bound->GetTypes()[0]))
+		}
+		if (!Matches(metric.datatype, bound->GetTypes()[0])) {
 			Fail(metric.name, "bind", "metric datatype incompatible with bound aggregate type");
+		}
 		bundle->metric_types[metric.name] = bound->GetTypes()[0].ToString();
 	}
 	CheckBoolean(*bundle, *bundle->rule);
@@ -1496,10 +1601,12 @@ unique_ptr<ParsedExpression> Population(Bundle &bundle, const string &concept, c
 		Fail(concept, "bind", "unknown executable concept");
 	}
 	unique_ptr<ParsedExpression> predicate;
-	if (concept == bundle.derived)
+	if (concept == bundle.derived) {
 		predicate = bundle.rule->Copy();
-	if (filters.size() > 64)
+	}
+	if (filters.size() > 64) {
 		Fail(concept, "capability", "at most 64 request filters supported");
+	}
 	for (auto &filter : filters) {
 		auto expression = Parse(filter);
 		Strict(*expression);
@@ -1526,18 +1633,20 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 		options.population_source = source.get();
 		vector<string> translated;
 		for (auto &dimension : dimensions) {
-			if (bundle.provenance.empty())
+			if (bundle.provenance.empty()) {
 				translated.push_back(dimension);
-			else
+			} else {
 				translated.push_back(
 				    make_uniq<ColumnRefExpression>(LogicalField(bundle, dimension), bundle.model.datasets[0].name)
 				        ->ToString());
+			}
 		}
 		auto statement = Compile(bundle.model, metrics, translated, {}, options);
 		if (!bundle.provenance.empty()) {
 			auto &select = statement->node->Cast<SelectNode>();
-			for (idx_t i = 0; i < dimensions.size(); i++)
+			for (idx_t i = 0; i < dimensions.size(); i++) {
 				select.select_list[i]->SetAlias(dimensions[i]);
+			}
 		}
 		return statement;
 	}
@@ -1562,8 +1671,9 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 string JSONStrings(const vector<string> &values) {
 	string result = "[";
 	for (idx_t i = 0; i < values.size(); i++) {
-		if (i)
+		if (i) {
 			result += ",";
+		}
 		result += JSONString(values[i]);
 	}
 	return result + "]";
@@ -1593,8 +1703,9 @@ string PlanJSON(const Bundle &bundle, const SelectStatement &statement, const st
 		}
 	}
 	auto input_dataset = bundle.definition_model.FindDataset(bundle.model.datasets[0].name);
-	if (!input_dataset)
+	if (!input_dataset) {
 		Fail("grain", "explain", "population input lacks definition provenance");
+	}
 	auto rule = bundle.rule->Copy();
 	EngineFunctions(*rule);
 	string result =
@@ -1629,18 +1740,21 @@ string PlanJSON(const Bundle &bundle, const SelectStatement &statement, const st
 	    "},\"capture_join\":" + bundle.capture_join + ",\"inputs\":[";
 	for (idx_t i = 0; i < bundle.inputs.size(); i++) {
 		auto &input = bundle.inputs[i];
-		if (i)
+		if (i) {
 			result += ",";
+		}
 		result += "{\"dataset\":" + JSONString(input.dataset) + ",\"source\":" + JSONString(input.source) +
 		          ",\"captured_rows\":" + to_string(input.rows) + ",\"sha256\":" + JSONString(input.sha256) + "}";
 	}
 	result += "],\"metrics\":[";
 	for (idx_t i = 0; i < metrics.size(); i++) {
 		auto metric = bundle.definition_model.FindMetric(metrics[i]);
-		if (!metric)
+		if (!metric) {
 			Fail(metrics[i], "explain", "compiled metric lacks definition provenance");
-		if (i)
+		}
+		if (i) {
 			result += ",";
+		}
 		result += "{\"name\":" + JSONString(metric->name) + ",\"declared_datatype\":" + JSONString(metric->datatype) +
 		          ",\"expression\":" + DefinitionExpression(metric->expression) + "}";
 	}
@@ -1648,8 +1762,9 @@ string PlanJSON(const Bundle &bundle, const SelectStatement &statement, const st
 	idx_t field_index = 0;
 	for (auto &dataset : bundle.definition_model.datasets) {
 		for (auto &field : dataset.fields) {
-			if (field_index++)
+			if (field_index++) {
 				result += ",";
+			}
 			result += "{\"dataset\":" + JSONString(dataset.name) + ",\"name\":" + JSONString(field.name) +
 			          ",\"declared_datatype\":" + JSONString(field.datatype) +
 			          ",\"is_time\":" + (field.is_time ? "true" : "false") +
@@ -1666,14 +1781,16 @@ string PlanJSON(const Bundle &bundle, const SelectStatement &statement, const st
 	          JSONString(select.from_table->ToString()) + ",\"projections\":[";
 	for (idx_t i = 0; i < select.select_list.size(); i++) {
 		auto &expression = select.select_list[i];
-		if (i)
+		if (i) {
 			result += ",";
+		}
 		result += "{\"ordinal\":" + to_string(i + 1) + ",\"alias\":" + JSONString(expression->GetAlias()) +
 		          ",\"sql\":" + JSONString(expression->ToString()) + "}";
 	}
 	vector<string> groups;
-	for (auto &expression : select.groups.group_expressions)
+	for (auto &expression : select.groups.group_expressions) {
 		groups.push_back(expression->ToString());
+	}
 	result += "],\"group_by_sql\":" + JSONStrings(groups) +
 	          "},\"result_contract\":{\"ordering\":\"unspecified\",\"groups\":\"sparse\","
 	          "\"query_paging\":false,\"query_truncation\":false,\"calendar_completion\":false,"
@@ -1712,16 +1829,18 @@ struct PopulationScan : GlobalTableFunctionState {
 
 shared_ptr<Bundle> Current(ClientContext &context) {
 	auto bundle = PopulationState::Get(context).GetBundle();
-	if (!bundle)
+	if (!bundle) {
 		Fail("bundle", "bind", "no bundle loaded; call ossie_bundle_load");
+	}
 	return bundle;
 }
 
 unique_ptr<FunctionData> LoadBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
                                   vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
-	if (input.inputs[0].IsNull())
+	if (input.inputs[0].IsNull()) {
 		Fail("bundle", "load", "manifest path required");
+	}
 	result->path = input.inputs[0].GetValue<string>();
 	result->load = true;
 	names = {"profile", "snapshot_id", "content_sha256", "records"};
@@ -1791,8 +1910,9 @@ unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBin
 		         "load_preflight_validated",
 		         "execution_verified"};
 		types = vector<LogicalType>(16, LogicalType::VARCHAR);
-		for (idx_t i = 0; i < 5; i++)
+		for (idx_t i = 0; i < 5; i++) {
 			types.push_back(LogicalType::BOOLEAN);
+		}
 	} else {
 		names = {"api_version", "discovery_schema", "plan_schema", "ossie_spec_version", "capabilities_json"};
 		types = vector<LogicalType>(5, LogicalType::VARCHAR);
@@ -1808,9 +1928,10 @@ unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBin
 void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 	auto &b = *data.bundle;
 	auto append = [&](vector<Value> row) {
-		for (auto value :
-		     {b.profile, b.snapshot_id, b.content_hash, b.core_hash, b.ontology_hash, b.mapping_hash, b.manifest_hash})
+		for (const auto &value : {b.profile, b.snapshot_id, b.content_hash, b.core_hash, b.ontology_hash,
+		                          b.mapping_hash, b.manifest_hash}) {
 			row.push_back(Value(value));
+		}
 		rows.push_back(std::move(row));
 	};
 	if (data.vocabulary == "ossie_population_metrics") {
@@ -1895,44 +2016,50 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
                                      vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
 	result->bundle = Current(context);
-	if (input.inputs[0].IsNull())
+	if (input.inputs[0].IsNull()) {
 		Fail("concept", "bind", "concept required");
+	}
 	auto concept = input.inputs[0].GetValue<string>();
 	result->concept = concept;
 	bool objects = input.inputs.size() == 2;
 	auto metrics = objects ? vector<string>() : ToStringList(input.inputs[1], "ossie_concept_query");
 	auto dimensions = objects ? vector<string>() : ToStringList(input.inputs[2], "ossie_concept_query");
 	auto filters = ToStringList(input.inputs.back(), "ossie_population");
-	if (metrics.size() > 64 || dimensions.size() > 256)
+	if (metrics.size() > 64 || dimensions.size() > 256) {
 		Fail(concept, "capability", "request exceeds 64 metrics or 256 dimensions");
+	}
 	result->compile = input.table_function.name == "ossie_concept_compile";
 	result->encoded =
 	    input.table_function.name == "ossie_objects_json" || input.table_function.name == "ossie_concept_query_json";
 	// Empty metrics explicitly select the object path for the compile endpoint only.
 	objects |= result->compile && metrics.empty();
 	result->objects = objects;
-	if (objects && !dimensions.empty())
+	if (objects && !dimensions.empty()) {
 		Fail(concept, "bind", "object compile does not accept dimensions");
+	}
 	lock_guard<mutex> guard(result->bundle->query_lock);
 	result->statement = QueryAST(*result->bundle, concept, metrics, dimensions, filters, objects);
 	auto trace = input.named_parameters.find("include_trace");
 	if (trace != input.named_parameters.end() && !trace->second.IsNull() && trace->second.GetValue<bool>()) {
 		auto &select = result->statement->node->Cast<SelectNode>();
-		for (auto entry : {std::make_pair("_ossie_snapshot_id", result->bundle->snapshot_id),
-		                   std::make_pair("_ossie_content_sha256", result->bundle->content_hash),
-		                   std::make_pair("_ossie_ontology_sha256", result->bundle->ontology_hash)}) {
+		for (const auto &entry : {std::make_pair("_ossie_snapshot_id", result->bundle->snapshot_id),
+		                          std::make_pair("_ossie_content_sha256", result->bundle->content_hash),
+		                          std::make_pair("_ossie_ontology_sha256", result->bundle->ontology_hash)}) {
 			auto expression = make_uniq<ConstantExpression>(Value(entry.second));
 			expression->SetAlias(entry.first);
 			select.select_list.push_back(std::move(expression));
 		}
 	}
 	auto &query = result->statement->node->Cast<SelectNode>();
-	for (auto &expression : query.select_list)
+	for (auto &expression : query.select_list) {
 		EngineFunctions(*expression);
-	for (auto &expression : query.groups.group_expressions)
+	}
+	for (auto &expression : query.groups.group_expressions) {
 		EngineFunctions(*expression);
-	if (query.where_clause)
+	}
+	if (query.where_clause) {
 		EngineFunctions(*query.where_clause);
+	}
 	result->sql = result->statement->ToString();
 	if (result->compile) {
 		result->plan_json = PlanJSON(*result->bundle, *result->statement, concept, metrics, filters, objects);
@@ -1952,15 +2079,17 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
 	} else {
 		auto engine = Engine(*result->bundle);
 		auto prepared = engine->Prepare(result->statement->Copy());
-		if (prepared->HasError())
+		if (prepared->HasError()) {
 			NormalizeError(prepared->GetErrorObject(), concept, "bind", ExceptionType::INVALID_INPUT);
+		}
 		types = prepared->GetTypes();
 		names = prepared->GetNames();
 		if (result->encoded) {
 			case_insensitive_set_t unique_names;
 			for (auto &name : names) {
-				if (!unique_names.insert(name).second)
+				if (!unique_names.insert(name).second) {
 					Fail(name, "bind", "duplicate column name in typed JSON result");
+				}
 			}
 			result->result_types = types;
 			result->result_names = names;
@@ -1996,8 +2125,9 @@ string ResultEncoding(const LogicalType &type) {
 }
 
 string ResultJSON(ClientContext &context, const PopulationBind &data, QueryResult &query) {
-	if (query.types != data.result_types || query.names != data.result_names)
+	if (query.types != data.result_types || query.names != data.result_names) {
 		Fail("query", "execute", "typed JSON result schema differs from the bound schema");
+	}
 	auto &b = *data.bundle;
 	string json =
 	    "{\"schema_version\":\"ossie-population-result-v1\",\"request_kind\":" +
@@ -2008,8 +2138,9 @@ string ResultJSON(ClientContext &context, const PopulationBind &data, QueryResul
 	    ",\"manifest_sha256\":" + JSONString(b.manifest_hash) +
 	    ",\"ordering\":\"unspecified\",\"paging\":false,\"truncated\":false,\"columns\":[";
 	for (idx_t col = 0; col < query.types.size(); col++) {
-		if (col)
+		if (col) {
 			json += ",";
+		}
 		json += "{\"ordinal\":" + to_string(col + 1) + ",\"name\":" + JSONString(query.names[col]) +
 		        ",\"bound_type\":" + JSONString(query.types[col].ToString()) +
 		        ",\"encoding\":" + JSONString(ResultEncoding(query.types[col])) + "}";
@@ -2017,40 +2148,47 @@ string ResultJSON(ClientContext &context, const PopulationBind &data, QueryResul
 	json += "],\"rows\":[";
 	idx_t count = 0;
 	while (auto chunk = query.Fetch()) {
-		if (chunk->ColumnCount() != query.types.size())
+		if (chunk->ColumnCount() != query.types.size()) {
 			Fail("query", "execute", "typed JSON chunk width differs from the bound schema");
+		}
 		for (idx_t row = 0; row < chunk->size(); row++) {
-			if (context.IsInterrupted())
+			if (context.IsInterrupted()) {
 				throw InterruptException();
-			if (count++)
+			}
+			if (count++) {
 				json += ",";
+			}
 			json += "[";
 			for (idx_t col = 0; col < query.types.size(); col++) {
-				if (col)
+				if (col) {
 					json += ",";
+				}
 				auto value = chunk->GetValue(col, row);
-				if (value.IsNull())
+				if (value.IsNull()) {
 					json += "null";
-				else if (value.type().id() == LogicalTypeId::BOOLEAN)
+				} else if (value.type().id() == LogicalTypeId::BOOLEAN) {
 					json += value.GetValue<bool>() ? "true" : "false";
-				else if (value.type().id() == LogicalTypeId::FLOAT || value.type().id() == LogicalTypeId::DOUBLE) {
+				} else if (value.type().id() == LogicalTypeId::FLOAT || value.type().id() == LogicalTypeId::DOUBLE) {
 					auto number = value.GetValue<double>();
 					auto text = std::isnan(number)                    ? "NaN"
 					            : std::isinf(number)                  ? (number < 0 ? "-Infinity" : "+Infinity")
 					            : number == 0 && std::signbit(number) ? "-0"
 					                                                  : value.ToString();
 					json += JSONString(text);
-				} else
+				} else {
 					json += JSONString(value.type().id() == LogicalTypeId::VARCHAR ? value.GetValue<string>()
 					                                                               : value.ToString());
+				}
 			}
 			json += "]";
 		}
 	}
-	if (query.HasError())
+	if (query.HasError()) {
 		NormalizeError(query.GetErrorObject(), "query", "execute", ExceptionType::INVALID_INPUT);
-	if (context.IsInterrupted())
+	}
+	if (context.IsInterrupted()) {
 		throw InterruptException();
+	}
 	return json + "],\"row_count\":" + to_string(count) + "}";
 }
 
@@ -2061,23 +2199,24 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 		auto bundle = ErrorBoundary(
 		    data.path, "load", [&]() { return LoadBundle(context, data.path); }, ExceptionType::INVALID_INPUT);
 		result->rows.push_back({Value(bundle->profile), Value(bundle->snapshot_id), Value(bundle->content_hash),
-		                        Value::BIGINT(bundle->rows)});
+		                        Value::BIGINT(static_cast<int64_t>(bundle->rows))});
 		ObserveLoad(context, PopulationLoadCheckpoint::BEFORE_PUBLISH);
-		if (context.IsInterrupted())
+		if (context.IsInterrupted()) {
 			throw InterruptException();
+		}
 		PopulationState::Get(context).SetBundle(std::move(bundle));
 	} else if (!data.vocabulary.empty()) {
 		VocabularyRows(data, result->rows);
 	} else if (data.discover) {
 		auto &b = *data.bundle;
-		for (auto concept : {b.root, b.derived}) {
+		for (const auto &concept : {b.root, b.derived}) {
 			bool derived = concept == b.derived;
 			result->rows.push_back({Value(concept), derived ? Value(b.root) : Value(LogicalType::VARCHAR),
 			                        Value(OriginalName(b, b.identity)),
 			                        derived ? Value(b.original_rule) : Value(LogicalType::VARCHAR), Value(b.profile),
 			                        Value(b.snapshot_id), Value(b.content_hash), Value(b.core_hash),
 			                        Value(b.ontology_hash), Value(b.mapping_hash), Value(b.manifest_hash),
-			                        Value(b.original_source), Value::BIGINT(b.rows)});
+			                        Value(b.original_source), Value::BIGINT(static_cast<int64_t>(b.rows))});
 		}
 	} else if (data.compile) {
 		auto &b = *data.bundle;
@@ -2101,15 +2240,17 @@ void Scan(ClientContext &context, TableFunctionInput &input, DataChunk &output) 
 	auto &state = input.global_state->Cast<PopulationScan>();
 	if (state.result) {
 		state.chunk = state.result->Fetch();
-		if (state.chunk && state.chunk->size())
+		if (state.chunk && state.chunk->size()) {
 			output.Reference(*state.chunk);
+		}
 		return;
 	}
 	idx_t count = 0;
 	while (state.offset < state.rows.size() && count < STANDARD_VECTOR_SIZE) {
 		auto &row = state.rows[state.offset++];
-		for (idx_t col = 0; col < row.size(); col++)
+		for (idx_t col = 0; col < row.size(); col++) {
 			output.SetValue(col, count, row[col]);
+		}
 		count++;
 	}
 	output.SetCardinality(count);
@@ -2119,16 +2260,20 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
                                       vector<string> &names) {
 	auto name = input.table_function.name;
 	string object = name;
-	if (!input.inputs.empty() && !input.inputs[0].IsNull() && input.inputs[0].type() == LogicalType::VARCHAR)
+	if (!input.inputs.empty() && !input.inputs[0].IsNull() && input.inputs[0].type() == LogicalType::VARCHAR) {
 		object = input.inputs[0].GetValue<string>();
+	}
 	return ErrorBoundary(object, "bind", [&]() {
-		if (name == "ossie_bundle_load")
+		if (name == "ossie_bundle_load") {
 			return LoadBind(context, input, types, names);
-		if (name == "ossie_concepts")
+		}
+		if (name == "ossie_concepts") {
 			return DiscoverBind(context, input, types, names);
+		}
 		if (name == "ossie_population_metrics" || name == "ossie_population_fields" ||
-		    name == "ossie_population_capabilities")
+		    name == "ossie_population_capabilities") {
 			return VocabularyBind(context, input, types, names);
+		}
 		return RequestBind(context, input, types, names);
 	});
 }
@@ -2146,22 +2291,26 @@ void ScanBoundary(ClientContext &context, TableFunctionInput &input, DataChunk &
 void JSONListFunction(DataChunk &args, ExpressionState &, Vector &result) {
 	for (idx_t row = 0; row < args.size(); row++) {
 		auto value = args.data[0].GetValue(row);
-		if (value.IsNull())
+		if (value.IsNull()) {
 			Fail("list", "arguments", "population MCP: list argument required");
+		}
 		auto bytes = value.GetValue<string>();
 		auto doc = yyjson_read(bytes.data(), bytes.size(), 0);
-		if (!doc)
+		if (!doc) {
 			Fail("list", "arguments", "population MCP: malformed JSON; JSON array of strings required");
+		}
 		std::unique_ptr<yyjson_doc, decltype(&yyjson_doc_free)> owner(doc, yyjson_doc_free);
 		auto root = yyjson_doc_get_root(doc);
-		if (!yyjson_is_arr(root))
+		if (!yyjson_is_arr(root)) {
 			Fail("list", "arguments", "population MCP: JSON array of strings required");
+		}
 		vector<Value> values;
 		size_t index, max;
 		yyjson_val *item;
 		yyjson_arr_foreach(root, index, max, item) {
-			if (!yyjson_is_str(item))
+			if (!yyjson_is_str(item)) {
 				Fail("list[" + to_string(index) + "]", "arguments", "population MCP: JSON array of strings required");
+			}
 			values.push_back(Value(string(yyjson_get_str(item), yyjson_get_len(item))));
 		}
 		result.SetValue(row, Value::LIST(LogicalType::VARCHAR, std::move(values)));

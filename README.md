@@ -196,6 +196,10 @@ build compiles DuckDB from source and takes a while; later builds are incrementa
 make test
 ```
 
+For the bounded acceptance runner and independent Linux setup, see
+[the acceptance entry](docs/p0-acceptance.md) and
+[Linux reproduction](docs/linux-reproduction.md).
+
 For the architecture and how to work on the compiler, see
 [docs/architecture.md](docs/architecture.md).
 

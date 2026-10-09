@@ -1,0 +1,36 @@
+Makefile:33: warning: overriding recipe for target 'tidy-check'
+extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old recipe for target 'tidy-check'
+mkdir -p build/release
+cmake -G "Ninja" -DFORCE_COLORED_OUTPUT=1 -DEXTENSION_STATIC_BUILD=1  -DDUCKDB_EXTENSION_CONFIGS='/workspace/extension_config.cmake'   -DOSX_BUILD_ARCH=   -DDUCKDB_EXPLICIT_PLATFORM='' -DCUSTOM_LINKER= -DOVERRIDE_GIT_DESCRIBE="" -DUNITTEST_ROOT_DIRECTORY="/workspace/" -DBENCHMARK_ROOT_DIRECTORY="/workspace/" -DENABLE_UNITTEST_CPP_TESTS=FALSE -DENABLE_EXTENSION_AUTOLOADING=0 -DENABLE_EXTENSION_AUTOINSTALL=0 -DBUILD_EXTENSION_TEST_DEPS=default   -DCMAKE_BUILD_TYPE=Release -S "./duckdb/" -B build/release
+-- GIT_COMMIT_HASH has length 8 different than the expected 10
+-- git hash 069cc9f9, version v1.5.6, extension folder v1.5.6
+-- Build workers: compile=4 link_release=4 link_non_release=2
+-- Extensions will be deployed to: /workspace/build/release/repository
+-- Load extension 'ossie' from '/workspace' @ 1b6011c
+-- Load extension 'tpcds' from '/workspace/duckdb/extensions' @ v1.5.6
+-- Load extension 'core_functions' from '/workspace/duckdb/extensions' @ v1.5.6
+-- Load extension 'parquet' from '/workspace/duckdb/extensions' @ v1.5.6
+CMake Warning at extension/extension_build_tools.cmake:597 (message):
+  Extension 'ossie' has a vcpkg.json, but build was not run with VCPKG.  If
+  build fails, check out VCPKG build instructions in
+  'duckdb/extension/README.md' or try manually installing the dependencies in
+  /workspace/vcpkg.json
+Call Stack (most recent call first):
+  CMakeLists.txt:855 (include)
+
+
+-- Extensions linked into DuckDB: [ossie, tpcds, core_functions, parquet]
+-- Configuring done (1.4s)
+-- Generating done (0.3s)
+-- Build files have been written to: /workspace/build/release
+cmake --build build/release --config Release
+[1/10] Updating .cache/clangd (release)
+[2/10] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/population/population.cpp.o
+[3/10] Linking CXX static library extension/ossie/libossie_extension.a
+[4/10] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/population/population.cpp.o
+[5/10] Linking CXX executable duckdb
+[6/10] Linking CXX executable tools/plan_serializer
+[7/10] Linking CXX executable test/unittest
+[8/10] Linking CXX shared library src/libduckdb.so
+[9/10] Linking CXX shared library extension/ossie/ossie.duckdb_extension
+[10/10] repository

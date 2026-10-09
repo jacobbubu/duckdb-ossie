@@ -42,3 +42,11 @@ DuckDB
   Copyright 2018-2025 Stichting DuckDB Foundation.
   Licensed under the MIT License.
   https://github.com/duckdb/duckdb
+
+QwenPaw-Data research sources
+  Files under docs/research/ossie-req-001/sources/qwenpaw-data/ are immutable
+  research/test sources, including the original demo workbook and document.
+  They are not included in the built extension. Source labels and hashes are
+  recorded in docs/research/ossie-req-001/sources/manifest.json.
+  Licensed under the Apache License, Version 2.0; the original license is saved
+  at docs/research/ossie-req-001/sources/qwenpaw-data/LICENSE.

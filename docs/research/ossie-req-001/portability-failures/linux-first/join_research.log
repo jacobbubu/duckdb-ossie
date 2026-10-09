@@ -1,0 +1,558 @@
+{
+  "scope": "R6 core live-query and research SQL preflight controls; production joined population NOT implemented",
+  "runtime": "Bun 1.3.11",
+  "duckdb_version": "v1.5.6",
+  "duckdb_source_id": "069cc9f9b5",
+  "artifact_sha256": "d5d19cc40ee88a378a90193dc20fd11da9c0435aff1d56df6df0fa3ba6f97291",
+  "script_sha256": "72c9b30c6f4812b618b7c003bf8f05278ada1b290efb3a77a176887cff7c7ac2",
+  "helper_sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+  "fact_rows": 6,
+  "dimension_rows": 4,
+  "independent_oracle": "hand-defined associations and bigint cents",
+  "non_null_measure_count": 5,
+  "average_control": 11.002,
+  "average_tolerance": 1e-12,
+  "dimension_grain_count_vs_naive_flattened_count": [
+    4,
+    6
+  ],
+  "dimension_grain_compiles_independently": "SELECT count(dimension.id) AS dimension_count FROM memory.main.r6_dimension AS dimension",
+  "fact_total": [
+    [
+      6,
+      "55.01"
+    ]
+  ],
+  "joined_groups": [
+    [
+      "North",
+      4,
+      "24.98"
+    ],
+    [
+      "South",
+      2,
+      "30.03"
+    ]
+  ],
+  "selected_fact_ids": [
+    "f1",
+    "f2",
+    "f5",
+    "f6"
+  ],
+  "compiled_sql": "SELECT dimension.\"label\" AS \"dimension.label\", count(fact.id) AS record_count, sum(fact.amount) AS amount_sum FROM memory.main.r6_fact AS fact INNER JOIN memory.main.r6_dimension AS dimension ON ((fact.dim_id = dimension.id)) GROUP BY dimension.\"label\"",
+  "preflight_cases": [
+    {
+      "name": "referenced_duplicate_dimension",
+      "research_reasons": [
+        "dimension_key_duplicate"
+      ],
+      "core_joined_rows": [
+        [
+          "North",
+          6,
+          "55.01"
+        ],
+        [
+          "South",
+          2,
+          "30.03"
+        ]
+      ],
+      "core_fact_only_rows": [
+        [
+          6,
+          "55.01"
+        ]
+      ],
+      "actual_fact_rows": 6,
+      "actual_join_rows": 8,
+      "fact_id_multiplicity": [
+        [
+          "f1",
+          2
+        ],
+        [
+          "f2",
+          2
+        ],
+        [
+          "f3",
+          1
+        ],
+        [
+          "f4",
+          1
+        ],
+        [
+          "f5",
+          1
+        ],
+        [
+          "f6",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "unreferenced_duplicate_dimension",
+      "research_reasons": [
+        "dimension_key_duplicate"
+      ],
+      "core_joined_rows": [
+        [
+          "North",
+          4,
+          "24.98"
+        ],
+        [
+          "South",
+          2,
+          "30.03"
+        ]
+      ],
+      "core_fact_only_rows": [
+        [
+          6,
+          "55.01"
+        ]
+      ],
+      "actual_fact_rows": 6,
+      "actual_join_rows": 6,
+      "fact_id_multiplicity": [
+        [
+          "f1",
+          1
+        ],
+        [
+          "f2",
+          1
+        ],
+        [
+          "f3",
+          1
+        ],
+        [
+          "f4",
+          1
+        ],
+        [
+          "f5",
+          1
+        ],
+        [
+          "f6",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "null_dimension_key",
+      "research_reasons": [
+        "dimension_key_null"
+      ],
+      "core_joined_rows": [
+        [
+          "North",
+          4,
+          "24.98"
+        ],
+        [
+          "South",
+          2,
+          "30.03"
+        ]
+      ],
+      "core_fact_only_rows": [
+        [
+          6,
+          "55.01"
+        ]
+      ],
+      "actual_fact_rows": 6,
+      "actual_join_rows": 6,
+      "fact_id_multiplicity": [
+        [
+          "f1",
+          1
+        ],
+        [
+          "f2",
+          1
+        ],
+        [
+          "f3",
+          1
+        ],
+        [
+          "f4",
+          1
+        ],
+        [
+          "f5",
+          1
+        ],
+        [
+          "f6",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "missing_target",
+      "research_reasons": [
+        "fact_foreign_key_unmatched"
+      ],
+      "core_joined_rows": [
+        [
+          "North",
+          2,
+          "30.03"
+        ],
+        [
+          "South",
+          2,
+          "30.03"
+        ]
+      ],
+      "core_fact_only_rows": [
+        [
+          6,
+          "55.01"
+        ]
+      ],
+      "actual_fact_rows": 6,
+      "actual_join_rows": 4,
+      "fact_id_multiplicity": [
+        [
+          "f1",
+          1
+        ],
+        [
+          "f2",
+          1
+        ],
+        [
+          "f3",
+          1
+        ],
+        [
+          "f4",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "null_fact_foreign_key",
+      "research_reasons": [
+        "fact_foreign_key_null"
+      ],
+      "core_joined_rows": [
+        [
+          "North",
+          3,
+          "14.97"
+        ],
+        [
+          "South",
+          2,
+          "30.03"
+        ]
+      ],
+      "core_fact_only_rows": [
+        [
+          6,
+          "55.01"
+        ]
+      ],
+      "actual_fact_rows": 6,
+      "actual_join_rows": 5,
+      "fact_id_multiplicity": [
+        [
+          "f2",
+          1
+        ],
+        [
+          "f3",
+          1
+        ],
+        [
+          "f4",
+          1
+        ],
+        [
+          "f5",
+          1
+        ],
+        [
+          "f6",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "unmatched_fact_outside_active_scope",
+      "research_reasons": [
+        "fact_foreign_key_unmatched"
+      ],
+      "core_joined_rows": [
+        [
+          "North",
+          4,
+          "24.98"
+        ],
+        [
+          "South",
+          1,
+          null
+        ]
+      ],
+      "core_fact_only_rows": [
+        [
+          6,
+          "55.01"
+        ]
+      ],
+      "actual_fact_rows": 6,
+      "actual_join_rows": 5,
+      "fact_id_multiplicity": [
+        [
+          "f1",
+          1
+        ],
+        [
+          "f2",
+          1
+        ],
+        [
+          "f4",
+          1
+        ],
+        [
+          "f5",
+          1
+        ],
+        [
+          "f6",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "duplicate_fact_identity",
+      "research_reasons": [
+        "fact_identity_duplicate"
+      ],
+      "core_joined_rows": [
+        [
+          "North",
+          5,
+          "34.99"
+        ],
+        [
+          "South",
+          2,
+          "30.03"
+        ]
+      ],
+      "core_fact_only_rows": [
+        [
+          7,
+          "65.02"
+        ]
+      ],
+      "actual_fact_rows": 7,
+      "actual_join_rows": 7,
+      "fact_id_multiplicity": [
+        [
+          "f1",
+          2
+        ],
+        [
+          "f2",
+          1
+        ],
+        [
+          "f3",
+          1
+        ],
+        [
+          "f4",
+          1
+        ],
+        [
+          "f5",
+          1
+        ],
+        [
+          "f6",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "null_fact_identity",
+      "research_reasons": [
+        "fact_identity_null"
+      ],
+      "core_joined_rows": [
+        [
+          "North",
+          4,
+          "25.98"
+        ],
+        [
+          "South",
+          2,
+          "30.03"
+        ]
+      ],
+      "core_fact_only_rows": [
+        [
+          6,
+          "56.01"
+        ]
+      ],
+      "actual_fact_rows": 7,
+      "actual_join_rows": 7,
+      "fact_id_multiplicity": [
+        [
+          "f1",
+          1
+        ],
+        [
+          "f2",
+          1
+        ],
+        [
+          "f3",
+          1
+        ],
+        [
+          "f4",
+          1
+        ],
+        [
+          "f5",
+          1
+        ],
+        [
+          "f6",
+          1
+        ],
+        [
+          null,
+          1
+        ]
+      ]
+    },
+    {
+      "name": "key_type_coercion",
+      "research_reasons": [
+        "exact_integer_key_type"
+      ],
+      "core_joined_rows": [
+        [
+          "North",
+          6,
+          "55.01"
+        ],
+        [
+          "South",
+          2,
+          "30.03"
+        ]
+      ],
+      "core_fact_only_rows": [
+        [
+          6,
+          "55.01"
+        ]
+      ],
+      "actual_fact_rows": 6,
+      "actual_join_rows": 8,
+      "fact_id_multiplicity": [
+        [
+          "f1",
+          2
+        ],
+        [
+          "f2",
+          2
+        ],
+        [
+          "f3",
+          1
+        ],
+        [
+          "f4",
+          1
+        ],
+        [
+          "f5",
+          1
+        ],
+        [
+          "f6",
+          1
+        ]
+      ]
+    },
+    {
+      "name": "empty_fact_bad_dimension",
+      "research_reasons": [
+        "dimension_key_duplicate"
+      ],
+      "core_joined_rows": [],
+      "core_fact_only_rows": [
+        [
+          0,
+          null
+        ]
+      ],
+      "actual_fact_rows": 0,
+      "actual_join_rows": 0,
+      "fact_id_multiplicity": []
+    },
+    {
+      "name": "empty_dimension_nonempty_fact",
+      "research_reasons": [
+        "fact_foreign_key_unmatched"
+      ],
+      "core_joined_rows": [],
+      "core_fact_only_rows": [
+        [
+          6,
+          "55.01"
+        ]
+      ],
+      "actual_fact_rows": 6,
+      "actual_join_rows": 0,
+      "fact_id_multiplicity": []
+    }
+  ],
+  "planner_rejections": [
+    "declared_many_to_many",
+    "ambiguous_path",
+    "mixed_grain",
+    "reverse_fanout"
+  ],
+  "declared_unique_key_supported": true,
+  "unused_dimension_row_produces_no_fact": true,
+  "null_nonkey_attribute_allowed": true,
+  "empty_sources_checked": true,
+  "host_same_database_transaction_snapshot_checked": true,
+  "population_v1_multitable_still_refused": true,
+  "inputs_sha256": {
+    "test/fixtures/safe-join-research/core.json": "8daca735a09840dea99104930ab457f97e6c6613c47be5943c462d5134b5aebe",
+    "test/fixtures/safe-join-research/oracle.json": "b8c19ebec0013dc28dd238ce0bf4a0069a097f7c551d4dcaa1f65fe53c2a29c4",
+    "test/fixtures/safe-join-research/rows.sql": "ea9ac378b27a6638090d269f770eeb711f6ec2d7a0bba02d2ef935cc3f8078fa"
+  },
+  "implementation_sha256": {
+    "src/compile/compile.cpp": "dec2c6a72ac178b9ef16cd2796d7b8dc15ff88542ddbf8266fff60beca3ef460",
+    "src/model/graph.cpp": "da654783f170010c6ada5a0c538053104ae9bbbb00c6aa647050fd4a65fe5292",
+    "src/model/validate.cpp": "557ce77b1c86ab7bb6070e840ea232c014524b59b91047d3b1542816181b5d22",
+    "src/population/population.cpp": "7848e8b0fcb7fd0855ea3f89c68d85633839eb7bfd13da05ab801e01ad8616e8"
+  }
+}

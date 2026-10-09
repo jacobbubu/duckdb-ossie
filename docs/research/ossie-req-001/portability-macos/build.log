@@ -1,0 +1,281 @@
+Makefile:33: warning: overriding commands for target `tidy-check'
+extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old commands for target `tidy-check'
+mkdir -p build/release
+cmake  -DEXTENSION_STATIC_BUILD=1  -DDUCKDB_EXTENSION_CONFIGS='/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/extension_config.cmake'   -DOSX_BUILD_ARCH=   -DDUCKDB_EXPLICIT_PLATFORM='' -DCUSTOM_LINKER= -DOVERRIDE_GIT_DESCRIBE="" -DUNITTEST_ROOT_DIRECTORY="/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/" -DBENCHMARK_ROOT_DIRECTORY="/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/" -DENABLE_UNITTEST_CPP_TESTS=FALSE -DENABLE_EXTENSION_AUTOLOADING=0 -DENABLE_EXTENSION_AUTOINSTALL=0 -DBUILD_EXTENSION_TEST_DEPS=default   -DCMAKE_BUILD_TYPE=Release -S "./duckdb/" -B build/release
+CMake Warning at CMakeLists.txt:226 (message):
+  Not disabling vptr sanitizer on M1 Macbook - set DISABLE_VPTR_SANITIZER
+  manually if you run into issues with false positives in the sanitizer
+
+
+-- git hash 069cc9f9b5, version v1.5.6, extension folder v1.5.6
+-- Build workers: compile=4 link_release=4 link_non_release=2
+-- Extensions will be deployed to: /Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release/repository
+-- Load extension 'ossie' from '/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie' @ 1b6011c
+-- Load extension 'tpcds' from '/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/duckdb/extensions' @ v1.5.6
+-- Load extension 'core_functions' from '/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/duckdb/extensions' @ v1.5.6
+-- Load extension 'parquet' from '/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/duckdb/extensions' @ v1.5.6
+CMake Warning at extension/extension_build_tools.cmake:597 (message):
+  Extension 'ossie' has a vcpkg.json, but build was not run with VCPKG.  If
+  build fails, check out VCPKG build instructions in
+  'duckdb/extension/README.md' or try manually installing the dependencies in
+  /Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/vcpkg.json
+Call Stack (most recent call first):
+  CMakeLists.txt:855 (include)
+
+
+CMake Warning (deprecated) at /Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+-- Extensions linked into DuckDB: [ossie, tpcds, core_functions, parquet]
+-- Configuring done (2.3s)
+-- Generating done (1.2s)
+-- Build files have been written to: /Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release
+cmake --build build/release --config Release
+[  0%] Updating .cache/clangd (release)
+[  0%] Built target duckdb_execution
+[  0%] Built target duckdb_logging
+[  0%] Built target clangd_cache
+[  2%] Built target duckdb_vector_operations
+[  2%] Built target duckdb_nested_loop_join
+[  2%] Built target duckdb_operator_aggregate
+[  2%] Built target duckdb_expression_executor
+[  2%] Built target duckdb_csv_buffer_manager
+[  2%] Built target duckdb_csv_encode
+[  2%] Built target duckdb_csv_sniffer
+[  3%] Built target duckdb_csv_scanner
+[  3%] Built target duckdb_csv_state_machine
+[  3%] Built target duckdb_operator_csv_table_function
+[  3%] Built target duckdb_csv_util
+[  4%] Built target duckdb_operator_filter
+[  4%] Built target duckdb_operator_helper
+[  4%] Built target duckdb_operator_join
+[  4%] Built target duckdb_operator_order
+[  4%] Built target duckdb_operator_persistent
+[  5%] Built target duckdb_operator_scan
+[  5%] Built target duckdb_operator_projection
+[  5%] Built target duckdb_operator_schema
+[  5%] Built target duckdb_operator_set
+[  6%] Built target duckdb_execution_index
+[  6%] Built target duckdb_physical_plan
+[  6%] Built target duckdb_sample
+[  6%] Built target duckdb_execution_index_art
+[  6%] Built target duckdb_main
+[  6%] Built target duckdb_main_capi
+[  6%] Built target duckdb_main_capi_cast
+[  6%] Built target duckdb_common_http
+[  6%] Built target duckdb_main_relation
+[  7%] Built target duckdb_main_extension
+[  7%] Built target duckdb_main_secret
+[  8%] Built target duckdb_main_chunk_scan_state
+[  8%] Built target duckdb_main_buffered_data
+[  8%] Built target duckdb_main_settings
+[  8%] Built target duckdb_parallel
+[  8%] Built target duckdb_storage_checkpoint
+[  8%] Built target duckdb_storage
+[  8%] Built target duckdb_storage_buffer
+[  9%] Built target duckdb_storage_compression
+[ 10%] Built target duckdb_storage_compression_roaring
+[ 10%] Built target duckdb_storage_compression_alp
+[ 10%] Built target duckdb_storage_compression_chimp
+[ 10%] Built target duckdb_storage_compression_dictionary
+[ 10%] Built target duckdb_storage_metadata
+[ 10%] Built target duckdb_storage_compression_dict_fsst
+[ 10%] Built target duckdb_storage_statistics
+[ 10%] Built target duckdb_storage_serialization
+[ 10%] Built target duckdb_storage_table
+[ 10%] Built target duckdb_storage_table_variant
+[ 10%] Built target duckdb_transaction
+[ 11%] Built target duckdb_fastpforlib
+[ 11%] Built target duckdb_fmt
+[ 11%] Built target duckdb_fsst
+[ 12%] Built target duckdb_verification
+[ 12%] Built target duckdb_hyperloglog
+[ 16%] Built target duckdb_mbedtls
+[ 17%] Built target duckdb_miniz
+[ 19%] Built target duckdb_pg_query
+[ 19%] Built target duckdb_skiplistlib
+[ 20%] Built target duckdb_yyjson
+[ 20%] Built target duckdb_utf8proc
+[ 20%] Built target duckdb_optimizer_compressed_materialization
+[ 20%] Built target duckdb_optimizer
+[ 26%] Built target duckdb_zstd
+[ 31%] Built target duckdb_re2
+[ 31%] Built target duckdb_optimizer_matcher
+[ 31%] Built target duckdb_optimizer_pullup
+[ 32%] Built target duckdb_optimizer_join_order
+[ 32%] Built target duckdb_optimizer_pushdown
+[ 32%] Built target duckdb_optimizer_rules
+[ 32%] Built target duckdb_optimizer_statistics_expr
+[ 33%] Built target duckdb_optimizer_statistics_op
+[ 34%] Built target duckdb_planner
+[ 34%] Built target duckdb_bind_expression
+[ 34%] Built target duckdb_planner_expression
+[ 34%] Built target duckdb_bind_query_node
+[ 34%] Built target duckdb_bind_statement
+[ 34%] Built target duckdb_expression_binders
+[ 34%] Built target duckdb_planner_filter
+[ 35%] Built target duckdb_bind_tableref
+[ 35%] Built target duckdb_planner_operator
+[ 35%] Built target duckdb_planner_subquery
+[ 35%] Built target duckdb_constraints
+[ 35%] Built target duckdb_parser
+[ 35%] Built target duckdb_expression
+[ 35%] Built target duckdb_query_node
+[ 35%] Built target duckdb_parsed_data
+[ 35%] Built target duckdb_statement
+[ 35%] Built target duckdb_parser_tableref
+[ 35%] Built target duckdb_transformer_constraint
+[ 35%] Built target duckdb_transformer_expression
+[ 35%] Built target duckdb_transformer_helpers
+[ 36%] Built target duckdb_transformer_statement
+[ 36%] Built target duckdb_function
+[ 36%] Built target duckdb_transformer_tableref
+[ 37%] Built target duckdb_func_aggr
+[ 37%] Built target duckdb_aggr_distr
+[ 37%] Built target duckdb_union_cast
+[ 37%] Built target duckdb_func_cast
+[ 37%] Built target duckdb_variant_cast
+[ 37%] Built target duckdb_func_pragma
+[ 37%] Built target duckdb_func_scalar
+[ 37%] Built target duckdb_func_compressed_materialization
+[ 37%] Built target duckdb_func_date
+[ 37%] Built target duckdb_func_generic_main
+[ 37%] Built target duckdb_function_map
+[ 38%] Built target duckdb_func_list_nested
+[ 38%] Built target duckdb_func_ops_main
+[ 38%] Built target duckdb_func_seq
+[ 39%] Built target duckdb_func_string_main
+[ 39%] Built target duckdb_func_struct_main
+[ 39%] Built target duckdb_func_string_regexp
+[ 40%] Built target duckdb_func_variant_main
+[ 40%] Built target duckdb_func_system
+[ 40%] Built target duckdb_func_geometry
+[ 40%] Built target duckdb_func_table
+[ 41%] Built target duckdb_table_func_system
+[ 41%] Built target duckdb_arrow_conversion
+[ 41%] Built target duckdb_func_table_version
+[ 41%] Built target duckdb_func_window
+[ 41%] Built target duckdb_function_variant
+[ 41%] Built target duckdb_catalog
+[ 41%] Built target duckdb_catalog_entries_dependency
+[ 41%] Built target duckdb_catalog_entries
+[ 41%] Built target duckdb_catalog_default_entries
+[ 42%] Built target duckdb_common
+[ 42%] Built target duckdb_adbc
+[ 43%] Built target duckdb_adbc_nanoarrow
+[ 43%] Built target duckdb_common_allocator
+[ 43%] Built target duckdb_common_arrow
+[ 43%] Built target duckdb_common_arrow_appender
+[ 43%] Built target duckdb_common_crypto
+[ 43%] Built target duckdb_common_enums
+[ 44%] Built target duckdb_common_exception
+[ 44%] Built target duckdb_common_multi_file
+[ 44%] Built target duckdb_common_operators
+[ 44%] Built target duckdb_progress_bar
+[ 45%] Built target duckdb_common_tree_renderer
+[ 45%] Built target duckdb_row_operations
+[ 45%] Built target duckdb_common_serializer
+[ 46%] Built target duckdb_sort
+[ 46%] Built target duckdb_common_types
+[ 46%] Built target duckdb_common_types_column
+[ 46%] Built target duckdb_common_variant
+[ 46%] Built target duckdb_common_types_row
+[ 47%] Built target duckdb_value_operations
+[ 47%] Built target duckdb_platform_binary
+[ 47%] Built target dummy_static_extension_loader
+[ 47%] Built target duckdb_parquet_decoders
+[ 47%] Built target duckdb_parquet_readers
+[ 47%] Built target duckdb_parquet_reader_variant
+[ 47%] Built target duckdb_parquet_writers
+[ 48%] Built target duckdb_parquet_writer_variant
+[ 49%] Built target dsdgen
+[ 50%] Built target duckdb_core_functions_algebraic
+[ 50%] Built target duckdb_core_functions_distributive
+[ 59%] Built target dsdgen_c
+[ 59%] Built target duckdb_core_functions_holistic
+[ 59%] Built target duckdb_core_functions_nested
+[ 60%] Built target duckdb_core_functions_regression
+[ 60%] Built target duckdb_core_functions_array
+[ 60%] Built target duckdb_core_functions_bit
+[ 60%] Built target duckdb_core_functions_blob
+[ 60%] Built target duckdb_core_functions_date
+[ 60%] Built target duckdb_core_functions_enum
+[ 61%] Built target duckdb_core_functions_debug
+[ 61%] Built target duckdb_core_functions_generic
+[ 61%] Built target duckdb_core_functions_list
+[ 61%] Built target duckdb_core_functions_math
+[ 62%] Built target duckdb_core_functions_map
+[ 62%] Built target duckdb_core_functions_operators
+[ 62%] Built target duckdb_core_functions_random
+[ 62%] Built target duckdb_core_functions_string
+[ 62%] Built target duckdb_core_functions_struct
+[ 62%] Built target duckdb_core_functions_union
+[ 63%] Building CXX object extension/CMakeFiles/duckdb_generated_extension_loader.dir/__/codegen/src/generated_extension_loader.cpp.o
+[ 64%] Built target duckdb_linenoise
+[ 65%] Built target test_helpers
+[ 65%] Building CXX object test/sqlite/CMakeFiles/test_sqlite.dir/ub_test_sqlite.cpp.o
+[ 65%] Built target duckdb_static
+[ 66%] Built target duckdb_platform
+[ 67%] Built target tpcds_extension
+[ 67%] Built target core_functions_extension
+[ 67%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/ossie_extension.cpp.o
+[ 77%] Built target parquet_extension
+[ 88%] Built target parquet_loadable_extension
+[ 89%] Built target loadable_extension_demo_loadable_extension
+[ 89%] Built target loadable_extension_optimizer_demo_loadable_extension
+[ 90%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/ossie_extension.cpp.o
+[ 90%] Linking CXX static library libduckdb_generated_extension_loader.a
+[ 90%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/parser.cpp.o
+[ 90%] Built target duckdb_generated_extension_loader
+[ 90%] Built target tpcds_loadable_extension
+[ 91%] Built target core_functions_loadable_extension
+[ 91%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/parser.cpp.o
+[ 91%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/validate.cpp.o
+[ 91%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/validate.cpp.o
+[ 91%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/graph.cpp.o
+[ 91%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/catalog.cpp.o
+[ 91%] Built target test_sqlite
+[ 92%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/graph.cpp.o
+[ 93%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/dialect.cpp.o
+[ 93%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/catalog.cpp.o
+[ 93%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/yaml.cpp.o
+[ 93%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/compile/compile.cpp.o
+[ 93%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/dialect.cpp.o
+[ 93%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/yaml.cpp.o
+[ 93%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/compile/compile.cpp.o
+[ 93%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/load.cpp.o
+[ 94%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/load.cpp.o
+[ 94%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/compile.cpp.o
+[ 94%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/compile.cpp.o
+[ 94%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/describe.cpp.o
+[ 95%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/query.cpp.o
+[ 95%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/describe.cpp.o
+[ 95%] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/population/population.cpp.o
+[ 95%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/query.cpp.o
+[ 95%] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/population/population.cpp.o
+[ 95%] Linking CXX shared library ossie.duckdb_extension
+ld: warning: search path '/usr/local/opt/libxml2/lib' not found
+[ 95%] Built target ossie_loadable_extension
+[ 96%] repository
+[ 96%] Built target duckdb_local_extension_repo
+[ 96%] Linking CXX static library libossie_extension.a
+[ 96%] Built target ossie_extension
+[ 96%] Linking CXX shared library libduckdb.dylib
+[ 97%] Linking CXX executable unittest
+[ 97%] Linking CXX executable plan_serializer
+ld: warning: search path '/usr/local/opt/libxml2/lib' not found
+ld: warning: search path '/usr/local/opt/libxml2/lib' not found
+ld: warning: search path '/usr/local/opt/libxml2/lib' not found
+[ 97%] Linking CXX executable ../../duckdb
+ld: warning: search path '/usr/local/opt/libxml2/lib' not found
+[ 97%] Built target plan_serializer
+[ 97%] Built target unittest
+[ 97%] Built target duckdb
+[100%] Built target shell

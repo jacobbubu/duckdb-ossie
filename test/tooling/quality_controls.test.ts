@@ -10,6 +10,7 @@ import {
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
+import { VERIFIERS } from "../../scripts/audit_acceptance_evidence.ts";
 import { ROOT, check } from "../../scripts/check_architecture.ts";
 function tree(files: Record<string, string>, reason?: string) {
   const root = mkdtempSync(join(tmpdir(), "ossie-architecture-"));
@@ -259,23 +260,28 @@ test("strict typecheck rejects a runtime-valid type error and recovers", () => {
   }
 });
 
-test("CI uses frozen Bun tooling and the same artifact for all five verifiers", () => {
+test("CI uses frozen Bun tooling and the complete same-artifact acceptance runner", () => {
   const workflow = readFileSync(
     join(ROOT, ".github/workflows/MainDistributionPipeline.yml"),
     "utf8",
   );
   const artifact = workflow.split("  artifact-load:")[1].split("  ci-gate:")[0];
-  for (const name of [
+  expect(artifact).toContain(
+    "bun scripts/run_p0_acceptance.ts downloaded/ossie.duckdb_extension quality-reports",
+  );
+  expect(VERIFIERS).toEqual([
     "loader",
     "population",
     "expression",
     "date",
     "join_research",
     "joined_population",
-  ])
-    expect(artifact).toContain(
-      `bun scripts/verify_${name}_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/${name}.json`,
-    );
+    "plan",
+    "discovery",
+    "error",
+    "typed_population",
+    "correspondence",
+  ]);
   expect(artifact).toContain("bun-version: '1.3.11'");
   expect(artifact).toContain("bun install --frozen-lockfile");
   const controls = workflow.split("  project-controls:")[1];
@@ -296,7 +302,13 @@ test("stock artifact CLI and all verifiers consume the downloaded artifact", () 
   expect(artifact).toContain("name: ossie-v1.5.6-extension-${{ matrix.arch }}");
   expect(artifact).toContain("path: downloaded");
   expect(artifact).toContain(
-    "OSSIE_EXTENSION: downloaded/ossie.duckdb_extension",
+    "run: bun scripts/run_p0_acceptance.ts downloaded/ossie.duckdb_extension quality-reports",
   );
-  expect(artifact).toContain("run: ./scripts/full_functionality_check.sh");
+  const runner = readFileSync(
+    join(ROOT, "scripts/run_p0_acceptance.ts"),
+    "utf8",
+  );
+  expect(runner).toContain("OSSIE_EXTENSION: artifact");
+  expect(runner).toContain('"scripts/full_functionality_check.sh"');
+  expect(runner).not.toContain("INSTALL ossie");
 });

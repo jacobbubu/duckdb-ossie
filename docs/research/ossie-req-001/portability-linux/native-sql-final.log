@@ -1,0 +1,86 @@
+cmake --build build/release --target ossie_state_test
+Makefile:33: warning: overriding recipe for target 'tidy-check'
+extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old recipe for target 'tidy-check'
+[1/1] Linking CXX executable extension/ossie/ossie_state_test
+./build/release/extension/ossie/ossie_state_test "/workspace/"
+PASS: 19 checks; controlled publication, lifetime, compile behavior, cross-connection timing
+cmake --build build/release --target ossie_metric_grain_test
+[1/1] Linking CXX executable extension/ossie/ossie_metric_grain_test
+./build/release/extension/ossie/ossie_metric_grain_test "/workspace/"
+PASS: fact grain: amount_sum
+PASS: fact grain: amount_avg
+PASS: fact grain: value_count
+PASS: fact grain: record_count
+PASS: fact grain: eligible_amount
+PASS: fact grain: dimension_scalar
+PASS: fact grain: wrapped_fact
+PASS: fact grain: constant_field_sum
+PASS: fact grain: quoted_fact
+PASS: independent metrics all have designated fact grain
+PASS: case-insensitive declared metric and dataset
+PASS: core dimension metric independently compiles
+PASS: reject different/absent grain: dimension_count
+PASS: reject different/absent grain: dimension_distinct
+PASS: reject different/absent grain: mixed
+PASS: reject different/absent grain: wrapped_mixed
+PASS: reject different/absent grain: scalar
+PASS: reject different/absent grain: unknown_function
+PASS: reject grainless aggregate: star
+PASS: reject grainless aggregate: with_star
+PASS: reject grainless aggregate: one
+PASS: new checker does not infer standalone COUNT(*) grain from another metric
+PASS: existing core grainless inheritance retained
+PASS: existing core in-metric grainless inheritance retained
+PASS: window rejected by shared analysis
+PASS: unknown metric rejected
+PASS: unknown designated dataset rejected
+PASS: empty request rejected
+PASS: designated grain does not replace fan-out planning
+PASS: designated grain does not replace ambiguity planning
+PASS: validation leaves original model and SQL unchanged
+PASS: native binding fixture created
+PASS: nested aggregates still require physical binder refusal
+PASS: valid original query executes after grain checks
+PASS: group membership, totals and counts match independent hand-derived oracle
+PASS: all designated fact metrics execute
+PASS: exact fact metrics/CASE/constant field match hand oracle
+PASS: AVG and wrapped ratio match hand oracle
+PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: nested_star
+PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: hidden_sum_metric
+PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: hidden_window_metric
+PASS: unrecognized aggregate requires separate strict expression whitelist; binder alone is insufficient
+PASS: 42 designated-grain controls
+cmake --build build/release --target ossie_population_capture_test
+[1/1] Linking CXX executable extension/ossie/ossie_population_capture_test
+./build/release/extension/ossie/ossie_population_capture_test "/workspace/"
+PASS: 158 checks; deterministic production capture, capture/prepublish cancel, callback failure; threads=4/1
+./build/release/"/test/unittest" ""test/"*"
+Filters: test/*
+
+[0/23] (0%): test/sql/ossie_join_research.test
+[1/23] (4%): test/sql/ossie_field_expansion.test
+[2/23] (8%): test/sql/ossie_describe.test
+[3/23] (13%): test/sql/ossie_loader_contract.test
+[4/23] (17%): test/sql/ossie_relationships.test
+[5/23] (21%): test/sql/ossie_population_expressions.test
+[6/23] (26%): test/sql/ossie_population.test
+[7/23] (30%): test/sql/ossie_population_result.test
+[8/23] (34%): test/sql/ossie_population_discovery.test
+[9/23] (39%): test/sql/ossie_population_errors.test
+[10/23] (43%): test/sql/ossie_sql_2026.test
+[11/23] (47%): test/sql/ossie_yaml.test
+[12/23] (52%): test/sql/ossie_population_plan.test
+[13/23] (56%): test/sql/ossie_differential.test
+[14/23] (60%): test/sql/ossie_function_metadata.test
+[15/23] (65%): test/sql/ossie_conformance.test
+[16/23] (69%): test/sql/ossie_population_dates.test
+[17/23] (73%): test/sql/ossie_compile.test
+[18/23] (78%): test/sql/ossie_joined_population.test
+[19/23] (82%): test/sql/ossie_grain.test
+[20/23] (86%): test/sql/ossie_load.test
+[21/23] (91%): test/sql/ossie.test
+[22/23] (95%): test/sql/ossie_validate.test
+[23/23] (100%): test/sql/ossie_validate.test
+===============================================================================
+All tests passed (840 assertions in 23 test cases)
+

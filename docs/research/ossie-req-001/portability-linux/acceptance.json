@@ -1,0 +1,1349 @@
+{
+  "scope": "adjusted A1-A8 local rule-driven acceptance for the two reviewed bounded profiles",
+  "conclusion": "PASS within declared scope and deviations",
+  "artifact_sha256": "4926122b73590b3724e6b46d561c5ae88a330f15f2ce32b80181ab2e8c612dd6",
+  "project_api_version": "2.0.0",
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "spec_version": "0.2.0.dev0",
+  "engine_version": "1.5.6",
+  "verifier_sha256": "a9503c66d7d15969dec0b023ce8f1936c5b44e07e04e428351d55f7a0f12412b",
+  "verifier_dependencies_sha256": {
+    "scripts/audit_acceptance_evidence.ts": "6c8a60754cabc73be4126f90d92be5766717d0f06cc91c18e13b85c3311619e0",
+    "scripts/source_evidence.ts": "363b17cdaf87f7a02b96cb494aa2e77b64903a23fda0093eff7621ad9242865b",
+    "scripts/verify_acceptance_replay.ts": "370f53b10068e797cacba9ca4bcb15592bab3080ce31813ead1175321757ddd8",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c"
+  },
+  "acceptance": [
+    {
+      "id": "A1",
+      "status": "PASS within scope",
+      "behavior": "original 475-row daily oracle and March10 45.89 USD",
+      "evidence": [
+        {
+          "path": "/evidence/linux-delivery/p0-final-population-artifact-results.json",
+          "sha256": "c4a346e28a022439604792ebbe2ef4bcf5cbeadfdaf965738b850615cec1a324"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-mcp-results.json",
+          "sha256": "af40a97618be08bee7f736d0a59b086f3e718835a62b950e3c8ecf674539a308"
+        }
+      ]
+    },
+    {
+      "id": "A2",
+      "status": "PASS within scope",
+      "behavior": "formal threshold10/20 only; same metric/mapping/request; SQL/population/results change",
+      "evidence": [
+        {
+          "path": "/evidence/linux-delivery/p0-final-population-artifact-results.json",
+          "sha256": "c4a346e28a022439604792ebbe2ef4bcf5cbeadfdaf965738b850615cec1a324"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-mcp-results.json",
+          "sha256": "af40a97618be08bee7f736d0a59b086f3e718835a62b950e3c8ecf674539a308"
+        }
+      ]
+    },
+    {
+      "id": "A3",
+      "status": "PASS within scope",
+      "behavior": "complete object IDs, COUNT/SUM/AVG and same frozen population",
+      "evidence": [
+        {
+          "path": "/evidence/linux-delivery/p0-final-population-artifact-results.json",
+          "sha256": "c4a346e28a022439604792ebbe2ef4bcf5cbeadfdaf965738b850615cec1a324"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-mcp-results.json",
+          "sha256": "af40a97618be08bee7f736d0a59b086f3e718835a62b950e3c8ecf674539a308"
+        }
+      ]
+    },
+    {
+      "id": "A4",
+      "status": "PASS within scope",
+      "behavior": "complete daily/groups/drilldown; inherited filters and rules",
+      "evidence": [
+        {
+          "path": "/evidence/linux-delivery/p0-final-population-artifact-results.json",
+          "sha256": "c4a346e28a022439604792ebbe2ef4bcf5cbeadfdaf965738b850615cec1a324"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-mcp-results.json",
+          "sha256": "af40a97618be08bee7f736d0a59b086f3e718835a62b950e3c8ecf674539a308"
+        }
+      ]
+    },
+    {
+      "id": "A5",
+      "status": "PASS within scope",
+      "behavior": "threshold equality, NULL, empty/sparse and missing-relation rejection",
+      "evidence": [
+        {
+          "path": "/evidence/linux-delivery/p0-final-population-artifact-results.json",
+          "sha256": "c4a346e28a022439604792ebbe2ef4bcf5cbeadfdaf965738b850615cec1a324"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-expression-artifact-results.json",
+          "sha256": "0bb4e37ff0d45a73382c748e65ac112d77e5f59f2a860320431c476688023f1d"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-date-artifact-results.json",
+          "sha256": "11daa477586c5f3eb0bf7e8770816b2b8425ca3cf7ba443177c3c79fdef82098"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json",
+          "sha256": "fd8d53ba1d60551de681ee86fd7b483edd464a4f2812509157b413e57bf133f9"
+        }
+      ]
+    },
+    {
+      "id": "A6",
+      "status": "PASS within scope",
+      "behavior": "hand-derived safe fact grain and production key/FK/grain/policy refusals",
+      "evidence": [
+        {
+          "path": "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json",
+          "sha256": "fd8d53ba1d60551de681ee86fd7b483edd464a4f2812509157b413e57bf133f9"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-join_research-artifact-results.json",
+          "sha256": "157c51f4565998164c7ae4ed211b1f4b4bbd9487982249b766ecc093afcc27df"
+        }
+      ]
+    },
+    {
+      "id": "A7",
+      "status": "PASS within scope",
+      "behavior": "actual AST/definition/capture provenance, independent-process replay and scoped typed transport",
+      "evidence": [
+        {
+          "path": "/evidence/linux-delivery/p0-final-population-artifact-results.json",
+          "sha256": "c4a346e28a022439604792ebbe2ef4bcf5cbeadfdaf965738b850615cec1a324"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-plan-artifact-results.json",
+          "sha256": "e247333c5e644f0787b1297df0f21f18204d28b59f019af27f0d8197e561aaca"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-discovery-artifact-results.json",
+          "sha256": "99a00f7642eba8ddb728382faad159bafff059db9ac3d6ba08d757a46ec39a8e"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json",
+          "sha256": "892a041faa941296a2c7c8f2d39577077049ae6109095d1be1c5e8408ffc92fe"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-mcp-results.json",
+          "sha256": "af40a97618be08bee7f736d0a59b086f3e718835a62b950e3c8ecf674539a308"
+        }
+      ]
+    },
+    {
+      "id": "A8",
+      "status": "PASS within scope",
+      "behavior": "user-adjusted new-format only; exact dialect selection and unsupported constructs refused",
+      "evidence": [
+        {
+          "path": "/evidence/linux-delivery/p0-final-loader-artifact-results.json",
+          "sha256": "d1d4fddeeb310783f7125bf7c96ea004cb4f7d1c5e47ff0e5e5c54176cfba13a"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json",
+          "sha256": "f59042e688b05d2745c200a2d6751d590dcb616b35214762b8008da119e4f022"
+        },
+        {
+          "path": "/evidence/linux-delivery/p0-final-expression-artifact-results.json",
+          "sha256": "0bb4e37ff0d45a73382c748e65ac112d77e5f59f2a860320431c476688023f1d"
+        }
+      ]
+    }
+  ],
+  "audit": {
+    "scope": "documentary evidence audit; not a functional rerun or full P0 acceptance",
+    "artifact_sha256": "4926122b73590b3724e6b46d561c5ae88a330f15f2ce32b80181ab2e8c612dd6",
+    "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+    "source_evidence": {
+      "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "manifest_path": "docs/research/ossie-req-001/sources/manifest.json",
+      "manifest_sha256": "9450ced5bfaec4ccc3f65ca21c4b5abc605f76572f544fb8ab8164a334bcd5ca",
+      "locator_path": "docs/research/ossie-req-001/sources/source-locations.json",
+      "locator_sha256": "4ee0140bffd6528634da92c62c8105d1a1e32955d6c699b1e73dc21af8fd366e",
+      "helper_sha256": "363b17cdaf87f7a02b96cb494aa2e77b64903a23fda0093eff7621ad9242865b",
+      "sources": [
+        {
+          "kind": "source",
+          "original_path": "core-spec/spec.md",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/spec.md",
+          "sha256": "d277ef2a929510bc86eb8b27b6036480008c233f2cd05b9f4ef11f203feebad1"
+        },
+        {
+          "kind": "source",
+          "original_path": "core-spec/ossie-schema.json",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/ossie-schema.json",
+          "sha256": "5b9cf15d31057e2b7363194b1c254a6b669fc412b3f8f402d4efbdcfa25fcc87"
+        },
+        {
+          "kind": "source",
+          "original_path": "core-spec/expression_language.md",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md",
+          "sha256": "94b6a922f61afbc94576a9794e53f8dd02b3cc57bca123a6f20da5c97b9ed94f"
+        },
+        {
+          "kind": "source",
+          "original_path": "ontology/ontology.md",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/ontology/ontology.md",
+          "sha256": "fcd7fa3e40f419f81143b1fbe523f97fc17935bc85bd0dc88f8b8b5c4103458d"
+        },
+        {
+          "kind": "source",
+          "original_path": "ontology/ontology.json",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/ontology/ontology.json",
+          "sha256": "52421ba8161385a4d0117eac2a76863d2ef21ef3434a95334b6b1564371fe149"
+        },
+        {
+          "kind": "source",
+          "original_path": "ontology/mapping.json",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/ontology/mapping.json",
+          "sha256": "8db74be12cda94e23240cc502bb2ac0580b69a05431fda35ee0c9e8b7e6f096b"
+        },
+        {
+          "kind": "source",
+          "original_path": "examples/flights.ontology.yaml",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/examples/flights.ontology.yaml",
+          "sha256": "4035aa22494a1dfc739f5fe6689ffa74d07338497ef67a7acab69c568eae00fd"
+        },
+        {
+          "kind": "source",
+          "original_path": "examples/flights.mapping.yaml",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/examples/flights.mapping.yaml",
+          "sha256": "dd62e2614097d0fa3f457fdb15a4ac431cfbbc088fa0a46148d2671ca6b1215c"
+        },
+        {
+          "kind": "source",
+          "original_path": "LICENSE",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        },
+        {
+          "kind": "source",
+          "original_path": "NOTICE",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/NOTICE",
+          "sha256": "cdd61e3d225833b912985567730c9043394ae21e3ecfe619ed63cff5f170c59a"
+        },
+        {
+          "kind": "source",
+          "original_path": "converters/ontology/src/ossie_ontology/model.py",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/converters/ontology/src/ossie_ontology/model.py",
+          "sha256": "ed658677923eb39906c54b114db356c3f3fe307f10813bf0a0b5630663fb1b02"
+        },
+        {
+          "kind": "source",
+          "original_path": "converters/ontology/src/ossie_ontology/parser/__init__.py",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/converters/ontology/src/ossie_ontology/parser/__init__.py",
+          "sha256": "284591189f00adb0bbf97c15f1b11263eb542e624abc196f6cc9b928febd2180"
+        },
+        {
+          "kind": "source",
+          "original_path": "converters/ontology/src/ossie_ontology/spec.py",
+          "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/converters/ontology/src/ossie_ontology/spec.py",
+          "sha256": "d9a4aebd25d616478983de55bd6112c532a31a47d7eb3839f205eae6fb4539d5"
+        },
+        {
+          "kind": "source",
+          "original_path": "/Users/rongshen/github/QwenPaw-Data/examples/init_demo.py",
+          "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/init_demo.py",
+          "sha256": "8df9a5a41ffe43ac995dabbed1ce26d926d7e4fc4448118809c641562bff5bd6"
+        },
+        {
+          "kind": "source",
+          "original_path": "/Users/rongshen/github/QwenPaw-Data/examples/README.md",
+          "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/README.md",
+          "sha256": "93a23ce9e8eafcf991fee21aee28527f5c65a982a6e541b0cb1dc7cbbc7bfb87"
+        },
+        {
+          "kind": "source",
+          "original_path": "/Users/rongshen/github/QwenPaw-Data/examples/demo/postgres/init.sql",
+          "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo/postgres/init.sql",
+          "sha256": "c4618e1632d4c0aadc20ba214b106f1c90672208184529916c08029b2652ea98"
+        },
+        {
+          "kind": "source",
+          "original_path": "/Users/rongshen/github/QwenPaw-Data/examples/demo/sqlite/init.sql",
+          "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo/sqlite/init.sql",
+          "sha256": "d908904de12087443720eae4b466c2e70df1e2c9c4be726efc71103dbe8156c6"
+        },
+        {
+          "kind": "source",
+          "original_path": "/Users/rongshen/github/QwenPaw-Data/examples/demo_semantic_config.xlsx",
+          "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo_semantic_config.xlsx",
+          "sha256": "d5d4c049116f1a27653a25d9c59d3b67170810dc724cf2d6c4d5fc0182d5c56a"
+        },
+        {
+          "kind": "source",
+          "original_path": "/Users/rongshen/github/QwenPaw-Data/examples/demo_kg_doc.docx",
+          "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo_kg_doc.docx",
+          "sha256": "7553425fc2b2fb34bdcd9fff85b12d2791dc20d459b96e3f58c261c68a8198bd"
+        },
+        {
+          "kind": "source",
+          "original_path": "/Users/rongshen/github/QwenPaw-Data/LICENSE",
+          "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+        },
+        {
+          "kind": "original_requirement",
+          "original_path": "/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md",
+          "saved_path": "docs/research/ossie-req-001/sources/requirements.original.md",
+          "sha256": "6c41eeaafba2dc8a28eb31dc99bb8e2d06e8a2b0e4826994f01c90ed82b1780b"
+        }
+      ],
+      "original_files_checked": 20,
+      "original_requirement_checked": true,
+      "external_original_paths_read": false
+    },
+    "verifier_sha256": "6c8a60754cabc73be4126f90d92be5766717d0f06cc91c18e13b85c3311619e0",
+    "requirements": [
+      "R1.1",
+      "R1.2",
+      "R1.3",
+      "R1.4",
+      "R2.1",
+      "R2.2",
+      "R2.3",
+      "R2.4",
+      "R2.5",
+      "R3.1",
+      "R3.2",
+      "R3.3",
+      "R3.4",
+      "R3.5",
+      "R3.6",
+      "R4.1",
+      "R4.2",
+      "R4.3",
+      "R4.4",
+      "R4.5",
+      "R4.6",
+      "R5.1",
+      "R5.2",
+      "R5.3",
+      "R5.4",
+      "R5.5",
+      "R5.6",
+      "R5.7",
+      "R6.1",
+      "R6.2",
+      "R6.3",
+      "R6.4",
+      "R6.5",
+      "R7.1",
+      "R7.2",
+      "R7.3",
+      "R7.4",
+      "R7.5"
+    ],
+    "acceptance": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7",
+      "A8"
+    ],
+    "hash_checks": [
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/spec.md",
+        "sha256": "d277ef2a929510bc86eb8b27b6036480008c233f2cd05b9f4ef11f203feebad1",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/ossie-schema.json",
+        "sha256": "5b9cf15d31057e2b7363194b1c254a6b669fc412b3f8f402d4efbdcfa25fcc87",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md",
+        "sha256": "94b6a922f61afbc94576a9794e53f8dd02b3cc57bca123a6f20da5c97b9ed94f",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/ontology/ontology.md",
+        "sha256": "fcd7fa3e40f419f81143b1fbe523f97fc17935bc85bd0dc88f8b8b5c4103458d",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/ontology/ontology.json",
+        "sha256": "52421ba8161385a4d0117eac2a76863d2ef21ef3434a95334b6b1564371fe149",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/ontology/mapping.json",
+        "sha256": "8db74be12cda94e23240cc502bb2ac0580b69a05431fda35ee0c9e8b7e6f096b",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/examples/flights.ontology.yaml",
+        "sha256": "4035aa22494a1dfc739f5fe6689ffa74d07338497ef67a7acab69c568eae00fd",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/examples/flights.mapping.yaml",
+        "sha256": "dd62e2614097d0fa3f457fdb15a4ac431cfbbc088fa0a46148d2671ca6b1215c",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/LICENSE",
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/NOTICE",
+        "sha256": "cdd61e3d225833b912985567730c9043394ae21e3ecfe619ed63cff5f170c59a",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/converters/ontology/src/ossie_ontology/model.py",
+        "sha256": "ed658677923eb39906c54b114db356c3f3fe307f10813bf0a0b5630663fb1b02",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/converters/ontology/src/ossie_ontology/parser/__init__.py",
+        "sha256": "284591189f00adb0bbf97c15f1b11263eb542e624abc196f6cc9b928febd2180",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/converters/ontology/src/ossie_ontology/spec.py",
+        "sha256": "d9a4aebd25d616478983de55bd6112c532a31a47d7eb3839f205eae6fb4539d5",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/init_demo.py",
+        "sha256": "8df9a5a41ffe43ac995dabbed1ce26d926d7e4fc4448118809c641562bff5bd6",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/README.md",
+        "sha256": "93a23ce9e8eafcf991fee21aee28527f5c65a982a6e541b0cb1dc7cbbc7bfb87",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo/postgres/init.sql",
+        "sha256": "c4618e1632d4c0aadc20ba214b106f1c90672208184529916c08029b2652ea98",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo/sqlite/init.sql",
+        "sha256": "d908904de12087443720eae4b466c2e70df1e2c9c4be726efc71103dbe8156c6",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo_semantic_config.xlsx",
+        "sha256": "d5d4c049116f1a27653a25d9c59d3b67170810dc724cf2d6c4d5fc0182d5c56a",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo_kg_doc.docx",
+        "sha256": "7553425fc2b2fb34bdcd9fff85b12d2791dc20d459b96e3f58c261c68a8198bd",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/qwenpaw-data/LICENSE",
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/requirements.original.md",
+        "sha256": "6c41eeaafba2dc8a28eb31dc99bb8e2d06e8a2b0e4826994f01c90ed82b1780b",
+        "carrier": "docs/research/ossie-req-001/sources/manifest.json"
+      },
+      {
+        "path": "scripts/verify_loader_artifact.ts",
+        "sha256": "60f0f266ce31b337eb61d6c702759e013e4a4d06e5ee492deca5e0ff2ab49d0d",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "scripts/artifact_helpers.ts",
+        "sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "src/model/parser.cpp",
+        "sha256": "efb44a16d4d8d0ed84b5918161ce651629073e6b7556bb3ce0260a89bea46a19",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/model.hpp",
+        "sha256": "0f51d181d2e2a7b280639133f86274a9e9b50542ae5f545103ecf2d86c05d4cd",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "src/functions/describe.cpp",
+        "sha256": "beca66aba1855721ab72ae06ecafff7f46a1a3cb9f148b3e18d4245b64b5c5c3",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/tpcds_semantic_model.json",
+        "sha256": "7f8fa7a861b4a9a637fb579020e7d448e8d6a4afbbcaf82e4d2a3a3ec141244c",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/sql/ossie_loader_contract.test",
+        "sha256": "a207073de9b638f5d25334a8e5c38b027849b1f60158fac8cf6d0ba59360ef97",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/empty_datasets.json",
+        "sha256": "918a2c062368020bac396d9c84e724c6165953ab95460f97cc3709aed375d695",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/future_version.json",
+        "sha256": "7445a5010edc38aed0c031eea096bebece9c7a25704115c43fa0feb97739554e",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/invalid_ai.json",
+        "sha256": "e7545b116471a10a4201e73ad972293e761170da6ae3ed31c7f2dcc6b6b21311",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/invalid_datatype.json",
+        "sha256": "be0dda8d33f05b3591642179434c3c2fe31a22ee9a578bc6e329061caf3585f8",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/invalid_dimension.json",
+        "sha256": "267bec0fa0cb45a1ea66ddd80b83ee9bcd0c990917567c14e9e784e067e863d3",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/invalid_instructions.json",
+        "sha256": "cb89f3c98e1e83c102983c638eee51bb455ac9a930f867580cd462fc05401348",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/invalid_metric_datatype.json",
+        "sha256": "bdcb097605f6cb4e22bfc225f6015215140ac8cf1f50b9323f38c4325fe9cee4",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/invalid_time.json",
+        "sha256": "9582cbe55af65d707e971333b7201a1645480d248678193f6cbb230afcf67593",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/invalid_timestamp_datatype.json",
+        "sha256": "1e15d7b50a548438abab72f0cf662415408e669fb32fedf1eeb6732b0d59f2d4",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/missing_version.json",
+        "sha256": "c271d7817a4070806bf2331baa397c4400ea2b654ba1979b6f4f9a8f2448659e",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/mixed_mapping.json",
+        "sha256": "580ff2c99f8f500503c7301c77790b12151e31a47fbcb2a20d1f5f7c5d56605b",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/mixed_ontology.json",
+        "sha256": "5815fb7f19f63ebdda6d93ec16c50b98d69cf01f06aa7d475cc214ebf94b27b7",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/nonstring_examples.json",
+        "sha256": "2faf98d3ac9b1e07e67ebd1ee08dfe096625496e250de854900a347e08b25479",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/nonstring_synonyms.json",
+        "sha256": "a879eb6b851092b39555f742ed4cc0f3fea2acdfe14298484fd953ae4c6b626a",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/nul_version.json",
+        "sha256": "78cac4de0b1bbd22b0b5978bf10e153841da27d75159df2822ea2d449d0b98f0",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/null_datatype.json",
+        "sha256": "6fccdd01586a5fb3b54748729561a0838df8d8d44f93e317b53cf33e4e401cf8",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/null_version.json",
+        "sha256": "db8011214a65a5400b2e9812bb6f37f68761ff0e3d3a7f5e6762f580595a3b0e",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/numeric_version.json",
+        "sha256": "2b3ebbcd0ede2f95c40332363b99a4dfcbf680690c3bba360b23a3d718522a2b",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/old_version.json",
+        "sha256": "7e09614914527541b67daa814d5135e946b322fc01e507f7fff21ea54a4b23f2",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/valid.json",
+        "sha256": "293ec968269bb69b6f01136cda96e4bd48494eff901e231a65c962b29af0998f",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/valid.yaml",
+        "sha256": "71132c08184ca71ffde7216179cf519d0c50deffe035d2ed520f405e6885fe7a",
+        "carrier": "/evidence/linux-delivery/p0-final-loader-artifact-results.json"
+      },
+      {
+        "path": "scripts/verify_population_artifact.ts",
+        "sha256": "7c05d8ff099c4814473f244808c778e67ddf6a5751652dcd991fa8c7513111f0",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "scripts/artifact_helpers.ts",
+        "sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/gaap-original-475.csv",
+        "sha256": "e01a940a3f83ed6f5f22beb598e64206144658ad3b9fef89124e2790e7fc3e18",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/gaap-boundary.csv",
+        "sha256": "93aabea30c8f94246e44e1c7d4d7c1ddb2b4650cd347c5c57edbbf4e8abcb6b1",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/baseline-results.json",
+        "sha256": "f286859729b7cf0b99a0c8ee022bff79940b495b9486f1148c0fd975cafaef23",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/boundary-results.json",
+        "sha256": "da7e1638387e3ea2b431dfa50432b9ab694f677c0222f8657832d94e000961d5",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/proposed-definitions/gaap.core.json",
+        "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/proposed-definitions/gaap.mapping.json",
+        "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/proposed-definitions/gaap.ontology.threshold-10.json",
+        "sha256": "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/proposed-definitions/gaap.ontology.threshold-20.json",
+        "sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population/bundle-10.json",
+        "sha256": "61498fe419af6bace141492be85d8296d378fbba8205695efce9056a6f61964a",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population/bundle-20.json",
+        "sha256": "0f87d33a6c6a7d0b4558a75414728c976b705ac0a1ed83b69495606ebdc089aa",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "test/sql/ossie_population.test",
+        "sha256": "0e37629dcf29ab9638eca8a5d730c0b4395b2341a1267abf0aa447a684d9962c",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "scripts/population_error.ts",
+        "sha256": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "CMakeLists.txt",
+        "sha256": "4da33780d274cfecbd7e11ae83e1c76d9446f6122416bef03dbf6628c4fe6562",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/compile/compile.cpp",
+        "sha256": "dec2c6a72ac178b9ef16cd2796d7b8dc15ff88542ddbf8266fff60beca3ef460",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/functions/compile.cpp",
+        "sha256": "0ced88a9668b3334bd241aaade5a17995869f01f69c5ff219caa86aed9eff419",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/functions/describe.cpp",
+        "sha256": "beca66aba1855721ab72ae06ecafff7f46a1a3cb9f148b3e18d4245b64b5c5c3",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/functions/load.cpp",
+        "sha256": "940ea630f93f4b6ebe45b9a49879416f7ffba6c693557f9211d4f968ceb219ba",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/functions/query.cpp",
+        "sha256": "a4e9721e1723d03b4dedd79ef67db675ca7d4ce0fd01025450975fcfb8390488",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/catalog.hpp",
+        "sha256": "31a14b4b8680e9303902508ffd2975a426894df96a2cf212468483a552a38d51",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/compile.hpp",
+        "sha256": "6cab076df7d19429934d75f9389036aa5f435709387f1df8a34944f3160d0d84",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/describe_functions.hpp",
+        "sha256": "bb7417d8892a606a23f5862dd146dcf0dafd9666ea7005c0b3eb483c1e25414c",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/dialect.hpp",
+        "sha256": "3bff6bde0ece193c5ec6bdf51f6470e5eafabb88cf0aff101caf7d0579603dac",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/functions.hpp",
+        "sha256": "21e4cae9e69b336add2cb33be9829167353f03e699ff040e398a5ce2a3b0cae1",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/graph.hpp",
+        "sha256": "620a388ad927e71534f83d29daf19ea07e1b52d6c05239197a89e510c6293ac5",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/model.hpp",
+        "sha256": "0f51d181d2e2a7b280639133f86274a9e9b50542ae5f545103ecf2d86c05d4cd",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/parser.hpp",
+        "sha256": "8e339cb4addb44d37873b820d3ddee0bc1d974e1d1c61dbb535850b709009df5",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/population_testing.hpp",
+        "sha256": "995ae3a68e711ac080d4bb36e9af935b11787508682453225741ae68eaa6f0f3",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/state.hpp",
+        "sha256": "ed1d0e9966aca2a949072afea36ad7b1f9150b349691cc5eaffca26811b12f25",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/validate.hpp",
+        "sha256": "b460c6e776d9c9c2d5aa579b54a2808cff7bec1a98e81e108717c5bd898e40bc",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/yaml.hpp",
+        "sha256": "7409822d510d4d09a12a699c7ad95d7e869d5cafcb05c0ddafe29ca95eb88351",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie_extension.hpp",
+        "sha256": "382f683e705384688bb6928a9b3dae0a359923f4257d8f75835c6d052f366f12",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/model/catalog.cpp",
+        "sha256": "095735539374ed0a04a071f7b2d4af0eb137ffeb4bf94f1c2df42a619344612a",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/model/dialect.cpp",
+        "sha256": "cba1454964c879092926fb8ff2920a4fcb4c46dd04f82acbbcc5e162906aaaf7",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/model/graph.cpp",
+        "sha256": "da654783f170010c6ada5a0c538053104ae9bbbb00c6aa647050fd4a65fe5292",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/model/parser.cpp",
+        "sha256": "efb44a16d4d8d0ed84b5918161ce651629073e6b7556bb3ce0260a89bea46a19",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/model/validate.cpp",
+        "sha256": "557ce77b1c86ab7bb6070e840ea232c014524b59b91047d3b1542816181b5d22",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/model/yaml.cpp",
+        "sha256": "a0418e52478e8ea608dff4d42fa61f4b44895c0958a4272283e3d8339374df0d",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/ossie_extension.cpp",
+        "sha256": "62b6b2022ab4a721dc7316cf3d9e8d35e0889bce6b2d7092822fbcf716bb797e",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "src/population/population.cpp",
+        "sha256": "7848e8b0fcb7fd0855ea3f89c68d85633839eb7bfd13da05ab801e01ad8616e8",
+        "carrier": "/evidence/linux-delivery/p0-final-population-artifact-results.json"
+      },
+      {
+        "path": "scripts/verify_expression_artifact.ts",
+        "sha256": "c91435a6fc858380e31efcc7a5694d7e0f49f93f8eaea621de16b3b1b948e4fb",
+        "carrier": "/evidence/linux-delivery/p0-final-expression-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-expressions/bundle.json",
+        "sha256": "da3fd772535ab0b76dad1c9488d8ce687040ae24e6b7150a00b0078b99393148",
+        "carrier": "/evidence/linux-delivery/p0-final-expression-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-expressions/core.json",
+        "sha256": "e5ee6a7a0d3adf4a3c59df970f28290a3a8c4ae0135f99e50a7c56364359c247",
+        "carrier": "/evidence/linux-delivery/p0-final-expression-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-expressions/mapping.json",
+        "sha256": "621f6b1d41289b1c6bf19ac94afaa54a651f4fcfd2113e5188eacc4cacc9ec7a",
+        "carrier": "/evidence/linux-delivery/p0-final-expression-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-expressions/ontology.json",
+        "sha256": "88f6e6eb2e360c860fdc1caab0cc5b764daadf975528b2e3b6c900ef7d57d6da",
+        "carrier": "/evidence/linux-delivery/p0-final-expression-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-expressions/rows.sql",
+        "sha256": "06c004bee67511a0e9d759480a8e4d26c04913418914302e4bb01649bcbafd4b",
+        "carrier": "/evidence/linux-delivery/p0-final-expression-artifact-results.json"
+      },
+      {
+        "path": "src/population/population.cpp",
+        "sha256": "7848e8b0fcb7fd0855ea3f89c68d85633839eb7bfd13da05ab801e01ad8616e8",
+        "carrier": "/evidence/linux-delivery/p0-final-expression-artifact-results.json"
+      },
+      {
+        "path": "scripts/artifact_helpers.ts",
+        "sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+        "carrier": "/evidence/linux-delivery/p0-final-expression-artifact-results.json"
+      },
+      {
+        "path": "scripts/verify_date_artifact.ts",
+        "sha256": "906751f19d4e8063afc7d26502246b3f13d60781c5c4290c63cf173f1884195d",
+        "carrier": "/evidence/linux-delivery/p0-final-date-artifact-results.json"
+      },
+      {
+        "path": "scripts/artifact_helpers.ts",
+        "sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+        "carrier": "/evidence/linux-delivery/p0-final-date-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-dates/bundle.json",
+        "sha256": "1df325a4c60ca0057fded759b159780981ea9eafda5fcaeaa41c37a243265113",
+        "carrier": "/evidence/linux-delivery/p0-final-date-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-dates/core.json",
+        "sha256": "7f1777266e03628dd2e6db3f4b9952c341dd3ac3bff7d6fdcf034185dad620dd",
+        "carrier": "/evidence/linux-delivery/p0-final-date-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-dates/mapping.json",
+        "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807",
+        "carrier": "/evidence/linux-delivery/p0-final-date-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-dates/ontology.json",
+        "sha256": "b7e1fe5e2c7bff95ef827d07d5ea64d855694453e89f73d67d9cffb8967aab13",
+        "carrier": "/evidence/linux-delivery/p0-final-date-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-dates/rows.sql",
+        "sha256": "c15c7910076c44501172745a74ed3e8a10eb66da32bd64c7252413a75480e053",
+        "carrier": "/evidence/linux-delivery/p0-final-date-artifact-results.json"
+      },
+      {
+        "path": "src/population/population.cpp",
+        "sha256": "7848e8b0fcb7fd0855ea3f89c68d85633839eb7bfd13da05ab801e01ad8616e8",
+        "carrier": "/evidence/linux-delivery/p0-final-date-artifact-results.json"
+      },
+      {
+        "path": "scripts/verify_join_research_artifact.ts",
+        "sha256": "72c9b30c6f4812b618b7c003bf8f05278ada1b290efb3a77a176887cff7c7ac2",
+        "carrier": "/evidence/linux-delivery/p0-final-join_research-artifact-results.json"
+      },
+      {
+        "path": "scripts/artifact_helpers.ts",
+        "sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+        "carrier": "/evidence/linux-delivery/p0-final-join_research-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/safe-join-research/core.json",
+        "sha256": "8daca735a09840dea99104930ab457f97e6c6613c47be5943c462d5134b5aebe",
+        "carrier": "/evidence/linux-delivery/p0-final-join_research-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/safe-join-research/oracle.json",
+        "sha256": "b8c19ebec0013dc28dd238ce0bf4a0069a097f7c551d4dcaa1f65fe53c2a29c4",
+        "carrier": "/evidence/linux-delivery/p0-final-join_research-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/safe-join-research/rows.sql",
+        "sha256": "ea9ac378b27a6638090d269f770eeb711f6ec2d7a0bba02d2ef935cc3f8078fa",
+        "carrier": "/evidence/linux-delivery/p0-final-join_research-artifact-results.json"
+      },
+      {
+        "path": "src/compile/compile.cpp",
+        "sha256": "dec2c6a72ac178b9ef16cd2796d7b8dc15ff88542ddbf8266fff60beca3ef460",
+        "carrier": "/evidence/linux-delivery/p0-final-join_research-artifact-results.json"
+      },
+      {
+        "path": "src/model/graph.cpp",
+        "sha256": "da654783f170010c6ada5a0c538053104ae9bbbb00c6aa647050fd4a65fe5292",
+        "carrier": "/evidence/linux-delivery/p0-final-join_research-artifact-results.json"
+      },
+      {
+        "path": "src/model/validate.cpp",
+        "sha256": "557ce77b1c86ab7bb6070e840ea232c014524b59b91047d3b1542816181b5d22",
+        "carrier": "/evidence/linux-delivery/p0-final-join_research-artifact-results.json"
+      },
+      {
+        "path": "src/population/population.cpp",
+        "sha256": "7848e8b0fcb7fd0855ea3f89c68d85633839eb7bfd13da05ab801e01ad8616e8",
+        "carrier": "/evidence/linux-delivery/p0-final-join_research-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/joined-population/core.json",
+        "sha256": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878",
+        "carrier": "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json"
+      },
+      {
+        "path": "scripts/verify_joined_population_artifact.ts",
+        "sha256": "59c4a1bb0393187daaee7cbdcdbee7f2aabf64d444cdf8b7b3c782296ec7234a",
+        "carrier": "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json"
+      },
+      {
+        "path": "scripts/artifact_helpers.ts",
+        "sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+        "carrier": "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/safe-join-research/rows.sql",
+        "sha256": "ea9ac378b27a6638090d269f770eeb711f6ec2d7a0bba02d2ef935cc3f8078fa",
+        "carrier": "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/joined-population/core.json",
+        "sha256": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878",
+        "carrier": "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/joined-population/ontology.json",
+        "sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+        "carrier": "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/joined-population/mapping.json",
+        "sha256": "fede2d077986e8c46162973f87b750afcd1420e8229d480d175a6c7acee4dcfd",
+        "carrier": "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/joined-population/bundle.json",
+        "sha256": "4af4f7bed9a5d179e849d1ff68ebd82f276c584e96cb1b0d5520c2b073289890",
+        "carrier": "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json"
+      },
+      {
+        "path": "src/population/population.cpp",
+        "sha256": "7848e8b0fcb7fd0855ea3f89c68d85633839eb7bfd13da05ab801e01ad8616e8",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "scripts/artifact_helpers.ts",
+        "sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "test/sql/ossie_population_plan.test",
+        "sha256": "079b44703b9733b83293e23d18c28787ac96fa11132c6463e51e4a98f22c2870",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/gaap-boundary.csv",
+        "sha256": "93aabea30c8f94246e44e1c7d4d7c1ddb2b4650cd347c5c57edbbf4e8abcb6b1",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": ".github/workflows/MainDistributionPipeline.yml",
+        "sha256": "9ba04e2e1f9528a2321ee11542f653796e003799d897c7c160d6341a4b818c11",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "scripts/verify_plan_artifact.ts",
+        "sha256": "7abe2bd8a37897cc53b74a18465570d6d770b9b772420eb909d275b8d49aecc5",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population/bundle-10.json",
+        "sha256": "61498fe419af6bace141492be85d8296d378fbba8205695efce9056a6f61964a",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population/bundle-20.json",
+        "sha256": "0f87d33a6c6a7d0b4558a75414728c976b705ac0a1ed83b69495606ebdc089aa",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-expressions/core.json",
+        "sha256": "e5ee6a7a0d3adf4a3c59df970f28290a3a8c4ae0135f99e50a7c56364359c247",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-expressions/rows.sql",
+        "sha256": "06c004bee67511a0e9d759480a8e4d26c04913418914302e4bb01649bcbafd4b",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/joined-population/bundle.json",
+        "sha256": "4af4f7bed9a5d179e849d1ff68ebd82f276c584e96cb1b0d5520c2b073289890",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/safe-join-research/rows.sql",
+        "sha256": "ea9ac378b27a6638090d269f770eeb711f6ec2d7a0bba02d2ef935cc3f8078fa",
+        "carrier": "/evidence/linux-delivery/p0-final-plan-artifact-results.json"
+      },
+      {
+        "path": "scripts/verify_discovery_artifact.ts",
+        "sha256": "4f50b049b06a5842f95d36a3a692a9aa941855bdbea36ec9772fa1cdecb82bcb",
+        "carrier": "/evidence/linux-delivery/p0-final-discovery-artifact-results.json"
+      },
+      {
+        "path": "src/population/population.cpp",
+        "sha256": "7848e8b0fcb7fd0855ea3f89c68d85633839eb7bfd13da05ab801e01ad8616e8",
+        "carrier": "/evidence/linux-delivery/p0-final-discovery-artifact-results.json"
+      },
+      {
+        "path": "scripts/verify_error_artifact.ts",
+        "sha256": "9cce01abd3088b9a5566cb2785cc8880f85cc6b114de16186dabf11be573959b",
+        "carrier": "/evidence/linux-delivery/p0-final-error-artifact-results.json"
+      },
+      {
+        "path": "src/population/population.cpp",
+        "sha256": "7848e8b0fcb7fd0855ea3f89c68d85633839eb7bfd13da05ab801e01ad8616e8",
+        "carrier": "/evidence/linux-delivery/p0-final-error-artifact-results.json"
+      },
+      {
+        "path": "src/model/parser.cpp",
+        "sha256": "efb44a16d4d8d0ed84b5918161ce651629073e6b7556bb3ce0260a89bea46a19",
+        "carrier": "/evidence/linux-delivery/p0-final-error-artifact-results.json"
+      },
+      {
+        "path": "scripts/population_error.ts",
+        "sha256": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff",
+        "carrier": "/evidence/linux-delivery/p0-final-error-artifact-results.json"
+      },
+      {
+        "path": "src/population/population.cpp",
+        "sha256": "7848e8b0fcb7fd0855ea3f89c68d85633839eb7bfd13da05ab801e01ad8616e8",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "scripts/verify_typed_population_artifact.ts",
+        "sha256": "aa490ef6c3f8031ef840103dfbe28630dd96676a7a9a216e03bb77ba79ecd1da",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "scripts/population_result.ts",
+        "sha256": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "scripts/artifact_helpers.ts",
+        "sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "scripts/mcp_check.ts",
+        "sha256": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "examples/population_server.sql",
+        "sha256": "7f1e5ee31da9b4527968eeb20a8f560db643f820efaeca445ceb62c8738237a3",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-transport/core.json",
+        "sha256": "6b7ca2ceb7bd9694bb447cbf37e03b76d8b66b8322cfe623597390eb51c74e34",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-transport/ontology.json",
+        "sha256": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-transport/mapping.json",
+        "sha256": "6c52c3cbc9f7997d8e75d012ad9e0d9ed610455c457db97e1956329f835337c9",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-transport/bundle.json",
+        "sha256": "871bdc218cd6fc797c00ec75b86cbd6ca504612e72051b1e326c0fb70930336f",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/population-transport/numeric-rows.sql",
+        "sha256": "d39fa09ad7845610adc1e4d459caf48dd82247f5d80eccecbab34e28623ca9c5",
+        "carrier": "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json"
+      },
+      {
+        "path": "scripts/verify_core_correspondence.ts",
+        "sha256": "9dbc848d0d666fcfa62df96356c7f09bfa0c7ffe8a8de864a7b4e4f4e3064c66",
+        "carrier": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json"
+      },
+      {
+        "path": "src/model/parser.cpp",
+        "sha256": "efb44a16d4d8d0ed84b5918161ce651629073e6b7556bb3ce0260a89bea46a19",
+        "carrier": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/conformance/nul_metadata.json",
+        "sha256": "9ad523993fa37ed4b8e137c57afe8e0e194db128596bdef8beb0f22a9f00f6d7",
+        "carrier": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/conformance/nul_expression.json",
+        "sha256": "897d4d1c0db060777fa119d6accde19440e04306a0a016e9db821b06e21c2a52",
+        "carrier": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json"
+      },
+      {
+        "path": "src/model/validate.cpp",
+        "sha256": "557ce77b1c86ab7bb6070e840ea232c014524b59b91047d3b1542816181b5d22",
+        "carrier": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json"
+      },
+      {
+        "path": "src/functions/describe.cpp",
+        "sha256": "beca66aba1855721ab72ae06ecafff7f46a1a3cb9f148b3e18d4245b64b5c5c3",
+        "carrier": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json"
+      },
+      {
+        "path": "src/include/ossie/model.hpp",
+        "sha256": "0f51d181d2e2a7b280639133f86274a9e9b50542ae5f545103ecf2d86c05d4cd",
+        "carrier": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json"
+      },
+      {
+        "path": "scripts/artifact_helpers.ts",
+        "sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+        "carrier": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json"
+      },
+      {
+        "path": "test/fixtures/loader_contract/valid.json",
+        "sha256": "293ec968269bb69b6f01136cda96e4bd48494eff901e231a65c962b29af0998f",
+        "carrier": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/ossie-schema.json",
+        "sha256": "5b9cf15d31057e2b7363194b1c254a6b669fc412b3f8f402d4efbdcfa25fcc87",
+        "carrier": "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json"
+      },
+      {
+        "path": "/usr/local/bin/duckdb",
+        "sha256": "c0ac0b79e243ee312b3af29c34ac0b94e518aa44c4345036d5d96c1c042c9d48",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "examples/population_server.sql",
+        "sha256": "7f1e5ee31da9b4527968eeb20a8f560db643f820efaeca445ceb62c8738237a3",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "scripts/verify_population_mcp.ts",
+        "sha256": "21aa1c51bf5199c9810e64fd6c8e4ad44618508c2e670cbb4b65be363e56171c",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "scripts/population_error.ts",
+        "sha256": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "scripts/population_result.ts",
+        "sha256": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "scripts/mcp_check.ts",
+        "sha256": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "examples/server.sql",
+        "sha256": "2a008c850bbef303c6e7054d7b6577070a6542484e978488af12b4ad05634811",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": ".github/workflows/MainDistributionPipeline.yml",
+        "sha256": "9ba04e2e1f9528a2321ee11542f653796e003799d897c7c160d6341a4b818c11",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "scripts/full_functionality_check.sh",
+        "sha256": "9c45ad839015f6236fd21c29a1bea8070d182fc6e9b63e6cc239bb8d14b1b791",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/gaap-original-475.csv",
+        "sha256": "e01a940a3f83ed6f5f22beb598e64206144658ad3b9fef89124e2790e7fc3e18",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "test/fixtures/population/bundle-10.json",
+        "sha256": "61498fe419af6bace141492be85d8296d378fbba8205695efce9056a6f61964a",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "test/fixtures/population/bundle-20.json",
+        "sha256": "0f87d33a6c6a7d0b4558a75414728c976b705ac0a1ed83b69495606ebdc089aa",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "test/fixtures/safe-join-research/rows.sql",
+        "sha256": "ea9ac378b27a6638090d269f770eeb711f6ec2d7a0bba02d2ef935cc3f8078fa",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "test/fixtures/joined-population/bundle.json",
+        "sha256": "4af4f7bed9a5d179e849d1ff68ebd82f276c584e96cb1b0d5520c2b073289890",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "test/fixtures/joined-population/core.json",
+        "sha256": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "test/fixtures/joined-population/ontology.json",
+        "sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "test/fixtures/joined-population/mapping.json",
+        "sha256": "fede2d077986e8c46162973f87b750afcd1420e8229d480d175a6c7acee4dcfd",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/baseline-results.json",
+        "sha256": "f286859729b7cf0b99a0c8ee022bff79940b495b9486f1148c0fd975cafaef23",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/baseline-objects-threshold-10.json",
+        "sha256": "75eea9d158814f27fd98b6d3d105686eb1285328767e5bd22d1173fcfaf8f45f",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      },
+      {
+        "path": "docs/research/ossie-req-001/baseline-objects-threshold-20.json",
+        "sha256": "fb16fec69414f803c4700fd5f43d5835f0abb240bf8af2a723e9fa2a96b8c11b",
+        "carrier": "/evidence/linux-delivery/p0-final-mcp-results.json"
+      }
+    ],
+    "reports": {
+      "/evidence/linux-delivery/p0-final-loader-artifact-results.json": "d1d4fddeeb310783f7125bf7c96ea004cb4f7d1c5e47ff0e5e5c54176cfba13a",
+      "/evidence/linux-delivery/p0-final-population-artifact-results.json": "c4a346e28a022439604792ebbe2ef4bcf5cbeadfdaf965738b850615cec1a324",
+      "/evidence/linux-delivery/p0-final-expression-artifact-results.json": "0bb4e37ff0d45a73382c748e65ac112d77e5f59f2a860320431c476688023f1d",
+      "/evidence/linux-delivery/p0-final-date-artifact-results.json": "11daa477586c5f3eb0bf7e8770816b2b8425ca3cf7ba443177c3c79fdef82098",
+      "/evidence/linux-delivery/p0-final-join_research-artifact-results.json": "157c51f4565998164c7ae4ed211b1f4b4bbd9487982249b766ecc093afcc27df",
+      "/evidence/linux-delivery/p0-final-joined_population-artifact-results.json": "fd8d53ba1d60551de681ee86fd7b483edd464a4f2812509157b413e57bf133f9",
+      "/evidence/linux-delivery/p0-final-plan-artifact-results.json": "e247333c5e644f0787b1297df0f21f18204d28b59f019af27f0d8197e561aaca",
+      "/evidence/linux-delivery/p0-final-discovery-artifact-results.json": "99a00f7642eba8ddb728382faad159bafff059db9ac3d6ba08d757a46ec39a8e",
+      "/evidence/linux-delivery/p0-final-error-artifact-results.json": "04699310ef0854d5600555104fdf7b96ac143e9c4134c48d80e31ce445978074",
+      "/evidence/linux-delivery/p0-final-typed_population-artifact-results.json": "892a041faa941296a2c7c8f2d39577077049ae6109095d1be1c5e8408ffc92fe",
+      "/evidence/linux-delivery/p0-final-correspondence-artifact-results.json": "f59042e688b05d2745c200a2d6751d590dcb616b35214762b8008da119e4f022",
+      "/evidence/linux-delivery/p0-final-mcp-results.json": "af40a97618be08bee7f736d0a59b086f3e718835a62b950e3c8ecf674539a308"
+    },
+    "schema_property_rows": 50,
+    "documentation_sha256": {
+      "docs/ossie-execution-research.md": "916eb647b79a39afd7404ba0fcb86d30330e4742f9640ca651c26e515fd9d9e4",
+      "ossie-duckdb-plan.md": "12204eacbc02731229417e5d7a1df4ff442c76f0f1ea94b5b34559c926f8f086",
+      "docs/core-field-correspondence.md": "e45de094f89d17c7fd668135a13c5ba5e62bc9d7f837722b3be52efefa59cce2",
+      "docs/limitations.md": "60fd01ec65f35e91e962bd6a1c62345e1165662090156601d14d385f2ea8ea5f"
+    },
+    "remaining": [
+      "source consistency does not prove functional conformance",
+      "remote CI unrun; native/tidy quality is separate; no autonomous Agent proof"
+    ]
+  },
+  "replay": {
+    "scope": "A7 fixed-definition replay in separate processes with separately imported same immutable fixture; no live SQL-text replay or cross-reload atomicity promise",
+    "artifact_sha256": "4926122b73590b3724e6b46d561c5ae88a330f15f2ce32b80181ab2e8c612dd6",
+    "verifier_sha256": "370f53b10068e797cacba9ca4bcb15592bab3080ce31813ead1175321757ddd8",
+    "helper_sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "reports_sha256": {
+      "/evidence/linux-delivery/p0-final-population-artifact-results.json": "c4a346e28a022439604792ebbe2ef4bcf5cbeadfdaf965738b850615cec1a324",
+      "/evidence/linux-delivery/p0-replay-population-artifact-results.json": "0cfa3368fb380fcff7d03c86d3ab0b3b57da3c1f22554f8314dcd95cc7f54f68"
+    },
+    "checks": [
+      "threshold 10: complete objects, aggregates, daily/groups/drilldown, SQL and content/definition hashes reproduced",
+      "threshold 20: complete objects, aggregates, daily/groups/drilldown, SQL and content/definition hashes reproduced"
+    ],
+    "result_order": "unspecified SQL row order; complete row multisets compared",
+    "limitations": [
+      "fixed same engine and input; not universal determinism",
+      "native AVG is DOUBLE; repeated values compared exactly for this fixture",
+      "no Agent autonomy or remote CI proof"
+    ]
+  },
+  "remaining": [
+    "remote CI not run; native tests and clang-tidy are separate quality evidence",
+    "real autonomous Agent not tested",
+    "pagination future research only",
+    "P1/calendar/multi-period/general ontology/mixed grain/windows remain outside this acceptance"
+  ],
+  "limitations": [
+    "reviewed YTD classification does not establish active/paid status or automatic NL conflict detection",
+    "quoted identifiers use DuckDB ASCII case semantics",
+    "compile is diagnostic semantic AST, not physical/final binder proof or ordinary SQL replay",
+    "separate calls across reload are not atomic; service maintains execution reference",
+    "Float approximate; typed numeric transport does not prove arbitrary client arithmetic",
+    "10000-row response tests are not universal output or peak-memory bounds",
+    "local acceptance does not authorize push/merge/publication"
+  ],
+  "runner_sha256": "89a94f860684f151ed47ceca2ff914873618010ca6958dac6b01b410a69dca19",
+  "run_log_sha256": {
+    "/evidence/linux-delivery/cli-dependencies.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/evidence/linux-delivery/loader.log": "d1d4fddeeb310783f7125bf7c96ea004cb4f7d1c5e47ff0e5e5c54176cfba13a",
+    "/evidence/linux-delivery/population.log": "c4a346e28a022439604792ebbe2ef4bcf5cbeadfdaf965738b850615cec1a324",
+    "/evidence/linux-delivery/expression.log": "0bb4e37ff0d45a73382c748e65ac112d77e5f59f2a860320431c476688023f1d",
+    "/evidence/linux-delivery/date.log": "11daa477586c5f3eb0bf7e8770816b2b8425ca3cf7ba443177c3c79fdef82098",
+    "/evidence/linux-delivery/join_research.log": "157c51f4565998164c7ae4ed211b1f4b4bbd9487982249b766ecc093afcc27df",
+    "/evidence/linux-delivery/joined_population.log": "fd8d53ba1d60551de681ee86fd7b483edd464a4f2812509157b413e57bf133f9",
+    "/evidence/linux-delivery/plan.log": "e247333c5e644f0787b1297df0f21f18204d28b59f019af27f0d8197e561aaca",
+    "/evidence/linux-delivery/discovery.log": "99a00f7642eba8ddb728382faad159bafff059db9ac3d6ba08d757a46ec39a8e",
+    "/evidence/linux-delivery/error.log": "04699310ef0854d5600555104fdf7b96ac143e9c4134c48d80e31ce445978074",
+    "/evidence/linux-delivery/typed_population.log": "892a041faa941296a2c7c8f2d39577077049ae6109095d1be1c5e8408ffc92fe",
+    "/evidence/linux-delivery/correspondence.log": "f59042e688b05d2745c200a2d6751d590dcb616b35214762b8008da119e4f022",
+    "/evidence/linux-delivery/mcp.log": "af40a97618be08bee7f736d0a59b086f3e718835a62b950e3c8ecf674539a308",
+    "/evidence/linux-delivery/replay.log": "0cfa3368fb380fcff7d03c86d3ab0b3b57da3c1f22554f8314dcd95cc7f54f68",
+    "/evidence/linux-delivery/core-mcp.log": "bb4a14bc58f6a2b9f196557b95b0792c9c3c3b1d79aa9e761f0d2193460898ab",
+    "/evidence/linux-delivery/stock-cli.log": "292689c49c1ecf919351381b62736842f844126d23eeb6513b6f5eb45c211510"
+  },
+  "native_quality_gate": "run make quality-local test separately; not claimed by this artifact runner"
+}
