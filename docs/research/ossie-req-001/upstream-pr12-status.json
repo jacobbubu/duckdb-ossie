@@ -1,0 +1,234 @@
+{
+  "baseRefName": "docs/contributing-and-drop-reference-claim",
+  "headRefOid": "c2947c7de8e583b70e3f8b859a94c0b9830a36a4",
+  "state": "OPEN",
+  "statusCheckRollup": [
+    {
+      "name": "Build extension binaries / Generate matrix",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T14:55:05Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113376797866"
+    },
+    {
+      "name": "Build extension binaries / Generate matrix",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T14:55:00Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113376755769"
+    },
+    {
+      "name": "Build extension binaries / Linux (linux_amd64, ubuntu-24.04, x64-linux-release, x64-linux-release, true, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:01:56Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113376895468"
+    },
+    {
+      "name": "Build extension binaries / Linux (linux_amd64, ubuntu-24.04, x64-linux-release, x64-linux-release, true, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:01:33Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113376858359"
+    },
+    {
+      "name": "Build extension binaries / Linux (linux_arm64, ubuntu-24.04-arm, arm64-linux-release, arm64-linux-release, false, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:01:16Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113376895341"
+    },
+    {
+      "name": "Build extension binaries / Linux (linux_arm64, ubuntu-24.04-arm, arm64-linux-release, arm64-linux-release, false, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:00:15Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113376858501"
+    },
+    {
+      "name": "Build extension binaries / MacOS (osx_amd64, macos-15, x86_64, x64-osx-release, arm64-osx-release, false, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:04:26Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113380201262"
+    },
+    {
+      "name": "Build extension binaries / MacOS (osx_amd64, macos-15, x86_64, x64-osx-release, arm64-osx-release, false, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:04:20Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113380020579"
+    },
+    {
+      "name": "Build extension binaries / MacOS (osx_arm64, macos-15, arm64, arm64-osx-release, arm64-osx-release, true, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:04:06Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113380201130"
+    },
+    {
+      "name": "Build extension binaries / MacOS (osx_arm64, macos-15, arm64, arm64-osx-release, arm64-osx-release, true, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:04:04Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113380020602"
+    },
+    {
+      "name": "Build extension binaries / Windows (windows_amd64, windows-latest, x64-windows-static-release, x64-windows-static-release, t...",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:05:28Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113380201469"
+    },
+    {
+      "name": "Build extension binaries / Windows (windows_amd64, windows-latest, x64-windows-static-release, x64-windows-static-release, t...",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:05:12Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113380020674"
+    },
+    {
+      "name": "Build extension binaries / Windows (windows_amd64_mingw, windows-latest, x64-mingw-static, x64-mingw-static, true, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:08:53Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113380201162"
+    },
+    {
+      "name": "Build extension binaries / Windows (windows_amd64_mingw, windows-latest, x64-mingw-static, x64-mingw-static, true, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:12:25Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113380020558"
+    },
+    {
+      "name": "Build extension binaries / DuckDB-Wasm (wasm_mvp, wasm32-emscripten, x64-linux, true, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:08:48Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113380201173"
+    },
+    {
+      "name": "Build extension binaries / DuckDB-Wasm (wasm_mvp, wasm32-emscripten, x64-linux, true, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:07:34Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113380020618"
+    },
+    {
+      "name": "Build extension binaries / DuckDB-Wasm (wasm_eh, wasm32-emscripten, x64-linux, false, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:06:36Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113380201336"
+    },
+    {
+      "name": "Build extension binaries / DuckDB-Wasm (wasm_eh, wasm32-emscripten, x64-linux, false, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:09:17Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113380020878"
+    },
+    {
+      "name": "Build extension binaries / DuckDB-Wasm (wasm_threads, wasm32-emscripten, x64-linux, false, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:06:34Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113380201312"
+    },
+    {
+      "name": "Build extension binaries / DuckDB-Wasm (wasm_threads, wasm32-emscripten, x64-linux, false, false)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:07:22Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113380020640"
+    },
+    {
+      "name": "Code Quality Check / Format Check",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T14:56:02Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113376798009"
+    },
+    {
+      "name": "Code Quality Check / Format Check",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T14:55:42Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113376755158"
+    },
+    {
+      "name": "Code Quality Check / Tidy Check",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:01:55Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113376797598"
+    },
+    {
+      "name": "Code Quality Check / Tidy Check",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:00:32Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113376755476"
+    },
+    {
+      "name": "MCP round trip",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:09:07Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113383535747"
+    },
+    {
+      "name": "MCP round trip",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:12:40Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113385212707"
+    },
+    {
+      "name": "Load built artifact (linux_amd64)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:09:09Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113383535717"
+    },
+    {
+      "name": "Load built artifact (linux_amd64)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:12:38Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113385212534"
+    },
+    {
+      "name": "Load built artifact (osx_arm64)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:09:19Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113383535675"
+    },
+    {
+      "name": "Load built artifact (osx_arm64)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:12:53Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113385212737"
+    },
+    {
+      "name": "CI gate",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:09:26Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796381138/job/113383733851"
+    },
+    {
+      "name": "CI gate",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "completedAt": "2026-10-08T15:12:58Z",
+      "detailsUrl": "https://github.com/iqea-ai/duckdb-ossie/actions/runs/37796369482/job/113385429294"
+    }
+  ],
+  "title": "0.2.0: read the flat Ossie document shape and execute OSSIE_SQL_2026",
+  "url": "https://github.com/iqea-ai/duckdb-ossie/pull/12",
+  "evidence_scope": "Observed GitHub check statuses; no local extension build or execution in this research"
+}

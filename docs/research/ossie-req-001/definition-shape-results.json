@@ -1,0 +1,30 @@
+{
+  "scope": "Schema and document-name checks only; no parser/compiler/execution validation",
+  "jsonschema_version": "4.26.0",
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "source_manifest_sha256": "9450ced5bfaec4ccc3f65ca21c4b5abc605f76572f544fb8ab8164a334bcd5ca",
+  "references": "Pinned resources registered offline; unknown resources fail",
+  "documents": [
+    {
+      "path": "gaap.core.json",
+      "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a",
+      "schema": "core-spec/ossie-schema.json"
+    },
+    {
+      "path": "gaap.ontology.threshold-10.json",
+      "sha256": "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc",
+      "schema": "ontology/ontology.json"
+    },
+    {
+      "path": "gaap.ontology.threshold-20.json",
+      "sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf",
+      "schema": "ontology/ontology.json"
+    },
+    {
+      "path": "gaap.mapping.json",
+      "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807",
+      "schema": "ontology/mapping.json"
+    }
+  ],
+  "definition_change": "Only ValidUser.derived_by changes from >=10 to >=20"
+}

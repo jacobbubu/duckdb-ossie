@@ -1,0 +1,75 @@
+{
+  "status": "Lead-reviewed source correspondence; proposed executable description requires business review before implementation acceptance",
+  "source_extraction": {
+    "path": "sources/business-source-extraction.json",
+    "sha256": "1cce9ce8eeb88ec14392876a911cee0597fcce782e3605facee12bbb5e94a45a"
+  },
+  "correspondences": [
+    {
+      "claim": "Original valid-user indicator repeats threshold in AVG(CASE ...)",
+      "source": "demo_semantic_config.xlsx",
+      "locations": [
+        "metric_formula!E2",
+        "metric!D2"
+      ],
+      "resolution": "Draft mean_gaap removes validity predicate; derived_by owns threshold",
+      "status": "design proposal, no migration executed"
+    },
+    {
+      "claim": "USD is provided explicitly",
+      "source": "demo_semantic_config.xlsx",
+      "locations": [
+        "metric!E2"
+      ],
+      "resolution": "Preserve unit provenance; no inference or conversion"
+    },
+    {
+      "claim": "Active/paying status cannot be established by available fields",
+      "source": "demo_kg_doc.docx",
+      "paragraph_indices": [
+        7,
+        10
+      ],
+      "resolution": "Draft describes recorded YTD-threshold population only; active/paying claim left unverified",
+      "status": "business semantic decision pending"
+    },
+    {
+      "claim": "Workbook key/null flags differ from physical schema",
+      "source": "demo_semantic_config.xlsx",
+      "locations": [
+        "dataset_column!J2:K8"
+      ],
+      "other_source": "sources/qwenpaw-data/examples/demo/postgres/init.sql",
+      "resolution": "Independent import uses explicit physical schema; actual original IDs/nulls checked; metadata conflict preserved"
+    },
+    {
+      "claim": "Threshold20 is an experiment, not original authoritative rule",
+      "source": "original requirement A2",
+      "resolution": "Separate ontology version; metrics/mapping unchanged",
+      "status": "research-only candidate"
+    }
+  ],
+  "reviewed_derivatives": [
+    {
+      "path": "proposed-definitions/gaap.core.json",
+      "sha256": "58f3a38f27cfa6f428fb283922d803cca20d639c04268883d317f8514746848a",
+      "status": "research-only draft; schema accepted, execution unverified"
+    },
+    {
+      "path": "proposed-definitions/gaap.mapping.json",
+      "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807",
+      "status": "research-only draft; schema accepted, execution unverified"
+    },
+    {
+      "path": "proposed-definitions/gaap.ontology.threshold-10.json",
+      "sha256": "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc",
+      "status": "research-only draft; schema accepted, execution unverified"
+    },
+    {
+      "path": "proposed-definitions/gaap.ontology.threshold-20.json",
+      "sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf",
+      "status": "research-only draft; schema accepted, execution unverified"
+    }
+  ],
+  "revision_note": "After bounded Advisor follow-up: mean_gaap logical type Float matches observed DOUBLE; proposed replaces approved. Shape validation repeated after these changes."
+}

@@ -1,0 +1,12 @@
+ds,product,region,user_type,user_id,gaap_val,ytd_gaap
+2026-03-01,X,North,student,e01,10.00,10.00
+2026-03-01,X,North,student,e02,100.00,9.99
+2026-03-01,X,South,individual,e03,20.00,
+2026-03-01,X,South,individual,e04,,20.00
+2026-03-01,Y,North,student,e05,30.00,20.00
+2026-03-02,X,North,student,e06,5.00,0.00
+2026-03-03,X,North,student,e07,0.00,20.00
+2026-03-03,X,South,individual,e08,20.00,10.00
+2026-03-04,X,South,individual,e09,,
+2026-03-31,X,North,student,e10,50.00,10.00
+2026-04-01,X,North,student,e11,100.00,20.00

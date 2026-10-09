@@ -1,0 +1,113 @@
+{
+  "scope": "SQL oracle on synthetic controls; no ontology executor loaded",
+  "duckdb_version": "1.5.6",
+  "fixture_sha256": "93aabea30c8f94246e44e1c7d4d7c1ddb2b4650cd347c5c57edbbf4e8abcb6b1",
+  "expected_values_source": "Explicit hand-derived constants in verify_boundary_oracle.py",
+  "columns": [
+    "ds",
+    "record_count",
+    "gaap_value_count",
+    "gaap_sum",
+    "gaap_average"
+  ],
+  "cases": {
+    "10": {
+      "daily": [
+        [
+          "2026-03-01",
+          2,
+          1,
+          10.0,
+          10.0
+        ],
+        [
+          "2026-03-03",
+          2,
+          2,
+          20.0,
+          10.0
+        ],
+        [
+          "2026-03-31",
+          1,
+          1,
+          50.0,
+          50.0
+        ]
+      ],
+      "object_ids": [
+        "e01",
+        "e04",
+        "e07",
+        "e08",
+        "e10"
+      ]
+    },
+    "20": {
+      "daily": [
+        [
+          "2026-03-01",
+          1,
+          0,
+          null,
+          null
+        ],
+        [
+          "2026-03-03",
+          1,
+          1,
+          0.0,
+          0.0
+        ]
+      ],
+      "object_ids": [
+        "e04",
+        "e07"
+      ]
+    }
+  },
+  "old_case_groups": [
+    [
+      "2026-03-01",
+      10.0
+    ],
+    [
+      "2026-03-02",
+      null
+    ],
+    [
+      "2026-03-03",
+      10.0
+    ],
+    [
+      "2026-03-04",
+      null
+    ],
+    [
+      "2026-03-31",
+      50.0
+    ]
+  ],
+  "empty": [
+    0,
+    0,
+    null,
+    null
+  ],
+  "global_threshold_10": [
+    5,
+    4,
+    "80.00",
+    20.0
+  ],
+  "checks": [
+    "threshold equality",
+    "NULL YTD excludes population",
+    "NULL GAAP changes denominator",
+    "zero GAAP retained",
+    "product filter",
+    "March 31 inclusive / April 1 exclusive",
+    "empty scalar aggregate",
+    "CASE versus population-filter group difference"
+  ]
+}

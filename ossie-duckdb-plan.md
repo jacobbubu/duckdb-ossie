@@ -1,5 +1,25 @@
 # duckdb_ossie — Implementation Plan
 
+## Current research checkpoint — 2026-10-09
+
+The first research package is complete: pinned source evidence, an independent
+475-row GAAP oracle, hand-derived boundary controls, schema-checked definition
+drafts and an independently reviewed minimal execution contract. This does not
+complete P0; no ontology execution has been implemented or locally tested.
+The user subsequently authorized local implementation and tests in this repository,
+starting with an isolated build of the pinned feature branch. Only the pinned new
+document shape is required; legacy wrapper compatibility is not required. Push,
+upstream PR changes, merge and publication remain outside the authorization.
+The problem, evidence, remaining necessities and next authorized action are
+maintained in [the OSSIE-REQ-001 research record](docs/ossie-execution-research.md).
+The historical ontology non-goal below is superseded only for the reviewed bounded
+scalar-population profile in OSSIE-REQ-001. General ontology/OWL/RDF execution is
+still excluded. The user accepted the YTD-only initial population rule (active/paid
+unverified), SQL grouping and NULL defaults, and explicit calendar completion as
+a separate capability. The pinned feature build is now in progress; the next
+implementation milestone is loader/version and metadata adaptation with regressions,
+before ontology population execution.
+
 A DuckDB extension that reads Apache Ossie semantic model files and answers
 semantic queries against the tables they describe, exposed to AI agents over MCP.
 
@@ -102,7 +122,8 @@ Explicitly out of scope. Do not build these speculatively.
 
 - Writing, mutating, or validating Ossie models beyond schema conformance
 - Converting Ossie to other semantic formats (that space is well covered)
-- Any ontology / OWL / RDF layer — the Ossie ontology layer is roadmap, not spec
+- General ontology / OWL / RDF reasoning. The bounded scalar-population profile
+  authorized in the current research checkpoint is the sole exception.
 - Query result caching
 - Ossie `custom_extensions` vendor blocks — parse and ignore
 - Natural-language → metric-name mapping. The agent does that; the extension exposes

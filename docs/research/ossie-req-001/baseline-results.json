@@ -1,0 +1,1316 @@
+{
+  "scope": "Independent SQL and Decimal oracle; ossie extension not loaded; A1/A2/A3/A4 acceptance pending",
+  "duckdb_version": "1.5.6",
+  "duckdb_engine": [
+    "v1.5.6",
+    "v1.5.6",
+    "069cc9f9b5"
+  ],
+  "python_version": "3.14.7",
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "generator_sha256": "8df9a5a41ffe43ac995dabbed1ce26d926d7e4fc4448118809c641562bff5bd6",
+  "source_manifest_sha256": "9450ced5bfaec4ccc3f65ca21c4b5abc605f76572f544fb8ab8164a334bcd5ca",
+  "fixture_sha256": "e01a940a3f83ed6f5f22beb598e64206144658ad3b9fef89124e2790e7fc3e18",
+  "baseline_sql_sha256": "a1ae45d534e5042203b29ed0268726da1899dd979fbfe4bb6c36ed71140163dd",
+  "fixture_rows": 475,
+  "distinct_user_ids": 475,
+  "unit_source": "demo_semantic_config.xlsx metric!E2 = USD; no conversion",
+  "date_interval": "[2026-03-01, 2026-04-01)",
+  "cases": {
+    "10": {
+      "population_stage": "record selection before aggregation",
+      "object_ids_sha256": "75eea9d158814f27fd98b6d3d105686eb1285328767e5bd22d1173fcfaf8f45f",
+      "record_count": 166,
+      "gaap_sum": "2265.86",
+      "daily": [
+        {
+          "ds": "2026-03-01",
+          "record_count": 6,
+          "distinct_user_count": 6,
+          "gaap_sum": "27.82",
+          "gaap_average": "4.636666666666666666666666667",
+          "gaap_average_rounded": "4.64"
+        },
+        {
+          "ds": "2026-03-02",
+          "record_count": 12,
+          "distinct_user_count": 12,
+          "gaap_sum": "48.49",
+          "gaap_average": "4.040833333333333333333333333",
+          "gaap_average_rounded": "4.04"
+        },
+        {
+          "ds": "2026-03-03",
+          "record_count": 7,
+          "distinct_user_count": 7,
+          "gaap_sum": "23.62",
+          "gaap_average": "3.374285714285714285714285714",
+          "gaap_average_rounded": "3.37"
+        },
+        {
+          "ds": "2026-03-04",
+          "record_count": 10,
+          "distinct_user_count": 10,
+          "gaap_sum": "53.10",
+          "gaap_average": "5.31",
+          "gaap_average_rounded": "5.31"
+        },
+        {
+          "ds": "2026-03-05",
+          "record_count": 10,
+          "distinct_user_count": 10,
+          "gaap_sum": "50.63",
+          "gaap_average": "5.063",
+          "gaap_average_rounded": "5.06"
+        },
+        {
+          "ds": "2026-03-06",
+          "record_count": 10,
+          "distinct_user_count": 10,
+          "gaap_sum": "42.63",
+          "gaap_average": "4.263",
+          "gaap_average_rounded": "4.26"
+        },
+        {
+          "ds": "2026-03-07",
+          "record_count": 7,
+          "distinct_user_count": 7,
+          "gaap_sum": "27.60",
+          "gaap_average": "3.942857142857142857142857143",
+          "gaap_average_rounded": "3.94"
+        },
+        {
+          "ds": "2026-03-08",
+          "record_count": 6,
+          "distinct_user_count": 6,
+          "gaap_sum": "29.54",
+          "gaap_average": "4.923333333333333333333333333",
+          "gaap_average_rounded": "4.92"
+        },
+        {
+          "ds": "2026-03-09",
+          "record_count": 7,
+          "distinct_user_count": 7,
+          "gaap_sum": "33.35",
+          "gaap_average": "4.764285714285714285714285714",
+          "gaap_average_rounded": "4.76"
+        },
+        {
+          "ds": "2026-03-10",
+          "record_count": 37,
+          "distinct_user_count": 37,
+          "gaap_sum": "1697.80",
+          "gaap_average": "45.88648648648648648648648649",
+          "gaap_average_rounded": "45.89"
+        },
+        {
+          "ds": "2026-03-11",
+          "record_count": 9,
+          "distinct_user_count": 9,
+          "gaap_sum": "41.74",
+          "gaap_average": "4.637777777777777777777777778",
+          "gaap_average_rounded": "4.64"
+        },
+        {
+          "ds": "2026-03-12",
+          "record_count": 5,
+          "distinct_user_count": 5,
+          "gaap_sum": "16.60",
+          "gaap_average": "3.32",
+          "gaap_average_rounded": "3.32"
+        },
+        {
+          "ds": "2026-03-13",
+          "record_count": 11,
+          "distinct_user_count": 11,
+          "gaap_sum": "56.76",
+          "gaap_average": "5.16",
+          "gaap_average_rounded": "5.16"
+        },
+        {
+          "ds": "2026-03-14",
+          "record_count": 16,
+          "distinct_user_count": 16,
+          "gaap_sum": "69.07",
+          "gaap_average": "4.316875",
+          "gaap_average_rounded": "4.32"
+        },
+        {
+          "ds": "2026-03-15",
+          "record_count": 13,
+          "distinct_user_count": 13,
+          "gaap_sum": "47.11",
+          "gaap_average": "3.623846153846153846153846154",
+          "gaap_average_rounded": "3.62"
+        }
+      ],
+      "region_user_type_groups": [
+        {
+          "ds": "2026-03-01",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "1.14"
+        },
+        {
+          "ds": "2026-03-01",
+          "region": "North",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "7.19"
+        },
+        {
+          "ds": "2026-03-01",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "3.66"
+        },
+        {
+          "ds": "2026-03-01",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 2,
+          "gaap_sum": "9.54"
+        },
+        {
+          "ds": "2026-03-01",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.29"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 2,
+          "gaap_sum": "13.20"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "4.42"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "1.35"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "North",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "6.10"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "North",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "1.57"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "North",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "2.16"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "1.84"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "9.67"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "West",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "1.69"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.49"
+        },
+        {
+          "ds": "2026-03-03",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "1.49"
+        },
+        {
+          "ds": "2026-03-03",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "7.53"
+        },
+        {
+          "ds": "2026-03-03",
+          "region": "North",
+          "user_type": "enterprise",
+          "record_count": 2,
+          "gaap_sum": "6.08"
+        },
+        {
+          "ds": "2026-03-03",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "1.32"
+        },
+        {
+          "ds": "2026-03-03",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "7.20"
+        },
+        {
+          "ds": "2026-03-04",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "3.24"
+        },
+        {
+          "ds": "2026-03-04",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "12.50"
+        },
+        {
+          "ds": "2026-03-04",
+          "region": "North",
+          "user_type": "enterprise",
+          "record_count": 2,
+          "gaap_sum": "8.58"
+        },
+        {
+          "ds": "2026-03-04",
+          "region": "North",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "6.41"
+        },
+        {
+          "ds": "2026-03-04",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "5.45"
+        },
+        {
+          "ds": "2026-03-04",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 3,
+          "gaap_sum": "16.92"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "3.38"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 3,
+          "gaap_sum": "15.66"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.20"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "6.51"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "2.48"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "11.59"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "4.81"
+        },
+        {
+          "ds": "2026-03-06",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "3.38"
+        },
+        {
+          "ds": "2026-03-06",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "1.28"
+        },
+        {
+          "ds": "2026-03-06",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 3,
+          "gaap_sum": "15.84"
+        },
+        {
+          "ds": "2026-03-06",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "6.85"
+        },
+        {
+          "ds": "2026-03-06",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "3.37"
+        },
+        {
+          "ds": "2026-03-06",
+          "region": "West",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "3.04"
+        },
+        {
+          "ds": "2026-03-06",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "8.87"
+        },
+        {
+          "ds": "2026-03-07",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "5.00"
+        },
+        {
+          "ds": "2026-03-07",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "3.88"
+        },
+        {
+          "ds": "2026-03-07",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "1.55"
+        },
+        {
+          "ds": "2026-03-07",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 2,
+          "gaap_sum": "9.31"
+        },
+        {
+          "ds": "2026-03-07",
+          "region": "West",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "2.00"
+        },
+        {
+          "ds": "2026-03-07",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "5.86"
+        },
+        {
+          "ds": "2026-03-08",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "5.43"
+        },
+        {
+          "ds": "2026-03-08",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "11.41"
+        },
+        {
+          "ds": "2026-03-08",
+          "region": "North",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "1.10"
+        },
+        {
+          "ds": "2026-03-08",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "4.38"
+        },
+        {
+          "ds": "2026-03-08",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "7.22"
+        },
+        {
+          "ds": "2026-03-09",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 2,
+          "gaap_sum": "11.72"
+        },
+        {
+          "ds": "2026-03-09",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "4.84"
+        },
+        {
+          "ds": "2026-03-09",
+          "region": "North",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "9.76"
+        },
+        {
+          "ds": "2026-03-09",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "7.03"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "3.64"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 6,
+          "gaap_sum": "204.31"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "North",
+          "user_type": "enterprise",
+          "record_count": 10,
+          "gaap_sum": "875.61"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "North",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "5.69"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "North",
+          "user_type": "student",
+          "record_count": 3,
+          "gaap_sum": "152.27"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "4.00"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "6.40"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 5,
+          "gaap_sum": "217.34"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "5.31"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "West",
+          "user_type": "individual",
+          "record_count": 3,
+          "gaap_sum": "14.30"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 5,
+          "gaap_sum": "208.93"
+        },
+        {
+          "ds": "2026-03-11",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "8.00"
+        },
+        {
+          "ds": "2026-03-11",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 2,
+          "gaap_sum": "9.83"
+        },
+        {
+          "ds": "2026-03-11",
+          "region": "North",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "2.30"
+        },
+        {
+          "ds": "2026-03-11",
+          "region": "North",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.94"
+        },
+        {
+          "ds": "2026-03-11",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 2,
+          "gaap_sum": "5.70"
+        },
+        {
+          "ds": "2026-03-11",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "5.37"
+        },
+        {
+          "ds": "2026-03-11",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "3.60"
+        },
+        {
+          "ds": "2026-03-12",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 2,
+          "gaap_sum": "6.80"
+        },
+        {
+          "ds": "2026-03-12",
+          "region": "North",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "4.36"
+        },
+        {
+          "ds": "2026-03-12",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "5.44"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "5.59"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.12"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "North",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "3.15"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "North",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "3.89"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 3,
+          "gaap_sum": "16.06"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "12.10"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "2.30"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "West",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "7.55"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "5.19"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "2.25"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "North",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "1.22"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "North",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "3.93"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "6.98"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "6.28"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 3,
+          "gaap_sum": "9.74"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 3,
+          "gaap_sum": "10.48"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "West",
+          "user_type": "individual",
+          "record_count": 2,
+          "gaap_sum": "11.12"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "11.88"
+        },
+        {
+          "ds": "2026-03-15",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 2,
+          "gaap_sum": "7.56"
+        },
+        {
+          "ds": "2026-03-15",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "1.98"
+        },
+        {
+          "ds": "2026-03-15",
+          "region": "North",
+          "user_type": "enterprise",
+          "record_count": 3,
+          "gaap_sum": "9.25"
+        },
+        {
+          "ds": "2026-03-15",
+          "region": "North",
+          "user_type": "individual",
+          "record_count": 2,
+          "gaap_sum": "3.44"
+        },
+        {
+          "ds": "2026-03-15",
+          "region": "North",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.63"
+        },
+        {
+          "ds": "2026-03-15",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 3,
+          "gaap_sum": "12.67"
+        },
+        {
+          "ds": "2026-03-15",
+          "region": "West",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "5.58"
+        }
+      ]
+    },
+    "20": {
+      "population_stage": "record selection before aggregation",
+      "object_ids_sha256": "fb16fec69414f803c4700fd5f43d5835f0abb240bf8af2a723e9fa2a96b8c11b",
+      "record_count": 63,
+      "gaap_sum": "1472.73",
+      "daily": [
+        {
+          "ds": "2026-03-01",
+          "record_count": 3,
+          "distinct_user_count": 3,
+          "gaap_sum": "11.09",
+          "gaap_average": "3.696666666666666666666666667",
+          "gaap_average_rounded": "3.70"
+        },
+        {
+          "ds": "2026-03-02",
+          "record_count": 5,
+          "distinct_user_count": 5,
+          "gaap_sum": "26.19",
+          "gaap_average": "5.238",
+          "gaap_average_rounded": "5.24"
+        },
+        {
+          "ds": "2026-03-03",
+          "record_count": 3,
+          "distinct_user_count": 3,
+          "gaap_sum": "7.40",
+          "gaap_average": "2.466666666666666666666666667",
+          "gaap_average_rounded": "2.47"
+        },
+        {
+          "ds": "2026-03-04",
+          "record_count": 4,
+          "distinct_user_count": 4,
+          "gaap_sum": "24.95",
+          "gaap_average": "6.2375",
+          "gaap_average_rounded": "6.24"
+        },
+        {
+          "ds": "2026-03-05",
+          "record_count": 4,
+          "distinct_user_count": 4,
+          "gaap_sum": "19.24",
+          "gaap_average": "4.81",
+          "gaap_average_rounded": "4.81"
+        },
+        {
+          "ds": "2026-03-06",
+          "record_count": 2,
+          "distinct_user_count": 2,
+          "gaap_sum": "8.98",
+          "gaap_average": "4.49",
+          "gaap_average_rounded": "4.49"
+        },
+        {
+          "ds": "2026-03-07",
+          "record_count": 3,
+          "distinct_user_count": 3,
+          "gaap_sum": "11.01",
+          "gaap_average": "3.67",
+          "gaap_average_rounded": "3.67"
+        },
+        {
+          "ds": "2026-03-08",
+          "record_count": 1,
+          "distinct_user_count": 1,
+          "gaap_sum": "4.38",
+          "gaap_average": "4.38",
+          "gaap_average_rounded": "4.38"
+        },
+        {
+          "ds": "2026-03-09",
+          "record_count": 1,
+          "distinct_user_count": 1,
+          "gaap_sum": "6.09",
+          "gaap_average": "6.09",
+          "gaap_average_rounded": "6.09"
+        },
+        {
+          "ds": "2026-03-10",
+          "record_count": 21,
+          "distinct_user_count": 21,
+          "gaap_sum": "1277.54",
+          "gaap_average": "60.83523809523809523809523810",
+          "gaap_average_rounded": "60.84"
+        },
+        {
+          "ds": "2026-03-11",
+          "record_count": 4,
+          "distinct_user_count": 4,
+          "gaap_sum": "19.72",
+          "gaap_average": "4.93",
+          "gaap_average_rounded": "4.93"
+        },
+        {
+          "ds": "2026-03-12",
+          "record_count": 2,
+          "distinct_user_count": 2,
+          "gaap_sum": "4.59",
+          "gaap_average": "2.295",
+          "gaap_average_rounded": "2.30"
+        },
+        {
+          "ds": "2026-03-13",
+          "record_count": 4,
+          "distinct_user_count": 4,
+          "gaap_sum": "28.46",
+          "gaap_average": "7.115",
+          "gaap_average_rounded": "7.12"
+        },
+        {
+          "ds": "2026-03-14",
+          "record_count": 4,
+          "distinct_user_count": 4,
+          "gaap_sum": "19.02",
+          "gaap_average": "4.755",
+          "gaap_average_rounded": "4.76"
+        },
+        {
+          "ds": "2026-03-15",
+          "record_count": 2,
+          "distinct_user_count": 2,
+          "gaap_sum": "4.07",
+          "gaap_average": "2.035",
+          "gaap_average_rounded": "2.04"
+        }
+      ],
+      "region_user_type_groups": [
+        {
+          "ds": "2026-03-01",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "1.14"
+        },
+        {
+          "ds": "2026-03-01",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "3.66"
+        },
+        {
+          "ds": "2026-03-01",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.29"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "4.42"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "North",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "6.10"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "1.84"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "7.34"
+        },
+        {
+          "ds": "2026-03-02",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.49"
+        },
+        {
+          "ds": "2026-03-03",
+          "region": "North",
+          "user_type": "enterprise",
+          "record_count": 2,
+          "gaap_sum": "6.08"
+        },
+        {
+          "ds": "2026-03-03",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "1.32"
+        },
+        {
+          "ds": "2026-03-04",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.95"
+        },
+        {
+          "ds": "2026-03-04",
+          "region": "North",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "6.41"
+        },
+        {
+          "ds": "2026-03-04",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "5.45"
+        },
+        {
+          "ds": "2026-03-04",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.14"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "3.38"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "2.98"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.20"
+        },
+        {
+          "ds": "2026-03-05",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "6.68"
+        },
+        {
+          "ds": "2026-03-06",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "7.10"
+        },
+        {
+          "ds": "2026-03-06",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "1.88"
+        },
+        {
+          "ds": "2026-03-07",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "1.55"
+        },
+        {
+          "ds": "2026-03-07",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "3.60"
+        },
+        {
+          "ds": "2026-03-07",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "5.86"
+        },
+        {
+          "ds": "2026-03-08",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "4.38"
+        },
+        {
+          "ds": "2026-03-09",
+          "region": "East",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "6.09"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "East",
+          "user_type": "student",
+          "record_count": 3,
+          "gaap_sum": "134.33"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "North",
+          "user_type": "enterprise",
+          "record_count": 10,
+          "gaap_sum": "875.61"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "North",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "47.81"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "6.40"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 3,
+          "gaap_sum": "103.39"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "West",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "5.31"
+        },
+        {
+          "ds": "2026-03-10",
+          "region": "West",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "104.69"
+        },
+        {
+          "ds": "2026-03-11",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 2,
+          "gaap_sum": "9.83"
+        },
+        {
+          "ds": "2026-03-11",
+          "region": "South",
+          "user_type": "enterprise",
+          "record_count": 1,
+          "gaap_sum": "4.52"
+        },
+        {
+          "ds": "2026-03-11",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "5.37"
+        },
+        {
+          "ds": "2026-03-12",
+          "region": "East",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "3.24"
+        },
+        {
+          "ds": "2026-03-12",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "1.35"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 2,
+          "gaap_sum": "13.16"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "7.75"
+        },
+        {
+          "ds": "2026-03-13",
+          "region": "West",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "7.55"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "South",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "6.28"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 2,
+          "gaap_sum": "8.27"
+        },
+        {
+          "ds": "2026-03-14",
+          "region": "West",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "4.47"
+        },
+        {
+          "ds": "2026-03-15",
+          "region": "North",
+          "user_type": "individual",
+          "record_count": 1,
+          "gaap_sum": "1.24"
+        },
+        {
+          "ds": "2026-03-15",
+          "region": "South",
+          "user_type": "student",
+          "record_count": 1,
+          "gaap_sum": "2.83"
+        }
+      ]
+    }
+  },
+  "empty_aggregate": {
+    "count": 0,
+    "sum": null,
+    "average": null
+  },
+  "checks": [
+    "all 15 published threshold-10 rounded daily averages",
+    "both thresholds daily exact sum/count and average tolerance 1e-10",
+    "both thresholds exact object ID sets",
+    "all region/user-type group sums and counts",
+    "original source hash verification",
+    "empty SQL aggregate"
+  ]
+}

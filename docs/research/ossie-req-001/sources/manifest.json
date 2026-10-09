@@ -1,0 +1,165 @@
+{
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "files": [
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "core-spec/spec.md",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/spec.md",
+      "sha256": "d277ef2a929510bc86eb8b27b6036480008c233f2cd05b9f4ef11f203feebad1",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/core-spec/spec.md"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "core-spec/ossie-schema.json",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/ossie-schema.json",
+      "sha256": "5b9cf15d31057e2b7363194b1c254a6b669fc412b3f8f402d4efbdcfa25fcc87",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/core-spec/ossie-schema.json"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "core-spec/expression_language.md",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md",
+      "sha256": "94b6a922f61afbc94576a9794e53f8dd02b3cc57bca123a6f20da5c97b9ed94f",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/core-spec/expression_language.md"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "ontology/ontology.md",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/ontology/ontology.md",
+      "sha256": "fcd7fa3e40f419f81143b1fbe523f97fc17935bc85bd0dc88f8b8b5c4103458d",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/ontology/ontology.md"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "ontology/ontology.json",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/ontology/ontology.json",
+      "sha256": "52421ba8161385a4d0117eac2a76863d2ef21ef3434a95334b6b1564371fe149",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/ontology/ontology.json"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "ontology/mapping.json",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/ontology/mapping.json",
+      "sha256": "8db74be12cda94e23240cc502bb2ac0580b69a05431fda35ee0c9e8b7e6f096b",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/ontology/mapping.json"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "examples/flights.ontology.yaml",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/examples/flights.ontology.yaml",
+      "sha256": "4035aa22494a1dfc739f5fe6689ffa74d07338497ef67a7acab69c568eae00fd",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/examples/flights.ontology.yaml"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "examples/flights.mapping.yaml",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/examples/flights.mapping.yaml",
+      "sha256": "dd62e2614097d0fa3f457fdb15a4ac431cfbbc088fa0a46148d2671ca6b1215c",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/examples/flights.mapping.yaml"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "LICENSE",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/LICENSE"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "NOTICE",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/NOTICE",
+      "sha256": "cdd61e3d225833b912985567730c9043394ae21e3ecfe619ed63cff5f170c59a",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/NOTICE"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "converters/ontology/src/ossie_ontology/model.py",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/converters/ontology/src/ossie_ontology/model.py",
+      "sha256": "ed658677923eb39906c54b114db356c3f3fe307f10813bf0a0b5630663fb1b02",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/converters/ontology/src/ossie_ontology/model.py"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "converters/ontology/src/ossie_ontology/parser/__init__.py",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/converters/ontology/src/ossie_ontology/parser/__init__.py",
+      "sha256": "284591189f00adb0bbf97c15f1b11263eb542e624abc196f6cc9b928febd2180",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/converters/ontology/src/ossie_ontology/parser/__init__.py"
+    },
+    {
+      "repository": "apache/ossie",
+      "commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+      "source_path": "converters/ontology/src/ossie_ontology/spec.py",
+      "saved_path": "docs/research/ossie-req-001/sources/apache-ossie/converters/ontology/src/ossie_ontology/spec.py",
+      "sha256": "d9a4aebd25d616478983de55bd6112c532a31a47d7eb3839f205eae6fb4539d5",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/converters/ontology/src/ossie_ontology/spec.py"
+    },
+    {
+      "repository": "QwenPaw-Data local checkout",
+      "commit": "e0bae363fcabe0ebf66bad8345001d7e8d0c4c56",
+      "source_path": "/Users/rongshen/github/QwenPaw-Data/examples/init_demo.py",
+      "sha256": "8df9a5a41ffe43ac995dabbed1ce26d926d7e4fc4448118809c641562bff5bd6",
+      "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/init_demo.py"
+    },
+    {
+      "repository": "QwenPaw-Data local checkout",
+      "commit": "e0bae363fcabe0ebf66bad8345001d7e8d0c4c56",
+      "source_path": "/Users/rongshen/github/QwenPaw-Data/examples/README.md",
+      "sha256": "93a23ce9e8eafcf991fee21aee28527f5c65a982a6e541b0cb1dc7cbbc7bfb87",
+      "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/README.md"
+    },
+    {
+      "repository": "QwenPaw-Data local checkout",
+      "commit": "e0bae363fcabe0ebf66bad8345001d7e8d0c4c56",
+      "source_path": "/Users/rongshen/github/QwenPaw-Data/examples/demo/postgres/init.sql",
+      "sha256": "c4618e1632d4c0aadc20ba214b106f1c90672208184529916c08029b2652ea98",
+      "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo/postgres/init.sql"
+    },
+    {
+      "repository": "QwenPaw-Data local checkout",
+      "commit": "e0bae363fcabe0ebf66bad8345001d7e8d0c4c56",
+      "source_path": "/Users/rongshen/github/QwenPaw-Data/examples/demo/sqlite/init.sql",
+      "sha256": "d908904de12087443720eae4b466c2e70df1e2c9c4be726efc71103dbe8156c6",
+      "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/examples/demo/sqlite/init.sql"
+    },
+    {
+      "repository": "QwenPaw-Data local checkout",
+      "commit": "e0bae363fcabe0ebf66bad8345001d7e8d0c4c56",
+      "source_path": "/Users/rongshen/github/QwenPaw-Data/examples/demo_semantic_config.xlsx",
+      "sha256": "d5d4c049116f1a27653a25d9c59d3b67170810dc724cf2d6c4d5fc0182d5c56a"
+    },
+    {
+      "repository": "QwenPaw-Data local checkout",
+      "commit": "e0bae363fcabe0ebf66bad8345001d7e8d0c4c56",
+      "source_path": "/Users/rongshen/github/QwenPaw-Data/examples/demo_kg_doc.docx",
+      "sha256": "7553425fc2b2fb34bdcd9fff85b12d2791dc20d459b96e3f58c261c68a8198bd"
+    },
+    {
+      "repository": "QwenPaw-Data local checkout",
+      "commit": "e0bae363fcabe0ebf66bad8345001d7e8d0c4c56",
+      "source_path": "/Users/rongshen/github/QwenPaw-Data/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "saved_path": "docs/research/ossie-req-001/sources/qwenpaw-data/LICENSE"
+    }
+  ],
+  "original_requirement": {
+    "path": "/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md",
+    "sha256": "6c41eeaafba2dc8a28eb31dc99bb8e2d06e8a2b0e4826994f01c90ed82b1780b"
+  },
+  "extension": {
+    "main": "9d432f4b8a32fc7d85dd402fa85acb300208d764",
+    "feature": "c2947c7de8e583b70e3f8b859a94c0b9830a36a4",
+    "feature_duckdb_gitlink": "160000 commit 069cc9f9b5be802405797faecc284961b07c70ef\tduckdb"
+  }
+}

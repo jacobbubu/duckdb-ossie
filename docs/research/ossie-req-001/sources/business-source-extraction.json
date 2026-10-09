@@ -1,0 +1,381 @@
+{
+  "demo_semantic_config.xlsx": {
+    "source": "/Users/rongshen/github/QwenPaw-Data/examples/demo_semantic_config.xlsx",
+    "source_sha256": "d5d4c049116f1a27653a25d9c59d3b67170810dc724cf2d6c4d5fc0182d5c56a",
+    "sheets": {
+      "datasource": [
+        {
+          "A1": "datasource_id",
+          "B1": "datasource_name",
+          "C1": "datasource_type"
+        },
+        {
+          "A2": "postgresql-demo-gaap",
+          "B2": "Demo PG - GAAP use case",
+          "C2": "postgresql"
+        }
+      ],
+      "biz_domain": [
+        {
+          "A1": "datasource_id",
+          "B1": "domain_name",
+          "C1": "display_name",
+          "D1": "description",
+          "E1": "aliases"
+        },
+        {
+          "A2": "postgresql-demo-gaap",
+          "B2": "DemoProduct",
+          "C2": "Demo Product",
+          "D2": "Fictional product domain for external GAAP demo",
+          "E2": "ProductX$$$Demo"
+        }
+      ],
+      "dataset": [
+        {
+          "A1": "datasource_id",
+          "B1": "domain_name",
+          "C1": "dataset_name",
+          "D1": "dataset_comment",
+          "E1": "dataset_type",
+          "F1": "parents"
+        },
+        {
+          "A2": "postgresql-demo-gaap",
+          "B2": "DemoProduct",
+          "C2": "dws_gaap_di",
+          "D2": "Fictional GAAP daily snapshot per user for product demo",
+          "E2": "DWS",
+          "F2": "dws_gaap_di"
+        }
+      ],
+      "dataset_column": [
+        {
+          "A1": "datasource_id",
+          "B1": "domain_name",
+          "C1": "dataset_name",
+          "D1": "column_name",
+          "E1": "column_name_cn",
+          "F1": "data_type",
+          "G1": "column_type",
+          "H1": "dimension_type",
+          "I1": "column_comment",
+          "J1": "is_primary",
+          "K1": "is_nullable"
+        },
+        {
+          "A2": "postgresql-demo-gaap",
+          "B2": "DemoProduct",
+          "C2": "dws_gaap_di",
+          "D2": "ds",
+          "E2": "日期",
+          "F2": "date",
+          "I2": "日期",
+          "J2": "N",
+          "K2": "Y"
+        },
+        {
+          "A3": "postgresql-demo-gaap",
+          "B3": "DemoProduct",
+          "C3": "dws_gaap_di",
+          "D3": "product",
+          "E3": "产品",
+          "F3": "text",
+          "G3": "维度",
+          "I3": "产品",
+          "J3": "N",
+          "K3": "Y"
+        },
+        {
+          "A4": "postgresql-demo-gaap",
+          "B4": "DemoProduct",
+          "C4": "dws_gaap_di",
+          "D4": "region",
+          "E4": "地区",
+          "F4": "text",
+          "G4": "维度",
+          "I4": "地区",
+          "J4": "N",
+          "K4": "Y"
+        },
+        {
+          "A5": "postgresql-demo-gaap",
+          "B5": "DemoProduct",
+          "C5": "dws_gaap_di",
+          "D5": "user_type",
+          "E5": "用户类型",
+          "F5": "text",
+          "G5": "维度",
+          "I5": "用户类型",
+          "J5": "N",
+          "K5": "Y"
+        },
+        {
+          "A6": "postgresql-demo-gaap",
+          "B6": "DemoProduct",
+          "C6": "dws_gaap_di",
+          "D6": "user_id",
+          "E6": "用户ID",
+          "F6": "text",
+          "I6": "用户ID",
+          "J6": "N",
+          "K6": "Y"
+        },
+        {
+          "A7": "postgresql-demo-gaap",
+          "B7": "DemoProduct",
+          "C7": "dws_gaap_di",
+          "D7": "gaap_val",
+          "E7": "当日GAAP价值",
+          "F7": "numeric",
+          "G7": "指标",
+          "I7": "当日GAAP价值",
+          "J7": "N",
+          "K7": "Y"
+        },
+        {
+          "A8": "postgresql-demo-gaap",
+          "B8": "DemoProduct",
+          "C8": "dws_gaap_di",
+          "D8": "ytd_gaap",
+          "E8": "年初至今GAAP累计",
+          "F8": "numeric",
+          "G8": "指标",
+          "I8": "年初至今GAAP累计",
+          "J8": "N",
+          "K8": "Y"
+        }
+      ],
+      "dimension": [
+        {
+          "A1": "datasource_id",
+          "B1": "domain_name",
+          "C1": "dimension_name",
+          "D1": "description",
+          "E1": "parent_name",
+          "F1": "depth",
+          "G1": "synonyms",
+          "H1": "is_visible",
+          "I1": "is_attribution",
+          "J1": "enums"
+        },
+        {
+          "A2": "postgresql-demo-gaap",
+          "B2": "DemoProduct",
+          "C2": "日期",
+          "D2": "Dimension mapped to column ds",
+          "G2": "date,ds",
+          "H2": 1,
+          "I2": 1,
+          "J2": "2026-03-01$$$2026-03-15"
+        },
+        {
+          "A3": "postgresql-demo-gaap",
+          "B3": "DemoProduct",
+          "C3": "产品",
+          "D3": "Dimension mapped to column product",
+          "G3": "product",
+          "H3": 1,
+          "I3": 1,
+          "J3": "X$$$Y"
+        },
+        {
+          "A4": "postgresql-demo-gaap",
+          "B4": "DemoProduct",
+          "C4": "地区",
+          "D4": "Dimension mapped to column region",
+          "G4": "region",
+          "H4": 1,
+          "I4": 1,
+          "J4": "North$$$South$$$East$$$West"
+        },
+        {
+          "A5": "postgresql-demo-gaap",
+          "B5": "DemoProduct",
+          "C5": "用户类型",
+          "D5": "Dimension mapped to column user_type",
+          "G5": "user type",
+          "H5": 1,
+          "I5": 1,
+          "J5": "student$$$enterprise$$$individual"
+        }
+      ],
+      "dataset_dimension": [
+        {
+          "A1": "datasource_id",
+          "B1": "domain_name",
+          "C1": "dataset_name",
+          "D1": "dimension_name",
+          "E1": "calculate_expr",
+          "F1": "dimension_type",
+          "G1": "data_type"
+        },
+        {
+          "A2": "postgresql-demo-gaap",
+          "B2": "DemoProduct",
+          "C2": "dws_gaap_di",
+          "D2": "日期",
+          "E2": "select(ds)",
+          "F2": "date",
+          "G2": "date"
+        },
+        {
+          "A3": "postgresql-demo-gaap",
+          "B3": "DemoProduct",
+          "C3": "dws_gaap_di",
+          "D3": "产品",
+          "E3": "select(product)",
+          "F3": "普通维度",
+          "G3": "text"
+        },
+        {
+          "A4": "postgresql-demo-gaap",
+          "B4": "DemoProduct",
+          "C4": "dws_gaap_di",
+          "D4": "地区",
+          "E4": "select(region)",
+          "F4": "普通维度",
+          "G4": "text"
+        },
+        {
+          "A5": "postgresql-demo-gaap",
+          "B5": "DemoProduct",
+          "C5": "dws_gaap_di",
+          "D5": "用户类型",
+          "E5": "select(user_type)",
+          "F5": "普通维度",
+          "G5": "text"
+        }
+      ],
+      "metric": [
+        {
+          "A1": "datasource_id",
+          "B1": "domain_name",
+          "C1": "metric_name",
+          "D1": "description",
+          "E1": "unit",
+          "F1": "is_polaris",
+          "G1": "show_distribution",
+          "H1": "is_visible",
+          "I1": "synonyms",
+          "J1": "tags"
+        },
+        {
+          "A2": "postgresql-demo-gaap",
+          "B2": "DemoProduct",
+          "C2": "average GAAP value of valid users",
+          "D2": "Average GAAP value of valid users, where a valid user is defined as fiscal YTD GAAP >= 10. 有效用户：年初至今GAAP >= 10。",
+          "E2": "USD",
+          "F2": 1,
+          "G2": 0,
+          "H2": 0,
+          "I2": "有效用户平均GAAP价值$$$valid user GAAP average$$$avg GAAP valid users$$$产品X有效用户GAAP均值",
+          "J2": "GAAP$$$demo"
+        }
+      ],
+      "metric_formula": [
+        {
+          "A1": "datasource_id",
+          "B1": "domain_name",
+          "C1": "metric_name",
+          "D1": "dataset_name",
+          "E1": "formula",
+          "F1": "date_range",
+          "G1": "formula_evidence"
+        },
+        {
+          "A2": "postgresql-demo-gaap",
+          "B2": "DemoProduct",
+          "C2": "average GAAP value of valid users",
+          "D2": "dws_gaap_di",
+          "E2": "AVG(CASE WHEN ytd_gaap >= 10 THEN gaap_val END)",
+          "F2": "1d",
+          "G2": "gaap_val"
+        }
+      ]
+    }
+  },
+  "demo_kg_doc.docx": {
+    "source": "/Users/rongshen/github/QwenPaw-Data/examples/demo_kg_doc.docx",
+    "source_sha256": "7553425fc2b2fb34bdcd9fff85b12d2791dc20d459b96e3f58c261c68a8198bd",
+    "paragraphs": [
+      {
+        "index": 0,
+        "text": "Product X Revenue Analysis — March 2026"
+      },
+      {
+        "index": 1,
+        "text": "This document describes the fictional Product X revenue events used for the GAAP analysis demo."
+      },
+      {
+        "index": 2,
+        "text": "Accounting standard"
+      },
+      {
+        "index": 3,
+        "text": "GAAP (Generally Accepted Accounting Principles) is the accounting standard used to report revenue in this demo. The GAAP value is recorded in the daily snapshot table dws_gaap_di."
+      },
+      {
+        "index": 4,
+        "text": "Entities"
+      },
+      {
+        "index": 5,
+        "text": "Entity Name: ValidUser"
+      },
+      {
+        "index": 6,
+        "text": "Type: concept"
+      },
+      {
+        "index": 7,
+        "text": "Definition: A valid user is an active paying customer whose fiscal year-to-date GAAP value is at least 10 USD. Only rows where ytd_gaap >= 10 represent valid users."
+      },
+      {
+        "index": 9,
+        "text": "Valid user definition"
+      },
+      {
+        "index": 10,
+        "text": "A valid user is defined as an active paying customer whose fiscal year-to-date GAAP value is at least 10 USD. Only rows where ytd_gaap is greater than or equal to 10 are considered valid users when calculating the average GAAP value."
+      },
+      {
+        "index": 11,
+        "text": "Product and segments"
+      },
+      {
+        "index": 12,
+        "text": "Product X is the flagship education product. The student segment is an important customer group for Product X. The North region team handles enterprise renewals for education accounts. The West region team is responsible for new service rollouts."
+      },
+      {
+        "index": 13,
+        "text": "Event timeline"
+      },
+      {
+        "index": 14,
+        "text": "2026-03-05 — West region service launch: The West region team introduced a new service in the West region."
+      },
+      {
+        "index": 15,
+        "text": "2026-03-07 — North enterprise renewal batch: The North region team processed annual contracts for enterprise accounts, contributing to enterprise GAAP on 2026-03-10."
+      },
+      {
+        "index": 16,
+        "text": "2026-03-08 — Student renewal campaign: A campaign started to reduce churn in the student segment. The campaign drove a large number of student renewals, which were recognized on 2026-03-10."
+      },
+      {
+        "index": 17,
+        "text": "2026-03-10 — GAAP spike: The average GAAP value of valid users for Product X spiked significantly compared to surrounding days. The spike was caused by the combination of the student renewal campaign and the North enterprise renewal batch."
+      },
+      {
+        "index": 18,
+        "text": "Causal explanation"
+      },
+      {
+        "index": 19,
+        "text": "The spike on 2026-03-10 is explained by two independent events: the student renewal campaign increased student GAAP, and the North enterprise renewal batch increased enterprise GAAP. Both events were about Product X and affected the valid-user population."
+      }
+    ],
+    "tables": []
+  }
+}
