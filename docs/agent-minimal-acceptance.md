@@ -133,4 +133,4 @@ bun --env-file=.env_test scripts/agent_acceptance.ts --prepare \
   --out /tmp/ossie-agent-prepare-new
 ```
 
-真实运行时改为 `--run --token-budget-only`，仍须先确认预算。程序不自动加载专用配置文件，不自动运行模型。`.env_test`权限设为0600；私有配置和原始本地实验记录不提交。历史公开准备记录已标为脱敏衍生物，哈希关联的原始字节保存在忽略的本地目录；公开值是占位值，不能据此推断当时实际服务配置。当前跟踪文件清理不代表Git旧提交历史已改写。
+真实运行时改为 `--run --token-budget-only`，仍须先确认预算。程序不自动加载专用配置文件，不自动运行模型。`.env_test`权限设为0600；私有配置和原始本地实验记录不提交。历史公开准备记录已标为脱敏衍生物，哈希关联的原始字节保存在忽略的本地目录；公开值是占位值，不能据此推断当时实际服务配置。六个未推送提交的历史清理现已完成，见[历史清理核验](research/ossie-req-001/agent-history-cleanup-controls/verification.json)。当前tip文件树与清理前相同；原始提交保存在忽略的本地bundle，已实际恢复验证。历史执行commit ID与源码hash仍是原始观测的来源标识，不表示改写后重新执行。

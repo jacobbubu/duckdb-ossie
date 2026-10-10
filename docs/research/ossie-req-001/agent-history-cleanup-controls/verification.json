@@ -1,0 +1,64 @@
+{
+  "scope": "OSSIE-REQ-001 unpublished local history configuration cleanup",
+  "history": {
+    "base": "b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af",
+    "old_tip": "07042f5258a5bd0aa4ff2f5e9dcdec390ec2e209",
+    "new_tip": "3db90ee9511c25dc4c11f8653d2dad6aa3b7d5e4",
+    "old_tip_tree": "3d1ed86bf636dde6afa307512d3c3857aeb84dc3",
+    "new_tip_tree": "3d1ed86bf636dde6afa307512d3c3857aeb84dc3",
+    "mapping": [
+      {
+        "old": "e5db46faab6f3c30029d4a2254f73f40a147f1a7",
+        "new": "e5db46faab6f3c30029d4a2254f73f40a147f1a7",
+        "changed_files": 0
+      },
+      {
+        "old": "df0ea9c3ed8d8fb1cac0b6e5269c9ce53d764df7",
+        "new": "df0ea9c3ed8d8fb1cac0b6e5269c9ce53d764df7",
+        "changed_files": 0
+      },
+      {
+        "old": "59ff56cc4e07bb394cc70cc85c9677fbcbfb0d4f",
+        "new": "59ff56cc4e07bb394cc70cc85c9677fbcbfb0d4f",
+        "changed_files": 0
+      },
+      {
+        "old": "7b0cbb3b0893cf5f8ef22bab3f15b804f6679058",
+        "new": "b0b87a9c919b3e370e63c20ccef9969f2e2a3b59",
+        "changed_files": 7
+      },
+      {
+        "old": "6831a8f3d4c413f1e2d151d928063320d1a3638d",
+        "new": "0b7c894bc34b474ddbb83ca04892cb9582be2dbd",
+        "changed_files": 9
+      },
+      {
+        "old": "07042f5258a5bd0aa4ff2f5e9dcdec390ec2e209",
+        "new": "3db90ee9511c25dc4c11f8653d2dad6aa3b7d5e4",
+        "changed_files": 0
+      }
+    ]
+  },
+  "verification": {
+    "base": "b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af",
+    "scanned_tip": "3db90ee9511c25dc4c11f8653d2dad6aa3b7d5e4",
+    "scanned_commits": 6,
+    "full_snapshot_paths": 3516,
+    "unique_snapshot_blobs": 582,
+    "private_fingerprints_including_escaped_variants": "none",
+    "other_refs_containing_rewritten_old_commits": {
+      "7b0cbb3b0893cf5f8ef22bab3f15b804f6679058": [],
+      "6831a8f3d4c413f1e2d151d928063320d1a3638d": [],
+      "07042f5258a5bd0aa4ff2f5e9dcdec390ec2e209": []
+    },
+    "preserved_original_files": 6,
+    "bundle_restore_and_fsck": "passed",
+    "current_tip_tree_identical_before_documentation_update": "3d1ed86bf636dde6afa307512d3c3857aeb84dc3",
+    "remote_mutated": false,
+    "live_model_requests": 0
+  },
+  "evidence_retention": "Original commits remain in a private ignored bundle and may remain in local reflogs/unreachable objects. No machine-wide erasure is claimed. Existing raw file bytes and private configuration are unchanged.",
+  "provenance": "Historical execution commit IDs and executed-source hashes remain original observation labels. Redacted historical file checksum entries were updated; execution results were not rerun or relabelled.",
+  "review": "Existing bounded Advisor consulted for history rewrite risks; Lead verified tree equality, private file hashes, complete outgoing snapshots, escaped fingerprints, refs and actual backup restoration. Backend identity, effective effort, usage and billing unknown.",
+  "delivery": "Local only; no push, remote mutation, live model call, merge or release."
+}

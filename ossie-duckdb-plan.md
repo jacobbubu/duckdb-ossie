@@ -915,6 +915,22 @@ internal destination/model/key-variable bindings are removed. Current tracked
 configuration references are redacted derivatives with immutable originals kept
 locally outside Git; source business inputs are unchanged. All 59 tooling tests/239
 assertions, typecheck/format and explicit local-env three-scene MCP preparation
-pass. No model call occurred. Older unpublished commits still contain prior service
-and model references; clean that unpublished history before any push and inspect
-the complete outgoing history. Current-tree cleanup alone is not history cleanup.
+pass. No model call occurred. The unpublished history cleanup is now complete;
+see the following checkpoint. Current-tree cleanup alone was not history cleanup.
+
+### Unpublished history cleanup — 2026-10-10
+
+The six local milestones above remote b2d486a are retained; only the two historical
+configuration-bearing trees and their descendants required new commit IDs. The
+rewritten tip tree exactly matches the previous tip, including source bytes and
+file modes. A private ignored bundle was actually restored and passed strict Git
+object checks. All six complete snapshots, commit metadata and newly reachable
+blobs pass internal configuration/key fingerprint scanning, including escaped
+variants. Six existing private files retain their SHA256 values. No other local
+ref contains a replaced old commit; old objects intentionally remain in the local
+backup/reflogs. Historical executed-source hashes remain original provenance.
+See [the verification record](docs/research/ossie-req-001/agent-history-cleanup-controls/verification.json).
+The final documentation commit is scanned separately before delivery. No push or
+live model request occurred. The next necessary Agent evidence still requires the
+budget decision, bounded live run and human semantic review; P1/pagination remain
+later work.
