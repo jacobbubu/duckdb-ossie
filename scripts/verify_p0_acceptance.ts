@@ -160,7 +160,7 @@ export function verifyAcceptance(
     audit,
     replay,
     remaining: [
-      "remote CI not run; native tests and clang-tidy are separate quality evidence",
+      "remote CI, native tests and clang-tidy outcomes require separate run evidence",
       "real autonomous Agent not tested",
       "pagination future research only",
       "P1/calendar/multi-period/general ontology/mixed grain/windows remain outside this acceptance",

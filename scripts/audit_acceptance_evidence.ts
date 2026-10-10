@@ -134,7 +134,7 @@ export function auditEvidence(
     ),
     remaining: [
       "source consistency does not prove functional conformance",
-      "remote CI unrun; native/tidy quality is separate; no autonomous Agent proof",
+      "this source audit does not establish remote CI, native/tidy quality or autonomous Agent outcomes",
     ],
   };
 }

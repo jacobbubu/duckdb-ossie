@@ -836,3 +836,13 @@ CMake仅在MSVC时将三个既有原生目标纳入ALL，编译发生于上游�
 下载LinuxAMD64/MacARM64产物与独立报告，重新运行现verifyAcceptance：两端A1–A8/来源与verifier绑定及各16份日志hash通过；产物SHA256分别e24605ad2a00a53b6372d483aa7b268891739c3367a14f2b87860e62565c4ca7、0a928dcfe8baa5a679bbc0817c180aa665fd265484c115b1041c039a780f0088。原始报告ZIP与GitHub artifact digest逐字节核对通过，原样保存在docs/research/ossie-req-001/ci-final/，并附run/artifact元数据与下载复核结果。初次复核因CLI不在PATH、进程内PATH更新不可用和本地MacCLI与runnerCLI哈希不同失败；最终分别使用官方1.5.6 LinuxAMD64/MacARM64 CLI启动独立Bun进程后严格通过，未放宽hash检查。
 
 报告中remote CI未运行文字来自独立验收器旧模板，本次CI结论由run及全部job状态单独证明；原始报告不重写。该模板文字改进作为现issue后续维护项，不阻塞已经实际完成的远端验证；自主Agent、分页/P1等仍不在此包内。当前跨环境/remote CI工作包完成，不启动新能力、不合并main或发布。此后仅本地提交原始证据和状态文档，不为了归档再触发整轮CI；远端已验证tip继续为65b9828。
+
+### OSSIE-REQ-001：验收报告模板收尾（2026-10-10，恢复）
+
+用户要求继续。远端CI工作包已完成，比较剩余后本轮只处理已记录的模板维护及归档推送，不启动P1/分页/Agent。独立验收/来源审计不应硬编码remote CI未运行，改为说明其不提供CI/native质量结论，状态由独立运行证据给出；replay说明仅约束该检查的证明范围。原始历史报告/ZIP不改。验证现绑定远端两端产物与原报告重算验收（文档性复核，不重跑功能）、TS格式/类型/既有工具测试，提交并普通推送现fork开发分支；新tip的CI与65b9828已通过运行分开记录。不合并或发布。
+
+### 验收模板维护交付（2026-10-10）
+
+三个报告模板只改证明范围措辞，去除硬编码remote CI未运行；CI结果仍由独立run/job证据确认，验证逻辑/业务源码/历史报告ZIP不改。对65b9828远端LinuxAMD64与MacARM64同产物及既有报告实际重算验收，A1–A8行为/status/evidence hashes逐项一致；这是文档性复核，不是功能重跑。新模板源码hash/复核报告及43Bun/136expects、format/typecheck通过日志归docs/research/ossie-req-001/report-template-maintenance/。旧ZIP的原始文字保留，原通过CI链接仍有效。
+
+本轮模板维护完成；将ce6fae5归档和本轮提交普通推送已授权fork分支，新push的CI另行核实，不能把65b9828通过等同新tip已通过。已调整的P0/跨环境/远端CI工作包完成，当前剩余交付仅本次push及新CI状态；P1、分页调研与自主Agent等后续范围保持未启动，不合并main或发布。

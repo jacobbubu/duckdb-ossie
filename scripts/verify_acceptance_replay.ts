@@ -92,7 +92,7 @@ export function verifyReplay(
     limitations: [
       "fixed same engine and input; not universal determinism",
       "native AVG is DOUBLE; repeated values compared exactly for this fixture",
-      "no Agent autonomy or remote CI proof",
+      "this replay alone does not establish Agent autonomy or remote CI outcomes",
     ],
   };
 }

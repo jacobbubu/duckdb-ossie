@@ -1,0 +1,16 @@
+import { verifyAcceptance } from '/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_p0_acceptance.ts';
+import { digest } from '/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/artifact_helpers.ts';
+import assert from 'node:assert/strict';
+import { join } from 'node:path';
+const arch=process.argv[2]!;
+const root='/tmp/ossie-ci-final-38019831758';
+const directory=join(root,'ossie-independent-evidence-'+arch);
+const artifact=join(root,'ossie-v1.5.6-extension-'+arch,'ossie.duckdb_extension');
+const saved=await Bun.file(join(directory,'acceptance.json')).json();
+const report=verifyAcceptance(artifact,directory);
+const semantic=(a:any[])=>a.map(x=>({id:x.id,status:x.status,behavior:x.behavior,evidence_hashes:x.evidence.map((e:any)=>e.sha256)}));
+assert.deepEqual(semantic(report.acceptance),semantic(saved.acceptance));
+assert.equal(report.artifact_sha256,saved.artifact_sha256);
+const result={kind:'documentary revalidation, no functional rerun',verified_run:38019831758,verified_source_commit:'65b9828fe1d85dd2985113bfed8dc779f65149f9',arch,artifact_sha256:report.artifact_sha256,acceptance_unchanged:true,remaining:report.remaining,audit_remaining:report.audit.remaining,replay_limitations:report.replay.limitations,template_sources_sha256:Object.fromEntries(['scripts/verify_p0_acceptance.ts','scripts/audit_acceptance_evidence.ts','scripts/verify_acceptance_replay.ts'].map(p=>[p,digest(p)]))};
+await Bun.write(join(root,'template-check-'+arch+'.json'),JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result));

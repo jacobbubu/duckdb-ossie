@@ -1,0 +1,72 @@
+Makefile:33: warning: overriding commands for target `tidy-check'
+extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old commands for target `tidy-check'
+bun run format:check
+$ bun x --bun --no-install prettier --check scripts/*.ts test/tooling/*.ts package.json tsconfig.json
+Checking formatting...
+All matched files use Prettier code style!
+bun run typecheck
+$ bun x --bun --no-install tsc --noEmit
+bun test test/tooling
+bun test v1.3.11 (af24e281)
+
+test/tooling/population_result.test.ts:
+(pass) decoder uses DuckDB ASCII case rules for output names [1.97ms]
+(pass) ordinary JSON decoding retains exact integer/Decimal strings [0.07ms]
+(pass) typed decoder refuses numeric cells and mismatched type/encoding [0.12ms]
+(pass) empty typed result keeps schema, snapshot and null cells stay null [0.27ms]
+(pass) typed decoder refuses malformed carrier, unknown schema and broken row width [0.29ms]
+
+test/tooling/quality_controls.test.ts:
+(pass) direct forbidden [18.10ms]
+(pass) indirect forbidden [19.20ms]
+(pass) model forbidden [18.69ms]
+(pass) header cycle [19.25ms]
+(pass) relative AST and comments [18.28ms]
+(pass) missing quoted reference [15.56ms]
+(pass) missing angle reference [16.86ms]
+(pass) indirect runtime [17.14ms]
+(pass) nonliteral reference [14.82ms]
+(pass) zero inputs [16.63ms]
+(pass) unscanned source [17.49ms]
+(pass) undeclared source [15.64ms]
+(pass) empty compiled inventory [19.08ms]
+(pass) compiler IO [18.19ms]
+(pass) precise parser adapter [35.49ms]
+(pass) parser exception cannot permit state [15.89ms]
+(pass) script formatting failure and recovery [272.48ms]
+(pass) state, grain and production capture runners required before SQL [11.41ms]
+(pass) actual CI gate fails closed for every dependency [32.96ms]
+(pass) current project graph scans nonzero inventory [7.19ms]
+(pass) strict typecheck rejects a runtime-valid type error and recovers [802.60ms]
+(pass) CI uses frozen Bun tooling and the complete same-artifact acceptance runner [0.17ms]
+(pass) stock artifact CLI and all verifiers consume the downloaded artifact [0.09ms]
+
+test/tooling/population_error.test.ts:
+(pass) error framing respects quoted braces, escapes and marker text [0.15ms]
+(pass) external, incomplete and invalid-schema diagnostics stay unclassified [0.25ms]
+
+test/tooling/source_evidence.test.ts:
+(pass) fresh checkout verifies 20 sources and the original requirement without external paths [9.81ms]
+(pass) missing and single-byte changed source copies refuse [17.73ms]
+(pass) wrong manifest binding, duplicate, missing and unknown locators refuse [29.91ms]
+(pass) absolute, parent traversal and escaping symlink targets refuse [25.65ms]
+(pass) locator content hash cannot override the manifest's expected source hash [9.43ms]
+
+test/tooling/artifact_cli.test.ts:
+(pass) missing stock CLI fails instead of using build-tree engine [15.38ms]
+(pass) missing artifact fails before invoking the CLI [14.24ms]
+(pass) artifact loading failure is fatal and retains its diagnostic [568.71ms]
+(pass) relative artifact paths are normalized before stock CLI loading [257.54ms]
+
+test/tooling/artifact_values.test.ts:
+(pass) native DATE adapter preserves finite dates, infinity and NULL [0.84ms]
+
+test/tooling/mcp_transport.test.ts:
+(pass) MCP ignores banners, receives RPC, and cleans up child [19.07ms]
+(pass) silent MCP server hits a real read deadline and is terminated [32.61ms]
+(pass) server setup failure reaches reader with stderr [9.83ms]
+
+ 43 pass
+ 0 fail
+ 136 expect() calls
+Ran 43 tests across 7 files. [2.63s]

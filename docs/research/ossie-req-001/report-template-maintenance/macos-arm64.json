@@ -1,0 +1,28 @@
+{
+  "kind": "documentary revalidation, no functional rerun",
+  "verified_run": 38019831758,
+  "verified_source_commit": "65b9828fe1d85dd2985113bfed8dc779f65149f9",
+  "arch": "osx_arm64",
+  "artifact_sha256": "0a928dcfe8baa5a679bbc0817c180aa665fd265484c115b1041c039a780f0088",
+  "acceptance_unchanged": true,
+  "remaining": [
+    "remote CI, native tests and clang-tidy outcomes require separate run evidence",
+    "real autonomous Agent not tested",
+    "pagination future research only",
+    "P1/calendar/multi-period/general ontology/mixed grain/windows remain outside this acceptance"
+  ],
+  "audit_remaining": [
+    "source consistency does not prove functional conformance",
+    "this source audit does not establish remote CI, native/tidy quality or autonomous Agent outcomes"
+  ],
+  "replay_limitations": [
+    "fixed same engine and input; not universal determinism",
+    "native AVG is DOUBLE; repeated values compared exactly for this fixture",
+    "this replay alone does not establish Agent autonomy or remote CI outcomes"
+  ],
+  "template_sources_sha256": {
+    "scripts/verify_p0_acceptance.ts": "910359e379e52be0144559bfe5edc63d29483297d6a37be569c5084a8de4d4e7",
+    "scripts/audit_acceptance_evidence.ts": "d038cd30101ee3e8732f913ec5b4defe9758b7df611b34e8d941ff3ad07d02b9",
+    "scripts/verify_acceptance_replay.ts": "fbdf4612932e22783042a6320bd539c0fc422418475352412abb2d15cc1b1e3f"
+  }
+}
