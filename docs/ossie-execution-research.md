@@ -847,3 +847,13 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 [最小 Agent 方案](agent-minimal-acceptance.md)建议三场景：原规则、规则变化同题、active/paid能力边界；Bun/TS显式循环，宿主提供真实发现资源，模型选择查询参数，独立oracle和人工完整transcript评审分层核对。参照MCP2024-11-05官方resources/tools及官方工具调用循环资料，不决定供应商或升级协议。一次只读Advisor反证后修正：边界场景允许不查询；独立问题补齐日期；固定prompt与动态资源哈希分开；要求解释实际阈值并把数值引用定位到执行响应。模型相同参数在不同规则下返回不同结果不等于模型改变策略。requested Astra/high；有效backend/effort/usage/billing unknown，Lead核对并采纳，未调用模型。
 
 本轮研究包完成，仅本地提交；没有新增运行依赖或修改生产代码，无真实Agent结果。下一步尚需确定供应商/模型/API版本/预算及实施与运行范围，随后才实施最小harness。P1/分页/main合并/发布仍未启动。文档性改动只做链接、diff和来源/状态核对，不重跑已通过的C++功能门禁，不因纯状态文档再推送触发整轮CI。
+
+### OSSIE-REQ-001：Agent 运行条件与发现预检 checkpoint（2026-10-10）
+
+用户要求继续；先推进方案尚未确定的模型/API/预算与真实词汇预检。项目无指定模型配置，已向用户询问服务/模型选择，等待期间只运行本地真实MCP发现检查。范围为两阈值的initialize/tools/list/resources/read及来源哈希，保存一性探针和原始响应；不写Agent harness、不调用模型、不安装模型依赖或更改生产代码。核对初始化协议、工具schema、概念派生谓词、指标单位与逻辑字段，失败保留，不把预检当Agent验收。
+
+### Agent 发现预检完成，模型选择待定（2026-10-10）
+
+两阈值独立进程的initialize、三个tools与四resources/list/read实际通过，原始响应/一次性探针/哈希归[预检目录](research/ossie-req-001/agent-discovery-preflight/summary.json)。资源含正式谓词、USD来源和日期/产品逻辑字段，不含active/paid具名字段。实际发现独立进程snapshot_id相同而ontology哈希不同，故跨场景追溯以完整来源/定义哈希组合核对，不能只凭snapshot_id。检查仍限本地Mac产物发现链路，未查询业务值、未验证模型行为、未证明当前远端产物身份；serverInfo自报版本与duckdb_mcp二进制哈希验证分开。
+
+候选system/user提示词另存并绑定哈希，无oracle/预制参数。当前研究/预检切片完成；用户模型选择问题仍待回答，未默认供应商或运行模型。剩余必要为服务/模型/API/预算及具体实施运行范围；可用现有三场景方案继续，不添加第二backlog或P1/分页。文档与证据链接/diff/hash检查后只本地提交保留。

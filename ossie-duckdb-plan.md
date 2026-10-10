@@ -856,3 +856,15 @@ CMake仅在MSVC时将三个既有原生目标纳入ALL，编译发生于上游�
 run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af；17个job全部success，MacARM64上传、两端Load built artifact、MCP round trip及CI gate均成功，独立验收和MCP证据artifacts存在未过期。状态、逐job结果及artifact元数据保存ci-artifact-timeout/final-state.json、attempt-2-result.json、attempt-2-artifacts.json；attempt1原始超时日志和排队状态仍保留。重跑成功支持此次为瞬时上传故障的判断，不推断整个GitHub服务故障；无需生产代码、workflow或规则修改。
 
 本轮检修及最新tip远端验证完成，不自动启动P1/分页/Agent，不合并或发布。检修记录仅本地提交，避免纯状态归档再次触发整轮CI；远端已验证tip保持b2d486a。当前已授权工作包无剩余必需修复，后续能力工作需要确定范围。
+
+### Agent discovery preflight — 2026-10-10
+
+Research-only continuation verified both trusted startup bundles against the local
+Mac artifact: initialization, three tools and four readable resources pass. Rule,
+metric/unit and field metadata are available; candidate fixed prompts are archived.
+Separate processes produced equal snapshot IDs but different ontology hashes;
+verification must compare the full source/definition hash tuple, not snapshot ID
+alone. See [the research evidence](docs/research/ossie-req-001/agent-discovery-preflight/summary.json).
+No model or population tool was called and no Agent harness was implemented.
+Provider/model/API/budget selection remains pending; real Agent acceptance is still
+unverified. This preflight is complete, while the subsequent Agent experiment is not.

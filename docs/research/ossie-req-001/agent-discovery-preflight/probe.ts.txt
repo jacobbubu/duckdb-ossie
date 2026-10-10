@@ -1,0 +1,37 @@
+import { RpcProcess } from '/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/mcp_check.ts';
+import { readFileSync,writeFileSync,mkdtempSync,rmSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import assert from 'node:assert/strict';
+const root='/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie';
+const cli='/tmp/ossie-ci-final-38019831758/stock-cli-macos/duckdb';
+const extension=root+'/build/release/extension/ossie/ossie.duckdb_extension';
+const out=root+'/docs/research/ossie-req-001/agent-discovery-preflight';
+const hash=(p:string)=>createHash('sha256').update(readFileSync(p)).digest('hex');
+const temp=mkdtempSync('/tmp/ossie-agent-discovery-');
+const source=readFileSync(root+'/examples/population_server.sql','utf8');
+const summary:any={scope:'Discovery only; no model or population tools called',cli_sha256:hash(cli),extension_sha256:hash(extension),source_sha256:hash(root+'/examples/population_server.sql'),probe_sha256:hash(import.meta.path),cases:[]};
+try{
+for(const threshold of [10,20]){
+const sql=source.replace('INSTALL ossie FROM community;\nLOAD ossie;\n',`LOAD '${extension}';\n`).replace('bundle-10.json',`bundle-${threshold}.json`);
+const setup=temp+`/${threshold}.sql`;writeFileSync(setup,sql);
+const server=new RpcProcess([cli,'-unsigned','-bail','-init',setup]);
+const transcript:any[]=[];let id=0;
+const request=async(method:string,params?:unknown)=>{const input={id:++id,method,params};const response=await server.request(id,method,params);transcript.push({input,response});assert(!response.error && !response.result?.isError);return response.result!;};
+try{
+const hello=await request('initialize',{protocolVersion:'2024-11-05',capabilities:{},clientInfo:{name:'ossie-agent-discovery-preflight',version:'1'}});
+assert.equal(hello.protocolVersion,'2024-11-05');server.send({jsonrpc:'2.0',method:'notifications/initialized'});
+const tools=await request('tools/list');assert.deepEqual((tools.tools??[]).map((x:any)=>x.name).sort(),['population_compile','population_objects','population_query']);
+const list=await request('resources/list');const uris=(list.resources??[]).map((x:any)=>x.uri).sort();assert.deepEqual(uris,['capabilities','concepts','fields','metrics'].map(x=>'ossie://population/'+x));
+const resources:any={};for(const uri of uris){const result=await request('resources/read',{uri});resources[uri]=JSON.parse((result.contents as any)[0].text);}
+const concepts=resources['ossie://population/concepts'];const metrics=resources['ossie://population/metrics'];const fields=resources['ossie://population/fields'];
+const valid=concepts.find((x:any)=>x.concept==='ValidUser');assert(valid);assert(String(valid.derived_by).includes(`User.ytd_gaap >= ${threshold}`));
+const mean=metrics.find((x:any)=>x.name==='mean_gaap');assert(mean.description.includes('USD'));assert(mean.description.includes('metric!E2'));
+assert(fields.some((x:any)=>x.name==='ds'));assert(fields.some((x:any)=>x.name==='product'));
+assert(!fields.some((x:any)=>['active','paid'].includes(x.name)));
+for(const rows of Object.values(resources) as any[]){for(const row of rows){assert.equal(row.snapshot_id,valid.snapshot_id);assert.equal(row.ontology_sha256,valid.ontology_sha256);}}
+summary.cases.push({threshold,protocol_version:hello.protocolVersion,server_info:hello.serverInfo,tool_names:tools.tools?.map((x:any)=>x.name),resource_bytes:Buffer.byteLength(JSON.stringify(resources)),derived_by:valid.derived_by,mean_description:mean.description,snapshot_id:valid.snapshot_id,ontology_sha256:valid.ontology_sha256,status:'pass'});
+}finally{writeFileSync(out+`/threshold-${threshold}.json`,JSON.stringify(transcript,null,2)+'\n');await server.close();}
+}
+writeFileSync(out+'/summary.json',JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary,null,2));
+}catch(error){writeFileSync(out+'/failure.json',JSON.stringify({error:String(error),summary},null,2)+'\n');throw error;}
+finally{rmSync(temp,{recursive:true,force:true});}

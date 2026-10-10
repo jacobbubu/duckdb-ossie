@@ -69,3 +69,11 @@ USD 可从已发现 mean_gaap 的 description 获得，其来源是原 workbook 
 ## 只读反证结论
 
 Advisor 建议保留三场景与显式循环，先修正上述场景门禁、独立问题、资源哈希及引用要求。Lead 根据原 MCP/定义/基准核对后采纳；这些仍是验收设计，真实模型行为和运行时资源是否足够尚未验证。requested Advisor Astra/high；有效 backend/effort、usage/billing 未获可验证信息，记为 unknown。
+
+## 运行条件预检（2026-10-10，实际执行）
+
+[真实发现预检](research/ossie-req-001/agent-discovery-preflight/summary.json)已通过两个独立启动资产。使用现有Mac ARM64产物 `13d5317f…` 和stock CLI，协商MCP `2024-11-05`，实际发布三个population工具/四份资源；规则分别为 `User.ytd_gaap >= 10` 与 `>= 20`。mean_gaap description含USD及workbook来源，日期/产品字段存在，没有名为active/paid的字段。每场景四资源解析后合并JSON为15,420 UTF-8 bytes；这不是模型token测量。原始响应、一次性探针和[校验清单](research/ossie-req-001/agent-discovery-preflight/checksums.json)保留，没有调用population工具或真实模型，不是三场景Agent通过。
+
+两个独立进程的snapshot_id恰好相同、ontology哈希不同。这证明snapshot_id不能独自作为跨进程定义身份；评审必须一起核对content/core/ontology/mapping/manifest哈希。每个进程内部四资源的snapshot/ontology一致。serverInfo.version仅为服务器自报值，此预检没有核验duckdb_mcp二进制哈希；后续真实验收仍须补齐运行时产物身份。
+
+[候选固定提示词](research/ossie-req-001/agent-discovery-preflight/prompts.json)将原问题、边界问题和无答案的system prompt独立保存并绑定哈希。它不含具体概念名、指标名、阈值、oracle或预制调用参数。最终JSON便于检查，口径与引用仍需人工核对。供应商/模型、API或SDK版本及费用预算仍待选择；候选提示词尚未送给模型，实施前如调整应保留新的实验版本。

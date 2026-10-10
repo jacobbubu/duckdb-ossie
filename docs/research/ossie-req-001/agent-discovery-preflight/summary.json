@@ -1,0 +1,47 @@
+{
+  "scope": "Discovery only; no model or population tools called",
+  "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+  "extension_sha256": "13d5317fb860f9ad81437a0a86cb8c996d7742a026f927f7b503c0fadf340c95",
+  "source_sha256": "7f1e5ee31da9b4527968eeb20a8f560db643f820efaeca445ceb62c8738237a3",
+  "probe_sha256": "9b332f5f6a5804e64385acd96e5c56f54b4138fe373fa84e0b97ae376946dcb4",
+  "cases": [
+    {
+      "threshold": 10,
+      "protocol_version": "2024-11-05",
+      "server_info": {
+        "name": "DuckDB MCP Server",
+        "version": "2.0.0"
+      },
+      "tool_names": [
+        "population_compile",
+        "population_query",
+        "population_objects"
+      ],
+      "resource_bytes": 15420,
+      "derived_by": "User.ytd_gaap >= 10",
+      "mean_description": "Arithmetic mean of non-null gaap_val over the requested scope; USD source is metric!E2 of the original workbook.",
+      "snapshot_id": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180:1",
+      "ontology_sha256": "7fac97f1579aca00cca6a7da498eeb4934161aa391aa20eb0d260e1ab1bff0bc",
+      "status": "pass"
+    },
+    {
+      "threshold": 20,
+      "protocol_version": "2024-11-05",
+      "server_info": {
+        "name": "DuckDB MCP Server",
+        "version": "2.0.0"
+      },
+      "tool_names": [
+        "population_compile",
+        "population_query",
+        "population_objects"
+      ],
+      "resource_bytes": 15420,
+      "derived_by": "User.ytd_gaap >= 20",
+      "mean_description": "Arithmetic mean of non-null gaap_val over the requested scope; USD source is metric!E2 of the original workbook.",
+      "snapshot_id": "41161759d3b6d8c3d5447238b62249e5755c545cca592f81623bff5923d46180:1",
+      "ontology_sha256": "42ecbdf3bbcfbc0b813037f5aa533790170acc7580516752ad4350fc044cf2cf",
+      "status": "pass"
+    }
+  ]
+}
