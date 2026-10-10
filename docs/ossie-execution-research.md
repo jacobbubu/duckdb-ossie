@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-10。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。真实 Agent 工作已从研究推进至[最小程序实施与本地验证](agent-minimal-acceptance.md)，用户指定了网关/模型/凭据变量；三场景真实MCP准备通过，尚未调用模型或完成自主Agent验收，P1/分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
+日期：2026-10-10。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。真实 Agent 工作已从研究推进至[最小程序实施与本地验证](agent-minimal-acceptance.md)，用户指定了网关/模型/凭据变量；三场景真实运行及委托Lead的口径/数据复核已完成，用户接受限定结论；原始失败与pending字段保持历史状态，数据真实性局限另记。下一P1重复实体/观察粒度已完成研究包，尚未实施；分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -927,3 +927,19 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 原始字节不覆盖；公开[审阅](research/ossie-req-001/agent-live-corrected-controls/review.md)与[证据](research/ossie-req-001/agent-live-corrected-controls/evidence.json)含8份原始/衍生文件SHA256，内部端点/模型脱敏，公开serialized_body不冒充原始字节。离线重放三场景数值门禁通过；核对原始serialized_body等于body、第二轮previous_response_id/call_id对应真实结果、首轮场景独立、每次输出2048与总时限通过。Lead阅读资源/模型回答/实际参数与结果，核对日期产品、无额外筛选、正式规则阈值变化、SUM/AVG/COUNT含义、USD、引用列对应一致；compile未调用，该项不适用。原始与公开human_verdict均pending，不能以Lead审查冒充人工确认。
 
 首次401保留；显式.env_test命令文档补充清除继承三变量，生产代码/凭据不改。本次单服务/模型一次成功不证明重复可靠性或所有协议/语言符合性。工作包真实运行/脱敏/核验完成，整体最小Agent验收还需用户确认三份回答的口径与引用。下一必要事项为该人工确认，不扩预算重跑，不推送/P1/分页。
+
+### 验收裁定归档及下一研究范围 checkpoint（2026-10-10）
+
+用户要求Lead判断数据/口径后，明确接受结论并要求记录局限、继续下一步。将记录三个最小用例的限定通过及用户接受该裁定，原始human_verdict=pending与所有raw/脱敏实验文件保持字节不变，新增后续裁定绑定原始/公开证据hash，不冒充用户逐份审阅transcript。补记原CSV475行/ID唯一/非空、阈值重算、单位源及合成数据95行gaap_val>ytd_gaap限制。
+
+比较现有后续事项：跨环境/remote CI/P0及最小Agent工作包已有证据；分页按原要求仅未来调研；混合粒度/复杂关系也未实现。下一步仅沿原P1条目研究同一实体跨日期观察的身份/计数/平均分母边界，复用固定spec和已有拒绝控制，不修改生产接口/规则保护，不新增模型调用/推送或第二backlog。因实体与观察模型存在架构取舍，复用既有Advisor一次只读反证；Lead核实和形成具体研究结论，实施范围需以该结论单独明确。
+
+### 限定验收裁定与跨日期下一研究完成（2026-10-10）
+
+用户接受Lead判断并要求归档，三个最小Agent用例限定通过，新增[后续裁定](research/ossie-req-001/agent-live-corrected-controls/acceptance-decision.json)绑定原始/公开记录SHA256；raw和现有8个公开衍生文件哈希逐一保持不变，不改历史human_verdict字段或冒充用户逐份读transcript。独立Decimal重算两阈值正确，475行/ID唯一/非空，源生成器/文档哈希及workbook原始E2=USD核对通过；CSV数字与归档生成器完全对应（9.5/9.50仅文本小数位差异）。临时来源核对首次读取部分manifest缺saved_path触发KeyError、随后按相对归档定位核对通过；直接文本比较小数位触发断言，改用数值相等而不改数据。
+
+95行gaap_val>ytd_gaap，二者由上游演示生成器独立生成；这是不能验证累计YTD一致性的证据，不无条件判定会计错误。数据为虚构且无重复实体，阈值20为变更实验，active/paid定义不足，一次运行不证明全规范/重复可靠性。
+
+比较现有P1/分页/交付事项后，沿原P1多期身份项完成[跨日期观察研究](research/ossie-req-001/multi-period-research/research.md)。8行新造研究数据区分实体/观察、两个日期跨月、两产品、阈值变化及NULL；不借用GAAP/YTD业务含义。手算/独立stock SQL通过，6合格观察/3用户/5非空金额、SUM31/AVG6.2及竞争分母区别明确。首次归档误把CLI多JSON数组输出当JSONL解析失败，原输出保留；连续解码后正确，不是生产失败。
+
+固定spec/生产代码/现有重复预检控制核对，现profile仍拒绝重复身份，不能静默DISTINCT/过滤后验证/拼接User ID。复用Advisor一轮只读反证，requested Astra/high、effective backend/effort/usage/billing未知；建议Observation表示仅为研究候选。研究包完成，下一必要动作是明确日快照唯一tuple及观察分类/期间用户投影/第一切片统计契约，再决定生产实现；P1生产、窗口/as-of/分页均未实现。本轮本地记录不推送、不重跑模型。

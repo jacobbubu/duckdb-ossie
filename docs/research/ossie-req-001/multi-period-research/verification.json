@@ -1,0 +1,52 @@
+{
+  "status": "research witness hand arithmetic and independent stock SQL agree; no production support claimed",
+  "selected_observations": [
+    "o2",
+    "o3",
+    "o4",
+    "o5",
+    "o6",
+    "o8"
+  ],
+  "selected_users": [
+    "A",
+    "B",
+    "C"
+  ],
+  "all_products": {
+    "observations": 6,
+    "distinct_users": 3,
+    "non_null_amount_count": 5,
+    "sum": "31.00",
+    "observation_value_mean": "6.2",
+    "mean_of_user_means": "19/3",
+    "mean_of_user_totals_excluding_null_only_user": "15.5",
+    "total_divided_by_all_distinct_users": "31/3"
+  },
+  "X": {
+    "observations": 4,
+    "distinct_users": 3,
+    "non_null_amount_count": 3,
+    "sum": "20.00",
+    "observation_value_mean": "20/3"
+  },
+  "daily_users": {
+    "2026-01-31": [
+      "B"
+    ],
+    "2026-02-01": [
+      "A",
+      "B",
+      "C"
+    ]
+  },
+  "null_policy": "C qualifies; included in entity/observation counts but excluded from amount AVG and from averages of NULL user amounts. Do not silently treat missing amount as zero.",
+  "purpose": "Deliberately synthetic amount and classification score; no GAAP/YTD or active/paid business meaning",
+  "hashes": {
+    "sql-results.raw.txt": "d33813617583e6994b7c6e8d503b1a0ca50d37f622debd75ad26085aa5b9d9d0",
+    "independent.sql": "f33b2f8f9f41bacf53fe263d8f4b23832cba0053e389f7e4d4cbfb5d026978b9",
+    "first-parser-failure.raw.txt": "d33813617583e6994b7c6e8d503b1a0ca50d37f622debd75ad26085aa5b9d9d0",
+    "observations.csv": "bfd38a0130028fe5829aa45e40dce8ac12e228cc2cc61e2f08f293493764f441"
+  },
+  "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39"
+}

@@ -1,6 +1,6 @@
 # 真实 Agent 最小验收研究
 
-2026-10-10，归属 [OSSIE-REQ-001](ossie-execution-research.md)。已按用户确认预算完成一次正确配置的真实三场景运行：两个数值场景通过，能力边界拒绝数值回答；Lead语义核对一致，最终人工确认仍待完成。此前401失败保留。实际配置仅本地保存。生产 C++、现有 MCP 接口、固定资产及独立 oracle 不改。
+2026-10-10，归属 [OSSIE-REQ-001](ossie-execution-research.md)。已按用户确认预算完成一次正确配置的真实三场景运行：两个数值场景通过，能力边界拒绝数值回答；用户接受了委托Lead作出的限定验收判断，见末尾裁定记录。此前401失败保留。实际配置仅本地保存。生产 C++、现有 MCP 接口、固定资产及独立 oracle 不改。
 
 ## 要证明什么
 
@@ -143,3 +143,9 @@ env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL \
 本次三场景完成，共5次模型请求、2次模型选择的工具调用。阈值10：37条记录、1697.80 USD、平均45.88648648648649；阈值20：21条记录、1277.54 USD、平均60.8352380952381。“活跃且付费”场景指出业务定义缺失、ValidUser不能替代，未查询/给出数值。网关报告输入34287、输出1288、总35575tokens（含缓存输入19250与reasoning输出394）；费用unknown，usage不当作金额。
 
 [三场景语义核对](research/ossie-req-001/agent-live-corrected-controls/review.md)及[机器证据](research/ossie-req-001/agent-live-corrected-controls/evidence.json)包含公开脱敏记录、原始/衍生SHA256和实际产物/源码身份。离线重放数值门禁、原始请求字节/续接call_id/场景隔离/预算核验通过。Lead核对范围、规则、单位、记录数与实体数区分及实际列引用一致；human_verdict仍pending，最终人工语义确认由用户完成，不自动宣布整体Agent验收通过。本次仅一个服务/模型的一次运行，不证明稳定性、所有Responses参数或完整Ossie语言符合性。
+
+## 最终限定裁定与数据局限（2026-10-10）
+
+用户委托Lead判断数据及口径，独立复核后接受结论并要求归档。因此三个最小用例按既定范围验收通过，见[后续裁定](research/ossie-req-001/agent-live-corrected-controls/acceptance-decision.json)。这是后续有来源裁定，原始/公开实验文件human_verdict=pending和报告字节保持不变，不声称用户亲自逐份审阅transcript。
+
+核对原CSV哈希、475行与归档生成器值对应、源文件哈希和原始workbook metric!E2=USD；Decimal重算两阈值结果一致，ID全唯一且非空、GAAP无NULL。95行gaap_val>ytd_gaap，二者独立随机生成，不能验证累计YTD会计一致性；只有明确假设前者为同口径当日正金额才构成需解释关系，不无条件判定会计错误。阈值20为变更实验；原fixture不证明真实多期实体计数；一次成功不证明稳定性或全规范。后续[跨日期观察研究](research/ossie-req-001/multi-period-research/research.md)另存8行人工见证，不改原数据。

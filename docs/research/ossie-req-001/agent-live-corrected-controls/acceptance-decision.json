@@ -1,0 +1,44 @@
+{
+  "issue": "OSSIE-REQ-001",
+  "date": "2026-10-10",
+  "decision": "accepted for three bounded minimal Agent cases",
+  "decision_basis": "Lead judgement delegated by user; user accepted the stated conclusion and requested recording it. No claim that user personally inspected every transcript.",
+  "execution_head": "40390db5bbf5a931ff4f0865951459ff1b2b836a",
+  "evidence_sha256": "9fccc9ac6fdd59f1ebfdac238cd51c6bc56db4ad45c29d022f2da553a50fd168",
+  "review_sha256": "9ecc49f26a44519d534081842111c63ce71be9b6f61704c507f3c17cde1413d8",
+  "original_human_verdict": "pending retained unchanged as the execution-time observation; this later decision is separate",
+  "calculation_review": [
+    {
+      "threshold": 10,
+      "records": 37,
+      "distinct_users": 37,
+      "non_null_values": 37,
+      "total_usd": "1697.80",
+      "decimal_mean": "45.88648648648648648648648649"
+    },
+    {
+      "threshold": 20,
+      "records": 21,
+      "distinct_users": 21,
+      "non_null_values": 21,
+      "total_usd": "1277.54",
+      "decimal_mean": "60.83523809523809523809523810"
+    }
+  ],
+  "source_integrity": {
+    "fixture_sha256": "e01a940a3f83ed6f5f22beb598e64206144658ad3b9fef89124e2790e7fc3e18",
+    "generator_values": "all475 archived rows match generator values; decimal lexical scale differs in some entries",
+    "workbook_unit": "original workbook metric!E2 = USD; file hash matches manifest"
+  },
+  "limitations": {
+    "synthetic_data": true,
+    "gaap_gt_ytd_records": 95,
+    "interpretation": "gaap_val/ytd_gaap independently generated. Cannot validate cumulative YTD consistency. Only if gaap_val denotes same-scope positive daily amount does gaap>ytd require explanation; no unconditional financial inconsistency is asserted.",
+    "identity": "475 distinct non-null IDs in475 records; this does not prove period deduplication",
+    "threshold20": "rule-change experiment, not the original authoritative business threshold",
+    "active_paid": "no verified definition; correct unsupported response",
+    "coverage": "one private provider/model run; no stability/full language/protocol certification"
+  },
+  "model_requests_this_review": 0,
+  "remote_mutated": false
+}

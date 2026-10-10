@@ -17,15 +17,17 @@ and [the issue record](docs/ossie-execution-research.md).
 Local `e5db46f` holds the retry archive and is not pushed; the verified remote
 commit remains `b2d486a`. No main merge or release has occurred. This completion
 covers the adjusted bounded profiles, not full Ossie/schema/language compliance.
-The bounded real Agent run is complete with numerical gates passed; final human
-semantic acceptance remains pending. P1 and pagination remain later work.
+The three bounded real Agent cases are accepted following the delegated Lead
+review and user acceptance, with synthetic-data limits recorded separately. P1
+production work and pagination remain later work.
 
 The reviewed [minimal real Agent acceptance case](docs/agent-minimal-acceptance.md)
 has advanced to implementation after user continuation and gateway/model/key
 selection. Local controls and real MCP preparation passed. One corrected-config
 live run completed all three scenes: two numerical answers match the independent
-oracle and the unsupported scope is refused. Lead semantic audit is consistent;
-final human review remains pending. The first HTTP 401 attempt is retained. See
+oracle and the unsupported scope is refused. The user accepted Lead judgement;
+this later scoped decision preserves pending fields in original run artifacts.
+The first HTTP 401 attempt is retained. See
 [the live review](docs/research/ossie-req-001/agent-live-corrected-controls/review.md).
 
 ## Historical error/discovery milestones — 2026-10-09
@@ -978,3 +980,25 @@ configuration and both original experiments remain local; public records redact
 provider/model with hash-bound provenance. Production implementation is unchanged.
 Next necessity is user semantic acceptance of [the three answers and scope](docs/research/ossie-req-001/agent-live-corrected-controls/review.md),
 not another model run. No push, P1 or pagination work occurred.
+
+### Scoped Agent acceptance recorded; multi-period research completed — 2026-10-10
+
+The user accepted the delegated Lead judgement and requested recording the
+conclusion/data limits. [Later acceptance decision](docs/research/ossie-req-001/agent-live-corrected-controls/acceptance-decision.json)
+is hash-bound to the original run and public review; raw pending review fields
+remain unchanged, not retroactively relabelled. Independent original CSV Decimal
+recalculation, archived generator value correspondence, source hashes and original
+workbook USD cell pass. Both numeric cases and unsupported active/paid case are
+accepted within the defined minimal scope. The synthetic fixture cannot validate
+cumulative YTD consistency: 95 rows have gaap_val>ytd_gaap, generated independently.
+This is a stated limitation, not an unconditional financial inconsistency finding.
+Unique fixture IDs do not establish real cross-period user identity.
+
+Compared remaining work and selected existing P1 repeated-entity/observation grain
+for research only. [Research and independent SQL witness](docs/research/ossie-req-001/multi-period-research/research.md)
+show 6 qualifying observations, 3 users and 5 non-null amounts; count/AVG/period
+entity projections require distinct contracts. Fixed spec supports investigating
+compound observation identity, while current production profiles reject this
+shape. Bounded Advisor follow-up and Lead source/code/SQL verification completed.
+Next necessary design decision is the minimal daily-observation contract before
+any production implementation. No push, model rerun, paging or production change.
