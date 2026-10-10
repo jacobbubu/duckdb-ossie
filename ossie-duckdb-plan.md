@@ -934,3 +934,12 @@ The final documentation commit is scanned separately before delivery. No push or
 live model request occurred. The next necessary Agent evidence still requires the
 budget decision, bounded live run and human semantic review; P1/pagination remain
 later work.
+
+### First real Agent run authorized — 2026-10-10
+
+The user explicitly accepted the existing token/call/time budget and unknown
+monetary ceiling. Next authorized action is one three-scene live run using the
+previously selected private configuration, preserving the first raw result in
+ignored local evidence. Evaluate numerical gates and independently review scope,
+rules and actual tool-response references. No automatic retry, push or scope
+expansion is authorized.

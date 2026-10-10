@@ -905,3 +905,7 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 扫描6个完整提交快照，共3516个路径记录、582个唯一blob，并核对commit metadata及新增可达blob；内部端点/主机/模型/旧变量名/Key的直接和转义形式均未检出。没有其他Git ref包含被替换的旧提交。原对象按用户要求仍在私有备份及可能的reflog/unreachable objects中，不宣称清除本机所有旧对象。沿既有Advisor作一次有界风险审阅，Lead实际核实恢复、树/私有字节一致、扫描和ref结果；有效backend/effort/usage/billing未知。证据见[历史核验记录](research/ossie-req-001/agent-history-cleanup-controls/verification.json)。
 
 本轮仅本地历史清理和记录归档，不推送、不改remote、不调用模型。文档归档提交后复核完整最终待推范围。当前工作包完成；整体真实Agent验收仍需预算决定、真实有界调用及人工语义裁定，P1/分页不启动。
+
+### OSSIE-REQ-001：首次真实Agent运行授权 checkpoint（2026-10-10）
+
+用户明确确认三场景预算：最多24次模型请求、36次工具调用，各场景120秒、每次请求输出2048tokens，合计请求输出上限49152tokens；网关金额未知，无货币硬上限。使用此前指定并已保密保存的.env_test标准OpenAI配置，只进行首次有界运行，不自动重试/切换模型/扩大预算。原始记录写入忽略的本地私有证据目录，保留失败；公开结论脱敏并绑定原始哈希。核对首次数值门禁、实际调用/usage/产物身份，再逐项人工口径/规则/引用评审，不以数值通过等同Agent通过。本次不推送、不改生产C++/MCP、不启动P1/分页。
