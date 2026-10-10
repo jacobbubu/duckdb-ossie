@@ -990,16 +990,17 @@ void Frame(string &output, const string &value) {
 string JSONString(const string &value) {
 	string result = "\"";
 	const char *hex = "0123456789abcdef";
-	for (unsigned char c : value) {
+	for (char original : value) {
+		const auto c = static_cast<unsigned char>(original);
 		if (c == '"' || c == '\\') {
 			result += '\\';
-			result += c;
+			result += original;
 		} else if (c < 32) {
 			result += "\\u00";
 			result += hex[c >> 4];
 			result += hex[c & 15];
 		} else {
-			result += c;
+			result += original;
 		}
 	}
 	return result + "\"";

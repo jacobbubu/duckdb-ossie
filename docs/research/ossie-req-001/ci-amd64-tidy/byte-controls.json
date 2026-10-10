@@ -1,0 +1,10 @@
+{
+  "source_sha256": "dca4906397447a4d8196f228758951b136535d2c68cc1ae1893606a5b0d51867",
+  "function_sha256": "dde1f7fd4823282eb5b25c87f87dde77e7fb01ae242f013c8779f2114fa6de8a",
+  "byte_checks_per_mode": 256,
+  "modes": [
+    "signed-char",
+    "unsigned-char"
+  ],
+  "identical_outputs": true
+}

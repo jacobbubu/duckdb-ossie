@@ -773,3 +773,23 @@ Advisor沿原只读身份补一次限定取消反证：Node参数化执行异步
 用户在跨环境包0d79c73完成后要求继续。本地已授权验收/跨环境工作包完成，不自行启动P1或分页；比较剩余后，下一必要交付证据是远端Linux AMD64/macOS CI。只读预检确认push目标为jacobbubu/duckdb-ossie的codex/ossie-execution；远端tip为08c06e6668b7c033ea774ce2170526f22ea5db23，预检时本地0d79c73领先26提交。GitHub Actions enabled=true、allowed_actions=all，分支run list为空、workflow list为空；不把启用状态当成跑过。仓库Issues已关闭，使用现OSSIE-REQ-001记录，不声称读取远端issue。
 
 本次没有重跑功能、推送、dispatch或修改远端设置；上一包源码/报告hash保留0d79c73时点，不重写历史控制。用户AGENTS.md规定“A pilot does not authorize push, main merge or deployment”及“Continue continues authorized work; proposals are not approval”；此前本轮只本地提交，因此推送这个具体fork/分支须明确授权。已完成reviewable工作并核实目标，下一待授权动作是普通fast-forward push（禁止force）触发现有CI，再检查实际jobs/失败并按本地范围修复；不合并main、不发布、不改远端规则。此预检说明本地提交后，push范围会再包含这一文档提交；实际推送前须重新核对remote tip与ahead/divergence，不能依赖本节旧快照。
+
+### OSSIE-REQ-001：推送后 Actions 未注册（2026-10-10）
+
+用户授权推送已完成：27提交fast-forward至codex/ossie-execution，远端tip ee78f5fcf7ec16c48d36f583f2fb548d78067ab8。用户随后要求判断Actions原因。只读检查：默认main/开发分支都有同名workflow且含push入口；fork enabled=true/allowed_actions=all；workflow与run总数0；上游同名workflow active。指定开发分支手动dispatch失败404（workflow在默认分支未识别），没有创建run。Token默认read且不能批准PR。可复用workflow内容在v1.5.6 ref可读取；本包未改YAML或设置。
+
+问题范围是fork工作流注册/启用，不是已执行job失败。GitHub官方[事件说明](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflows-in-forked-repositories)说明fork默认不运行工作流、需在Actions页启用；这是当前最可能解释，未登录页面不能确证首次启用提示。推荐先核对已登录fork Actions页并完成首次启用，再dispatch开发分支、追踪CI gate与必要失败修复；不提前合并main、不放宽token、不发布。CLI没有可启用workflow对象、当前浏览器未登录，首次启用的具体操作和页面访问仍需落实。诊断记录本地保存、不额外提交推送；远端验收仍未完成，历史本地通过证据保留。
+
+### Actions 首次启用后远端验证 checkpoint（2026-10-10）
+
+用户确认首次启用已完成。GitHub已注册主工作流380187158，state=active；此前fork首次启用解释获得前后状态证据。Lead已成功dispatch codex/ossie-execution，run 38015505660，验证tip ee78f5fcf7ec16c48d36f583f2fb548d78067ab8，事件workflow_dispatch。运行链接：https://github.com/jacobbubu/duckdb-ossie/actions/runs/38015505660 。初查queued/jobs=[]，不称CI通过；下一必要动作跟进实际job和CI gate，保存失败/最终结果。未更改权限、合并或发布；诊断文档仍本地未提交。
+
+### OSSIE-REQ-001：远端 AMD64 tidy 字节窄化修复 checkpoint（2026-10-10）
+
+实际run38015505660的tidy job114104763139失败；原始日志保存/tmp/ossie-ci-tidy-38015505660.log。population.cpp JSONString的两处unsigned char追加string触发bugprone-narrowing-conversions，重复TU输出仍只有两处源位置。沿已有issue修复char原始输出/unsigned字节分类，不降低tidy规则、不改变JSON约定。验证覆盖所有字节在signed/unsigned char编译选项下的输出对应及UTF-8/quote/backslash/control转义，再重建和原生/SQL及stock typed/error验证；必要剩余为新提交远端tidy和CI gate。前一LinuxARM64tidy通过不能代表AMD64字符类型环境。用户push/跟进CI授权沿该fork开发分支复用，不合并或发布。
+
+### AMD64 tidy 字节窄化本地修复结果（2026-10-10）
+
+JSONString以原始char追加字符串、显式unsigned char用于分类；不改JSON编码或降低规则。实际重建后Mac产物hash仍为13d5317fb860f9ad81437a0a86cb8c996d7742a026f927f7b503c0fadf340c95（优化后的产物与前包字节相同，不声称源码未变）。signed/unsigned-char各256字节（含控制/quote/backslash/高位字节）独立输出期望通过，-Werror/-Wconversion编译通过；原生19/42/158和SQL840/23通过；stock typed24含UTF-8/转义/真实MCP、error54通过；clang-format11.0.1和diff whitespace检查通过。首次辅助harness自身int转换/输出循环-Wconversion失败，显式转换修复后通过；typed首次因stock CLI未在PATH失败，使用原独立CLI后通过，未放宽检查。
+
+原CI tidy失败日志及byte脚本/结果、typed/error同产物报告保存在docs/research/ossie-req-001/ci-amd64-tidy/。当前工作包仅本地验证完成，远端tidy/构建/完整验收仍必要；沿用户该fork分支push和CI跟进授权提交推送修复，新push触发现有工作流，不改设置、不合并或发布。历史证据及失败日志不覆盖。

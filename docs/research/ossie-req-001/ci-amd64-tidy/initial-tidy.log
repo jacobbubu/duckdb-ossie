@@ -1,0 +1,467 @@
+﻿2026-10-10T02:03:02.9528330Z Current runner version: '2.337.0'
+2026-10-10T02:03:02.9554559Z ##[group]Runner Image Provisioner
+2026-10-10T02:03:02.9555555Z Hosted Compute Agent
+2026-10-10T02:03:02.9556197Z Version: 20261002.596
+2026-10-10T02:03:02.9556910Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-10T02:03:02.9557635Z Build Date: 2026-10-02T22:28:27Z
+2026-10-10T02:03:02.9558346Z Worker ID: {45f0848a-12a7-43fe-9bd8-1d201b18d467}
+2026-10-10T02:03:02.9559073Z Region: westcentralus
+2026-10-10T02:03:02.9559668Z Cloud: Azure
+2026-10-10T02:03:02.9560481Z ##[endgroup]
+2026-10-10T02:03:02.9562142Z ##[group]Operating System
+2026-10-10T02:03:02.9562765Z Ubuntu
+2026-10-10T02:03:02.9563457Z 24.04.5
+2026-10-10T02:03:02.9563961Z LTS
+2026-10-10T02:03:02.9564521Z ##[endgroup]
+2026-10-10T02:03:02.9565067Z ##[group]Runner Image
+2026-10-10T02:03:02.9565650Z Image: ubuntu-24.04
+2026-10-10T02:03:02.9566303Z Version: 20261004.327.1
+2026-10-10T02:03:02.9567570Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-10T02:03:02.9569182Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+2026-10-10T02:03:02.9570104Z ##[endgroup]
+2026-10-10T02:03:02.9572060Z ##[group]GITHUB_TOKEN Permissions
+2026-10-10T02:03:02.9575103Z Contents: read
+2026-10-10T02:03:02.9576275Z Metadata: read
+2026-10-10T02:03:02.9577328Z ##[endgroup]
+2026-10-10T02:03:02.9580922Z Secret source: Actions
+2026-10-10T02:03:02.9582704Z Cache mode: write
+2026-10-10T02:03:02.9584292Z Prepare workflow directory
+2026-10-10T02:03:03.0135509Z Prepare all required actions
+2026-10-10T02:03:03.0184270Z Getting action download info
+2026-10-10T02:03:03.3150904Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-10T02:03:03.5137635Z Uses: duckdb/extension-ci-tools/.github/workflows/_extension_code_quality.yml@refs/heads/v1.5.6 (3fd6109fc01555673b7c7123eba8d0d143fe8ce4)
+2026-10-10T02:03:03.5142876Z ##[group] Inputs
+2026-10-10T02:03:03.5143421Z   explicit_checks: 
+2026-10-10T02:03:03.5143895Z   extension_name: ossie
+2026-10-10T02:03:03.5144395Z   override_repository: 
+2026-10-10T02:03:03.5144872Z   override_ref: 
+2026-10-10T02:03:03.5145383Z   duckdb_version: v1.5.6
+2026-10-10T02:03:03.5146039Z   override_ci_tools_repository: duckdb/extension-ci-tools
+2026-10-10T02:03:03.5146715Z   ci_tools_version: v1.5.6
+2026-10-10T02:03:03.5147215Z   extra_toolchains: 
+2026-10-10T02:03:03.5147682Z   format_checks: format;tidy
+2026-10-10T02:03:03.5148177Z ##[endgroup]
+2026-10-10T02:03:03.5148671Z Complete job name: Code Quality Check / Tidy Check
+2026-10-10T02:03:03.5948423Z ##[group]Run actions/checkout@v4
+2026-10-10T02:03:03.5949313Z with:
+2026-10-10T02:03:03.5949735Z   fetch-depth: 0
+2026-10-10T02:03:03.5950477Z   submodules: recursive
+2026-10-10T02:03:03.5950974Z   repository: jacobbubu/duckdb-ossie
+2026-10-10T02:03:03.5955247Z   token: ***
+2026-10-10T02:03:03.5955828Z   ssh-strict: true
+2026-10-10T02:03:03.5956548Z   ssh-user: git
+2026-10-10T02:03:03.5957223Z   persist-credentials: true
+2026-10-10T02:03:03.5957706Z   clean: true
+2026-10-10T02:03:03.5958135Z   sparse-checkout-cone-mode: true
+2026-10-10T02:03:03.5958645Z   fetch-tags: false
+2026-10-10T02:03:03.5959078Z   show-progress: true
+2026-10-10T02:03:03.5959515Z   lfs: false
+2026-10-10T02:03:03.5959928Z   set-safe-directory: true
+2026-10-10T02:03:03.5960583Z   allow-unsafe-pr-checkout: false
+2026-10-10T02:03:03.5961456Z env:
+2026-10-10T02:03:03.5961850Z   GH_TOKEN: 
+2026-10-10T02:03:03.5962246Z   CC: gcc
+2026-10-10T02:03:03.5962643Z   CXX: g++
+2026-10-10T02:03:03.5963145Z   GEN: ninja
+2026-10-10T02:03:03.5963593Z   TIDY_THREADS: 4
+2026-10-10T02:03:03.5964014Z   TIDY_CHECKS: 
+2026-10-10T02:03:03.5964425Z ##[endgroup]
+2026-10-10T02:03:03.7040408Z Syncing repository: jacobbubu/duckdb-ossie
+2026-10-10T02:03:03.7042912Z ##[group]Getting Git version info
+2026-10-10T02:03:03.7044084Z Working directory is '/home/runner/work/duckdb-ossie/duckdb-ossie'
+2026-10-10T02:03:03.7045770Z [command]/usr/bin/git version
+2026-10-10T02:03:03.7134593Z git version 2.55.0
+2026-10-10T02:03:03.7159357Z ##[endgroup]
+2026-10-10T02:03:03.7175003Z Temporarily overriding HOME='/home/runner/work/_temp/e8a3153a-1e7d-43bd-b0ac-b931b4333476' before making global git config changes
+2026-10-10T02:03:03.7177306Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-10T02:03:03.7182471Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/duckdb-ossie/duckdb-ossie
+2026-10-10T02:03:03.7238779Z Deleting the contents of '/home/runner/work/duckdb-ossie/duckdb-ossie'
+2026-10-10T02:03:03.7243157Z ##[group]Initializing the repository
+2026-10-10T02:03:03.7247130Z [command]/usr/bin/git init /home/runner/work/duckdb-ossie/duckdb-ossie
+2026-10-10T02:03:03.7386145Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-10T02:03:03.7391194Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-10T02:03:03.7392970Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-10T02:03:03.7394366Z hint: call:
+2026-10-10T02:03:03.7395067Z hint:
+2026-10-10T02:03:03.7395981Z hint: 	git config --global init.defaultBranch <name>
+2026-10-10T02:03:03.7397037Z hint:
+2026-10-10T02:03:03.7398015Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-10T02:03:03.7399571Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-10T02:03:03.7401135Z hint:
+2026-10-10T02:03:03.7401933Z hint: 	git branch -m <name>
+2026-10-10T02:03:03.7402840Z hint:
+2026-10-10T02:03:03.7404006Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-10T02:03:03.7406187Z Initialized empty Git repository in /home/runner/work/duckdb-ossie/duckdb-ossie/.git/
+2026-10-10T02:03:03.7409482Z [command]/usr/bin/git remote add origin https://github.com/jacobbubu/duckdb-ossie
+2026-10-10T02:03:03.7466432Z ##[endgroup]
+2026-10-10T02:03:03.7467758Z ##[group]Disabling automatic garbage collection
+2026-10-10T02:03:03.7470442Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-10T02:03:03.7506558Z ##[endgroup]
+2026-10-10T02:03:03.7508338Z ##[group]Setting up auth
+2026-10-10T02:03:03.7515211Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-10T02:03:03.7562699Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-10T02:03:03.7988456Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-10T02:03:03.8025810Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-10T02:03:03.8254017Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T02:03:03.8290034Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-10T02:03:03.8517478Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-10T02:03:03.8558447Z ##[endgroup]
+2026-10-10T02:03:03.8568678Z ##[group]Fetching the repository
+2026-10-10T02:03:03.8571436Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-10-10T02:03:04.8091544Z From https://github.com/jacobbubu/duckdb-ossie
+2026-10-10T02:03:04.8092749Z  * [new branch]      chore/duckdb-1.5.6    -> origin/chore/duckdb-1.5.6
+2026-10-10T02:03:04.8093684Z  * [new branch]      ci/pin-cli-version    -> origin/ci/pin-cli-version
+2026-10-10T02:03:04.8094667Z  * [new branch]      codex/ossie-execution -> origin/codex/ossie-execution
+2026-10-10T02:03:04.8095963Z  * [new branch]      docs/contributing-and-drop-reference-claim -> origin/docs/contributing-and-drop-reference-claim
+2026-10-10T02:03:04.8097542Z  * [new branch]      feat/ossie-spec-0.2   -> origin/feat/ossie-spec-0.2
+2026-10-10T02:03:04.8098469Z  * [new branch]      main                  -> origin/main
+2026-10-10T02:03:04.8099369Z  * [new branch]      v2.0-cyanoptera       -> origin/v2.0-cyanoptera
+2026-10-10T02:03:04.8100562Z  * [new tag]         v0.1.0                -> v0.1.0
+2026-10-10T02:03:04.8101948Z  * [new tag]         v0.1.1                -> v0.1.1
+2026-10-10T02:03:04.8105364Z [command]/usr/bin/git branch --list --remote origin/codex/ossie-execution
+2026-10-10T02:03:04.8155479Z   origin/codex/ossie-execution
+2026-10-10T02:03:04.8169342Z [command]/usr/bin/git rev-parse refs/remotes/origin/codex/ossie-execution
+2026-10-10T02:03:04.8198793Z ee78f5fcf7ec16c48d36f583f2fb548d78067ab8
+2026-10-10T02:03:04.8205505Z ##[endgroup]
+2026-10-10T02:03:04.8207203Z ##[group]Determining the checkout info
+2026-10-10T02:03:04.8208743Z ##[endgroup]
+2026-10-10T02:03:04.8214069Z [command]/usr/bin/git sparse-checkout disable
+2026-10-10T02:03:04.8288988Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-10T02:03:04.8325309Z ##[group]Checking out the ref
+2026-10-10T02:03:04.8327819Z [command]/usr/bin/git checkout --progress --force -B codex/ossie-execution refs/remotes/origin/codex/ossie-execution
+2026-10-10T02:03:04.8895961Z Switched to a new branch 'codex/ossie-execution'
+2026-10-10T02:03:04.8909997Z branch 'codex/ossie-execution' set up to track 'origin/codex/ossie-execution'.
+2026-10-10T02:03:04.8921922Z ##[endgroup]
+2026-10-10T02:03:04.8922905Z ##[group]Setting up auth for fetching submodules
+2026-10-10T02:03:04.8929383Z [command]/usr/bin/git config --global http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-10T02:03:04.8972225Z [command]/usr/bin/git config --global --unset-all url.https://github.com/.insteadOf
+2026-10-10T02:03:04.9006937Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf git@github.com:
+2026-10-10T02:03:04.9039794Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf org-1164378@github.com:
+2026-10-10T02:03:04.9072719Z ##[endgroup]
+2026-10-10T02:03:04.9074057Z ##[group]Fetching submodules
+2026-10-10T02:03:04.9076726Z [command]/usr/bin/git submodule sync --recursive
+2026-10-10T02:03:04.9309801Z [command]/usr/bin/git -c protocol.version=2 submodule update --init --force --recursive
+2026-10-10T02:03:04.9537122Z Submodule 'duckdb' (https://github.com/duckdb/duckdb) registered for path 'duckdb'
+2026-10-10T02:03:04.9541894Z Submodule 'extension-ci-tools' (https://github.com/duckdb/extension-ci-tools) registered for path 'extension-ci-tools'
+2026-10-10T02:03:04.9548123Z Submodule 'third_party/fkYAML' (https://github.com/fktn-k/fkYAML) registered for path 'third_party/fkYAML'
+2026-10-10T02:03:04.9574236Z Cloning into '/home/runner/work/duckdb-ossie/duckdb-ossie/duckdb'...
+2026-10-10T02:03:33.3592930Z Cloning into '/home/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools'...
+2026-10-10T02:03:34.1169194Z Cloning into '/home/runner/work/duckdb-ossie/duckdb-ossie/third_party/fkYAML'...
+2026-10-10T02:03:37.4396574Z Submodule path 'duckdb': checked out '069cc9f9b5be802405797faecc284961b07c70ef'
+2026-10-10T02:03:37.4551563Z Submodule path 'extension-ci-tools': checked out '3fd6109fc01555673b7c7123eba8d0d143fe8ce4'
+2026-10-10T02:03:37.5062719Z Submodule path 'third_party/fkYAML': checked out '1818a25156b9b1a65a9c9b6126631e2cd7cfa8f6'
+2026-10-10T02:03:37.5111403Z [command]/usr/bin/git submodule foreach --recursive git config --local gc.auto 0
+2026-10-10T02:03:37.5332732Z Entering 'duckdb'
+2026-10-10T02:03:37.5389834Z Entering 'extension-ci-tools'
+2026-10-10T02:03:37.5429061Z Entering 'third_party/fkYAML'
+2026-10-10T02:03:37.5477192Z ##[endgroup]
+2026-10-10T02:03:37.5477954Z ##[group]Persisting credentials for submodules
+2026-10-10T02:03:37.5502306Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'url\.https\:\/\/github\.com\/\.insteadOf' && git config --local --unset-all 'url.https://github.com/.insteadOf' || :"
+2026-10-10T02:03:37.5704809Z Entering 'duckdb'
+2026-10-10T02:03:37.5766321Z Entering 'extension-ci-tools'
+2026-10-10T02:03:37.5808936Z Entering 'third_party/fkYAML'
+2026-10-10T02:03:37.5866360Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local 'http.https://github.com/.extraheader' 'AUTHORIZATION: basic ***' && git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-10T02:03:37.6078961Z Entering 'duckdb'
+2026-10-10T02:03:37.6117900Z file:/home/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/duckdb/config	remote.origin.url
+2026-10-10T02:03:37.6156309Z Entering 'extension-ci-tools'
+2026-10-10T02:03:37.6195317Z file:/home/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/extension-ci-tools/config	remote.origin.url
+2026-10-10T02:03:37.6214992Z Entering 'third_party/fkYAML'
+2026-10-10T02:03:37.6254008Z file:/home/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/third_party/fkYAML/config	remote.origin.url
+2026-10-10T02:03:37.6306932Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'git@github.com:'
+2026-10-10T02:03:37.6520856Z Entering 'duckdb'
+2026-10-10T02:03:37.6577725Z Entering 'extension-ci-tools'
+2026-10-10T02:03:37.6616506Z Entering 'third_party/fkYAML'
+2026-10-10T02:03:37.6668831Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'org-1164378@github.com:'
+2026-10-10T02:03:37.6883318Z Entering 'duckdb'
+2026-10-10T02:03:37.6939769Z Entering 'extension-ci-tools'
+2026-10-10T02:03:37.6980456Z Entering 'third_party/fkYAML'
+2026-10-10T02:03:37.7027381Z ##[endgroup]
+2026-10-10T02:03:37.7075988Z [command]/usr/bin/git log -1 --format=%H
+2026-10-10T02:03:37.7103665Z ee78f5fcf7ec16c48d36f583f2fb548d78067ab8
+2026-10-10T02:03:37.7430477Z ##[group]Run actions/checkout@v4
+2026-10-10T02:03:37.7430795Z with:
+2026-10-10T02:03:37.7431020Z   path: extension-ci-tools
+2026-10-10T02:03:37.7431299Z   ref: v1.5.6
+2026-10-10T02:03:37.7431531Z   repository: duckdb/extension-ci-tools
+2026-10-10T02:03:37.7434336Z   token: ***
+2026-10-10T02:03:37.7434548Z   ssh-strict: true
+2026-10-10T02:03:37.7434760Z   ssh-user: git
+2026-10-10T02:03:37.7434982Z   persist-credentials: true
+2026-10-10T02:03:37.7435232Z   clean: true
+2026-10-10T02:03:37.7435461Z   sparse-checkout-cone-mode: true
+2026-10-10T02:03:37.7435725Z   fetch-depth: 1
+2026-10-10T02:03:37.7435931Z   fetch-tags: false
+2026-10-10T02:03:37.7436144Z   show-progress: true
+2026-10-10T02:03:37.7436397Z   lfs: false
+2026-10-10T02:03:37.7436594Z   submodules: false
+2026-10-10T02:03:37.7436814Z   set-safe-directory: true
+2026-10-10T02:03:37.7437074Z   allow-unsafe-pr-checkout: false
+2026-10-10T02:03:37.7437328Z env:
+2026-10-10T02:03:37.7437518Z   GH_TOKEN: 
+2026-10-10T02:03:37.7437742Z   CC: gcc
+2026-10-10T02:03:37.7437924Z   CXX: g++
+2026-10-10T02:03:37.7438107Z   GEN: ninja
+2026-10-10T02:03:37.7438301Z   TIDY_THREADS: 4
+2026-10-10T02:03:37.7438509Z   TIDY_CHECKS: 
+2026-10-10T02:03:37.7438706Z ##[endgroup]
+2026-10-10T02:03:37.8291549Z Syncing repository: duckdb/extension-ci-tools
+2026-10-10T02:03:37.8292350Z ##[group]Getting Git version info
+2026-10-10T02:03:37.8292899Z Working directory is '/home/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools'
+2026-10-10T02:03:37.8340370Z [command]/usr/bin/git version
+2026-10-10T02:03:37.8385199Z git version 2.55.0
+2026-10-10T02:03:37.8409215Z ##[endgroup]
+2026-10-10T02:03:37.8425433Z Temporarily overriding HOME='/home/runner/work/_temp/711fa854-3b1d-4ca8-b99c-adf3cf102883' before making global git config changes
+2026-10-10T02:03:37.8427101Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-10T02:03:37.8432720Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools
+2026-10-10T02:03:37.8475316Z Deleting the contents of '/home/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools'
+2026-10-10T02:03:37.8534361Z ##[group]Initializing the repository
+2026-10-10T02:03:37.8539020Z [command]/usr/bin/git init /home/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools
+2026-10-10T02:03:37.8596947Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-10T02:03:37.8598179Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-10T02:03:37.8599576Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-10T02:03:37.8601938Z hint: call:
+2026-10-10T02:03:37.8602482Z hint:
+2026-10-10T02:03:37.8603119Z hint: 	git config --global init.defaultBranch <name>
+2026-10-10T02:03:37.8603829Z hint:
+2026-10-10T02:03:37.8604545Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-10T02:03:37.8605714Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-10T02:03:37.8606569Z hint:
+2026-10-10T02:03:37.8607095Z hint: 	git branch -m <name>
+2026-10-10T02:03:37.8607680Z hint:
+2026-10-10T02:03:37.8608481Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-10T02:03:37.8610877Z Initialized empty Git repository in /home/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/.git/
+2026-10-10T02:03:37.8613367Z [command]/usr/bin/git remote add origin https://github.com/duckdb/extension-ci-tools
+2026-10-10T02:03:37.8648987Z ##[endgroup]
+2026-10-10T02:03:37.8649730Z ##[group]Disabling automatic garbage collection
+2026-10-10T02:03:37.8655443Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-10T02:03:37.8687568Z ##[endgroup]
+2026-10-10T02:03:37.8688272Z ##[group]Setting up auth
+2026-10-10T02:03:37.8695653Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-10T02:03:37.8731065Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-10T02:03:37.8992099Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-10T02:03:37.9034483Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-10T02:03:37.9292793Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T02:03:37.9337532Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-10T02:03:37.9581564Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-10T02:03:37.9629069Z ##[endgroup]
+2026-10-10T02:03:37.9629771Z ##[group]Fetching the repository
+2026-10-10T02:03:37.9641171Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/v1.5.6*:refs/remotes/origin/v1.5.6* +refs/tags/v1.5.6*:refs/tags/v1.5.6*
+2026-10-10T02:03:38.4118120Z From https://github.com/duckdb/extension-ci-tools
+2026-10-10T02:03:38.4118550Z  * [new branch]      v1.5.6     -> origin/v1.5.6
+2026-10-10T02:03:38.4123354Z ##[endgroup]
+2026-10-10T02:03:38.4123754Z ##[group]Determining the checkout info
+2026-10-10T02:03:38.4131404Z [command]/usr/bin/git branch --list --remote origin/v1.5.6
+2026-10-10T02:03:38.4163017Z   origin/v1.5.6
+2026-10-10T02:03:38.4167188Z ##[endgroup]
+2026-10-10T02:03:38.4172648Z [command]/usr/bin/git sparse-checkout disable
+2026-10-10T02:03:38.4216632Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-10T02:03:38.4247605Z ##[group]Checking out the ref
+2026-10-10T02:03:38.4251805Z [command]/usr/bin/git checkout --progress --force -B v1.5.6 refs/remotes/origin/v1.5.6
+2026-10-10T02:03:38.4323239Z Switched to a new branch 'v1.5.6'
+2026-10-10T02:03:38.4326928Z branch 'v1.5.6' set up to track 'origin/v1.5.6'.
+2026-10-10T02:03:38.4331745Z ##[endgroup]
+2026-10-10T02:03:38.4369970Z [command]/usr/bin/git log -1 --format=%H
+2026-10-10T02:03:38.4396895Z 3fd6109fc01555673b7c7123eba8d0d143fe8ce4
+2026-10-10T02:03:38.4532735Z ##[group]Run sudo apt-get update -y -qq && sudo apt-get install -y -qq ninja-build clang-tidy && sudo pip3 install pybind11[global] --break-system-packages
+2026-10-10T02:03:38.4533873Z [36;1msudo apt-get update -y -qq && sudo apt-get install -y -qq ninja-build clang-tidy && sudo pip3 install pybind11[global] --break-system-packages[0m
+2026-10-10T02:03:38.4811237Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-10T02:03:38.4811638Z env:
+2026-10-10T02:03:38.4811843Z   GH_TOKEN: 
+2026-10-10T02:03:38.4812050Z   CC: gcc
+2026-10-10T02:03:38.4812248Z   CXX: g++
+2026-10-10T02:03:38.4812445Z   GEN: ninja
+2026-10-10T02:03:38.4812655Z   TIDY_THREADS: 4
+2026-10-10T02:03:38.4812876Z   TIDY_CHECKS: 
+2026-10-10T02:03:38.4813090Z ##[endgroup]
+2026-10-10T02:03:43.7693384Z Selecting previously unselected package clang-tidy.
+2026-10-10T02:03:43.7992215Z (Reading database ... 
+2026-10-10T02:03:43.7992780Z (Reading database ... 5%
+2026-10-10T02:03:43.7993344Z (Reading database ... 10%
+2026-10-10T02:03:43.7993753Z (Reading database ... 15%
+2026-10-10T02:03:43.7994182Z (Reading database ... 20%
+2026-10-10T02:03:43.7994568Z (Reading database ... 25%
+2026-10-10T02:03:43.7994951Z (Reading database ... 30%
+2026-10-10T02:03:43.7995334Z (Reading database ... 35%
+2026-10-10T02:03:43.7995715Z (Reading database ... 40%
+2026-10-10T02:03:43.7996088Z (Reading database ... 45%
+2026-10-10T02:03:43.7996459Z (Reading database ... 50%
+2026-10-10T02:03:43.8064649Z (Reading database ... 55%
+2026-10-10T02:03:43.8856980Z (Reading database ... 60%
+2026-10-10T02:03:44.0946417Z (Reading database ... 65%
+2026-10-10T02:03:44.2992856Z (Reading database ... 70%
+2026-10-10T02:03:44.4493031Z (Reading database ... 75%
+2026-10-10T02:03:44.5981514Z (Reading database ... 80%
+2026-10-10T02:03:44.6950444Z (Reading database ... 85%
+2026-10-10T02:03:44.7947888Z (Reading database ... 90%
+2026-10-10T02:03:44.9547209Z (Reading database ... 95%
+2026-10-10T02:03:44.9547691Z (Reading database ... 100%
+2026-10-10T02:03:44.9548320Z (Reading database ... 203191 files and directories currently installed.)
+2026-10-10T02:03:44.9588574Z Preparing to unpack .../clang-tidy_1%3a18.0-59~exp2_amd64.deb ...
+2026-10-10T02:03:44.9615137Z Unpacking clang-tidy (1:18.0-59~exp2) ...
+2026-10-10T02:03:44.9854641Z Selecting previously unselected package ninja-build.
+2026-10-10T02:03:44.9977698Z Preparing to unpack .../ninja-build_1.11.1-2_amd64.deb ...
+2026-10-10T02:03:44.9986143Z Unpacking ninja-build (1.11.1-2) ...
+2026-10-10T02:03:45.0437460Z Setting up clang-tidy (1:18.0-59~exp2) ...
+2026-10-10T02:03:45.0459239Z Setting up ninja-build (1.11.1-2) ...
+2026-10-10T02:03:45.0480710Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-10-10T02:03:45.0508208Z Not building database; man-db/auto-update is not 'true'.
+2026-10-10T02:03:45.6792870Z 
+2026-10-10T02:03:45.6793955Z Running kernel seems to be up-to-date.
+2026-10-10T02:03:45.6794460Z 
+2026-10-10T02:03:45.6794651Z No services need to be restarted.
+2026-10-10T02:03:45.6794902Z 
+2026-10-10T02:03:45.6795049Z No containers need to be restarted.
+2026-10-10T02:03:45.6795300Z 
+2026-10-10T02:03:45.6795464Z No user sessions are running outdated binaries.
+2026-10-10T02:03:45.6795763Z 
+2026-10-10T02:03:45.6796034Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-10-10T02:03:47.3573209Z Collecting pybind11[global]
+2026-10-10T02:03:47.4861757Z   Downloading pybind11-3.1.0-py3-none-any.whl.metadata (10 kB)
+2026-10-10T02:03:47.5400912Z Collecting pybind11-global==3.1.0 (from pybind11[global])
+2026-10-10T02:03:47.5624420Z   Downloading pybind11_global-3.1.0-py3-none-any.whl.metadata (10 kB)
+2026-10-10T02:03:47.5915498Z Downloading pybind11_global-3.1.0-py3-none-any.whl (588 kB)
+2026-10-10T02:03:47.6754781Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 588.5/588.5 kB 7.2 MB/s eta 0:00:00
+2026-10-10T02:03:47.6952350Z Downloading pybind11-3.1.0-py3-none-any.whl (319 kB)
+2026-10-10T02:03:47.7044378Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 319.4/319.4 kB 42.1 MB/s eta 0:00:00
+2026-10-10T02:03:47.9611821Z Installing collected packages: pybind11-global, pybind11
+2026-10-10T02:03:48.0336805Z Successfully installed pybind11-3.1.0 pybind11-global-3.1.0
+2026-10-10T02:03:48.0339426Z WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+2026-10-10T02:03:48.0927856Z ##[group]Run make tidy-check
+2026-10-10T02:03:48.0928175Z [36;1mmake tidy-check[0m
+2026-10-10T02:03:48.0994514Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-10T02:03:48.0994874Z env:
+2026-10-10T02:03:48.0995062Z   GH_TOKEN: 
+2026-10-10T02:03:48.0995256Z   CC: gcc
+2026-10-10T02:03:48.0995430Z   CXX: g++
+2026-10-10T02:03:48.0995608Z   GEN: ninja
+2026-10-10T02:03:48.0995792Z   TIDY_THREADS: 4
+2026-10-10T02:03:48.0996028Z   TIDY_CHECKS: 
+2026-10-10T02:03:48.0996233Z ##[endgroup]
+2026-10-10T02:03:48.1104993Z Makefile:33: warning: overriding recipe for target 'tidy-check'
+2026-10-10T02:03:48.1106239Z extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old recipe for target 'tidy-check'
+2026-10-10T02:03:48.1111829Z mkdir -p ./build/tidy
+2026-10-10T02:03:48.1126275Z cmake -G "Ninja" -DFORCE_COLORED_OUTPUT=1 -DEXTENSION_STATIC_BUILD=1  -DDUCKDB_EXTENSION_CONFIGS='/home/runner/work/duckdb-ossie/duckdb-ossie/extension_config.cmake'   -DOSX_BUILD_ARCH=   -DDUCKDB_EXPLICIT_PLATFORM='' -DCUSTOM_LINKER= -DOVERRIDE_GIT_DESCRIBE="" -DUNITTEST_ROOT_DIRECTORY="/home/runner/work/duckdb-ossie/duckdb-ossie/" -DBENCHMARK_ROOT_DIRECTORY="/home/runner/work/duckdb-ossie/duckdb-ossie/" -DENABLE_UNITTEST_CPP_TESTS=FALSE -DENABLE_EXTENSION_AUTOLOADING=0 -DENABLE_EXTENSION_AUTOINSTALL=0 -DBUILD_EXTENSION_TEST_DEPS=default  -DDISABLE_UNITY=1 -DCLANG_TIDY=1 -S "./duckdb/" -B build/tidy
+2026-10-10T02:03:48.4596300Z -- The C compiler identification is GNU 13.3.0
+2026-10-10T02:03:48.9327018Z -- The CXX compiler identification is GNU 13.3.0
+2026-10-10T02:03:49.0065946Z -- Detecting C compiler ABI info
+2026-10-10T02:03:49.1376961Z -- Detecting C compiler ABI info - done
+2026-10-10T02:03:49.1545050Z -- Check for working C compiler: /usr/bin/gcc - skipped
+2026-10-10T02:03:49.1599660Z -- Detecting C compile features
+2026-10-10T02:03:49.1647042Z -- Detecting C compile features - done
+2026-10-10T02:03:49.1978669Z -- Detecting CXX compiler ABI info
+2026-10-10T02:03:49.2851000Z -- Detecting CXX compiler ABI info - done
+2026-10-10T02:03:49.3024232Z -- Check for working CXX compiler: /usr/bin/g++ - skipped
+2026-10-10T02:03:49.3028644Z -- Detecting CXX compile features
+2026-10-10T02:03:49.3035847Z -- Detecting CXX compile features - done
+2026-10-10T02:03:49.3399037Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+2026-10-10T02:03:49.4170546Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+2026-10-10T02:03:49.4287752Z -- Found Threads: TRUE
+2026-10-10T02:03:49.4454704Z -- Found Git: /usr/bin/git (found version "2.55.0")
+2026-10-10T02:03:49.4504145Z -- GIT_COMMIT_HASH has length 11 different than the expected 10
+2026-10-10T02:03:49.4504669Z -- git hash 069cc9f9b5, version v1.5.6, extension folder v1.5.6
+2026-10-10T02:03:49.4508061Z -- Build workers: compile= link_release=4 link_non_release=2
+2026-10-10T02:03:49.4508494Z -- Setting build type to 'Release'.
+2026-10-10T02:03:49.4586051Z -- Load extension 'ossie' from '/home/runner/work/duckdb-ossie/duckdb-ossie' @ ee78f5f
+2026-10-10T02:03:49.4589433Z -- Load extension 'tpcds' from '/home/runner/work/duckdb-ossie/duckdb-ossie/duckdb/extensions' @ v1.5.6
+2026-10-10T02:03:49.4592877Z -- Load extension 'core_functions' from '/home/runner/work/duckdb-ossie/duckdb-ossie/duckdb/extensions' @ v1.5.6
+2026-10-10T02:03:49.4594654Z -- Load extension 'parquet' from '/home/runner/work/duckdb-ossie/duckdb-ossie/duckdb/extensions' @ v1.5.6
+2026-10-10T02:03:49.4596806Z CMake Warning at extension/extension_build_tools.cmake:597 (message):
+2026-10-10T02:03:49.4597590Z   Extension 'ossie' has a vcpkg.json, but build was not run with VCPKG.  If
+2026-10-10T02:03:49.4598036Z   build fails, check out VCPKG build instructions in
+2026-10-10T02:03:49.4598480Z   'duckdb/extension/README.md' or try manually installing the dependencies in
+2026-10-10T02:03:49.4598942Z   /home/runner/work/duckdb-ossie/duckdb-ossie/vcpkg.json
+2026-10-10T02:03:49.4599291Z Call Stack (most recent call first):
+2026-10-10T02:03:49.4599573Z   CMakeLists.txt:855 (include)
+2026-10-10T02:03:49.4599917Z 
+2026-10-10T02:03:49.4599922Z 
+2026-10-10T02:03:49.4604800Z CMake Deprecation Warning at /home/runner/work/duckdb-ossie/duckdb-ossie/CMakeLists.txt:1 (cmake_minimum_required):
+2026-10-10T02:03:49.4605525Z   Compatibility with CMake < 3.10 will be removed from a future version of
+2026-10-10T02:03:49.4605921Z   CMake.
+2026-10-10T02:03:49.4606026Z 
+2026-10-10T02:03:49.4606243Z   Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+2026-10-10T02:03:49.4606779Z   to tell CMake that the project requires at least <min> but has been updated
+2026-10-10T02:03:49.4607214Z   to work with policies introduced by <max> or earlier.
+2026-10-10T02:03:49.4607446Z 
+2026-10-10T02:03:49.4607449Z 
+2026-10-10T02:03:49.4924087Z -- Extensions linked into DuckDB: [ossie, tpcds, core_functions, parquet]
+2026-10-10T02:03:49.6380863Z -- Configuring done (1.5s)
+2026-10-10T02:03:50.1513176Z CMake Warning:
+2026-10-10T02:03:50.1513604Z -- Generating done (0.5s)
+2026-10-10T02:03:50.1514148Z   Manually-specified variables were not used by the project:
+2026-10-10T02:03:50.1514592Z 
+2026-10-10T02:03:50.1514748Z     BENCHMARK_ROOT_DIRECTORY
+2026-10-10T02:03:50.1515135Z     BUILD_EXTENSION_TEST_DEPS
+2026-10-10T02:03:50.1515509Z     CUSTOM_LINKER
+2026-10-10T02:03:50.1515832Z     UNITTEST_ROOT_DIRECTORY
+2026-10-10T02:03:50.1516061Z 
+2026-10-10T02:03:50.1516066Z 
+2026-10-10T02:03:50.1518132Z -- Build files have been written to: /home/runner/work/duckdb-ossie/duckdb-ossie/build/tidy
+2026-10-10T02:03:50.1879560Z cp duckdb/.clang-tidy build/tidy/.clang-tidy
+2026-10-10T02:03:50.1896644Z cd build/tidy && python3 ../../duckdb/scripts/run-clang-tidy.py '/home/runner/work/duckdb-ossie/duckdb-ossie/src/' -header-filter '/home/runner/work/duckdb-ossie/duckdb-ossie/src/' -quiet -j 4  
+2026-10-10T02:07:47.2951284Z 33642 warnings generated.
+2026-10-10T02:07:47.2961653Z 67284 warnings generated.
+2026-10-10T02:07:47.2963332Z clang-tidy -header-filter=/home/runner/work/duckdb-ossie/duckdb-ossie/src/ -p=/home/runner/work/duckdb-ossie/duckdb-ossie/build/tidy --quiet /home/runner/work/duckdb-ossie/duckdb-ossie/src/population/population.cpp
+2026-10-10T02:07:47.2992283Z /home/runner/work/duckdb-ossie/duckdb-ossie/src/population/population.cpp:996:14: error: narrowing conversion from 'unsigned char' to signed type 'char' is implementation-defined [bugprone-narrowing-conversions,-warnings-as-errors]
+2026-10-10T02:07:47.3020750Z   996 |                         result += c;
+2026-10-10T02:07:47.3040692Z       |                                   ^
+2026-10-10T02:07:47.3052006Z /home/runner/work/duckdb-ossie/duckdb-ossie/src/population/population.cpp:1002:14: error: narrowing conversion from 'unsigned char' to signed type 'char' is implementation-defined [bugprone-narrowing-conversions,-warnings-as-errors]
+2026-10-10T02:07:47.3080821Z  1002 |                         result += c;
+2026-10-10T02:07:47.3110728Z       |                                   ^
+2026-10-10T02:10:27.1985272Z 33642 warnings generated.
+2026-10-10T02:10:27.1986284Z clang-tidy -header-filter=/home/runner/work/duckdb-ossie/duckdb-ossie/src/ -p=/home/runner/work/duckdb-ossie/duckdb-ossie/build/tidy --quiet /home/runner/work/duckdb-ossie/duckdb-ossie/src/population/population.cpp
+2026-10-10T02:10:27.1987877Z /home/runner/work/duckdb-ossie/duckdb-ossie/src/population/population.cpp:996:14: error: narrowing conversion from 'unsigned char' to signed type 'char' is implementation-defined [bugprone-narrowing-conversions,-warnings-as-errors]
+2026-10-10T02:10:27.1989334Z   996 |                         result += c;
+2026-10-10T02:10:27.1989607Z       |                                   ^
+2026-10-10T02:10:27.1991358Z /home/runner/work/duckdb-ossie/duckdb-ossie/src/population/population.cpp:1002:14: error: narrowing conversion from 'unsigned char' to signed type 'char' is implementation-defined [bugprone-narrowing-conversions,-warnings-as-errors]
+2026-10-10T02:10:27.1992566Z  1002 |                         result += c;
+2026-10-10T02:10:27.1992834Z       |                                   ^
+2026-10-10T02:10:27.1993358Z 67284 warnings generated.
+2026-10-10T02:10:27.2066822Z make: *** [Makefile:36: tidy-check] Error 1
+2026-10-10T02:10:27.2085717Z ##[error]Process completed with exit code 2.
+2026-10-10T02:10:27.2225268Z Post job cleanup.
+2026-10-10T02:10:27.3109979Z [command]/usr/bin/git version
+2026-10-10T02:10:27.3155316Z git version 2.55.0
+2026-10-10T02:10:27.3199447Z Temporarily overriding HOME='/home/runner/work/_temp/fb528205-f753-4bd1-990f-39d3a5546d0f' before making global git config changes
+2026-10-10T02:10:27.3201214Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-10T02:10:27.3205165Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools
+2026-10-10T02:10:27.3246512Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-10T02:10:27.3285473Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-10T02:10:27.3536118Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-10T02:10:27.3569539Z http.https://github.com/.extraheader
+2026-10-10T02:10:27.3582247Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-10T02:10:27.3621631Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-10T02:10:27.3882561Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T02:10:27.3927449Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-10T02:10:27.4386885Z Post job cleanup.
+2026-10-10T02:10:27.5299900Z [command]/usr/bin/git version
+2026-10-10T02:10:27.5348009Z git version 2.55.0
+2026-10-10T02:10:27.5391799Z Temporarily overriding HOME='/home/runner/work/_temp/1901d744-d0a3-4473-a96d-2410ab83a22a' before making global git config changes
+2026-10-10T02:10:27.5393338Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-10T02:10:27.5394770Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/duckdb-ossie/duckdb-ossie
+2026-10-10T02:10:27.5431030Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-10T02:10:27.5465632Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-10T02:10:27.5707903Z Entering 'duckdb'
+2026-10-10T02:10:27.5772279Z Entering 'extension-ci-tools'
+2026-10-10T02:10:27.5817787Z Entering 'third_party/fkYAML'
+2026-10-10T02:10:27.5879736Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-10T02:10:27.5905029Z http.https://github.com/.extraheader
+2026-10-10T02:10:27.5917469Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-10T02:10:27.5957448Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-10T02:10:27.6191224Z Entering 'duckdb'
+2026-10-10T02:10:27.6214127Z http.https://github.com/.extraheader
+2026-10-10T02:10:27.6275120Z Entering 'extension-ci-tools'
+2026-10-10T02:10:27.6319343Z Entering 'third_party/fkYAML'
+2026-10-10T02:10:27.6353966Z http.https://github.com/.extraheader
+2026-10-10T02:10:27.6407095Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T02:10:27.6447684Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-10T02:10:27.6683607Z Entering 'duckdb'
+2026-10-10T02:10:27.6702471Z file:/home/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/duckdb/config	remote.origin.url
+2026-10-10T02:10:27.6739122Z Entering 'extension-ci-tools'
+2026-10-10T02:10:27.6758465Z file:.git/config	remote.origin.url
+2026-10-10T02:10:27.6776937Z Entering 'third_party/fkYAML'
+2026-10-10T02:10:27.6797354Z file:/home/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/third_party/fkYAML/config	remote.origin.url
+2026-10-10T02:10:27.6834054Z [command]/usr/bin/git config --file /home/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/duckdb/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T02:10:27.6873257Z [command]/usr/bin/git config --file .git/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T02:10:27.6909512Z [command]/usr/bin/git config --file /home/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/third_party/fkYAML/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T02:10:27.7098742Z Cleaning up orphan processes
+2026-10-10T02:10:27.7555701Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

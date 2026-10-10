@@ -1,0 +1,27 @@
+import { readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import assert from 'node:assert/strict';
+const source = readFileSync('src/population/population.cpp', 'utf8');
+const begin = source.indexOf('string JSONString(const string &value) {');
+const end = source.indexOf('\nidx_t PhysicalColumn(', begin);
+assert(begin >= 0 && end > begin);
+const fn = source.slice(begin, end);
+const cpp = '#include <string>\n#include <iostream>\nusing std::string;\n' + fn + '\nint main() { for(int i=0;i<256;++i) { const unsigned char byte = static_cast<unsigned char>(i); string input(reinterpret_cast<const char*>(&byte),1); auto result=JSONString(input); for(char raw:result) { const auto c = static_cast<unsigned char>(raw); const char *h="0123456789abcdef"; std::cout<<h[c>>4]<<h[c&15]; } std::cout<<"\\n"; } }\n';
+writeFileSync('/tmp/ossie-ci-char-controls/check.cpp', cpp);
+const outputs: string[] = [];
+for (const mode of ['signed', 'unsigned']) {
+  const binary = '/tmp/ossie-ci-char-controls/' + mode;
+  execFileSync('clang++', ['-std=c++17', '-Werror', '-Wconversion', '-f'+mode+'-char', '/tmp/ossie-ci-char-controls/check.cpp', '-o', binary]);
+  const lines = execFileSync(binary, { encoding:'utf8' }).trim().split('\n');
+  assert.equal(lines.length, 256);
+  for (let i=0;i<256;i++) {
+    const interior = i < 32 ? Buffer.from('\\u' + i.toString(16).padStart(4,'0')) : i === 34 || i === 92 ? Buffer.from([92,i]) : Buffer.from([i]);
+    assert.equal(lines[i], Buffer.concat([Buffer.from('"'),interior,Buffer.from('"')]).toString('hex'));
+  }
+  outputs.push(lines.join('\n'));
+}
+assert.equal(outputs[0], outputs[1]);
+const report = { source_sha256:createHash('sha256').update(source).digest('hex'), function_sha256:createHash('sha256').update(fn).digest('hex'), byte_checks_per_mode:256, modes:['signed-char','unsigned-char'], identical_outputs:true };
+writeFileSync('/tmp/ossie-ci-char-controls/results.json', JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report));
