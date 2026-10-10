@@ -1,0 +1,148 @@
+{
+  "execution_head": "40390db5bbf5a931ff4f0865951459ff1b2b836a",
+  "execution_dirty": "",
+  "api": "responses",
+  "provider_model": "private configured service/model; publicly redacted",
+  "observed_model_requests": 5,
+  "observed_tool_calls": 2,
+  "provider_reported_usage": {
+    "input_tokens": 34287,
+    "output_tokens": 1288,
+    "total_tokens": 35575,
+    "cached_input_tokens": 19250,
+    "reasoning_output_tokens": 394
+  },
+  "billing": "unknown; token usage is provider-reported, not a monetary measurement",
+  "scenes": [
+    {
+      "scene": "baseline",
+      "model_requests": 2,
+      "tool_calls": 1,
+      "elapsed_ms": 6121,
+      "usage": {
+        "input_tokens": 13916,
+        "output_tokens": 493,
+        "total_tokens": 14409,
+        "cached_input_tokens": 6426,
+        "reasoning_output_tokens": 150
+      },
+      "answer": {
+        "status": "answered",
+        "count": "37",
+        "total": "1697.80",
+        "average": "45.88648648648649",
+        "unit": "USD",
+        "scope": "2026年3月10日、产品X的有效用户；按字段 dws_gaap_di.ds 和 dws_gaap_di.product 筛选，未推断其他日期范围。",
+        "definition": "正式定义中，ValidUser 是 ytd_gaap >= 10 的 User，以 user_id 标识。记录数为 COUNT(user_id)，GAAP总额为 SUM(gaap_val)，平均值为非空 gaap_val 的算术平均值 AVG(gaap_val)。本次记录数与非空GAAP值数均为37。单位依据 mean_gaap 指标说明中的 USD 来源。",
+        "evidence_ids": [
+          "ossie://population/concepts",
+          "ossie://population/fields",
+          "ossie://population/metrics",
+          "tool-1"
+        ],
+        "limitations": [
+          "平均值是查询返回的 DOUBLE 近似值，按返回精度展示，未另行舍入。"
+        ]
+      },
+      "numerical_gate": "pass",
+      "lead_semantic_audit": "consistent with observed resources, calls and replies",
+      "human_verdict": "pending"
+    },
+    {
+      "scene": "changed-rule",
+      "model_requests": 2,
+      "tool_calls": 1,
+      "elapsed_ms": 5913,
+      "usage": {
+        "input_tokens": 13966,
+        "output_tokens": 466,
+        "total_tokens": 14432,
+        "cached_input_tokens": 6454,
+        "reasoning_output_tokens": 137
+      },
+      "answer": {
+        "status": "answered",
+        "count": "21",
+        "total": "1277.54",
+        "average": "60.8352380952381",
+        "unit": "USD",
+        "scope": "2026年3月10日、产品X的有效用户；按该范围内的记录计算。",
+        "definition": "正式定义中，ValidUser 是 ytd_gaap ≥ 20 的 User。记录数为非空 user_id 的数量；GAAP总额为 gaap_val 之和；平均值为非空 gaap_val 的算术平均值。本次查询中，21条记录的 gaap_val 均非空。单位依据 mean_gaap 指标说明中的原始工作簿 metric!E2。",
+        "evidence_ids": [
+          "ossie://population/concepts",
+          "ossie://population/fields",
+          "ossie://population/metrics",
+          "tool-1"
+        ],
+        "limitations": [
+          "平均值是查询返回的 DOUBLE 近似值，按返回精度原样展示，未另行舍入。"
+        ]
+      },
+      "numerical_gate": "pass",
+      "lead_semantic_audit": "consistent with observed resources, calls and replies",
+      "human_verdict": "pending"
+    },
+    {
+      "scene": "unsupported-scope",
+      "model_requests": 1,
+      "tool_calls": 0,
+      "elapsed_ms": 31759,
+      "usage": {
+        "input_tokens": 6405,
+        "output_tokens": 329,
+        "total_tokens": 6734,
+        "cached_input_tokens": 6370,
+        "reasoning_output_tokens": 107
+      },
+      "answer": {
+        "status": "unsupported",
+        "count": null,
+        "total": null,
+        "average": null,
+        "unit": null,
+        "scope": "2026年3月10日产品X的活跃且付费用户",
+        "definition": "已提供的指标 mean_gaap 是指定范围内非空 gaap_val 的算术平均值；但“活跃且付费用户”的筛选口径未定义。现有 ValidUser 仅定义为 ytd_gaap >= 10，不能据此认定其等同于活跃且付费用户。",
+        "evidence_ids": [
+          "ossie://population/concepts",
+          "ossie://population/fields",
+          "ossie://population/metrics"
+        ],
+        "limitations": [
+          "缺少“活跃”和“付费”的业务定义或对应筛选条件，无法确定应纳入哪些用户。",
+          "未执行数值查询，因此不能提供平均GAAP。"
+        ]
+      },
+      "numerical_gate": "not applicable",
+      "lead_semantic_audit": "consistent with observed resources, calls and replies",
+      "human_verdict": "pending"
+    }
+  ],
+  "overall": "pending human review",
+  "limitations": [
+    "Single bounded run with one private service/model, not a reliability or full protocol certification.",
+    "No compile path exercised; both answered scenes selected population_query directly.",
+    "No test of paging, full language compliance or other model providers."
+  ],
+  "preservation": "First 401 attempt and corrected original files remain immutable in ignored private directories. Public transcripts are redacted derivatives; serialized requests in these derivatives are not original exact bytes.",
+  "original_files_sha256": {
+    "baseline/events.jsonl": "a259b5786a0d67f55a0a29f32d43554cabcfeffbdcc7637c1e7aee3a29f90b10",
+    "baseline/review.json": "b5b2707c70c9088ce8cf6176f1badfcb986b4af16d9265ddf9ec43252c0309d4",
+    "changed-rule/events.jsonl": "c777945adafe137df87ec90ea415dc92f1347e7f0984128e3db70297a69de7b4",
+    "changed-rule/review.json": "de01e9da63996b1c204bb7827b1db668b0ffe1d704a528a4925a3a5841813849",
+    "run.json": "1804b713c917f324624bdb373784144ff415e6503c240005ff7e1cd41664961a",
+    "summary.json": "80fac59de28247a5f633c285ab45f02d616c479d402fa63367149a72345eeb4c",
+    "unsupported-scope/events.jsonl": "d721090fe2df85a38fbcc4ccaf41966a99b1cb7e22bdc95f3eb4a90ed152d4f7",
+    "unsupported-scope/review.json": "b93ebdce34b0904f61acab0043d7168105b3abe92156e71163b55b163b5b34c4"
+  },
+  "derivative_files_sha256": {
+    "baseline/events.jsonl": "bb3b2b2342a4eab879af114e06b38bf500f99f54ff188d095f4b0495c75199cc",
+    "baseline/review.json": "b5b2707c70c9088ce8cf6176f1badfcb986b4af16d9265ddf9ec43252c0309d4",
+    "changed-rule/events.jsonl": "db4c256abbbb0984c0d32540c6476bf98a1cd3c193eeb727696147687a184efc",
+    "changed-rule/review.json": "de01e9da63996b1c204bb7827b1db668b0ffe1d704a528a4925a3a5841813849",
+    "run.json": "36906a43aeef206253616d72f996c8196b7d640dbe8a1268449efebdb7c9ada1",
+    "summary.json": "80fac59de28247a5f633c285ab45f02d616c479d402fa63367149a72345eeb4c",
+    "unsupported-scope/events.jsonl": "5a2beaf412e8d6bd79d352b5fbb72e43e22abfcb8bcd7fcc4ddfdde4ded3f67d",
+    "unsupported-scope/review.json": "b93ebdce34b0904f61acab0043d7168105b3abe92156e71163b55b163b5b34c4"
+  },
+  "remote_mutated": false
+}

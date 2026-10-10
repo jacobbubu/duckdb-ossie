@@ -1,0 +1,28 @@
+{
+  "scenarios": [
+    {
+      "scene": "baseline",
+      "status": "answered",
+      "manual_review": "required: scope, rule interpretation, units, citations, unsupported claims",
+      "numerical_gate": "pass",
+      "executed_support": "matching cited values found; row/scope correspondence pending review",
+      "overall": "pending human review"
+    },
+    {
+      "scene": "changed-rule",
+      "status": "answered",
+      "manual_review": "required: scope, rule interpretation, units, citations, unsupported claims",
+      "numerical_gate": "pass",
+      "executed_support": "matching cited values found; row/scope correspondence pending review",
+      "overall": "pending human review"
+    },
+    {
+      "scene": "unsupported-scope",
+      "status": "unsupported",
+      "manual_review": "required: scope, rule interpretation, units, citations, unsupported claims",
+      "numerical_gate": "not applicable",
+      "semantic_refusal": "pending human review"
+    }
+  ],
+  "overall": "pending human review"
+}

@@ -17,14 +17,16 @@ and [the issue record](docs/ossie-execution-research.md).
 Local `e5db46f` holds the retry archive and is not pushed; the verified remote
 commit remains `b2d486a`. No main merge or release has occurred. This completion
 covers the adjusted bounded profiles, not full Ossie/schema/language compliance.
-Real autonomous Agent acceptance has not run; P1 and pagination remain later work.
+The bounded real Agent run is complete with numerical gates passed; final human
+semantic acceptance remains pending. P1 and pagination remain later work.
 
 The reviewed [minimal real Agent acceptance case](docs/agent-minimal-acceptance.md)
 has advanced to implementation after user continuation and gateway/model/key
-selection. Local controls and three-scene real MCP preparation pass. No live model
-request has been made; gateway compatibility, actual model behavior and human
-semantic review remain necessary. Existing scripted verifiers establish transport
-evidence, not model-selected queries or autonomous answers.
+selection. Local controls and real MCP preparation passed. One corrected-config
+live run completed all three scenes: two numerical answers match the independent
+oracle and the unsupported scope is refused. Lead semantic audit is consistent;
+final human review remains pending. The first HTTP 401 attempt is retained. See
+[the live review](docs/research/ossie-req-001/agent-live-corrected-controls/review.md).
 
 ## Historical error/discovery milestones — 2026-10-09
 
@@ -961,3 +963,18 @@ After the failed attempt and explicit same-budget retry question, the user said
 continue. One fresh experiment is authorized with inherited standard OpenAI
 variables cleared and the selected private file loaded. Preserve the 401 run and
 all new first results; no further automatic retry or push.
+
+### Corrected live run completed; human acceptance pending — 2026-10-10
+
+All three isolated scenes completed from clean 40390db with five model requests
+and two model-selected population_query calls. Both exact numerical gates pass;
+unsupported active/paid scope returns null numerical claims without substitution.
+Offline replay and original request serialization/continuation/budget checks pass.
+Lead checked date/product/concept scope, changed formal rule, units, record-count
+semantics, actual executed columns and resource references: consistent. Human
+verdict remains pending in immutable originals and public derivatives. Provider
+usage is 34287 input/1288 output/35575 total tokens; billing is unknown. Private
+configuration and both original experiments remain local; public records redact
+provider/model with hash-bound provenance. Production implementation is unchanged.
+Next necessity is user semantic acceptance of [the three answers and scope](docs/research/ossie-req-001/agent-live-corrected-controls/review.md),
+not another model run. No push, P1 or pagination work occurred.

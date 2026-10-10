@@ -1,0 +1,28 @@
+{
+  "scene": {
+    "label": "changed-rule",
+    "threshold": 20,
+    "boundary": false
+  },
+  "final": {
+    "content": "{\n  \"status\": \"answered\",\n  \"count\": \"21\",\n  \"total\": \"1277.54\",\n  \"average\": \"60.8352380952381\",\n  \"unit\": \"USD\",\n  \"scope\": \"2026年3月10日、产品X的有效用户；按该范围内的记录计算。\",\n  \"definition\": \"正式定义中，ValidUser 是 ytd_gaap ≥ 20 的 User。记录数为非空 user_id 的数量；GAAP总额为 gaap_val 之和；平均值为非空 gaap_val 的算术平均值。本次查询中，21条记录的 gaap_val 均非空。单位依据 mean_gaap 指标说明中的原始工作簿 metric!E2。\",\n  \"evidence_ids\": [\n    \"ossie://population/concepts\",\n    \"ossie://population/fields\",\n    \"ossie://population/metrics\",\n    \"tool-1\"\n  ],\n  \"limitations\": [\n    \"平均值是查询返回的 DOUBLE 近似值，按返回精度原样展示，未另行舍入。\"\n  ]\n}",
+    "calls": 1,
+    "rounds": 2
+  },
+  "evaluation": {
+    "status": "answered",
+    "manual_review": "required: scope, rule interpretation, units, citations, unsupported claims",
+    "numerical_gate": "pass",
+    "executed_support": "matching cited values found; row/scope correspondence pending review",
+    "overall": "pending human review"
+  },
+  "manual_checks": [
+    "date/product/concept scope and no extra narrowing",
+    "current formal predicate explained and resource citation",
+    "response/column/row references support answer",
+    "units and record versus entity scope",
+    "no active/paid substitution",
+    "compile/query hashes match if compile used"
+  ],
+  "human_verdict": "pending"
+}

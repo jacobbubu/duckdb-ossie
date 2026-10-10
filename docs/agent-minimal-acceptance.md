@@ -1,6 +1,6 @@
 # 真实 Agent 最小验收研究
 
-2026-10-10，归属 [OSSIE-REQ-001](ossie-execution-research.md)。方案已推进至最小程序实施和本地验证，尚无真实模型运行结果。用户已指定兼容网关、模型及凭据变量；实际运行预算仍待明确。生产 C++、现有 MCP 接口、固定资产及独立 oracle 不改。
+2026-10-10，归属 [OSSIE-REQ-001](ossie-execution-research.md)。已按用户确认预算完成一次正确配置的真实三场景运行：两个数值场景通过，能力边界拒绝数值回答；Lead语义核对一致，最终人工确认仍待完成。此前401失败保留。实际配置仅本地保存。生产 C++、现有 MCP 接口、固定资产及独立 oracle 不改。
 
 ## 要证明什么
 
@@ -127,10 +127,19 @@ bun scripts/agent_acceptance.ts --run --token-budget-only \
 复制 `.env_test.example` 为 Git 忽略的 `.env_test` 并填写个人配置，显式加载：
 
 ```sh
-bun --env-file=.env_test scripts/agent_acceptance.ts --prepare \
+env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL \
+  bun --env-file=.env_test scripts/agent_acceptance.ts --prepare \
   --cli /absolute/path/to/stock/duckdb \
   --extension build/release/extension/ossie/ossie.duckdb_extension \
   --out /tmp/ossie-agent-prepare-new
 ```
 
 真实运行时改为 `--run --token-budget-only`，仍须先确认预算。程序不自动加载专用配置文件，不自动运行模型。`.env_test`权限设为0600；私有配置和原始本地实验记录不提交。历史公开准备记录已标为脱敏衍生物，哈希关联的原始字节保存在忽略的本地目录；公开值是占位值，不能据此推断当时实际服务配置。六个未推送提交的历史清理现已完成，见[历史清理核验](research/ossie-req-001/agent-history-cleanup-controls/verification.json)。当前tip文件树与清理前相同；原始提交保存在忽略的本地bundle，已实际恢复验证。历史执行commit ID与源码hash仍是原始观测的来源标识，不表示改写后重新执行。
+
+## 正确配置的真实运行结果（2026-10-10）
+
+用户确认原预算，首次请求401后授权一次正确配置的新实验。无网络检查发现继承OPENAI_API_KEY覆盖.env_test，故上述显式本地配置命令先清除三个继承变量；普通程序仍遵循环境变量配置，无需改生产代码。两次原始记录分别保存在忽略私有目录，401不覆盖。
+
+本次三场景完成，共5次模型请求、2次模型选择的工具调用。阈值10：37条记录、1697.80 USD、平均45.88648648648649；阈值20：21条记录、1277.54 USD、平均60.8352380952381。“活跃且付费”场景指出业务定义缺失、ValidUser不能替代，未查询/给出数值。网关报告输入34287、输出1288、总35575tokens（含缓存输入19250与reasoning输出394）；费用unknown，usage不当作金额。
+
+[三场景语义核对](research/ossie-req-001/agent-live-corrected-controls/review.md)及[机器证据](research/ossie-req-001/agent-live-corrected-controls/evidence.json)包含公开脱敏记录、原始/衍生SHA256和实际产物/源码身份。离线重放数值门禁、原始请求字节/续接call_id/场景隔离/预算核验通过。Lead核对范围、规则、单位、记录数与实体数区分及实际列引用一致；human_verdict仍pending，最终人工语义确认由用户完成，不自动宣布整体Agent验收通过。本次仅一个服务/模型的一次运行，不证明稳定性、所有Responses参数或完整Ossie语言符合性。

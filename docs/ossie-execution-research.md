@@ -919,3 +919,11 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 ### 正确配置的新实验授权 checkpoint（2026-10-10）
 
 用户在明确询问同预算正确配置重跑后回复继续，授权一次新实验。启动清除继承OPENAI_API_KEY/OPENAI_BASE_URL/OPENAI_MODEL，以此前指定.env_test加载三项配置；相同24请求/36工具调用/每场景120秒/2048单次输出预算及未知金额，不改Key/模型/端点。新私有目录独立保存首次结果，不覆盖401证据，不自动再次重试、不推送。完成后核对数值/口径/引用，失败保留。
+
+### 正确配置三场景运行完成，最终人工验收待确认（2026-10-10）
+
+干净40390db启动，三场景completed；5次模型请求/2次自主population_query调用，耗时分别6121/5913/31759ms。阈值10返回37/1697.80/45.88648648648649，阈值20返回21/1277.54/60.8352380952381，数值门禁通过；active/paid场景指出无定义、ValidUser不能替代，零工具调用/无数值。网关报告input34287/output1288/total35575，cached input19250、reasoning output394，金额未知。无额外模型调用。
+
+原始字节不覆盖；公开[审阅](research/ossie-req-001/agent-live-corrected-controls/review.md)与[证据](research/ossie-req-001/agent-live-corrected-controls/evidence.json)含8份原始/衍生文件SHA256，内部端点/模型脱敏，公开serialized_body不冒充原始字节。离线重放三场景数值门禁通过；核对原始serialized_body等于body、第二轮previous_response_id/call_id对应真实结果、首轮场景独立、每次输出2048与总时限通过。Lead阅读资源/模型回答/实际参数与结果，核对日期产品、无额外筛选、正式规则阈值变化、SUM/AVG/COUNT含义、USD、引用列对应一致；compile未调用，该项不适用。原始与公开human_verdict均pending，不能以Lead审查冒充人工确认。
+
+首次401保留；显式.env_test命令文档补充清除继承三变量，生产代码/凭据不改。本次单服务/模型一次成功不证明重复可靠性或所有协议/语言符合性。工作包真实运行/脱敏/核验完成，整体最小Agent验收还需用户确认三份回答的口径与引用。下一必要事项为该人工确认，不扩预算重跑，不推送/P1/分页。

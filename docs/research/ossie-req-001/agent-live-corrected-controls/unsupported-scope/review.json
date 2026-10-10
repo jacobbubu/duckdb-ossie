@@ -1,0 +1,27 @@
+{
+  "scene": {
+    "label": "unsupported-scope",
+    "threshold": 10,
+    "boundary": true
+  },
+  "final": {
+    "content": "{\n  \"status\": \"unsupported\",\n  \"count\": null,\n  \"total\": null,\n  \"average\": null,\n  \"unit\": null,\n  \"scope\": \"2026年3月10日产品X的活跃且付费用户\",\n  \"definition\": \"已提供的指标 mean_gaap 是指定范围内非空 gaap_val 的算术平均值；但“活跃且付费用户”的筛选口径未定义。现有 ValidUser 仅定义为 ytd_gaap >= 10，不能据此认定其等同于活跃且付费用户。\",\n  \"evidence_ids\": [\n    \"ossie://population/concepts\",\n    \"ossie://population/fields\",\n    \"ossie://population/metrics\"\n  ],\n  \"limitations\": [\n    \"缺少“活跃”和“付费”的业务定义或对应筛选条件，无法确定应纳入哪些用户。\",\n    \"未执行数值查询，因此不能提供平均GAAP。\"\n  ]\n}",
+    "calls": 0,
+    "rounds": 1
+  },
+  "evaluation": {
+    "status": "unsupported",
+    "manual_review": "required: scope, rule interpretation, units, citations, unsupported claims",
+    "numerical_gate": "not applicable",
+    "semantic_refusal": "pending human review"
+  },
+  "manual_checks": [
+    "date/product/concept scope and no extra narrowing",
+    "current formal predicate explained and resource citation",
+    "response/column/row references support answer",
+    "units and record versus entity scope",
+    "no active/paid substitution",
+    "compile/query hashes match if compile used"
+  ],
+  "human_verdict": "pending"
+}

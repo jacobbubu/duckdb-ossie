@@ -1,0 +1,28 @@
+{
+  "scene": {
+    "label": "baseline",
+    "threshold": 10,
+    "boundary": false
+  },
+  "final": {
+    "content": "{\n  \"status\": \"answered\",\n  \"count\": \"37\",\n  \"total\": \"1697.80\",\n  \"average\": \"45.88648648648649\",\n  \"unit\": \"USD\",\n  \"scope\": \"2026年3月10日、产品X的有效用户；按字段 dws_gaap_di.ds 和 dws_gaap_di.product 筛选，未推断其他日期范围。\",\n  \"definition\": \"正式定义中，ValidUser 是 ytd_gaap >= 10 的 User，以 user_id 标识。记录数为 COUNT(user_id)，GAAP总额为 SUM(gaap_val)，平均值为非空 gaap_val 的算术平均值 AVG(gaap_val)。本次记录数与非空GAAP值数均为37。单位依据 mean_gaap 指标说明中的 USD 来源。\",\n  \"evidence_ids\": [\n    \"ossie://population/concepts\",\n    \"ossie://population/fields\",\n    \"ossie://population/metrics\",\n    \"tool-1\"\n  ],\n  \"limitations\": [\n    \"平均值是查询返回的 DOUBLE 近似值，按返回精度展示，未另行舍入。\"\n  ]\n}",
+    "calls": 1,
+    "rounds": 2
+  },
+  "evaluation": {
+    "status": "answered",
+    "manual_review": "required: scope, rule interpretation, units, citations, unsupported claims",
+    "numerical_gate": "pass",
+    "executed_support": "matching cited values found; row/scope correspondence pending review",
+    "overall": "pending human review"
+  },
+  "manual_checks": [
+    "date/product/concept scope and no extra narrowing",
+    "current formal predicate explained and resource citation",
+    "response/column/row references support answer",
+    "units and record versus entity scope",
+    "no active/paid substitution",
+    "compile/query hashes match if compile used"
+  ],
+  "human_verdict": "pending"
+}
