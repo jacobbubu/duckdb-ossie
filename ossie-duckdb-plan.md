@@ -954,3 +954,10 @@ OpenAI variables loads all three selected values correctly, verified without a
 network request. Provider authentication with the selected key remains untested.
 No retry occurred; usage/billing are unknown. The next action requires a user
 decision for one corrected-launch attempt at the same limits.
+
+### Corrected launch authorized — 2026-10-10
+
+After the failed attempt and explicit same-budget retry question, the user said
+continue. One fresh experiment is authorized with inherited standard OpenAI
+variables cleared and the selected private file loaded. Preserve the 401 run and
+all new first results; no further automatic retry or push.

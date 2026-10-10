@@ -915,3 +915,7 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 首次实验以干净2d304bf源码启动，baseline真实MCP发现完成，第一次Responses请求返回HTTP401后立即停止；0场景完成、没有模型选择的工具调用，后两场景未开始。原始run/events/failure保留在忽略私有目录，公开[失败核验](research/ossie-req-001/agent-live-first-controls/summary.json)包含脱敏事实与原始文件SHA256。usage/金额未知，无Agent通过或数值/语义结论。适用openai-api-troubleshooting技能归类为认证失败，未发送诊断请求。
 
 无网络检查发现启动环境Key与.env_test不一致，端点/模型一致；Bun保留继承Key优先于env-file。清除继承的三个标准变量后检查均与指定私有文件一致，不输出值、不写凭据。401不能证明指定私有Key无效；adapter只保留HTTP状态，没有详细错误体。没有改生产代码/凭据或重试。证据归档脚本首次误用model_request事件名触发断言、未产生报告，改用实际provider_request后核对1次请求。下一步需用户决定是否以正确配置启动新实验，同预算、原始失败不可覆盖。
+
+### 正确配置的新实验授权 checkpoint（2026-10-10）
+
+用户在明确询问同预算正确配置重跑后回复继续，授权一次新实验。启动清除继承OPENAI_API_KEY/OPENAI_BASE_URL/OPENAI_MODEL，以此前指定.env_test加载三项配置；相同24请求/36工具调用/每场景120秒/2048单次输出预算及未知金额，不改Key/模型/端点。新私有目录独立保存首次结果，不覆盖401证据，不自动再次重试、不推送。完成后核对数值/口径/引用，失败保留。
