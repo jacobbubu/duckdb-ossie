@@ -19,7 +19,8 @@ commit remains `b2d486a`. No main merge or release has occurred. This completion
 covers the adjusted bounded profiles, not full Ossie/schema/language compliance.
 The three bounded real Agent cases are accepted following the delegated Lead
 review and user acceptance, with synthetic-data limits recorded separately. P1
-production work and pagination remain later work.
+production work and pagination remain later work. The daily-observation contract
+and minimal implementation design are now recorded; implementation is pending.
 
 The reviewed [minimal real Agent acceptance case](docs/agent-minimal-acceptance.md)
 has advanced to implementation after user continuation and gateway/model/key
@@ -1002,3 +1003,28 @@ compound observation identity, while current production profiles reject this
 shape. Bounded Advisor follow-up and Lead source/code/SQL verification completed.
 Next necessary design decision is the minimal daily-observation contract before
 any production implementation. No push, model rerun, paging or production change.
+
+### Daily-observation contract and minimal design — 2026-10-10
+
+User authorized contract clarification and implementation design, not production
+edits. [The design](docs/research/ossie-req-001/multi-period-research/minimal-design.md)
+fixes User identity by raw non-null/nonempty user_id and finite DATE/product daily
+observation tuples; whole-batch duplicates, including identical rows, refuse
+before filters. Qualifying observations project an existential user set; AVG uses
+non-null observation amounts and distinct users have a separate count. Only
+registered five metric AST forms are allowed, not arbitrary formulas under names.
+
+Proposed new opt-in profile, three concepts and observation-only SQL execution
+keep both existing profiles intact. Exact standard-document sketches, role-aware
+metadata example and compatibility matrix are saved. New concepts-v2/plan-v2 are
+profile-specific; additive API2.1 and result/metric/field-v1 retain compatible
+shapes. User remains referent-only. MCP and new Agent runs are later scope.
+Advisor findings on mapping depth, COUNT(*) restrictions, binary keys/finite dates
+and versioning were verified by Lead. Independent SQL null/empty/duplicates and
+identity-collision witnesses pass; no production shape was executed. Full fixed
+JSON Schema validation of drafts is still required before loader acceptance; no
+local validator was available and no dependencies installed.
+
+Design package complete. Next authorized action is review of this concrete design;
+local implementation requires a further user instruction. Old source/experiment
+bytes preserved; no push, new model call or production change.

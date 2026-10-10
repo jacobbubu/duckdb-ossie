@@ -1,0 +1,90 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "daily_observation_ontology",
+  "ontology": [
+    {
+      "concept": "User",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne"
+        }
+      ]
+    },
+    {
+      "concept": "DailyObservation",
+      "type": "EntityType",
+      "identify_by": [
+        "user",
+        "date",
+        "product"
+      ],
+      "relationships": [
+        {
+          "name": "user",
+          "roles": [
+            {
+              "concept": "User"
+            }
+          ],
+          "multiplicity": "ManyToOne"
+        },
+        {
+          "name": "date",
+          "roles": [
+            {
+              "concept": "Date"
+            }
+          ],
+          "multiplicity": "ManyToOne"
+        },
+        {
+          "name": "product",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne"
+        },
+        {
+          "name": "amount",
+          "roles": [
+            {
+              "concept": "Decimal"
+            }
+          ],
+          "multiplicity": "ManyToOne"
+        },
+        {
+          "name": "classification_value",
+          "roles": [
+            {
+              "concept": "Integer"
+            }
+          ],
+          "multiplicity": "ManyToOne"
+        }
+      ]
+    },
+    {
+      "concept": "QualifiedObservation",
+      "type": "EntityType",
+      "extends": [
+        "DailyObservation"
+      ],
+      "derived_by": [
+        "DailyObservation.classification_value >= 10"
+      ]
+    }
+  ]
+}

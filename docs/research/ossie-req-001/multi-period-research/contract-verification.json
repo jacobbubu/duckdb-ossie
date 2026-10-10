@@ -1,0 +1,16 @@
+{
+  "scope": "ordinary SQL contract arithmetic only; no production loader or new profile implementation",
+  "checks": {
+    "empty_scalar_aggregate": "passed",
+    "qualified_null_only_user": "passed",
+    "tuple_duplicate_identical_and_conflicting": "both detectable; production rejection still to implement",
+    "null_classifier_true_only": "passed",
+    "raw_case_space_sensitive_identifiers": "passed"
+  },
+  "duplicate_identity_policy": "same observation tuple invalid even if duplicate outside requested date or qualification; observation_id difference does not rescue it",
+  "hashes": {
+    "observations.csv": "bfd38a0130028fe5829aa45e40dce8ac12e228cc2cc61e2f08f293493764f441",
+    "contract-checks.sql": "89e13481d9ec3ade578ccbc0076c1ed819e5fd74d0ad6e6932095fcd985405c7",
+    "contract-checks.raw.txt": "a4bbebfbcd2398b0affd7097180821dfd9785f0fd5d9ffbd8b07b9c1b646039d"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "scope": "design drafts and ordinary SQL checks only",
+  "draft_checks": "JSON syntax, references, identity ordering, binary role count and User.id separate link tree passed",
+  "full_fixed_JSON_Schema_validation": "not run; jsonschema validator unavailable in inspected local Python runtimes. Required before production loader acceptance. No dependencies installed.",
+  "identity_sql_checks": "case/space/Unicode distinction, concatenation collision and finite DATE witnesses passed",
+  "production_profile_execution": "not implemented or tested",
+  "hashes": {
+    "design-drafts/core.json": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+    "design-drafts/mapping.json": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+    "design-drafts/metadata-example.json": "7b4242948967b2a3b2063aad41cf9a833dd91285558f68aed501c108031f0487",
+    "design-drafts/ontology.json": "a8e847a304eb0f5f3c61a50380163a351dc808390686afe35ca53b6b3868f74c",
+    "identity-checks.sql": "8f42a14a36257f5d64503693a471943cfdcc6bbd244003fa7f4d0b0708eff9cf",
+    "identity-checks.raw.txt": "b3b085e1f83da342f3ce61bef1879bb4db544178d951008158e4f7ebe8df2cb9"
+  }
+}

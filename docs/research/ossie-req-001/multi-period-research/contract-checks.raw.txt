@@ -1,0 +1,7 @@
+[{"scope":"empty","observation_count":0,"user_count":0,"amount_value_count":0,"amount_sum":null,"mean_observation_amount":null},
+{"scope":"null-only-C","observation_count":1,"user_count":1,"amount_value_count":0,"amount_sum":null,"mean_observation_amount":null},
+{"scope":"qualified-X","observation_count":4,"user_count":3,"amount_value_count":3,"amount_sum":"20.00","mean_observation_amount":6.666666666666667}]
+[{"test":"conflicting-duplicate","user_id":"A","ds":"2026-02-01","product":"X","tuple_records":2},
+{"test":"identical-duplicate","user_id":"A","ds":"2026-01-31","product":"X","tuple_records":2}]
+[{"null_classifier_selected":0}]
+[{"raw_identifier_values":3}]

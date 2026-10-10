@@ -1,0 +1,87 @@
+{
+  "status": "proposed shapes, not observed runtime output",
+  "api_version": "2.1.0",
+  "profile": "daily-observation-population-v1",
+  "concept_schema": "ossie-population-concepts-v2",
+  "concept_discovery_function": "ossie_concepts_v2",
+  "plan_schema": "ossie-population-plan-v2",
+  "metric_field_discovery_schema": "ossie-population-discovery-v1",
+  "result_schema": "ossie-population-result-v1",
+  "concepts": [
+    {
+      "name": "User",
+      "identity_components": [
+        "observations.user_id"
+      ],
+      "execution": "referent-only; direct object/metric query refused"
+    },
+    {
+      "name": "DailyObservation",
+      "identity_components": [
+        "observations.user_id",
+        "observations.ds",
+        "observations.product"
+      ],
+      "execution": "objects/metrics"
+    },
+    {
+      "name": "QualifiedObservation",
+      "inherits_identity_from": "DailyObservation",
+      "execution": "objects/metrics"
+    }
+  ],
+  "identity": {
+    "kind": "daily_observation",
+    "components": [
+      {
+        "relationship": "user",
+        "field": "observations.user_id",
+        "bound_type": "VARCHAR",
+        "referent": "User.id"
+      },
+      {
+        "relationship": "date",
+        "field": "observations.ds",
+        "bound_type": "DATE"
+      },
+      {
+        "relationship": "product",
+        "field": "observations.product",
+        "bound_type": "VARCHAR"
+      }
+    ],
+    "referenced_entity": {
+      "concept": "User",
+      "identity_components": [
+        "observations.user_id"
+      ]
+    },
+    "observation_entity_equals_record": true,
+    "referenced_user_equals_record": false
+  },
+  "objects_example": {
+    "columns": [
+      "observations.user_id",
+      "observations.ds",
+      "observations.product",
+      "observations.amount_usd",
+      "observations.classification_value"
+    ],
+    "row": [
+      "A",
+      "2026-02-01",
+      "X",
+      "6.00",
+      "15"
+    ],
+    "identity_columns": [
+      1,
+      2,
+      3
+    ],
+    "user_identity_columns": [
+      1
+    ],
+    "trace_columns": "existing snapshot/content/ontology trace columns follow"
+  }
+}

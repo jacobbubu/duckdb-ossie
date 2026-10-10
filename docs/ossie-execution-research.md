@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-10。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。真实 Agent 工作已从研究推进至[最小程序实施与本地验证](agent-minimal-acceptance.md)，用户指定了网关/模型/凭据变量；三场景真实运行及委托Lead的口径/数据复核已完成，用户接受限定结论；原始失败与pending字段保持历史状态，数据真实性局限另记。下一P1重复实体/观察粒度已完成研究包，尚未实施；分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
+日期：2026-10-10。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。真实 Agent 工作已从研究推进至[最小程序实施与本地验证](agent-minimal-acceptance.md)，用户指定了网关/模型/凭据变量；三场景真实运行及委托Lead的口径/数据复核已完成，用户接受限定结论；原始失败与pending字段保持历史状态，数据真实性局限另记。P1重复实体/观察粒度研究、明确契约及最小实现设计已完成，尚未实施；分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -943,3 +943,17 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 比较现有P1/分页/交付事项后，沿原P1多期身份项完成[跨日期观察研究](research/ossie-req-001/multi-period-research/research.md)。8行新造研究数据区分实体/观察、两个日期跨月、两产品、阈值变化及NULL；不借用GAAP/YTD业务含义。手算/独立stock SQL通过，6合格观察/3用户/5非空金额、SUM31/AVG6.2及竞争分母区别明确。首次归档误把CLI多JSON数组输出当JSONL解析失败，原输出保留；连续解码后正确，不是生产失败。
 
 固定spec/生产代码/现有重复预检控制核对，现profile仍拒绝重复身份，不能静默DISTINCT/过滤后验证/拼接User ID。复用Advisor一轮只读反证，requested Astra/high、effective backend/effort/usage/billing未知；建议Observation表示仅为研究候选。研究包完成，下一必要动作是明确日快照唯一tuple及观察分类/期间用户投影/第一切片统计契约，再决定生产实现；P1生产、窗口/as-of/分页均未实现。本轮本地记录不推送、不重跑模型。
+
+### 用户/每日观察契约及最小实现设计 checkpoint（2026-10-10）
+
+用户明确要求先明确身份、重复处理、分母，再设计最小实现；本轮设计授权，不实现生产代码、不推送或调用模型。沿现P1多期研究，先确定User稳定身份和DailyObservation日快照tuple、全批重复拒绝/NULL/范围投影、观察AVG和distinct实体计数，再明确新opt-in profile、mapping形状与冻结计划/发现/结果契约的最小变化。复用既有Advisor一次架构反证，不创建第二backlog；以固定规范、现代码及独立SQL边界见证核对设计。原始源/实验/既有profile契约均保持，实施另由用户指示。
+
+### 用户/每日观察明确契约与最小设计完成（2026-10-10）
+
+按用户本轮指示完成[设计](research/ossie-req-001/multi-period-research/minimal-design.md)。User以非NULL非空原始user_id保持稳定身份，DailyObservation以(user_id,有限DATE,product) typed tuple标识。整个冻结批次先检查键及重复，完全相同和冲突重复都拒绝，User合法跨日/产品重复不消除观察；只允许User.id，其他可变属性绑定Observation。规则分类作用于观察，当前范围用户count是合格观察的存在式distinct投影，非每天/期末合格；AVG按非NULL观察金额，空集/全NULL明确分开。新增指标按五种AST形状约束，不靠名称放宽二阶段口径。
+
+新opt-in daily-observation profile最小支持SQL对象/五指标/发现与计划，User referent-only。现有单字段Bundle.identity及plan entity_equals_record假设不能简单放宽，设计分离有序tuple与引用User角色；旧两个profile保持。固定schema已有identify_by/referent_mappings支持草图表示，User.id独立link tree，未制造三元关系；本项目新版concept endpoint/plan schema不冒充Ossie标准。按现版本政策为兼容增量拟API2.1，新profile concepts-v2/plan-v2，result/metric/field-v1复用；旧concept endpoint在new profile明确拒绝而不是谎称单身份。MCP/追加Agent不纳入首切片。
+
+复用既有Advisor一轮只读架构反证（requested Astra/high；effective backend/effort/usage/billing未知）。Lead核对固定规范、身份绑定/plan/discovery源码和版本政策，落实有限DATE、collation/coercion拒绝、COUNT(nonNULL user_id)等价观察count（不扩通用COUNT*）、AST级限制和新旧兼容矩阵。独立普通SQL验证空集/全NULL/NULL分类、tuple完整重复与冲突、raw大小写/空格/Unicode，以及typed tuple2个/不安全拼接1个碰撞反例，通过；这些不是production loader验收。草图JSON语法/跨文档引用/role数量/链接树检查通过；当前本地检查Python runtime无jsonschema，未安装依赖，完整固定schema校验未跑，须在实施前补齐门禁。
+
+契约/设计包完成，本轮未修改生产代码或旧契约/原始fixture/实验字节，未推送或调用模型。下一具体工作为用户指示后本地实现新profile：固定schema及全批身份预检、随后对象/指标与v2元信息、最后独立SQL/精确逐行及旧profile回归；中间loader接受不能称可交付。多事件/修订/日历/as-of/窗口/混合粒度/分页仍在原issue作为后续。
