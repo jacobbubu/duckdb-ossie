@@ -1,0 +1,23 @@
+import { verifyAcceptance } from '/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_p0_acceptance.ts';
+import { digest } from '/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/artifact_helpers.ts';
+import assert from 'node:assert/strict';
+import { join, basename } from 'node:path';
+const root='/tmp/ossie-ci-final-38019831758';
+const results=[];
+const originalPath=process.env.PATH;
+for(const arch of [process.argv[2]!]) {
+
+ const dir=join(root,'ossie-independent-evidence-'+arch);
+ const artifact=join(root,'ossie-v1.5.6-extension-'+arch,'ossie.duckdb_extension');
+ const saved=await Bun.file(join(dir,'acceptance.json')).json();
+ const validated=verifyAcceptance(artifact,dir);
+ assert.equal(digest(artifact),saved.artifact_sha256);
+ assert.equal(saved.verifier_sha256,digest('scripts/verify_p0_acceptance.ts'));
+ for(const [path,hash] of Object.entries(saved.verifier_dependencies_sha256)) assert.equal(digest(path),hash);
+ for(const [path,hash] of Object.entries(saved.run_log_sha256)) assert.equal(digest(join(dir,basename(path))),hash);
+ for(const item of saved.acceptance) for(const e of item.evidence) assert.equal(digest(join(dir,basename(e.path))),e.sha256);
+ results.push({arch,artifact_sha256:digest(artifact),acceptance:validated.acceptance.map(x=>({id:x.id,status:x.status})),run_logs_verified:Object.keys(saved.run_log_sha256).length});
+}
+process.env.PATH=originalPath;
+await Bun.write(join(root,'download-audit-'+process.argv[2]+'.json'),JSON.stringify({run:38019831758,head_sha:'65b9828fe1d85dd2985113bfed8dc779f65149f9',results},null,2)+'\n');
+console.log(JSON.stringify(results));

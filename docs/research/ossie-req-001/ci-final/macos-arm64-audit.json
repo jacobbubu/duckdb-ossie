@@ -1,0 +1,45 @@
+{
+  "run": 38019831758,
+  "head_sha": "65b9828fe1d85dd2985113bfed8dc779f65149f9",
+  "results": [
+    {
+      "arch": "osx_arm64",
+      "artifact_sha256": "0a928dcfe8baa5a679bbc0817c180aa665fd265484c115b1041c039a780f0088",
+      "acceptance": [
+        {
+          "id": "A1",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A2",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A3",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A4",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A5",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A6",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A7",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A8",
+          "status": "PASS within scope"
+        }
+      ],
+      "run_logs_verified": 16
+    }
+  ]
+}

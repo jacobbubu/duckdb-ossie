@@ -828,3 +828,11 @@ JSONString以原始char追加字符串、显式unsigned char用于分类；不�
 ### MSVC 原生目标构建阶段修复本地交付（2026-10-10）
 
 CMake仅在MSVC时将三个既有原生目标纳入ALL，编译发生于上游已初始化vcvars的主构建；其他工具链仍显式构建，测试调用/门禁保持。本地实际重新configure/build及19state/42grain/158capture通过，固定format-check通过；没有本地Windows，MSVC分支与运行仍待远端。失败日志、上轮各job状态、本地CMake/format/native日志保存docs/research/ossie-req-001/ci-msvc-environment/。沿已授权fork开发分支提交推送触发下一轮CI；整体远端验收尚缺Windows通过后的artifact-load/MCP与CI gate。本包不改业务源码、不扩测试发行版、不合并或发布。
+
+### 远端 CI 验收完成（2026-10-10）
+
+实际run38019831758验证65b9828fe1d85dd2985113bfed8dc779f65149f9，17个job均success，CI gate成功；包含tidy/format/project、Linux两架构构建、Mac两架构、WindowsMSVC/MinGW、三种Wasm、LinuxAMD64/MacARM64独立产物验收和MCP round trip。ARM64 Linux上游跳过tests的限制保留，不把构建success说成该平台测试跑过。Windows修复已获实际远端编译和测试步骤成功证据。
+
+下载LinuxAMD64/MacARM64产物与独立报告，重新运行现verifyAcceptance：两端A1–A8/来源与verifier绑定及各16份日志hash通过；产物SHA256分别e24605ad2a00a53b6372d483aa7b268891739c3367a14f2b87860e62565c4ca7、0a928dcfe8baa5a679bbc0817c180aa665fd265484c115b1041c039a780f0088。原始报告ZIP与GitHub artifact digest逐字节核对通过，原样保存在docs/research/ossie-req-001/ci-final/，并附run/artifact元数据与下载复核结果。初次复核因CLI不在PATH、进程内PATH更新不可用和本地MacCLI与runnerCLI哈希不同失败；最终分别使用官方1.5.6 LinuxAMD64/MacARM64 CLI启动独立Bun进程后严格通过，未放宽hash检查。
+
+报告中remote CI未运行文字来自独立验收器旧模板，本次CI结论由run及全部job状态单独证明；原始报告不重写。该模板文字改进作为现issue后续维护项，不阻塞已经实际完成的远端验证；自主Agent、分页/P1等仍不在此包内。当前跨环境/remote CI工作包完成，不启动新能力、不合并main或发布。此后仅本地提交原始证据和状态文档，不为了归档再触发整轮CI；远端已验证tip继续为65b9828。

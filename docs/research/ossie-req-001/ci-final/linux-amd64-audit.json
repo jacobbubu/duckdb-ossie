@@ -1,0 +1,45 @@
+{
+  "run": 38019831758,
+  "head_sha": "65b9828fe1d85dd2985113bfed8dc779f65149f9",
+  "results": [
+    {
+      "arch": "linux_amd64",
+      "artifact_sha256": "e24605ad2a00a53b6372d483aa7b268891739c3367a14f2b87860e62565c4ca7",
+      "acceptance": [
+        {
+          "id": "A1",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A2",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A3",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A4",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A5",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A6",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A7",
+          "status": "PASS within scope"
+        },
+        {
+          "id": "A8",
+          "status": "PASS within scope"
+        }
+      ],
+      "run_logs_verified": 16
+    }
+  ]
+}
