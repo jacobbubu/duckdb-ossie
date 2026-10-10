@@ -1,29 +1,29 @@
 # duckdb_ossie — Implementation Plan
 
-## Current research checkpoint — 2026-10-10, portability package complete
+## Current delivery checkpoint — 2026-10-10
 
-The adjusted A1–A8 acceptance for the two bounded profiles now reproduces on
-macOS ARM64 and independently built Ubuntu 24.04 ARM64. Both pass 19 state/42
-grain/158 capture, 840 SQL assertions/23 cases/0 skips, 43 Bun tests/136 expects,
-eleven stock verifiers, real MCP/replay/core resources and CLI 40/0/0 FAITHFUL.
-Complete fixed GAAP results agree across environments (20 comparisons); this does
-not establish universal determinism, arbitrary arithmetic or autonomous Agents.
-Local Ubuntu ARM64 distro clang-tidy 18.1.3 passes over the 13 project translation
-units, including root registration. Pinned C++ formatting passes on macOS and
-separate Ubuntu AMD64; full quality-local was not run on ARM64. Fixes address
-actual population.cpp tidy diagnostics and the stock cancellation harness;
-strict negative assertions and deterministic native barriers remain.
-Source audit checks 20 immutable sources plus the original requirement from
-hash-bound repository copies; original paths are labels only. Original manifest
-and historical reports are unchanged. Final binaries are platform-specific:
-macOS 13d5317fb860f9ad81437a0a86cb8c996d7742a026f927f7b503c0fadf340c95;
-Linux 4926122b73590b3724e6b46d561c5ae88a330f15f2ce32b80181ab2e8c612dd6.
+The adjusted A1–A8 acceptance for two bounded population profiles, local
+cross-environment reproduction and remote CI packages are complete. Remote
+`b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af` passed all 17 jobs in
+[run 38027392941, attempt 2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941).
+The first attempt failed during macOS artifact upload; its raw log and the
+successful retry are retained in
+[the retry archive](docs/research/ossie-req-001/ci-artifact-timeout/final-state.json).
+Linux ARM64 CI establishes a build; its upstream test step is skipped. Local
+Ubuntu 24.04 ARM64 native/SQL/stock/MCP and tidy evidence remains separate.
 See [acceptance](docs/p0-acceptance.md), [Linux reproduction](docs/linux-reproduction.md)
-and [portability controls](docs/research/ossie-req-001/portability-control-results.json).
-This authorized local package is complete; local commit only. Remote Linux AMD64/
-macOS CI remains unrun, with no push/merge/publication authority for this package.
-P1, pagination research and real autonomous Agent validation remain separately
-scoped needs; no further capability implementation starts from this completion.
+and [the issue record](docs/ossie-execution-research.md).
+
+Local `e5db46f` holds the retry archive and is not pushed; the verified remote
+commit remains `b2d486a`. No main merge or release has occurred. This completion
+covers the adjusted bounded profiles, not full Ossie/schema/language compliance.
+Real autonomous Agent acceptance has not run; P1 and pagination remain later work.
+
+The next authorized action is documentation and research of
+[a minimal real Agent acceptance case](docs/agent-minimal-acceptance.md).
+The user has not authorized its implementation or a model API run. Research must
+separate MCP transport evidence, model-selected requests and independently checked
+answers; existing scripted verifiers establish only the first layer.
 
 ## Historical error/discovery milestones — 2026-10-09
 

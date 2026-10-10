@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-10。状态：五轮调整范围验收后，用户授权的跨环境复现/Linux质量工作包已完成。macOS ARM64与独立Ubuntu24.04 ARM64最终产物通过原生/SQL/43 Bun/完整stock/MCP，Ubuntu ARM64 clang-tidy及独立Ubuntu AMD64固定格式门禁通过；20项完整GAAP跨环境结果一致，20来源+1原需求仓库副本核对通过。证据见[跨环境控制](research/ossie-req-001/portability-control-results.json)及[复现说明](linux-reproduction.md)。不是全规范、真实自主Agent或远端CI通过；本轮只本地提交，不推送。历史计数按当时包保留，调整范围语义结论见[验收入口](p0-acceptance.md)。
+日期：2026-10-10。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。当前用户授权整理状态与[真实 Agent 最小验收研究](agent-minimal-acceptance.md)，未授权实现或模型调用；自主Agent尚未验收，P1/分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -835,3 +835,15 @@ CMake仅在MSVC时将三个既有原生目标纳入ALL，编译发生于上游�
 run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af；17个job全部success，MacARM64上传、两端Load built artifact、MCP round trip及CI gate均成功，独立验收和MCP证据artifacts存在未过期。状态、逐job结果及artifact元数据保存ci-artifact-timeout/final-state.json、attempt-2-result.json、attempt-2-artifacts.json；attempt1原始超时日志和排队状态仍保留。重跑成功支持此次为瞬时上传故障的判断，不推断整个GitHub服务故障；无需生产代码、workflow或规则修改。
 
 本轮检修及最新tip远端验证完成，不自动启动P1/分页/Agent，不合并或发布。检修记录仅本地提交，避免纯状态归档再次触发整轮CI；远端已验证tip保持b2d486a。当前已授权工作包无剩余必需修复，后续能力工作需要确定范围。
+
+### OSSIE-REQ-001：交付状态与真实 Agent 最小验收研究 checkpoint（2026-10-10）
+
+用户授权先整理交付状态，再研究真实 Agent 最小验收用例。范围为修正计划/验收入口的当前状态，复用已有真实 population MCP、固定475行来源和独立 oracle，提出模型调用与通过标准；不实现 harness、不安装依赖、不调用模型或启动 P1/分页。验证为归档 CI 的提交/attempt/17项结果核对、官方协议与工具调用资料核对、方案只读反证及文档链接检查。沿本 issue 记录，原始来源/历史报告不改。现有远端 b2d486a 全绿；本地 e5db46f 为尚未推送的检修归档，不冒充该提交也跑过 CI。
+
+### 交付整理与 Agent 最小验收研究完成（2026-10-10）
+
+当前计划首页和验收入口已区分本地语义验收、跨环境证据与远端17项CI通过，历史报告不改。只读实时核对run38027392941 attempt2的b2d486a及17项success，与归档一致；baseline中3月10日两阈值记录数/SUM/AVG与方案一致；当前文档本地链接核对通过。
+
+[最小 Agent 方案](agent-minimal-acceptance.md)建议三场景：原规则、规则变化同题、active/paid能力边界；Bun/TS显式循环，宿主提供真实发现资源，模型选择查询参数，独立oracle和人工完整transcript评审分层核对。参照MCP2024-11-05官方resources/tools及官方工具调用循环资料，不决定供应商或升级协议。一次只读Advisor反证后修正：边界场景允许不查询；独立问题补齐日期；固定prompt与动态资源哈希分开；要求解释实际阈值并把数值引用定位到执行响应。模型相同参数在不同规则下返回不同结果不等于模型改变策略。requested Astra/high；有效backend/effort/usage/billing unknown，Lead核对并采纳，未调用模型。
+
+本轮研究包完成，仅本地提交；没有新增运行依赖或修改生产代码，无真实Agent结果。下一步尚需确定供应商/模型/API版本/预算及实施与运行范围，随后才实施最小harness。P1/分页/main合并/发布仍未启动。文档性改动只做链接、diff和来源/状态核对，不重跑已通过的C++功能门禁，不因纯状态文档再推送触发整轮CI。

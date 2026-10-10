@@ -2,7 +2,7 @@
 
 本验收针对固定 Apache Ossie `8dd6732da354f22ca71f16d82626a46039ecdcd9` 的 `0.2.0.dev0`、DuckDB 1.5.6，以及本项目两个有界 population profiles。它验证审核后的业务规则实际进入查询并改变结果。仅支持新根级 core 格式；不承诺完整 Ossie/JSON Schema、一般本体推理或真实 Agent 自主回答。
 
-结论：按用户调整后的新格式、YTD分类及SQL NULL/分组契约，两个有界profile共同覆盖的相关支持路径与拒绝路径通过A1–A8本地规则驱动验收。每个profile并非分别执行全部八项；此结论不代表全规范、真实自主Agent、远端CI或P1能力通过。需求、授权与38项对应沿用 [OSSIE-REQ-001](ossie-execution-research.md)，本文件是验收入口。
+结论：按用户调整后的新格式、YTD分类及SQL NULL/分组契约，两个有界profile共同覆盖的相关支持路径与拒绝路径通过A1–A8本地规则驱动验收。每个profile并非分别执行全部八项；此本地语义结论不代表全规范、真实自主Agent或P1能力通过。远端 CI 已有独立通过证据：`b2d486a` 的 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 共17项任务成功；[重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)与本地验收分开。需求、授权与38项对应沿用 [OSSIE-REQ-001](ossie-execution-research.md)，本文件是验收入口。
 
 ## A1–A4：原始基准与规则变化
 
@@ -86,4 +86,4 @@ bun -e 'import {verifyAcceptance} from "./scripts/verify_p0_acceptance.ts"; cons
 
 后续跨环境工作包已在Mac ARM64与独立Ubuntu ARM64重建并复现：两端43 Bun/136 expects、19/42/158 native、840 SQL/23用例和完整stock/MCP/CLI通过；Ubuntu ARM64 clang-tidy、Mac及独立Ubuntu AMD64固定格式检查通过。最终产物分别为Mac `13d5317fb860f9ad81437a0a86cb8c996d7742a026f927f7b503c0fadf340c95`、Linux `4926122b73590b3724e6b46d561c5ae88a330f15f2ce32b80181ab2e8c612dd6`。完整结果20项跨环境比对一致，仍限固定fixture；[新控制记录](research/ossie-req-001/portability-control-results.json)保留失败和各环境实际报告。
 
-五轮均本地提交，没有推送/合并/发布。此次调整范围的本地验收工作完成；后续分页、calendar/多期身份、一般ontology、混合粒度/窗口等P1仍需独立启动。remote CI和真实自主Agent仍是未验证的独立证据，不能以本地成功替代。本地Ubuntu ARM64构建及质量验证见[跨环境复现说明](linux-reproduction.md)，与五轮历史证据分开。
+五轮验收当时均本地提交，没有推送/合并/发布；随后用户授权推送开发分支并完成远端 CI，当前远端已验证提交为 `b2d486a`，没有合并或发布。此次调整范围的本地验收、跨环境及远端 CI 工作包已完成；后续分页、calendar/多期身份、一般ontology、混合粒度/窗口等P1仍需独立启动。真实自主Agent尚未验收，当前仅获授权开展[最小验收研究](agent-minimal-acceptance.md)，不能以脚本调用MCP成功替代。本地Ubuntu ARM64构建及质量验证见[跨环境复现说明](linux-reproduction.md)，与五轮历史证据分开。
