@@ -1,0 +1,18 @@
+$ bun scripts/check_architecture.ts
+{
+  "scope": "all project src C++ files; project include reachability and header cycles; direct runtime includes; no vendor expansion",
+  "source_files": 26,
+  "project_edges": 43,
+  "external_edges_unexpanded": 125,
+  "adapter_exceptions": {
+    "src/model/parser.cpp": [
+      "duckdb/common/file_system.hpp",
+      "duckdb/main/client_context.hpp"
+    ],
+    "src/model/catalog.cpp": [
+      "duckdb/catalog/catalog.hpp",
+      "duckdb/catalog/entry_lookup_info.hpp",
+      "duckdb/main/client_context.hpp"
+    ]
+  }
+}

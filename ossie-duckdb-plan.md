@@ -19,11 +19,12 @@ commit remains `b2d486a`. No main merge or release has occurred. This completion
 covers the adjusted bounded profiles, not full Ossie/schema/language compliance.
 Real autonomous Agent acceptance has not run; P1 and pagination remain later work.
 
-The next authorized action is documentation and research of
-[a minimal real Agent acceptance case](docs/agent-minimal-acceptance.md).
-The user has not authorized its implementation or a model API run. Research must
-separate MCP transport evidence, model-selected requests and independently checked
-answers; existing scripted verifiers establish only the first layer.
+The reviewed [minimal real Agent acceptance case](docs/agent-minimal-acceptance.md)
+has advanced to implementation after user continuation and gateway/model/key
+selection. Local controls and three-scene real MCP preparation pass. No live model
+request has been made; gateway compatibility, actual model behavior and human
+semantic review remain necessary. Existing scripted verifiers establish transport
+evidence, not model-selected queries or autonomous answers.
 
 ## Historical error/discovery milestones — 2026-10-09
 
@@ -868,3 +869,24 @@ alone. See [the research evidence](docs/research/ossie-req-001/agent-discovery-p
 No model or population tool was called and no Agent harness was implemented.
 Provider/model/API/budget selection remains pending; real Agent acceptance is still
 unverified. This preflight is complete, while the subsequent Agent experiment is not.
+
+### Minimal Agent harness — 2026-10-10
+
+The user's gateway/model/key-variable selection enables implementation of the
+reviewed Bun/TypeScript experiment. The explicit loop and three-scene runner are
+implemented without dependencies or production changes. All 50 tooling tests/167
+assertions, typecheck, format and architecture checks pass; actual MCP preparation
+passes in three isolated processes. Mock controls do not establish model behavior.
+The initial injectable fetch type error and correction are retained. The next
+necessary evidence is a bounded live provider run and human review of scope,
+rule explanation and response citations. Pricing and monetary budget remain
+unknown; no model request has been made. See [the run guide](docs/agent-minimal-acceptance.md).
+
+The bounded implementation review found configuration, deadline and completion
+status gaps; these are repaired with local controls. Final evidence is 54 tests/184
+assertions plus successful three-process preparation. Provider/model mismatches
+are refused before requests, credential-bearing URLs before logs, and a shared
+120-second scene deadline includes discovery. Live execution additionally requires
+an explicit token-only budget choice because proxy pricing is unknown. No live
+request or Agent pass is claimed. The local implementation package is complete;
+the actual three-scene experiment and human semantic verdict remain necessary.

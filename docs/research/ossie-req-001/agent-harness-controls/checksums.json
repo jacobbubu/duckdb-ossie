@@ -1,0 +1,23 @@
+{
+  "advisor-review.md": "5f7cc78fc3b8dff0c584f31900a44cabe641c2abda98f6cf1f42a514b3c16ae2",
+  "architecture.log": "959e7268773730408fc2612c399280fb9d9fac4e259a77945a2d90414be42213",
+  "format-final.log": "89b1264c8c3a787cd3a2b4de12aef0c722fff2f133072cc3b44269c35cd0c21c",
+  "format.log": "89b1264c8c3a787cd3a2b4de12aef0c722fff2f133072cc3b44269c35cd0c21c",
+  "initial-typecheck.txt": "2e12f418fb3bdcf9cbbd708e2ff4c7c6dbad9a77b30e3892402340a9b203f5e0",
+  "prepare/baseline/events.jsonl": "603b992b6acba98ef597e3a3aef5356bfce63cb550119d48805b92afefb89daa",
+  "prepare/changed-rule/events.jsonl": "c748a26d6d305c426117309fd0bc52b165fa1b54cea6d916997133ece452cd7b",
+  "prepare/run.json": "15232c1c4f767b40b7d9c41c4082248a004eb4fb1fd4f767ebaf1fe4896419db",
+  "prepare/summary.json": "bb877fd1906d4b47d75a4c35545660ec10219d8c50a47164910b9f2148ba532a",
+  "prepare/unsupported-scope/events.jsonl": "603b992b6acba98ef597e3a3aef5356bfce63cb550119d48805b92afefb89daa",
+  "prepare-final/baseline/events.jsonl": "7e2b67588533d0ba5927cc9c6a4a196cf77c070bc0a48dc3f48fc0ec5167b511",
+  "prepare-final/changed-rule/events.jsonl": "180fc43cf7d166e63625b01995bd1fae458844f3bcf51cd85c3e084553369347",
+  "prepare-final/run.json": "9a37d104617d08df7cb488453cb2e4c652b64e920697b7a0c5e77b753cfb8a78",
+  "prepare-final/summary.json": "bb877fd1906d4b47d75a4c35545660ec10219d8c50a47164910b9f2148ba532a",
+  "prepare-final/unsupported-scope/events.jsonl": "03beb4f03037ca269630d80cdf1797b65e726478b9176da610da3adddd71c474",
+  "prepare-final.log": "011a4897c2608ad112eaded1c2adac597d840c027f3d483acc696bbf514c32eb",
+  "prepare.log": "011a4897c2608ad112eaded1c2adac597d840c027f3d483acc696bbf514c32eb",
+  "tests-final.log": "05f86f85daae203be443cc73b4634b8abe9fd49a4a3abd8a46e86246bfcf1cf3",
+  "tests.log": "aee3ca94de23c0a6f90b41028d8ac0008c6c6d40c7dfc5491cb7c04e9aae0728",
+  "typecheck-final.log": "4e8da542ccbffd70e1bacfda01f640a7a15c66d87fc2b7d4f58af694e973c17c",
+  "typecheck.log": "4e8da542ccbffd70e1bacfda01f640a7a15c66d87fc2b7d4f58af694e973c17c"
+}

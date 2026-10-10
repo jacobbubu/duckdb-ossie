@@ -1,6 +1,6 @@
 # 真实 Agent 最小验收研究
 
-2026-10-10，归属 [OSSIE-REQ-001](ossie-execution-research.md)。这是待实施的验收方案，尚无真实模型运行结果。用户本轮只授权整理交付状态和研究；生产 C++、现有 MCP 接口、固定资产及独立 oracle 不改。
+2026-10-10，归属 [OSSIE-REQ-001](ossie-execution-research.md)。方案已推进至最小程序实施和本地验证，尚无真实模型运行结果。用户已指定兼容网关、模型及凭据变量；实际运行预算仍待明确。生产 C++、现有 MCP 接口、固定资产及独立 oracle 不改。
 
 ## 要证明什么
 
@@ -62,9 +62,9 @@ USD 可从已发现 mean_gaap 的 description 获得，其来源是原 workbook 
 
 保存：repo提交及dirty状态、资产/CSV/二进制/提示词哈希、协商的MCP版本、供应商及请求/返回模型标识、实际可用的采样参数、token使用/耗时、原始模型可见输入输出、模型产生的工具参数、RPC响应与最终答案、分层评审和失败。供应商未报告的模型修订/有效推理强度/费用写 unknown；不采集私有思维链，不保存 API key/认证头。保存首次结果，后续修正必须产生新的有编号实验，不能覆盖失败。
 
-## 实施前剩余与下一步
+## 历史研究结论与实施前条件
 
-尚待确定供应商/模型、凭据方式、固定 API 或 SDK 版本、预算及实施授权。预检先验证词汇资源和 result/trace 足以供模型理解与评审；缺信息时先保留具体观察，不扩大插件能力。当前推荐下一步仅实现这三个隔离场景的 Bun/TypeScript 验收 harness，再在明确模型调用范围后运行；不调整生产 C++、MCP 分页或 P1。研究完成与实现/运行完成分开记录在原 issue。
+研究时尚待确定供应商/模型、凭据方式、固定 API 或 SDK 版本、预算及实施授权；当前选定服务与已完成实现见后续章节。预检先验证词汇资源和 result/trace 足以供模型理解与评审；缺信息时先保留具体观察，不扩大插件能力。研究时推荐下一步仅实现这三个隔离场景的 Bun/TypeScript 验收 harness，再在明确模型调用范围后运行；不调整生产 C++、MCP 分页或 P1。研究完成与实现/运行完成分开记录在原 issue。
 
 ## 只读反证结论
 
@@ -77,3 +77,36 @@ Advisor 建议保留三场景与显式循环，先修正上述场景门禁、独
 两个独立进程的snapshot_id恰好相同、ontology哈希不同。这证明snapshot_id不能独自作为跨进程定义身份；评审必须一起核对content/core/ontology/mapping/manifest哈希。每个进程内部四资源的snapshot/ontology一致。serverInfo.version仅为服务器自报值，此预检没有核验duckdb_mcp二进制哈希；后续真实验收仍须补齐运行时产物身份。
 
 [候选固定提示词](research/ossie-req-001/agent-discovery-preflight/prompts.json)将原问题、边界问题和无答案的system prompt独立保存并绑定哈希。它不含具体概念名、指标名、阈值、oracle或预制调用参数。最终JSON便于检查，口径与引用仍需人工核对。供应商/模型、API或SDK版本及费用预算仍待选择；候选提示词尚未送给模型，实施前如调整应保留新的实验版本。
+
+## 最小程序已实现，本地验证完成，真实调用待运行
+
+用户选定OpenAI兼容网关 `https://api.openai.com/v1/`、模型 `configured-tool-capable-model`，明确复用 `OPENAI_API_KEY`。凭据仅在 `--run` 时从环境读入，认证头不进入归档；无凭据文件写入、SDK或其他新增依赖。采用 [Chat Completions 官方参考](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)的函数工具schema、tool_calls/tool消息循环；网关实际兼容性尚未验证，不因“兼容”名称假定它支持全部参数。
+
+实现入口为 `scripts/agent_acceptance.ts`，模型调用循环为 `scripts/agent_loop.ts`。`--prepare`只做三场景的真实MCP发现；`--run`才调用模型。每次必须指定新的输出目录；固定prompt、二进制/源码/CSV/定义哈希、git HEAD及dirty状态、实际MCP版本/二进制身份、每轮模型可见请求/响应、原始工具参数/RPC响应及失败逐步归档。模型私有reasoning字段不保存；不发送oracle。最后才独立核对答案与引用的实际执行列，口径/规则/引用语义仍需人工审阅；`pending human review`不能当作通过。
+
+本地准备命令（stock CLI按调用方实际路径指定）：
+
+```sh
+bun scripts/agent_acceptance.ts --prepare \
+  --cli /absolute/path/to/stock/duckdb \
+  --extension build/release/extension/ossie/ossie.duckdb_extension \
+  --out /tmp/ossie-agent-prepare-new
+```
+
+真实运行命令（需已决定本次运行预算，凭据在当前环境）：
+
+```sh
+OPENAI_BASE_URL='https://api.openai.com/v1/' \
+OPENAI_MODEL='configured-tool-capable-model' \
+bun scripts/agent_acceptance.ts --run --token-budget-only \
+  --cli /absolute/path/to/stock/duckdb \
+  --extension build/release/extension/ossie/ossie.duckdb_extension \
+  --out /tmp/ossie-agent-live-new
+```
+
+当前硬限制：每场景8次模型请求、12次工具调用、准备/发现/模型工具循环合计120秒；单次模型请求131,072 UTF-8 bytes，每次请求 `max_completion_tokens=2048`。三场景总计最多24次请求，请求输出上限合计49,152 tokens。请求字节限额不是输入token测量；输出上限取决于网关是否遵守该API参数。usage按网关实际返回记录，未返回写unknown；没有网关单价资料，费用unknown，程序不提供货币金额硬上限。因此真实运行需用户明确接受这次token/调用/时间预算，并显式指定 `--token-budget-only`；这项选择尚未作出。启动三场景前的stock/MCP身份查询另有10秒预检上限。失败不自动重试、切换模型或扩大预算，场景关闭最多额外约1秒。后续如需不同预算，须另存实验配置，不能覆盖首次结果。
+
+[本地控制证据](research/ossie-req-001/agent-harness-controls/prepare/summary.json)：三场景独立真实MCP发现通过，没有模型调用。50 Bun tests/167 expects、TS类型、格式与现有架构检查通过，新增7项控制为模拟provider/RPC，并非真实Agent验收。首次typecheck因Bun fetch额外preconnect属性导致注入类型不匹配，已保留错误并修正为可调用签名，随后检查通过。生产C++、MCP接口、正式资产与既有独立oracle未修改。本轮只本地提交；下一必要证据为一次有界真实网关运行及完整人工口径审阅。
+
+
+只读实现审阅后的最终本地验证：54 Bun tests/184 expects、typecheck/format通过，三场景真实准备重跑通过，见[最终准备结果](research/ossie-req-001/agent-harness-controls/prepare-final/summary.json)与[审阅和修正](research/ossie-req-001/agent-harness-controls/advisor-review.md)。拒绝环境变量中的其他网关/模型；带凭据或query的URL在归档前拒绝；事件含时间戳/耗时；准备与模型共用场景deadline；只有正常stop才可评审最终答案，数值失败在summary中明确fail。没有真实模型请求，本地程序完成与Agent验收完成分开。

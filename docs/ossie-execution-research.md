@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-10。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。当前用户授权整理状态与[真实 Agent 最小验收研究](agent-minimal-acceptance.md)，未授权实现或模型调用；自主Agent尚未验收，P1/分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
+日期：2026-10-10。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。真实 Agent 工作已从研究推进至[最小程序实施与本地验证](agent-minimal-acceptance.md)，用户指定了网关/模型/凭据变量；三场景真实MCP准备通过，尚未调用模型或完成自主Agent验收，P1/分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -857,3 +857,15 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 两阈值独立进程的initialize、三个tools与四resources/list/read实际通过，原始响应/一次性探针/哈希归[预检目录](research/ossie-req-001/agent-discovery-preflight/summary.json)。资源含正式谓词、USD来源和日期/产品逻辑字段，不含active/paid具名字段。实际发现独立进程snapshot_id相同而ontology哈希不同，故跨场景追溯以完整来源/定义哈希组合核对，不能只凭snapshot_id。检查仍限本地Mac产物发现链路，未查询业务值、未验证模型行为、未证明当前远端产物身份；serverInfo自报版本与duckdb_mcp二进制哈希验证分开。
 
 候选system/user提示词另存并绑定哈希，无oracle/预制参数。当前研究/预检切片完成；用户模型选择问题仍待回答，未默认供应商或运行模型。剩余必要为服务/模型/API/预算及具体实施运行范围；可用现有三场景方案继续，不添加第二backlog或P1/分页。文档与证据链接/diff/hash检查后只本地提交保留。
+
+### OSSIE-REQ-001：最小 Agent harness 实施 checkpoint（2026-10-10）
+
+用户要求继续，并指定OpenAI兼容网关 `https://api.openai.com/v1/`、模型 `configured-tool-capable-model`、凭据环境变量 `OPENAI_API_KEY`。本轮实施既定三场景的Bun/TS显式循环与本地控制，不改C++/MCP/资产。先完成无模型prepare、工具参数原样转发、预算/错误终止/首次结果保存及独立oracle/人工评审入口；真实网关调用和费用单独记录，不将配置可用当协议兼容或Agent通过。凭据只从环境读取，不保存请求认证头。验证采用可注入本地provider/RPC控制及真实MCP准备，mock不能证明自主模型。门禁与失败保留，原始prompt及历史证据不覆盖。
+
+### 最小 Agent harness 本地完成，真实调用预算待明确（2026-10-10）
+
+显式Chat Completions循环及三隔离场景入口已实现，不新增依赖、不修改生产C++/MCP/正式资产。模型构造器不接收oracle，参数原样转发，工具名单/必填字符串校验、预算停止、正常stop、不可覆盖输出和逐步失败归档就绪。结果只给局部数值门禁；口径/当前规则/单位/引用对应仍须人工审阅，不自动宣称整体通过。
+
+一次只读Advisor发现URL先归档后校验、环境覆盖目标、总deadline不足、非stop final及汇总失败状态问题；Lead已修复并增加控制。requested Astra/high，有效backend/effort/usage/billing unknown，审阅与Lead验证归[审阅记录](research/ossie-req-001/agent-harness-controls/advisor-review.md)。首次fetch注入类型失败及修复保留；最终54Bun/184expects、typecheck/format/现有架构检查通过，三场景真实MCP prepare重跑通过；所有原始准备和最终结果分别保留，不覆盖。完整模型数据路径与真实网关兼容性尚未测，mock不是Agent自主证据。
+
+本地实施包完成，只本地提交。真实运行待明确预算：最多24次模型请求、每请求max_completion_tokens2048（总请求输出限额49,152）、12工具/场景、120秒/场景、请求131,072bytes；未知网关单价不等于金额上限。程序要求显式--token-budget-only，尚未选择或调用；下一必要动作是用户明确是否接受这一预算方式，然后进行单次三场景真实运行并逐份人工审阅。P1/分页/main合并/发布不启动。

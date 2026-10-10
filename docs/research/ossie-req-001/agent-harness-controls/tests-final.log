@@ -1,0 +1,76 @@
+bun test v1.3.11 (af24e281)
+
+test/tooling/population_result.test.ts:
+(pass) decoder uses DuckDB ASCII case rules for output names [1.07ms]
+(pass) ordinary JSON decoding retains exact integer/Decimal strings [0.30ms]
+(pass) typed decoder refuses numeric cells and mismatched type/encoding [0.15ms]
+(pass) empty typed result keeps schema, snapshot and null cells stay null [0.04ms]
+(pass) typed decoder refuses malformed carrier, unknown schema and broken row width [0.29ms]
+
+test/tooling/quality_controls.test.ts:
+(pass) direct forbidden [16.90ms]
+(pass) indirect forbidden [17.44ms]
+(pass) model forbidden [16.51ms]
+(pass) header cycle [17.74ms]
+(pass) relative AST and comments [62.48ms]
+(pass) missing quoted reference [48.18ms]
+(pass) missing angle reference [48.85ms]
+(pass) indirect runtime [43.98ms]
+(pass) nonliteral reference [22.77ms]
+(pass) zero inputs [16.58ms]
+(pass) unscanned source [16.49ms]
+(pass) undeclared source [15.86ms]
+(pass) empty compiled inventory [17.61ms]
+(pass) compiler IO [16.05ms]
+(pass) precise parser adapter [37.98ms]
+(pass) parser exception cannot permit state [18.86ms]
+(pass) script formatting failure and recovery [288.54ms]
+(pass) state, grain and production capture runners required before SQL [8.83ms]
+(pass) actual CI gate fails closed for every dependency [34.83ms]
+(pass) current project graph scans nonzero inventory [6.16ms]
+(pass) strict typecheck rejects a runtime-valid type error and recovers [753.35ms]
+(pass) CI uses frozen Bun tooling and the complete same-artifact acceptance runner [0.43ms]
+(pass) stock artifact CLI and all verifiers consume the downloaded artifact [0.06ms]
+
+test/tooling/population_error.test.ts:
+(pass) error framing respects quoted braces, escapes and marker text [0.20ms]
+(pass) external, incomplete and invalid-schema diagnostics stay unclassified
+
+test/tooling/source_evidence.test.ts:
+(pass) fresh checkout verifies 20 sources and the original requirement without external paths [8.36ms]
+(pass) missing and single-byte changed source copies refuse [16.00ms]
+(pass) wrong manifest binding, duplicate, missing and unknown locators refuse [29.84ms]
+(pass) absolute, parent traversal and escaping symlink targets refuse [20.99ms]
+(pass) locator content hash cannot override the manifest's expected source hash [8.78ms]
+
+test/tooling/agent_loop.test.ts:
+(pass) model arguments and exact numeric MCP strings reach the next model request unchanged [0.90ms]
+(pass) unknown tool or malformed arguments never reach MCP [0.34ms]
+(pass) call and round budgets terminate without successful-call substitution [0.18ms]
+(pass) deadline and byte budget stop requests; provider length is a failure [11.52ms]
+(pass) provider forwards only model-visible response fields, refuses redirects and HTTP failure without retries [0.42ms]
+(pass) boundary scene accepts zero calls but numerical hallucination is refused [0.20ms]
+(pass) correct-looking final numbers without executed citations cannot pass [0.11ms]
+(pass) credential-bearing URLs and unrelated ambient gateway/model overrides are rejected [0.06ms]
+(pass) shared scene deadline prevents setup from borrowing more time or starting after expiry [12.03ms]
+(pass) filtered/unknown provider termination cannot be a final answer [0.36ms]
+(pass) failure remains authoritative in the experiment summary [0.04ms]
+
+test/tooling/artifact_cli.test.ts:
+(pass) missing stock CLI fails instead of using build-tree engine [14.44ms]
+(pass) missing artifact fails before invoking the CLI [11.35ms]
+(pass) artifact loading failure is fatal and retains its diagnostic [360.15ms]
+(pass) relative artifact paths are normalized before stock CLI loading [226.76ms]
+
+test/tooling/artifact_values.test.ts:
+(pass) native DATE adapter preserves finite dates, infinity and NULL [0.29ms]
+
+test/tooling/mcp_transport.test.ts:
+(pass) MCP ignores banners, receives RPC, and cleans up child [18.16ms]
+(pass) silent MCP server hits a real read deadline and is terminated [32.67ms]
+(pass) server setup failure reaches reader with stderr [9.89ms]
+
+ 54 pass
+ 0 fail
+ 184 expect() calls
+Ran 54 tests across 8 files. [2.42s]

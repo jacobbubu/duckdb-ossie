@@ -1,0 +1,20 @@
+{
+  "scenarios": [
+    {
+      "scene": "baseline",
+      "status": "prepared",
+      "model_called": false
+    },
+    {
+      "scene": "changed-rule",
+      "status": "prepared",
+      "model_called": false
+    },
+    {
+      "scene": "unsupported-scope",
+      "status": "prepared",
+      "model_called": false
+    }
+  ],
+  "overall": "discovery-only; not Agent acceptance"
+}
