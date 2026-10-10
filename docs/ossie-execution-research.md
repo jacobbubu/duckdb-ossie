@@ -869,3 +869,15 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 一次只读Advisor发现URL先归档后校验、环境覆盖目标、总deadline不足、非stop final及汇总失败状态问题；Lead已修复并增加控制。requested Astra/high，有效backend/effort/usage/billing unknown，审阅与Lead验证归[审阅记录](research/ossie-req-001/agent-harness-controls/advisor-review.md)。首次fetch注入类型失败及修复保留；最终54Bun/184expects、typecheck/format/现有架构检查通过，三场景真实MCP prepare重跑通过；所有原始准备和最终结果分别保留，不覆盖。完整模型数据路径与真实网关兼容性尚未测，mock不是Agent自主证据。
 
 本地实施包完成，只本地提交。真实运行待明确预算：最多24次模型请求、每请求max_completion_tokens2048（总请求输出限额49,152）、12工具/场景、120秒/场景、请求131,072bytes；未知网关单价不等于金额上限。程序要求显式--token-budget-only，尚未选择或调用；下一必要动作是用户明确是否接受这一预算方式，然后进行单次三场景真实运行并逐份人工审阅。P1/分页/main合并/发布不启动。
+
+### OSSIE-REQ-001：用户指定 Responses endpoint 修正 checkpoint（2026-10-10）
+
+用户补充实际endpoint为 `/v1/responses`，修正此前Chat Completions假设。本轮只切换模型协议、循环状态/证据与控制测试，保留既定三场景和模型/凭据/预算界限，不调用网关或默认接受待确认预算。官方Responses/function calling说明用于input/function_call/function_call_output和completed/incomplete处理参考；实际内网网关兼容性仍未验证。先明确单场景continuation隔离，保存真实wire请求和公开输出，不归档私有reasoning，不静默回退chat端点。验证本地协议控制与原MCP prepare，沿现issue维护。
+
+### Responses 修正包完成（2026-10-10）
+
+用户指定 `/v1/responses` 后，移除chat adapter并切换实际wire到Responses input/instructions、平铺函数schema和function_call_output。单场景store:true/previous_response_id续接，跨场景首轮无continuation；每轮重复指令和设置，禁truncation、批量调用先完整校验、call_id关联、completed/incomplete/refusal状态门禁与缺失/重复response ID拒绝。公开响应投影与精确请求body分开标记，不保存本地私有reasoning，不声称无服务端存储；传输bytes不是累积context/费用上限。
+
+只读Advisor反证后Lead落实隔离/续接/记录约束；requested Astra/high，有效backend/effort/usage/billing unknown，见[审阅](research/ossie-req-001/agent-responses-controls/advisor-review.md)。迁移脚本中断后的旧chatProvider import失败保留；最终59Bun/238expects、typecheck/format通过，三场景真实MCP prepare通过，源码hash与[准备证据](research/ossie-req-001/agent-responses-controls/prepare/summary.json)绑定。原chat阶段证据不覆盖。
+
+本地协议修正包完成，只本地提交；未请求内网模型服务，网关Responses及store/continuation兼容性未验证。下一必要仍是用户明确接受token/调用/时间预算，然后单次三场景真实运行和人工语义审阅。用户提供端点不等于已确认待决预算。P1/分页/main合并/发布未启动。

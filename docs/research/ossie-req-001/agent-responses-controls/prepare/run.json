@@ -1,0 +1,44 @@
+{
+  "mode": "discovery-only",
+  "head": "7b0cbb3b0893cf5f8ef22bab3f15b804f6679058",
+  "dirty": "M docs/ossie-execution-research.md\n M scripts/agent_acceptance.ts\n M scripts/agent_loop.ts\n M test/tooling/agent_loop.test.ts\n?? docs/research/ossie-req-001/agent-responses-controls/",
+  "baseURL": "https://api.openai.com/v1/",
+  "requested_model": "configured-tool-capable-model",
+  "key_variable": "OPENAI_API_KEY",
+  "api": "responses",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "continuation": "store:true; previous_response_id only within each isolated scene",
+  "sampling": "provider default; effective unknown",
+  "backend_revision": "unknown",
+  "billing": "unknown; no monetary ceiling enforced",
+  "limits": {
+    "rounds": 8,
+    "calls": 12,
+    "milliseconds": 120000,
+    "outputTokens": 2048,
+    "inputBytes": 131072
+  },
+  "maximum_model_requests": 24,
+  "maximum_requested_output_tokens": 49152,
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "install_path": "/Users/rongshen/.duckdb/extensions/v1.5.6/osx_arm64/duckdb_mcp.duckdb_extension",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e"
+  },
+  "hashes": {
+    "/tmp/ossie-ci-final-38019831758/stock-cli-macos/duckdb": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release/extension/ossie/ossie.duckdb_extension": "13d5317fb860f9ad81437a0a86cb8c996d7742a026f927f7b503c0fadf340c95",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/agent-discovery-preflight/prompts.json": "00dec8a906db683e0cec3b6c589442301834190b124b8d4eb598cdcc0886342f",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/agent_acceptance.ts": "faa6937ef36e9be2c7cc5a91574b9b9d2a7eabebd90488b3d589f77a45c6fd9d",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/examples/population_server.sql": "7f1e5ee31da9b4527968eeb20a8f560db643f820efaeca445ceb62c8738237a3",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/gaap-original-475.csv": "e01a940a3f83ed6f5f22beb598e64206144658ad3b9fef89124e2790e7fc3e18",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/baseline-results.json": "f286859729b7cf0b99a0c8ee022bff79940b495b9486f1148c0fd975cafaef23"
+  },
+  "configuration_redaction": {
+    "status": "public redacted derivative; original in local history bundle",
+    "original_sha256": "062dc45550701bb1eaea93daeba7fbc9dcdd22927958670efb4066bb3fc7d043"
+  }
+}

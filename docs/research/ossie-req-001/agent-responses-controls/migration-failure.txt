@@ -1,0 +1,5 @@
+Preserved migration failure from the tool output:
+The temporary edit script raised ValueError: substring not found before writing the migrated test file. Agent loop and runner had been changed, while tests still imported the removed chatProvider.
+test/tooling/agent_loop.test.ts(4,3): error TS2305: Module '"../../scripts/agent_loop.ts"' has no exported member 'chatProvider'.
+Bun then reported Export named 'chatProvider' not found; 0 pass, 1 fail, 1 error.
+Correction: update tests to Responses output and input/call_id/previous_response_id wiring; rerun typecheck and tests. No provider call occurred during this failed migration.

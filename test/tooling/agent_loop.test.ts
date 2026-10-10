@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test";
 import {
   agentLoop,
-  chatProvider,
+  responsesProvider,
   LIMITS,
   beforeDeadline,
   providerBaseURL,
@@ -30,6 +30,7 @@ const toolReply = (
   args = '{"concept":"ChosenByModel","filters":"[\\"x = 1\\"]"}',
   id = "call-1",
 ): Completion => ({
+  id: `response-${id}`,
   message: {
     role: "assistant",
     content: null,
@@ -38,6 +39,7 @@ const toolReply = (
   finish_reason: "tool_calls",
 });
 const final: Completion = {
+  id: "response-final",
   message: { role: "assistant", content: '{"status":"unsupported"}' },
   finish_reason: "stop",
 };
@@ -66,12 +68,15 @@ test("model arguments and exact numeric MCP strings reach the next model request
     },
   });
   expect(args).toEqual({ concept: "ChosenByModel", filters: '["x = 1"]' });
-  const messages = requests[1].messages as JsonObject[];
-  expect(JSON.parse(String(messages.at(-1)?.content))).toEqual({
+  const messages = requests[1].input as JsonObject[];
+  expect(JSON.parse(String(messages.at(-1)?.output))).toEqual({
     evidence_id: "tool-1",
     mcp_response: mcp,
   });
-  expect((requests[0].messages as JsonObject[]).length).toBe(3);
+  expect((requests[0].input as JsonObject[]).length).toBe(2);
+  expect(requests[1].previous_response_id).toBe("response-call-1");
+  expect(messages[0].call_id).toBe("call-1");
+  expect(requests[0]).not.toHaveProperty("previous_response_id");
   expect(result.calls).toBe(1);
   expect(events.filter((e) => e.kind === "tool_request")).toHaveLength(1);
 });
@@ -202,21 +207,19 @@ test("provider forwards only model-visible response fields, refuses redirects an
         id: "r",
         model: "resolved",
         usage: { total_tokens: 3 },
-        choices: [
+        status: "completed",
+        output: [
+          { type: "reasoning", summary: [], private_field: "hidden" },
           {
-            finish_reason: "stop",
-            message: {
-              role: "assistant",
-              content: "answer",
-              reasoning_content: "private",
-              provider_private_field: "hidden",
-            },
+            type: "message",
+            role: "assistant",
+            content: [{ type: "output_text", text: "answer" }],
           },
         ],
       }),
     );
   };
-  const result = await chatProvider(
+  const result = await responsesProvider(
     "https://example.test/v1/",
     "dummy-test-key",
     fake,
@@ -226,7 +229,7 @@ test("provider forwards only model-visible response fields, refuses redirects an
   expect(count).toBe(1);
   let failures = 0;
   await expect(
-    chatProvider("https://example.test/", "dummy-test-key", async () => {
+    responsesProvider("https://example.test/", "dummy-test-key", async () => {
       failures++;
       return new Response("private error", { status: 401 });
     })({}, new AbortController().signal),
@@ -350,4 +353,262 @@ test("failure remains authoritative in the experiment summary", () => {
       true,
     ).overall,
   ).toBe("pending human review");
+});
+
+test("Responses wire bodies repeat instructions/tools and keep continuation IDs isolated", async () => {
+  const bodies: JsonObject[] = [];
+  for (let scene = 0; scene < 2; scene++) {
+    let round = 0;
+    await agentLoop({
+      model: "test",
+      system: "fixed instructions",
+      question: "fixed question",
+      resources: [],
+      tools,
+      record: (event) => {
+        if (event.kind === "provider_request")
+          expect(event.serialized_body).toBe(JSON.stringify(event.body));
+      },
+      complete: async (body) => {
+        bodies.push(structuredClone(body));
+        return ++round === 1 ? toolReply() : final;
+      },
+      call: async () => ({ result: "unchanged" }),
+    });
+  }
+  expect(bodies[0]).not.toHaveProperty("previous_response_id");
+  expect(bodies[2]).not.toHaveProperty("previous_response_id");
+  for (const body of bodies) {
+    expect(body.instructions).toBe("fixed instructions");
+    expect(body.max_output_tokens).toBe(2048);
+    expect(body.truncation).toBe("disabled");
+    expect(body.store).toBe(true);
+    expect(body.tools).toEqual([
+      {
+        type: "function",
+        name: tools[0].name,
+        description: tools[0].description,
+        parameters: tools[0].inputSchema,
+        strict: false,
+      },
+    ]);
+    expect(body).not.toHaveProperty("messages");
+  }
+});
+test("Responses call_id rather than item ID binds multiple tool outputs; mixed prose is not final", async () => {
+  const bodies: JsonObject[] = [];
+  let called = 0;
+  const complete = responsesProvider(
+    "https://example.test/v1/",
+    "dummy-test-key",
+    async (url, options) => {
+      expect(String(url)).toBe("https://example.test/v1/responses");
+      bodies.push(JSON.parse(String(options?.body)));
+      const output =
+        bodies.length === 1
+          ? [
+              {
+                type: "message",
+                role: "assistant",
+                content: [{ type: "output_text", text: "I will query." }],
+              },
+              ...["one", "two"].map((id) => ({
+                type: "function_call",
+                id: `item-${id}`,
+                call_id: `call-${id}`,
+                name: "population_query",
+                arguments: '{"concept":"X","filters":"[]"}',
+                status: "completed",
+              })),
+            ]
+          : [
+              {
+                type: "message",
+                role: "assistant",
+                content: [{ type: "output_text", text: "final answer" }],
+              },
+            ];
+      return new Response(
+        JSON.stringify({
+          id: `response-${bodies.length}`,
+          status: "completed",
+          output,
+        }),
+      );
+    },
+  );
+  const result = await agentLoop({
+    model: "test",
+    system: "s",
+    question: "q",
+    resources: [],
+    tools,
+    record: () => {},
+    complete,
+    call: async () => ({ result: ++called }),
+  });
+  expect(result.content).toBe("final answer");
+  expect(called).toBe(2);
+  expect((bodies[1].input as JsonObject[]).map((x) => x.call_id)).toEqual([
+    "call-one",
+    "call-two",
+  ]);
+});
+test("Responses incomplete/failed outcomes never execute partially generated calls", async () => {
+  for (const status of ["incomplete", "failed", "queued"]) {
+    let called = false;
+    const complete = responsesProvider(
+      "https://example.test/",
+      "dummy-test-key",
+      async () =>
+        new Response(
+          JSON.stringify({
+            id: "r",
+            status,
+            incomplete_details: { reason: "max_output_tokens" },
+            output: [
+              {
+                type: "function_call",
+                call_id: "c",
+                name: "population_query",
+                arguments: '{"concept":"X","filters":"[]"}',
+                status: "in_progress",
+              },
+            ],
+          }),
+        ),
+    );
+    await expect(
+      agentLoop({
+        model: "test",
+        system: "s",
+        question: "q",
+        resources: [],
+        tools,
+        record: () => {},
+        complete,
+        call: async () => {
+          called = true;
+          return {};
+        },
+      }),
+    ).rejects.toThrow();
+    expect(called).toBe(false);
+  }
+});
+test("missing/repeated Responses IDs and invalid call batches stop before further MCP execution", async () => {
+  let called = 0;
+  const options = {
+    model: "test",
+    system: "s",
+    question: "q",
+    resources: [],
+    tools,
+    record: () => {},
+    call: async () => {
+      called++;
+      return {};
+    },
+  };
+  await expect(
+    agentLoop({
+      ...options,
+      complete: async () => ({ ...toolReply(), id: undefined }),
+    }),
+  ).rejects.toThrow("Responses ID");
+  expect(called).toBe(0);
+  const second = toolReply("reload", '{"concept":"X","filters":"[]"}', "c2")
+    .message.tool_calls![0];
+  await expect(
+    agentLoop({
+      ...options,
+      complete: async () => ({
+        ...toolReply(),
+        message: {
+          ...toolReply().message,
+          tool_calls: [toolReply().message.tool_calls![0], second],
+        },
+      }),
+    }),
+  ).rejects.toThrow("allowlist");
+  expect(called).toBe(0);
+  await expect(
+    agentLoop({ ...options, complete: async () => toolReply() }),
+  ).rejects.toThrow("Responses ID");
+  expect(called).toBe(1);
+});
+test("Responses refusal and declined provider continuation do not trigger protocol fallback", async () => {
+  const refusal = responsesProvider(
+    "https://example.test/",
+    "dummy-test-key",
+    async () =>
+      new Response(
+        JSON.stringify({
+          id: "r",
+          status: "completed",
+          output: [
+            {
+              type: "message",
+              role: "assistant",
+              content: [{ type: "refusal", refusal: "cannot answer" }],
+            },
+          ],
+        }),
+      ),
+  );
+  await expect(
+    agentLoop({
+      model: "test",
+      system: "s",
+      question: "q",
+      resources: [],
+      tools,
+      record: () => {},
+      complete: refusal,
+      call: async () => ({}),
+    }),
+  ).rejects.toThrow("normal stop");
+  let requested = 0;
+  let called = 0;
+  const complete = responsesProvider(
+    "https://example.test/",
+    "dummy-test-key",
+    async () => {
+      if (++requested > 1)
+        return new Response("unsupported previous_response_id", {
+          status: 400,
+        });
+      return new Response(
+        JSON.stringify({
+          id: "r",
+          status: "completed",
+          output: [
+            {
+              type: "function_call",
+              call_id: "c",
+              name: "population_query",
+              arguments: '{"concept":"X","filters":"[]"}',
+            },
+          ],
+        }),
+      );
+    },
+  );
+  await expect(
+    agentLoop({
+      model: "test",
+      system: "s",
+      question: "q",
+      resources: [],
+      tools,
+      record: () => {},
+      complete,
+      call: async () => {
+        called++;
+        return {};
+      },
+    }),
+  ).rejects.toThrow("HTTP 400");
+  expect(requested).toBe(2);
+  expect(called).toBe(1);
 });

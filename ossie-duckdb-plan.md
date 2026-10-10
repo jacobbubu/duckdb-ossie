@@ -890,3 +890,18 @@ are refused before requests, credential-bearing URLs before logs, and a shared
 an explicit token-only budget choice because proxy pricing is unknown. No live
 request or Agent pass is claimed. The local implementation package is complete;
 the actual three-scene experiment and human semantic verdict remain necessary.
+
+### User-selected Responses endpoint — 2026-10-10
+
+The user corrected the gateway API to `/v1/responses`. The chat adapter is removed;
+actual requests now use Responses input/function-call outputs and per-scene server
+continuation. Instructions/configuration repeat each round; fresh scenes have no
+previous response ID. Public response projections exclude local private reasoning,
+while store:true explicitly relies on provider-side persistence. Transport-byte
+limits do not bound retained context or monetary cost. All 59 tests/238 assertions,
+typecheck/format and three-scene actual MCP preparation pass. Migration failure,
+read-only review and final source-bound evidence are retained in
+[Responses controls](docs/research/ossie-req-001/agent-responses-controls/prepare/summary.json).
+This protocol correction package is complete locally. No provider request was made;
+live gateway compatibility and Agent behavior remain unverified. The pending budget
+choice is unchanged; endpoint correction does not approve it.

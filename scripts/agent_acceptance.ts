@@ -16,7 +16,7 @@ import {
   agentLoop,
   beforeDeadline,
   providerBaseURL,
-  chatProvider,
+  responsesProvider,
   LIMITS,
   type JsonObject,
   type Tool,
@@ -245,7 +245,10 @@ export async function experiment(args: string[]) {
     baseURL,
     requested_model: model,
     key_variable: "OPENAI_API_KEY",
-    api: "chat/completions",
+    api: "responses",
+    endpoint: new URL("responses", baseURL).href,
+    continuation:
+      "store:true; previous_response_id only within each isolated scene",
     sampling: "provider default; effective unknown",
     backend_revision: "unknown",
     billing: "unknown; no monetary ceiling enforced",
@@ -431,7 +434,7 @@ export async function experiment(args: string[]) {
             : prompts.baseline_and_changed_rule,
           resources,
           tools,
-          complete: chatProvider(baseURL, key!),
+          complete: responsesProvider(baseURL, key!),
           call: async (name, params) => {
             const reply = await rpc("tools/call", { name, arguments: params });
             if (

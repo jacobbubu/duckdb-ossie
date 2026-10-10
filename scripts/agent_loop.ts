@@ -22,6 +22,10 @@ export interface Completion {
   model?: string;
   usage?: unknown;
   finish_reason?: string;
+  response_status?: string;
+  public_output?: JsonObject[];
+  incomplete_details?: unknown;
+  error_code?: string;
 }
 export interface LoopOptions {
   model: string;
@@ -82,8 +86,7 @@ export async function agentLoop(options: LoopOptions) {
   const limits = options.limits ?? LIMITS;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), limits.milliseconds);
-  const messages: JsonObject[] = [
-    { role: "system", content: options.system },
+  let input: JsonObject[] = [
     {
       role: "system",
       content: JSON.stringify({ discovered_resources: options.resources }),
@@ -92,12 +95,13 @@ export async function agentLoop(options: LoopOptions) {
   ];
   const tools = options.tools.map((t) => ({
     type: "function",
-    function: {
-      name: t.name,
-      description: t.description,
-      parameters: t.inputSchema,
-    },
+    name: t.name,
+    description: t.description,
+    parameters: t.inputSchema,
+    strict: false,
   }));
+  let previousResponseId: string | undefined;
+  const responseIds = new Set<string>();
   let calls = 0;
   const ids = new Set<string>();
   async function bounded<T>(promise: Promise<T>): Promise<T> {
@@ -120,26 +124,50 @@ export async function agentLoop(options: LoopOptions) {
       controller.signal.throwIfAborted();
       const body = {
         model: options.model,
-        messages: structuredClone(messages),
+        instructions: options.system,
+        input: structuredClone(input),
+        store: true,
+        truncation: "disabled",
+        ...(previousResponseId
+          ? { previous_response_id: previousResponseId }
+          : {}),
         tools,
         tool_choice: "auto",
-        max_completion_tokens: limits.outputTokens,
+        max_output_tokens: limits.outputTokens,
         stream: false,
       };
       assert(
         Buffer.byteLength(JSON.stringify(body)) <= limits.inputBytes,
         "model request byte budget exceeded",
       );
-      options.record({ kind: "provider_request", round, body });
+      options.record({
+        kind: "provider_request",
+        round,
+        body,
+        serialized_body: JSON.stringify(body),
+      });
       const response = await bounded(options.complete(body, controller.signal));
-      options.record({ kind: "provider_response", round, response });
+      options.record({
+        kind: "provider_response",
+        round,
+        projection: "public Responses fields; private reasoning omitted",
+        response,
+      });
       assert(
         response.finish_reason !== "length",
         "model output token budget exhausted",
       );
       const message = response.message;
       assert(message.role === "assistant", "invalid assistant role");
-      messages.push(message as unknown as JsonObject);
+      assert(
+        typeof response.id === "string" &&
+          response.id.length > 0 &&
+          !responseIds.has(response.id),
+        "missing or reused Responses ID",
+      );
+      responseIds.add(response.id);
+      previousResponseId = response.id;
+      input = [];
       if (!message.tool_calls?.length) {
         assert(
           response.finish_reason === "stop",
@@ -165,12 +193,19 @@ export async function agentLoop(options: LoopOptions) {
         calls + message.tool_calls.length <= limits.calls,
         "tool call budget exceeded",
       );
-      for (const call of message.tool_calls) {
+      const batchIds = new Set<string>();
+      const batch = message.tool_calls.map((call) => {
+        assert(
+          !ids.has(call.id) && !batchIds.has(call.id),
+          "duplicate tool call ID",
+        );
+        batchIds.add(call.id);
+        return { call, args: toolArguments(call, options.tools) };
+      });
+      for (const { call, args } of batch) {
         controller.signal.throwIfAborted();
-        assert(!ids.has(call.id), "duplicate tool call ID");
         ids.add(call.id);
         const evidence_id = `tool-${++calls}`;
-        const args = toolArguments(call, options.tools);
         options.record({
           kind: "tool_request",
           evidence_id,
@@ -181,10 +216,10 @@ export async function agentLoop(options: LoopOptions) {
         });
         const result = await bounded(options.call(call.function.name, args));
         options.record({ kind: "tool_response", evidence_id, result });
-        messages.push({
-          role: "tool",
-          tool_call_id: call.id,
-          content: JSON.stringify({ evidence_id, mcp_response: result }),
+        input.push({
+          type: "function_call_output",
+          call_id: call.id,
+          output: JSON.stringify({ evidence_id, mcp_response: result }),
         });
       }
     }
@@ -226,7 +261,7 @@ export async function beforeDeadline<T>(
   }
 }
 /** Record model-visible fields only; never persist authentication or private reasoning. */
-export function chatProvider(
+export function responsesProvider(
   baseURL: string,
   key: string,
   request: (
@@ -234,7 +269,7 @@ export function chatProvider(
     init?: RequestInit,
   ) => Promise<Response> = fetch,
 ) {
-  const endpoint = new URL("chat/completions", providerBaseURL(baseURL));
+  const endpoint = new URL("responses", providerBaseURL(baseURL));
   return async (body: JsonObject, signal: AbortSignal): Promise<Completion> => {
     const response = await request(endpoint, {
       method: "POST",
@@ -248,40 +283,107 @@ export function chatProvider(
     });
     assert(response.ok, `provider HTTP ${response.status}; no automatic retry`);
     const data = (await response.json()) as JsonObject;
-    const choices = data.choices as {
-      message: Assistant;
-      finish_reason: string;
-    }[];
     assert(
-      Array.isArray(choices) && choices.length === 1,
-      "exactly one choice required",
+      typeof data.id === "string" && data.id.length > 0,
+      "Responses ID required",
     );
-    const { message, finish_reason } = choices[0];
-    assert(
-      message &&
-        (typeof message.content === "string" || message.content === null),
-      "unsupported message content",
-    );
+    assert(Array.isArray(data.output), "Responses output array required");
+    const calls: ToolCall[] = [];
+    const text: string[] = [];
+    const publicOutput: JsonObject[] = [];
+    let refusal = false;
+    for (const [output_index, item] of (
+      data.output as JsonObject[]
+    ).entries()) {
+      if (item.type === "reasoning") continue; // Continuation remains at provider; private reasoning is not archived.
+      if (item.type === "function_call") {
+        assert(
+          typeof item.call_id === "string" &&
+            typeof item.name === "string" &&
+            typeof item.arguments === "string",
+          "invalid Responses function call",
+        );
+        assert(
+          item.status === "completed" ||
+            item.status === undefined ||
+            data.status !== "completed",
+          "incomplete function call",
+        );
+        calls.push({
+          id: item.call_id,
+          type: "function",
+          function: { name: item.name, arguments: item.arguments },
+        });
+        publicOutput.push({
+          output_index,
+          type: item.type,
+          id: item.id,
+          call_id: item.call_id,
+          name: item.name,
+          arguments: item.arguments,
+          status: item.status,
+        });
+      } else if (item.type === "message") {
+        assert(
+          item.status === "completed" ||
+            item.status === undefined ||
+            data.status !== "completed",
+          "incomplete Responses message",
+        );
+        assert(
+          item.role === "assistant" && Array.isArray(item.content),
+          "invalid Responses message",
+        );
+        const content: JsonObject[] = [];
+        for (const block of item.content as JsonObject[]) {
+          if (block.type === "output_text") {
+            assert(typeof block.text === "string", "invalid output text");
+            text.push(block.text);
+            content.push({ type: block.type, text: block.text });
+          } else if (block.type === "refusal") {
+            refusal = true;
+            content.push({ type: block.type, refusal: block.refusal });
+          } else throw new Error("unsupported Responses content type");
+        }
+        publicOutput.push({
+          output_index,
+          type: item.type,
+          id: item.id,
+          role: item.role,
+          phase: item.phase,
+          status: item.status,
+          content,
+        });
+      } else throw new Error("unsupported Responses output item");
+    }
+    const reason = (data.incomplete_details as JsonObject | undefined)?.reason;
+    const finish_reason =
+      data.status === "completed"
+        ? refusal
+          ? "refusal"
+          : calls.length
+            ? "tool_calls"
+            : "stop"
+        : data.status === "incomplete" && reason === "max_output_tokens"
+          ? "length"
+          : String(data.status ?? "unknown");
     return {
       message: {
-        role: message.role,
-        content: message.content,
-        ...(message.tool_calls
-          ? {
-              tool_calls: message.tool_calls.map((c) => ({
-                id: c.id,
-                type: c.type,
-                function: {
-                  name: c.function.name,
-                  arguments: c.function.arguments,
-                },
-              })),
-            }
-          : {}),
+        role: "assistant",
+        content: text.length ? text.join("") : null,
+        ...(calls.length ? { tool_calls: calls } : {}),
       },
-      id: typeof data.id === "string" ? data.id : undefined,
-      model: typeof data.model === "string" ? data.model : undefined,
-      usage: data.usage,
+      id: data.id,
+      model: typeof data.model === "string" ? data.model : "unknown",
+      usage: data.usage ?? "unknown",
+      response_status:
+        typeof data.status === "string" ? data.status : undefined,
+      public_output: publicOutput,
+      incomplete_details: reason === undefined ? undefined : { reason },
+      error_code:
+        typeof (data.error as JsonObject | undefined)?.code === "string"
+          ? ((data.error as JsonObject).code as string)
+          : undefined,
       finish_reason,
     };
   };

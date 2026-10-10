@@ -1,0 +1,81 @@
+bun test v1.3.11 (af24e281)
+
+test/tooling/population_result.test.ts:
+(pass) decoder uses DuckDB ASCII case rules for output names [0.93ms]
+(pass) ordinary JSON decoding retains exact integer/Decimal strings
+(pass) typed decoder refuses numeric cells and mismatched type/encoding [0.35ms]
+(pass) empty typed result keeps schema, snapshot and null cells stay null [0.05ms]
+(pass) typed decoder refuses malformed carrier, unknown schema and broken row width [0.25ms]
+
+test/tooling/quality_controls.test.ts:
+(pass) direct forbidden [22.40ms]
+(pass) indirect forbidden [15.77ms]
+(pass) model forbidden [19.21ms]
+(pass) header cycle [17.82ms]
+(pass) relative AST and comments [17.56ms]
+(pass) missing quoted reference [15.63ms]
+(pass) missing angle reference [15.97ms]
+(pass) indirect runtime [18.33ms]
+(pass) nonliteral reference [18.86ms]
+(pass) zero inputs [18.78ms]
+(pass) unscanned source [18.41ms]
+(pass) undeclared source [14.68ms]
+(pass) empty compiled inventory [17.04ms]
+(pass) compiler IO [14.40ms]
+(pass) precise parser adapter [33.06ms]
+(pass) parser exception cannot permit state [19.28ms]
+(pass) script formatting failure and recovery [252.62ms]
+(pass) state, grain and production capture runners required before SQL [11.02ms]
+(pass) actual CI gate fails closed for every dependency [37.76ms]
+(pass) current project graph scans nonzero inventory [6.53ms]
+(pass) strict typecheck rejects a runtime-valid type error and recovers [732.07ms]
+(pass) CI uses frozen Bun tooling and the complete same-artifact acceptance runner [0.15ms]
+(pass) stock artifact CLI and all verifiers consume the downloaded artifact [0.05ms]
+
+test/tooling/population_error.test.ts:
+(pass) error framing respects quoted braces, escapes and marker text [0.29ms]
+(pass) external, incomplete and invalid-schema diagnostics stay unclassified [0.06ms]
+
+test/tooling/source_evidence.test.ts:
+(pass) fresh checkout verifies 20 sources and the original requirement without external paths [7.68ms]
+(pass) missing and single-byte changed source copies refuse [15.02ms]
+(pass) wrong manifest binding, duplicate, missing and unknown locators refuse [24.82ms]
+(pass) absolute, parent traversal and escaping symlink targets refuse [20.18ms]
+(pass) locator content hash cannot override the manifest's expected source hash [8.08ms]
+
+test/tooling/agent_loop.test.ts:
+(pass) model arguments and exact numeric MCP strings reach the next model request unchanged [0.83ms]
+(pass) unknown tool or malformed arguments never reach MCP [0.40ms]
+(pass) call and round budgets terminate without successful-call substitution [0.17ms]
+(pass) deadline and byte budget stop requests; provider length is a failure [12.39ms]
+(pass) provider forwards only model-visible response fields, refuses redirects and HTTP failure without retries [0.59ms]
+(pass) boundary scene accepts zero calls but numerical hallucination is refused [0.08ms]
+(pass) correct-looking final numbers without executed citations cannot pass [0.19ms]
+(pass) credential-bearing URLs and unrelated ambient gateway/model overrides are rejected [0.20ms]
+(pass) shared scene deadline prevents setup from borrowing more time or starting after expiry [11.79ms]
+(pass) filtered/unknown provider termination cannot be a final answer [0.23ms]
+(pass) failure remains authoritative in the experiment summary [0.06ms]
+(pass) Responses wire bodies repeat instructions/tools and keep continuation IDs isolated [0.32ms]
+(pass) Responses call_id rather than item ID binds multiple tool outputs; mixed prose is not final [0.31ms]
+(pass) Responses incomplete/failed outcomes never execute partially generated calls [0.13ms]
+(pass) missing/repeated Responses IDs and invalid call batches stop before further MCP execution [0.24ms]
+(pass) Responses refusal and declined provider continuation do not trigger protocol fallback [0.20ms]
+
+test/tooling/artifact_cli.test.ts:
+(pass) missing stock CLI fails instead of using build-tree engine [13.35ms]
+(pass) missing artifact fails before invoking the CLI [12.98ms]
+(pass) artifact loading failure is fatal and retains its diagnostic [802.84ms]
+(pass) relative artifact paths are normalized before stock CLI loading [219.75ms]
+
+test/tooling/artifact_values.test.ts:
+(pass) native DATE adapter preserves finite dates, infinity and NULL [0.19ms]
+
+test/tooling/mcp_transport.test.ts:
+(pass) MCP ignores banners, receives RPC, and cleans up child [19.15ms]
+(pass) silent MCP server hits a real read deadline and is terminated [35.04ms]
+(pass) server setup failure reaches reader with stderr [10.92ms]
+
+ 59 pass
+ 0 fail
+ 238 expect() calls
+Ran 59 tests across 8 files. [2.66s]

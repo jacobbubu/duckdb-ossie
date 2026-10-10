@@ -80,7 +80,7 @@ Advisor 建议保留三场景与显式循环，先修正上述场景门禁、独
 
 ## 最小程序已实现，本地验证完成，真实调用待运行
 
-用户选定OpenAI兼容网关 `https://api.openai.com/v1/`、模型 `configured-tool-capable-model`，明确复用 `OPENAI_API_KEY`。凭据仅在 `--run` 时从环境读入，认证头不进入归档；无凭据文件写入、SDK或其他新增依赖。采用 [Chat Completions 官方参考](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)的函数工具schema、tool_calls/tool消息循环；网关实际兼容性尚未验证，不因“兼容”名称假定它支持全部参数。
+用户选定OpenAI兼容网关 `https://api.openai.com/v1/`、模型 `configured-tool-capable-model`，明确复用 `OPENAI_API_KEY`。凭据仅在 `--run` 时从环境读入，认证头不进入归档；无凭据文件写入、SDK或其他新增依赖。按用户补充端点采用 Responses API，实际目标为 `https://api.openai.com/v1/responses`。参照官方 [function calling](https://developers.openai.com/api/docs/guides/function-calling) 和 [conversation state](https://developers.openai.com/api/docs/guides/conversation-state)：input、function_call/function_call_output与call_id、completed/incomplete状态。网关实际兼容性尚未验证，不因“兼容”名称假定它支持全部参数；原Chat Completions实现已移除，不静默回退。
 
 实现入口为 `scripts/agent_acceptance.ts`，模型调用循环为 `scripts/agent_loop.ts`。`--prepare`只做三场景的真实MCP发现；`--run`才调用模型。每次必须指定新的输出目录；固定prompt、二进制/源码/CSV/定义哈希、git HEAD及dirty状态、实际MCP版本/二进制身份、每轮模型可见请求/响应、原始工具参数/RPC响应及失败逐步归档。模型私有reasoning字段不保存；不发送oracle。最后才独立核对答案与引用的实际执行列，口径/规则/引用语义仍需人工审阅；`pending human review`不能当作通过。
 
@@ -104,9 +104,18 @@ bun scripts/agent_acceptance.ts --run --token-budget-only \
   --out /tmp/ossie-agent-live-new
 ```
 
-当前硬限制：每场景8次模型请求、12次工具调用、准备/发现/模型工具循环合计120秒；单次模型请求131,072 UTF-8 bytes，每次请求 `max_completion_tokens=2048`。三场景总计最多24次请求，请求输出上限合计49,152 tokens。请求字节限额不是输入token测量；输出上限取决于网关是否遵守该API参数。usage按网关实际返回记录，未返回写unknown；没有网关单价资料，费用unknown，程序不提供货币金额硬上限。因此真实运行需用户明确接受这次token/调用/时间预算，并显式指定 `--token-budget-only`；这项选择尚未作出。启动三场景前的stock/MCP身份查询另有10秒预检上限。失败不自动重试、切换模型或扩大预算，场景关闭最多额外约1秒。后续如需不同预算，须另存实验配置，不能覆盖首次结果。
+当前硬限制：每场景8次模型请求、12次工具调用、准备/发现/模型工具循环合计120秒；单次模型请求131,072 UTF-8 bytes，每次请求 `max_output_tokens=2048`。三场景总计最多24次请求，请求输出上限合计49,152 tokens。请求字节限额不是输入token测量；输出上限取决于网关是否遵守该API参数。usage按网关实际返回记录，未返回写unknown；没有网关单价资料，费用unknown，程序不提供货币金额硬上限。因此真实运行需用户明确接受这次token/调用/时间预算，并显式指定 `--token-budget-only`；这项选择尚未作出。启动三场景前的stock/MCP身份查询另有10秒预检上限。失败不自动重试、切换模型或扩大预算，场景关闭最多额外约1秒。后续如需不同预算，须另存实验配置，不能覆盖首次结果。
 
 [本地控制证据](research/ossie-req-001/agent-harness-controls/prepare/summary.json)：三场景独立真实MCP发现通过，没有模型调用。50 Bun tests/167 expects、TS类型、格式与现有架构检查通过，新增7项控制为模拟provider/RPC，并非真实Agent验收。首次typecheck因Bun fetch额外preconnect属性导致注入类型不匹配，已保留错误并修正为可调用签名，随后检查通过。生产C++、MCP接口、正式资产与既有独立oracle未修改。本轮只本地提交；下一必要证据为一次有界真实网关运行及完整人工口径审阅。
 
 
-只读实现审阅后的最终本地验证：54 Bun tests/184 expects、typecheck/format通过，三场景真实准备重跑通过，见[最终准备结果](research/ossie-req-001/agent-harness-controls/prepare-final/summary.json)与[审阅和修正](research/ossie-req-001/agent-harness-controls/advisor-review.md)。拒绝环境变量中的其他网关/模型；带凭据或query的URL在归档前拒绝；事件含时间戳/耗时；准备与模型共用场景deadline；只有正常stop才可评审最终答案，数值失败在summary中明确fail。没有真实模型请求，本地程序完成与Agent验收完成分开。
+只读实现审阅后的最终本地验证：54 Bun tests/184 expects、typecheck/format通过，三场景真实准备重跑通过，见[最终准备结果](research/ossie-req-001/agent-harness-controls/prepare-final/summary.json)与[审阅和修正](research/ossie-req-001/agent-harness-controls/advisor-review.md)。拒绝环境变量中的其他网关/模型；带凭据或query的URL在归档前拒绝；事件含时间戳/耗时；准备与模型共用场景deadline；当时Chat协议仅正常stop才可评审最终答案（当前Responses以completed状态为依据），数值失败在summary中明确fail。没有真实模型请求，本地程序完成与Agent验收完成分开。
+
+
+## Responses 端点修正与当前状态
+
+用户明确实际端点为 `/v1/responses`。当前程序只用Responses：function工具schema平铺name/parameters并显式strict:false；每轮重复instructions/tools/model/输出限额，设置truncation:disabled避免静默丢弃前文。首轮发送固定指令、真实发现资源和问题；后续使用本场景上一轮的previous_response_id及每个call_id对应的真实function_call_output。每场景全新loop，不从旧实验或其他场景读continuation ID。
+
+设置store:true依赖网关保存单场景状态，避免本地重放或归档私有reasoning；不声称网关没有存储推理。服务端持久化和续接是否可用仍需观察，不支持则停止。归档的入站响应明确为公开字段投影，保留输出索引/顺序、item/call IDs、状态、消息phase、usage及错误/不完整原因；出站请求保存精确序列化body。输入bytes限制只约束本次传输大小，不能当作服务端累积context或费用上限。
+
+[Responses控制与准备证据](research/ossie-req-001/agent-responses-controls/prepare/summary.json)通过59Bun/238expects、typecheck/format及三场景真实MCP准备；[只读协议审阅](research/ossie-req-001/agent-responses-controls/advisor-review.md)的隔离/续接/记录约束已由Lead核对和落实。迁移编辑脚本首次中断导致测试仍引用旧chatProvider，错误保留，更新测试后通过。历史Chat验证不覆盖，生产C++/MCP/资产未改。真实模型仍未调用；预算方式仍待用户明确接受，不把端点纠正视作预算确认。
