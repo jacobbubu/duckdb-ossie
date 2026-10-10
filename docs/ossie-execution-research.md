@@ -825,3 +825,13 @@ CMake仅在MSVC时将三个既有原生目标纳入ALL，编译发生于上游�
 三个报告模板只改证明范围措辞，去除硬编码remote CI未运行；CI结果仍由独立run/job证据确认，验证逻辑/业务源码/历史报告ZIP不改。对65b9828远端LinuxAMD64与MacARM64同产物及既有报告实际重算验收，A1–A8行为/status/evidence hashes逐项一致；这是文档性复核，不是功能重跑。新模板源码hash/复核报告及43Bun/136expects、format/typecheck通过日志归docs/research/ossie-req-001/report-template-maintenance/。旧ZIP的原始文字保留，原通过CI链接仍有效。
 
 本轮模板维护完成；将ce6fae5归档和本轮提交普通推送已授权fork分支，新push的CI另行核实，不能把65b9828通过等同新tip已通过。已调整的P0/跨环境/远端CI工作包完成，当前剩余交付仅本次push及新CI状态；P1、分页调研与自主Agent等后续范围保持未启动，不合并main或发布。
+
+### OSSIE-REQ-001：产物上传超时检修（2026-10-10）
+
+用户要求检修。最新b2d486a的run38027392941 attempt1失败在MacARM64 upload-artifact；该job已通过原生42grain/158capture和840SQL/23cases，唯一失败步骤为CreateArtifact接口五次request timeout。其余构建/format/tidy/project已成功，后续artifact/MCP被上游依赖跳过，CI gate严格失败。没有代码断言或编译失败证据，不用改代码或放宽门禁。原始Mac日志保存docs/research/ossie-req-001/ci-artifact-timeout/attempt-1-macos.log，已使用gh run rerun --failed重跑失败任务与依赖。记录retry-state；下一必要动作检查attempt2上传、后续验收及gate。之前65b9828全绿证据仍是该提交结论，不代称b2d486a已全绿；本轮状态/日志先本地保存，避免推送触发另一轮，不改设置、不合并或发布。
+
+### 产物上传检修完成（2026-10-10）
+
+run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af；17个job全部success，MacARM64上传、两端Load built artifact、MCP round trip及CI gate均成功，独立验收和MCP证据artifacts存在未过期。状态、逐job结果及artifact元数据保存ci-artifact-timeout/final-state.json、attempt-2-result.json、attempt-2-artifacts.json；attempt1原始超时日志和排队状态仍保留。重跑成功支持此次为瞬时上传故障的判断，不推断整个GitHub服务故障；无需生产代码、workflow或规则修改。
+
+本轮检修及最新tip远端验证完成，不自动启动P1/分页/Agent，不合并或发布。检修记录仅本地提交，避免纯状态归档再次触发整轮CI；远端已验证tip保持b2d486a。当前已授权工作包无剩余必需修复，后续能力工作需要确定范围。

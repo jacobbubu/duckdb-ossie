@@ -1,0 +1,1598 @@
+﻿2026-10-10T05:31:34.7460100Z Current runner version: '2.337.0'
+2026-10-10T05:31:34.7475810Z ##[group]Runner Image Provisioner
+2026-10-10T05:31:34.7476370Z Hosted Compute Agent
+2026-10-10T05:31:34.7476770Z Version: 20260828.587
+2026-10-10T05:31:34.7477200Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-10-10T05:31:34.7477690Z Build Date: 2026-08-28T16:44:25Z
+2026-10-10T05:31:34.7478150Z Worker ID: {1a122fa8-b739-4f9e-a0a3-28234a7df59c}
+2026-10-10T05:31:34.7478630Z Azure Region: westus
+2026-10-10T05:31:34.7479000Z ##[endgroup]
+2026-10-10T05:31:34.7479890Z ##[group]Operating System
+2026-10-10T05:31:34.7480310Z macOS
+2026-10-10T05:31:34.7480690Z 15.7.9
+2026-10-10T05:31:34.7481060Z 24G830
+2026-10-10T05:31:34.7481400Z ##[endgroup]
+2026-10-10T05:31:34.7481770Z ##[group]Runner Image
+2026-10-10T05:31:34.7482160Z Image: macos-15-arm64
+2026-10-10T05:31:34.7482530Z Version: 20260907.0337.1
+2026-10-10T05:31:34.7483360Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20260907.0337/images/macos/macos-15-arm64-Readme.md
+2026-10-10T05:31:34.7484470Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20260907.0337
+2026-10-10T05:31:34.7485160Z ##[endgroup]
+2026-10-10T05:31:34.7485940Z ##[group]GITHUB_TOKEN Permissions
+2026-10-10T05:31:34.7487000Z Contents: read
+2026-10-10T05:31:34.7487360Z Metadata: read
+2026-10-10T05:31:34.7487730Z ##[endgroup]
+2026-10-10T05:31:34.7489090Z Secret source: Actions
+2026-10-10T05:31:34.7489710Z Cache mode: write
+2026-10-10T05:31:34.7490170Z Prepare workflow directory
+2026-10-10T05:31:34.7851730Z Prepare all required actions
+2026-10-10T05:31:34.7888290Z Getting action download info
+2026-10-10T05:31:35.1820660Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-10T05:31:35.3875330Z Download action repository 'hendrikmuhs/ccache-action@main' (SHA:a331fe55db42f31c7d79e088f8c0e122e7ebb431)
+2026-10-10T05:31:35.7808000Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-10-10T05:31:35.8640260Z Download action repository 'actions/setup-go@v4' (SHA:7b8cf10d4e4a01d4992d18a89f4d7dc5a3e6d6f4)
+2026-10-10T05:31:36.2470720Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-10T05:31:36.4411000Z Uses: duckdb/extension-ci-tools/.github/workflows/_extension_distribution.yml@refs/heads/v1.5.6 (3fd6109fc01555673b7c7123eba8d0d143fe8ce4)
+2026-10-10T05:31:36.4414070Z ##[group] Inputs
+2026-10-10T05:31:36.4414460Z   extension_name: ossie
+2026-10-10T05:31:36.4414840Z   extension_canonical: 
+2026-10-10T05:31:36.4415210Z   duckdb_version: v1.5.6
+2026-10-10T05:31:36.4415600Z   ci_tools_version: v1.5.6
+2026-10-10T05:31:36.4415980Z   exclude_archs: 
+2026-10-10T05:31:36.4416320Z   opt_in_archs: 
+2026-10-10T05:31:36.4416680Z   artifact_postfix: 
+2026-10-10T05:31:36.4417100Z   vcpkg_url: https://github.com/microsoft/vcpkg.git
+2026-10-10T05:31:36.4417680Z   vcpkg_commit: 84bab45d415d22042bd0b9081aea57f362da3f35
+2026-10-10T05:31:36.4418180Z   vcpkg_binary_sources: 
+2026-10-10T05:31:36.4418570Z   vcpkg_extra_dependencies: 
+2026-10-10T05:31:36.4419150Z   matrix_parse_script: ./extension-ci-tools/scripts/modify_distribution_matrix.py
+2026-10-10T05:31:36.4419960Z   build_duckdb_shell: true
+2026-10-10T05:31:36.4420360Z   override_repository: 
+2026-10-10T05:31:36.4420720Z   override_ref: 
+2026-10-10T05:31:36.4421150Z   override_ci_tools_repository: duckdb/extension-ci-tools
+2026-10-10T05:31:36.4421660Z   override_duckdb_repository: 
+2026-10-10T05:31:36.4422070Z   set_caller_as_duckdb: false
+2026-10-10T05:31:36.4422460Z   extra_toolchains: 
+2026-10-10T05:31:36.4422830Z   use_merged_vcpkg_manifest: 
+2026-10-10T05:31:36.4423220Z   rust_logs: false
+2026-10-10T05:31:36.4423560Z   extension_tag: 
+2026-10-10T05:31:36.4423900Z   duckdb_tag: 
+2026-10-10T05:31:36.4424240Z   skip_tests: false
+2026-10-10T05:31:36.4424660Z   save_cache: true
+2026-10-10T05:31:36.4425070Z   enable_rust: false
+2026-10-10T05:31:36.4426190Z   test_config: {}
+2026-10-10T05:31:36.4427040Z   build_type: release
+2026-10-10T05:31:36.4435450Z   upload_all_extensions: false
+2026-10-10T05:31:36.4435910Z   extra_extension_config: 
+2026-10-10T05:31:36.4436430Z   reduced_ci_mode: auto
+2026-10-10T05:31:36.4436800Z   run_disk_clean_step: true
+2026-10-10T05:31:36.4437210Z   extensions_test_selection: regular
+2026-10-10T05:31:36.4437640Z ##[endgroup]
+2026-10-10T05:31:36.4438360Z Complete job name: Build extension binaries / MacOS (osx_arm64, macos-15, arm64, arm64-osx-release, arm64-osx-release, true, false)
+2026-10-10T05:31:36.4936490Z ##[group]Run actions/checkout@v4
+2026-10-10T05:31:36.4937090Z with:
+2026-10-10T05:31:36.4937430Z   fetch-depth: 0
+2026-10-10T05:31:36.4937780Z   submodules: recursive
+2026-10-10T05:31:36.4938160Z   repository: jacobbubu/duckdb-ossie
+2026-10-10T05:31:36.4941050Z   token: ***
+2026-10-10T05:31:36.4941390Z   ssh-strict: true
+2026-10-10T05:31:36.4941730Z   ssh-user: git
+2026-10-10T05:31:36.4942080Z   persist-credentials: true
+2026-10-10T05:31:36.4942460Z   clean: true
+2026-10-10T05:31:36.4942830Z   sparse-checkout-cone-mode: true
+2026-10-10T05:31:36.4943230Z   fetch-tags: false
+2026-10-10T05:31:36.4943580Z   show-progress: true
+2026-10-10T05:31:36.4943930Z   lfs: false
+2026-10-10T05:31:36.4944260Z   set-safe-directory: true
+2026-10-10T05:31:36.4944670Z   allow-unsafe-pr-checkout: false
+2026-10-10T05:31:36.4945180Z env:
+2026-10-10T05:31:36.4945650Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:31:36.4946540Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/vcpkg/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:31:36.4947290Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:31:36.4947740Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:31:36.4948420Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:31:36.4949360Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:31:36.4950070Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:31:36.4950470Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:31:36.4950820Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:31:36.4951200Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:31:36.4951550Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:31:36.4951950Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:31:36.4952420Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:31:36.4952770Z   GEN: ninja
+2026-10-10T05:31:36.4953090Z   BUILD_SHELL: 1
+2026-10-10T05:31:36.4953450Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:31:36.4954240Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:31:36.4955060Z ##[endgroup]
+2026-10-10T05:31:36.7869750Z Syncing repository: jacobbubu/duckdb-ossie
+2026-10-10T05:31:36.7871270Z ##[group]Getting Git version info
+2026-10-10T05:31:36.7871800Z Working directory is '/Users/runner/work/duckdb-ossie/duckdb-ossie'
+2026-10-10T05:31:36.7872650Z [command]/opt/homebrew/bin/git version
+2026-10-10T05:31:36.8343630Z git version 2.55.0
+2026-10-10T05:31:36.8357680Z ##[endgroup]
+2026-10-10T05:31:36.8363120Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/a97872ba-8c81-4395-803b-7bd795f92682/.gitconfig'
+2026-10-10T05:31:36.8369210Z Temporarily overriding HOME='/Users/runner/work/_temp/a97872ba-8c81-4395-803b-7bd795f92682' before making global git config changes
+2026-10-10T05:31:36.8370230Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-10T05:31:36.8372700Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/duckdb-ossie/duckdb-ossie
+2026-10-10T05:31:36.8467200Z Deleting the contents of '/Users/runner/work/duckdb-ossie/duckdb-ossie'
+2026-10-10T05:31:36.8470310Z ##[group]Initializing the repository
+2026-10-10T05:31:36.8473660Z [command]/opt/homebrew/bin/git init /Users/runner/work/duckdb-ossie/duckdb-ossie
+2026-10-10T05:31:36.8665240Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-10T05:31:36.8666420Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-10T05:31:36.8667250Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-10T05:31:36.8667810Z hint: call:
+2026-10-10T05:31:36.8668140Z hint:
+2026-10-10T05:31:36.8668610Z hint: 	git config --global init.defaultBranch <name>
+2026-10-10T05:31:36.8669050Z hint:
+2026-10-10T05:31:36.8669480Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-10T05:31:36.8670470Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-10T05:31:36.8671050Z hint:
+2026-10-10T05:31:36.8671380Z hint: 	git branch -m <name>
+2026-10-10T05:31:36.8671860Z hint:
+2026-10-10T05:31:36.8672640Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-10T05:31:36.8675510Z Initialized empty Git repository in /Users/runner/work/duckdb-ossie/duckdb-ossie/.git/
+2026-10-10T05:31:36.8679120Z [command]/opt/homebrew/bin/git remote add origin https://github.com/jacobbubu/duckdb-ossie
+2026-10-10T05:31:36.8747650Z ##[endgroup]
+2026-10-10T05:31:36.8748440Z ##[group]Disabling automatic garbage collection
+2026-10-10T05:31:36.8750230Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2026-10-10T05:31:36.8810180Z ##[endgroup]
+2026-10-10T05:31:36.8810740Z ##[group]Setting up auth
+2026-10-10T05:31:36.8811320Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-10T05:31:36.8860480Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-10T05:31:36.9569420Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-10T05:31:36.9619030Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-10T05:31:37.0234020Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T05:31:37.0281310Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-10T05:31:37.0917750Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-10T05:31:37.0979260Z ##[endgroup]
+2026-10-10T05:31:37.0980020Z ##[group]Fetching the repository
+2026-10-10T05:31:37.0984760Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-10-10T05:31:38.4342810Z From https://github.com/jacobbubu/duckdb-ossie
+2026-10-10T05:31:38.4344050Z  * [new branch]      chore/duckdb-1.5.6    -> origin/chore/duckdb-1.5.6
+2026-10-10T05:31:38.4344980Z  * [new branch]      ci/pin-cli-version    -> origin/ci/pin-cli-version
+2026-10-10T05:31:38.4345930Z  * [new branch]      codex/ossie-execution -> origin/codex/ossie-execution
+2026-10-10T05:31:38.4347250Z  * [new branch]      docs/contributing-and-drop-reference-claim -> origin/docs/contributing-and-drop-reference-claim
+2026-10-10T05:31:38.4348720Z  * [new branch]      feat/ossie-spec-0.2   -> origin/feat/ossie-spec-0.2
+2026-10-10T05:31:38.4349640Z  * [new branch]      main                  -> origin/main
+2026-10-10T05:31:38.4350480Z  * [new branch]      v2.0-cyanoptera       -> origin/v2.0-cyanoptera
+2026-10-10T05:31:38.4351350Z  * [new tag]         v0.1.0                -> v0.1.0
+2026-10-10T05:31:38.4352110Z  * [new tag]         v0.1.1                -> v0.1.1
+2026-10-10T05:31:38.4354280Z [command]/opt/homebrew/bin/git branch --list --remote origin/codex/ossie-execution
+2026-10-10T05:31:38.4410670Z   origin/codex/ossie-execution
+2026-10-10T05:31:38.4416770Z [command]/opt/homebrew/bin/git rev-parse refs/remotes/origin/codex/ossie-execution
+2026-10-10T05:31:38.4462340Z b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af
+2026-10-10T05:31:38.4464940Z ##[endgroup]
+2026-10-10T05:31:38.4465930Z ##[group]Determining the checkout info
+2026-10-10T05:31:38.4467060Z ##[endgroup]
+2026-10-10T05:31:38.4468020Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2026-10-10T05:31:38.4527580Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-10T05:31:38.4575370Z ##[group]Checking out the ref
+2026-10-10T05:31:38.4577560Z [command]/opt/homebrew/bin/git checkout --progress --force -B codex/ossie-execution refs/remotes/origin/codex/ossie-execution
+2026-10-10T05:31:38.5292370Z Switched to a new branch 'codex/ossie-execution'
+2026-10-10T05:31:38.5305370Z branch 'codex/ossie-execution' set up to track 'origin/codex/ossie-execution'.
+2026-10-10T05:31:38.5308990Z ##[endgroup]
+2026-10-10T05:31:38.5310400Z ##[group]Setting up auth for fetching submodules
+2026-10-10T05:31:38.5312430Z [command]/opt/homebrew/bin/git config --global http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-10T05:31:38.5377050Z [command]/opt/homebrew/bin/git config --global --unset-all url.https://github.com/.insteadOf
+2026-10-10T05:31:38.5429460Z [command]/opt/homebrew/bin/git config --global --add url.https://github.com/.insteadOf git@github.com:
+2026-10-10T05:31:38.5487400Z [command]/opt/homebrew/bin/git config --global --add url.https://github.com/.insteadOf org-1164378@github.com:
+2026-10-10T05:31:38.5540350Z ##[endgroup]
+2026-10-10T05:31:38.5541760Z ##[group]Fetching submodules
+2026-10-10T05:31:38.5542880Z [command]/opt/homebrew/bin/git submodule sync --recursive
+2026-10-10T05:31:38.6230540Z [command]/opt/homebrew/bin/git -c protocol.version=2 submodule update --init --force --recursive
+2026-10-10T05:31:38.6877250Z Submodule 'duckdb' (https://github.com/duckdb/duckdb) registered for path 'duckdb'
+2026-10-10T05:31:38.6880920Z Submodule 'extension-ci-tools' (https://github.com/duckdb/extension-ci-tools) registered for path 'extension-ci-tools'
+2026-10-10T05:31:38.6887870Z Submodule 'third_party/fkYAML' (https://github.com/fktn-k/fkYAML) registered for path 'third_party/fkYAML'
+2026-10-10T05:31:38.6987690Z Cloning into '/Users/runner/work/duckdb-ossie/duckdb-ossie/duckdb'...
+2026-10-10T05:32:06.1697930Z Cloning into '/Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools'...
+2026-10-10T05:32:06.8356960Z Cloning into '/Users/runner/work/duckdb-ossie/duckdb-ossie/third_party/fkYAML'...
+2026-10-10T05:32:11.3844150Z Submodule path 'duckdb': checked out '069cc9f9b5be802405797faecc284961b07c70ef'
+2026-10-10T05:32:11.4223770Z Submodule path 'extension-ci-tools': checked out '3fd6109fc01555673b7c7123eba8d0d143fe8ce4'
+2026-10-10T05:32:11.5742520Z Submodule path 'third_party/fkYAML': checked out '1818a25156b9b1a65a9c9b6126631e2cd7cfa8f6'
+2026-10-10T05:32:11.5855700Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local gc.auto 0
+2026-10-10T05:32:11.6586770Z Entering 'duckdb'
+2026-10-10T05:32:11.6740540Z Entering 'extension-ci-tools'
+2026-10-10T05:32:11.6879430Z Entering 'third_party/fkYAML'
+2026-10-10T05:32:11.7030820Z ##[endgroup]
+2026-10-10T05:32:11.7031370Z ##[group]Persisting credentials for submodules
+2026-10-10T05:32:11.7097570Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'url\.https\:\/\/github\.com\/\.insteadOf' && git config --local --unset-all 'url.https://github.com/.insteadOf' || :"
+2026-10-10T05:32:11.7802880Z Entering 'duckdb'
+2026-10-10T05:32:11.7986770Z Entering 'extension-ci-tools'
+2026-10-10T05:32:11.8171280Z Entering 'third_party/fkYAML'
+2026-10-10T05:32:11.8779700Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local 'http.https://github.com/.extraheader' 'AUTHORIZATION: basic ***' && git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-10T05:32:12.0085650Z Entering 'duckdb'
+2026-10-10T05:32:12.0239750Z file:/Users/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/duckdb/config	remote.origin.url
+2026-10-10T05:32:12.0309240Z Entering 'extension-ci-tools'
+2026-10-10T05:32:12.0519010Z file:/Users/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/extension-ci-tools/config	remote.origin.url
+2026-10-10T05:32:12.0594060Z Entering 'third_party/fkYAML'
+2026-10-10T05:32:12.0871930Z file:/Users/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/third_party/fkYAML/config	remote.origin.url
+2026-10-10T05:32:12.1067710Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'git@github.com:'
+2026-10-10T05:32:12.1918110Z Entering 'duckdb'
+2026-10-10T05:32:12.2078290Z Entering 'extension-ci-tools'
+2026-10-10T05:32:12.2229510Z Entering 'third_party/fkYAML'
+2026-10-10T05:32:12.2386660Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'org-1164378@github.com:'
+2026-10-10T05:32:12.3222130Z Entering 'duckdb'
+2026-10-10T05:32:12.3385800Z Entering 'extension-ci-tools'
+2026-10-10T05:32:12.3539950Z Entering 'third_party/fkYAML'
+2026-10-10T05:32:12.3702960Z ##[endgroup]
+2026-10-10T05:32:12.3800390Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2026-10-10T05:32:12.3860130Z b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af
+2026-10-10T05:32:12.4181230Z ##[group]Run brew install ninja autoconf make libtool automake autoconf-archive
+2026-10-10T05:32:12.4181930Z [36;1mbrew install ninja autoconf make libtool automake autoconf-archive[0m
+2026-10-10T05:32:12.4225510Z shell: /bin/bash -e {0}
+2026-10-10T05:32:12.4225730Z env:
+2026-10-10T05:32:12.4226000Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:32:12.4226550Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/vcpkg/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:32:12.4227060Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:32:12.4227290Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:32:12.4227680Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:32:12.4228260Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:32:12.4228650Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:32:12.4228920Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:32:12.4229100Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:32:12.4229280Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:32:12.4229440Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:32:12.4249010Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:32:12.4249350Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:32:12.4249660Z   GEN: ninja
+2026-10-10T05:32:12.4249840Z   BUILD_SHELL: 1
+2026-10-10T05:32:12.4250030Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:32:12.4250510Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:32:12.4251020Z ##[endgroup]
+2026-10-10T05:32:14.2167840Z [33mWarning:[0m ninja 1.13.2 is already installed and up-to-date.
+2026-10-10T05:32:14.2168470Z To reinstall 1.13.2, run:
+2026-10-10T05:32:14.2168720Z   brew reinstall ninja
+2026-10-10T05:32:14.7914830Z [32m==>[0m [1mDownloading bottle manifests[0m
+2026-10-10T05:33:32.0754220Z ✔︎ Bottle Manifest autoconf (2.73)
+2026-10-10T05:33:32.0754960Z ✔︎ Bottle Manifest make (4.4.1)
+2026-10-10T05:33:32.0755430Z ✔︎ Bottle Manifest libtool (2.6.2)
+2026-10-10T05:33:32.0756600Z ✔︎ Bottle Manifest autoconf-archive (2024.10.16)
+2026-10-10T05:33:32.0761790Z ✔︎ Bottle Manifest automake (1.18.1_1)
+2026-10-10T05:33:32.0777460Z [34m==>[0m [1mWould install 5 formulae:[0m
+2026-10-10T05:33:32.0777970Z autoconf make libtool automake autoconf-archive
+2026-10-10T05:33:32.1564800Z [34m==>[0m [1mWould install 1 dependency for autoconf:[0m
+2026-10-10T05:33:32.1566100Z m4
+2026-10-10T05:33:32.1688310Z [34m==>[0m [1mWould install 1 dependency for libtool:[0m
+2026-10-10T05:33:32.1689380Z m4
+2026-10-10T05:33:32.1791110Z [34m==>[0m [1mWould install 2 dependencies for automake:[0m
+2026-10-10T05:33:32.1792640Z m4
+2026-10-10T05:33:32.1792880Z autoconf
+2026-10-10T05:33:32.1814540Z [34m==>[0m [1mWould install 2 dependencies for autoconf-archive:[0m
+2026-10-10T05:33:32.1815070Z m4
+2026-10-10T05:33:32.1815350Z autoconf
+2026-10-10T05:33:32.2000580Z [32m==>[0m [1mFetching downloads for: [32mautoconf[39m, [32mmake[39m, [32mlibtool[39m, [32mautomake[39m and [32mautoconf-archive[39m[0m
+2026-10-10T05:33:32.4203320Z ✔︎ Bottle Manifest m4 (1.4.21)
+2026-10-10T05:33:32.4800900Z ✔︎ Bottle make (4.4.1)
+2026-10-10T05:33:32.4804290Z ✔︎ Bottle autoconf (2.73)
+2026-10-10T05:33:32.4804720Z ✔︎ Bottle libtool (2.6.2)
+2026-10-10T05:33:32.4855170Z ✔︎ Bottle automake (1.18.1_1)
+2026-10-10T05:33:32.5784030Z ✔︎ Bottle autoconf-archive (2024.10.16)
+2026-10-10T05:33:32.6334610Z ✔︎ Bottle m4 (1.4.21)
+2026-10-10T05:33:32.6423790Z [32m==>[0m [1mInstalling autoconf dependency: [32mm4[39m[0m
+2026-10-10T05:33:32.6439770Z [34m==>[0m [1mPouring m4--1.4.21.arm64_sequoia.bottle.tar.gz[0m
+2026-10-10T05:33:32.7677190Z 🍺  /opt/homebrew/Cellar/m4/1.4.21: 14 files, 816.2KB
+2026-10-10T05:33:32.7679740Z [32m==>[0m [1mInstalling [32mautoconf[39m[0m
+2026-10-10T05:33:32.7681090Z [34m==>[0m [1mPouring autoconf--2.73.arm64_sequoia.bottle.tar.gz[0m
+2026-10-10T05:33:32.8286120Z 🍺  /opt/homebrew/Cellar/autoconf/2.73: 73 files, 3.8MB
+2026-10-10T05:33:32.8300350Z [34m==>[0m [1mPouring make--4.4.1.arm64_sequoia.bottle.1.tar.gz[0m
+2026-10-10T05:33:32.8566240Z 🍺  /opt/homebrew/Cellar/make/4.4.1: 17 files, 1.3MB
+2026-10-10T05:33:32.8593560Z [34m==>[0m [1mPouring libtool--2.6.2.arm64_sequoia.bottle.tar.gz[0m
+2026-10-10T05:33:32.8950570Z 🍺  /opt/homebrew/Cellar/libtool/2.6.2: 78 files, 4.2MB
+2026-10-10T05:33:32.9026640Z [34m==>[0m [1mPouring automake--1.18.1_1.arm64_sequoia.bottle.tar.gz[0m
+2026-10-10T05:33:32.9458680Z 🍺  /opt/homebrew/Cellar/automake/1.18.1_1: 134 files, 3.6MB
+2026-10-10T05:33:32.9499200Z [34m==>[0m [1mPouring autoconf-archive--2024.10.16.arm64_sequoia.bottle.1.tar.gz[0m
+2026-10-10T05:33:33.1207040Z 🍺  /opt/homebrew/Cellar/autoconf-archive/2024.10.16: 605 files, 3.8MB
+2026-10-10T05:33:33.1209560Z [32m==>[0m [1mCaveats[0m
+2026-10-10T05:33:33.1209840Z [34m==>[0m [1mmake[0m
+2026-10-10T05:33:33.1210160Z GNU "make" has been installed as "gmake".
+2026-10-10T05:33:33.1210570Z If you need to use it as "make", you can add a "gnubin" directory
+2026-10-10T05:33:33.1211020Z to your PATH from your bashrc like:
+2026-10-10T05:33:33.1211250Z 
+2026-10-10T05:33:33.1211350Z     PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+2026-10-10T05:33:33.1211750Z [34m==>[0m [1mlibtool[0m
+2026-10-10T05:33:33.1212100Z All commands have been installed with the prefix "g".
+2026-10-10T05:33:33.1212480Z If you need to use these commands with their normal names, you
+2026-10-10T05:33:33.1212960Z can add a "gnubin" directory to your PATH from your bashrc like:
+2026-10-10T05:33:33.1213400Z   PATH="/opt/homebrew/opt/libtool/libexec/gnubin:$PATH"
+2026-10-10T05:33:33.1400220Z ##[group]Run hendrikmuhs/ccache-action@main
+2026-10-10T05:33:33.1400560Z with:
+2026-10-10T05:33:33.1400770Z   key: ccache-extension-distribution-osx_arm64-v1.5.6
+2026-10-10T05:33:33.1401170Z   restore-keys: ccache-extension-distribution-osx_arm64-
+2026-10-10T05:33:33.1401650Z   save: true
+2026-10-10T05:33:33.1432670Z   restore: true
+2026-10-10T05:33:33.1432820Z   max-size: 500MB
+2026-10-10T05:33:33.1432960Z   verbose: 0
+2026-10-10T05:33:33.1433100Z   variant: ccache
+2026-10-10T05:33:33.1433250Z   append-timestamp: true
+2026-10-10T05:33:33.1433420Z   create-symlink: false
+2026-10-10T05:33:33.1433590Z   job-summary: CCache Statistics
+2026-10-10T05:33:33.1433790Z   update-package-index: false
+2026-10-10T05:33:33.1434010Z   install: detect
+2026-10-10T05:33:33.1434250Z env:
+2026-10-10T05:33:33.1434600Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:33:33.1435270Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/vcpkg/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:33:33.1435730Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:33:33.1436420Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:33:33.1436790Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:33:33.1437350Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:33:33.1437720Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:33:33.1437930Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:33:33.1438190Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:33:33.1438380Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:33:33.1438530Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:33:33.1438800Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:33:33.1439140Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:33:33.1439440Z   GEN: ninja
+2026-10-10T05:33:33.1439660Z   BUILD_SHELL: 1
+2026-10-10T05:33:33.1439910Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:33:33.1440420Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:33:33.1441000Z ##[endgroup]
+2026-10-10T05:33:33.4583270Z ##[group]Install ccache
+2026-10-10T05:33:33.4630680Z [command]/bin/sh -xc brew install ccache
+2026-10-10T05:33:33.4693900Z + brew install ccache
+2026-10-10T05:33:34.3817510Z [32m==>[0m [1mDownloading bottle manifests[0m
+2026-10-10T05:33:34.4018690Z ✔︎ Bottle Manifest ccache (4.14)
+2026-10-10T05:33:34.4119030Z [34m==>[0m [1mWould install 1 formula:[0m
+2026-10-10T05:33:34.4145300Z ccache
+2026-10-10T05:33:34.4714800Z [34m==>[0m [1mWould install 4 dependencies for ccache:[0m
+2026-10-10T05:33:34.4715380Z blake3
+2026-10-10T05:33:34.4715730Z fmt
+2026-10-10T05:33:34.4715880Z hiredis
+2026-10-10T05:33:34.4716100Z xxhash
+2026-10-10T05:33:34.5343590Z [32m==>[0m [1mFetching downloads for: [32mccache[39m[0m
+2026-10-10T05:33:34.7590850Z ✔︎ Bottle ccache (4.14)
+2026-10-10T05:33:34.7691910Z ✔︎ Bottle Manifest blake3 (1.8.7)
+2026-10-10T05:33:34.7711320Z ✔︎ Bottle blake3 (1.8.7)
+2026-10-10T05:33:34.7712120Z ✔︎ Bottle Manifest fmt (12.2.0)
+2026-10-10T05:33:34.7712500Z ✔︎ Bottle Manifest hiredis (1.4.1)
+2026-10-10T05:33:34.7712750Z ✔︎ Bottle fmt (12.2.0)
+2026-10-10T05:33:34.9127290Z ✔︎ Bottle Manifest xxhash (0.8.3)
+2026-10-10T05:33:34.9457530Z ✔︎ Bottle xxhash (0.8.3)
+2026-10-10T05:33:34.9467310Z ✔︎ Bottle hiredis (1.4.1)
+2026-10-10T05:33:34.9709370Z [32m==>[0m [1mInstalling dependencies for ccache:[0m [32mblake3[39m, [32mfmt[39m, [32mhiredis[39m and [32mxxhash[39m[0m
+2026-10-10T05:33:34.9710260Z [32m==>[0m [1mInstalling ccache dependency: [32mblake3[39m[0m
+2026-10-10T05:33:34.9736220Z [34m==>[0m [1mPouring blake3--1.8.7.arm64_sequoia.bottle.tar.gz[0m
+2026-10-10T05:33:35.0585830Z 🍺  /opt/homebrew/Cellar/blake3/1.8.7: 13 files, 79.5KB
+2026-10-10T05:33:35.0586570Z [32m==>[0m [1mInstalling ccache dependency: [32mfmt[39m[0m
+2026-10-10T05:33:35.0614240Z [34m==>[0m [1mPouring fmt--12.2.0.arm64_sequoia.bottle.tar.gz[0m
+2026-10-10T05:33:35.0815710Z 🍺  /opt/homebrew/Cellar/fmt/12.2.0: 31 files, 1MB
+2026-10-10T05:33:35.0816320Z [32m==>[0m [1mInstalling ccache dependency: [32mhiredis[39m[0m
+2026-10-10T05:33:35.0894050Z [34m==>[0m [1mPouring hiredis--1.4.1.arm64_sequoia.bottle.tar.gz[0m
+2026-10-10T05:33:35.1197210Z 🍺  /opt/homebrew/Cellar/hiredis/1.4.1: 53 files, 549.3KB
+2026-10-10T05:33:35.1197770Z [32m==>[0m [1mInstalling ccache dependency: [32mxxhash[39m[0m
+2026-10-10T05:33:35.1223440Z [34m==>[0m [1mPouring xxhash--0.8.3.arm64_sequoia.bottle.tar.gz[0m
+2026-10-10T05:33:35.1430700Z 🍺  /opt/homebrew/Cellar/xxhash/0.8.3: 28 files, 537.7KB
+2026-10-10T05:33:35.1432150Z [32m==>[0m [1mInstalling [32mccache[39m[0m
+2026-10-10T05:33:35.1436630Z [34m==>[0m [1mPouring ccache--4.14.arm64_sequoia.bottle.tar.gz[0m
+2026-10-10T05:33:35.1822160Z 🍺  /opt/homebrew/Cellar/ccache/4.14: 89 files, 2.2MB
+2026-10-10T05:33:35.1825530Z [32m==>[0m [1mCaveats[0m
+2026-10-10T05:33:35.1827120Z [34m==>[0m [1mccache[0m
+2026-10-10T05:33:35.1827600Z To install symlinks for compilers that will automatically use
+2026-10-10T05:33:35.1828630Z ccache, prepend this directory to your PATH:
+2026-10-10T05:33:35.1828990Z   /opt/homebrew/opt/ccache/libexec
+2026-10-10T05:33:35.1829220Z 
+2026-10-10T05:33:35.1829460Z If this is an upgrade and you have previously added the symlinks to
+2026-10-10T05:33:35.1829930Z your PATH, you may need to modify it to the path specified above so
+2026-10-10T05:33:35.1830330Z it points to the current version.
+2026-10-10T05:33:35.1830560Z 
+2026-10-10T05:33:35.1830770Z NOTE: ccache can prevent some software from compiling.
+2026-10-10T05:33:35.1831190Z ALSO NOTE: The brew command, by design, will never use ccache.
+2026-10-10T05:33:35.1936830Z ccache installed at /opt/homebrew/bin/ccache
+2026-10-10T05:33:35.1951520Z ##[endgroup]
+2026-10-10T05:33:35.1952000Z ##[group]Restore cache
+2026-10-10T05:33:35.4892740Z Cache hit for restore-key: ccache-ccache-extension-distribution-osx_arm64-v1.5.6-2026-10-10T03:23:25.491Z
+2026-10-10T05:33:36.8006290Z Received 0 of 44575736 (0.0%), 0.0 MBs/sec
+2026-10-10T05:33:37.3335700Z Received 44575736 of 44575736 (100.0%), 27.7 MBs/sec
+2026-10-10T05:33:37.3342690Z Cache Size: ~43 MB (44575736 B)
+2026-10-10T05:33:37.3392230Z [command]/opt/homebrew/bin/gtar -xf /Users/runner/work/_temp/eb4004e5-5253-4a1d-81ef-839705085afb/cache.tzst -P -C /Users/runner/work/duckdb-ossie/duckdb-ossie --delay-directory-restore --use-compress-program unzstd
+2026-10-10T05:33:37.6066860Z Cache restored successfully
+2026-10-10T05:33:37.6080150Z Restored from cache key "ccache-ccache-extension-distribution-osx_arm64-v1.5.6-2026-10-10T03:23:25.491Z".
+2026-10-10T05:33:37.6081280Z ##[endgroup]
+2026-10-10T05:33:37.6081900Z ##[group]Configure ccache, darwin
+2026-10-10T05:33:37.6092690Z [command]/bin/sh -xc ccache --set-config=cache_dir='/Users/runner/work/duckdb-ossie/duckdb-ossie/.ccache'
+2026-10-10T05:33:37.6186170Z + ccache --set-config=cache_dir=/Users/runner/work/duckdb-ossie/duckdb-ossie/.ccache
+2026-10-10T05:33:37.6386490Z [command]/bin/sh -xc ccache --set-config=max_size='500MB'
+2026-10-10T05:33:37.6447230Z + ccache --set-config=max_size=500MB
+2026-10-10T05:33:37.6538710Z [command]/bin/sh -xc ccache --set-config=compression=true
+2026-10-10T05:33:37.6584530Z + ccache --set-config=compression=true
+2026-10-10T05:33:37.6670940Z [command]/bin/sh -xc ccache --set-config=compiler_check=content
+2026-10-10T05:33:37.6716240Z + ccache --set-config=compiler_check=content
+2026-10-10T05:33:37.6789910Z Ccache config:
+2026-10-10T05:33:37.6798570Z [command]/bin/sh -xc ccache -p
+2026-10-10T05:33:37.6844390Z + ccache -p
+2026-10-10T05:33:37.6909310Z (default) absolute_paths_in_stderr = false
+2026-10-10T05:33:37.6911740Z (default) base_dir = 
+2026-10-10T05:33:37.6912360Z (/Users/runner/Library/Preferences/ccache/ccache.conf) cache_dir = /Users/runner/work/duckdb-ossie/duckdb-ossie/.ccache
+2026-10-10T05:33:37.6913050Z (default) ceiling_dirs = /Users/runner
+2026-10-10T05:33:37.6913380Z (default) ceiling_markers = .git
+2026-10-10T05:33:37.6913980Z (default) compiler = 
+2026-10-10T05:33:37.6914390Z (/Users/runner/Library/Preferences/ccache/ccache.conf) compiler_check = content
+2026-10-10T05:33:37.6914800Z (default) compiler_type = auto
+2026-10-10T05:33:37.6915120Z (/Users/runner/Library/Preferences/ccache/ccache.conf) compression = true
+2026-10-10T05:33:37.6915530Z (default) compression_level = 0
+2026-10-10T05:33:37.6915770Z (default) debug = false
+2026-10-10T05:33:37.6915980Z (default) debug_dir = 
+2026-10-10T05:33:37.6916160Z (default) debug_level = 2
+2026-10-10T05:33:37.6916430Z (default) depend_mode = false
+2026-10-10T05:33:37.6916650Z (default) direct_mode = true
+2026-10-10T05:33:37.6916890Z (default) disable = false
+2026-10-10T05:33:37.6917080Z (default) extra_files_to_hash = 
+2026-10-10T05:33:37.6917330Z (default) file_clone = false
+2026-10-10T05:33:37.6917580Z (default) hard_link = false
+2026-10-10T05:33:37.6917800Z (default) hash_dir = true
+2026-10-10T05:33:37.6918020Z (default) ignore_headers_in_manifest = 
+2026-10-10T05:33:37.6918250Z (default) ignore_options = 
+2026-10-10T05:33:37.6918450Z (default) inode_cache = true
+2026-10-10T05:33:37.6920580Z (default) keep_comments_cpp = false
+2026-10-10T05:33:37.6920940Z (default) libexec_dirs = /opt/homebrew/Cellar/ccache/4.14/libexec
+2026-10-10T05:33:37.6921240Z (default) log_file = 
+2026-10-10T05:33:37.6921470Z (default) max_files = 0
+2026-10-10T05:33:37.6921780Z (/Users/runner/Library/Preferences/ccache/ccache.conf) max_size = 500.0 MB
+2026-10-10T05:33:37.6922160Z (default) msvc_dep_prefix = Note: including file:
+2026-10-10T05:33:37.6922410Z (default) msvc_utf8 = true
+2026-10-10T05:33:37.6922590Z (default) namespace = 
+2026-10-10T05:33:37.6922780Z (default) path = 
+2026-10-10T05:33:37.6922960Z (default) pch_external_checksum = false
+2026-10-10T05:33:37.6923290Z (default) prefix_command = 
+2026-10-10T05:33:37.6923500Z (default) prefix_command_cpp = 
+2026-10-10T05:33:37.6923760Z (default) read_only = false
+2026-10-10T05:33:37.6923970Z (default) read_only_direct = false
+2026-10-10T05:33:37.6924240Z (default) recache = false
+2026-10-10T05:33:37.6924440Z (default) remote_only = false
+2026-10-10T05:33:37.6924690Z (default) remote_storage = 
+2026-10-10T05:33:37.6924900Z (default) reshare = false
+2026-10-10T05:33:37.6925090Z (default) response_file_format = auto
+2026-10-10T05:33:37.6925320Z (default) safe_dirs = 
+2026-10-10T05:33:37.6925500Z (default) sloppiness = 
+2026-10-10T05:33:37.6925690Z (default) stats = true
+2026-10-10T05:33:37.6925860Z (default) stats_log = 
+2026-10-10T05:33:37.6926160Z (default) temporary_dir = /Users/runner/work/duckdb-ossie/duckdb-ossie/.ccache/tmp
+2026-10-10T05:33:37.6926680Z (default) umask = 
+2026-10-10T05:33:37.6927000Z [command]/bin/sh -xc ccache -z
+2026-10-10T05:33:37.6990570Z + ccache -z
+2026-10-10T05:33:37.7860020Z Statistics zeroed
+2026-10-10T05:33:37.7863290Z ##[endgroup]
+2026-10-10T05:33:37.8014140Z ##[group]Run actions/setup-python@v5
+2026-10-10T05:33:37.8014360Z with:
+2026-10-10T05:33:37.8014500Z   python-version: 3.11
+2026-10-10T05:33:37.8014660Z   check-latest: false
+2026-10-10T05:33:37.8016500Z   token: ***
+2026-10-10T05:33:37.8016660Z   update-environment: true
+2026-10-10T05:33:37.8016840Z   allow-prereleases: false
+2026-10-10T05:33:37.8017010Z   freethreaded: false
+2026-10-10T05:33:37.8017150Z env:
+2026-10-10T05:33:37.8017390Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:33:37.8017900Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/vcpkg/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:33:37.8018320Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:33:37.8018530Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:33:37.8018910Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:33:37.8019480Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:33:37.8019870Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:33:37.8020040Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:33:37.8020200Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:33:37.8020370Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:33:37.8020530Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:33:37.8020710Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:33:37.8020940Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:33:37.8021090Z   GEN: ninja
+2026-10-10T05:33:37.8021230Z   BUILD_SHELL: 1
+2026-10-10T05:33:37.8021380Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:33:37.8021820Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:33:37.8022290Z ##[endgroup]
+2026-10-10T05:33:38.0207370Z ##[group]Installed versions
+2026-10-10T05:33:38.1800750Z (node:7433) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-10T05:33:38.1801360Z Successfully set up CPython (3.11.9)
+2026-10-10T05:33:38.1892860Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-10T05:33:38.1893490Z ##[endgroup]
+2026-10-10T05:33:38.2386990Z ##[group]Run actions/checkout@v4
+2026-10-10T05:33:38.2387450Z with:
+2026-10-10T05:33:38.2387610Z   path: extension-ci-tools
+2026-10-10T05:33:38.2387800Z   ref: v1.5.6
+2026-10-10T05:33:38.2387990Z   repository: duckdb/extension-ci-tools
+2026-10-10T05:33:38.2389930Z   token: ***
+2026-10-10T05:33:38.2390080Z   ssh-strict: true
+2026-10-10T05:33:38.2390250Z   ssh-user: git
+2026-10-10T05:33:38.2390430Z   persist-credentials: true
+2026-10-10T05:33:38.2390610Z   clean: true
+2026-10-10T05:33:38.2390790Z   sparse-checkout-cone-mode: true
+2026-10-10T05:33:38.2391010Z   fetch-depth: 1
+2026-10-10T05:33:38.2391160Z   fetch-tags: false
+2026-10-10T05:33:38.2391330Z   show-progress: true
+2026-10-10T05:33:38.2391500Z   lfs: false
+2026-10-10T05:33:38.2391660Z   submodules: false
+2026-10-10T05:33:38.2401630Z   set-safe-directory: true
+2026-10-10T05:33:38.2401850Z   allow-unsafe-pr-checkout: false
+2026-10-10T05:33:38.2402060Z env:
+2026-10-10T05:33:38.2402350Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:33:38.2402880Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/vcpkg/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:33:38.2403320Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:33:38.2403560Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:33:38.2403990Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:33:38.2404580Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:33:38.2404990Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:33:38.2405200Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:33:38.2405370Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:33:38.2406120Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:33:38.2406270Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:33:38.2406490Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:33:38.2406730Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:33:38.2406890Z   GEN: ninja
+2026-10-10T05:33:38.2407040Z   BUILD_SHELL: 1
+2026-10-10T05:33:38.2407210Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:33:38.2407700Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:33:38.2408270Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:38.2408690Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+2026-10-10T05:33:38.2409120Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:38.2409500Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:38.2409870Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:38.2410170Z ##[endgroup]
+2026-10-10T05:33:38.5468170Z Syncing repository: duckdb/extension-ci-tools
+2026-10-10T05:33:38.5468730Z ##[group]Getting Git version info
+2026-10-10T05:33:38.5469290Z Working directory is '/Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools'
+2026-10-10T05:33:38.5549050Z [command]/opt/homebrew/bin/git version
+2026-10-10T05:33:38.5841980Z git version 2.55.0
+2026-10-10T05:33:38.5854120Z ##[endgroup]
+2026-10-10T05:33:38.5860920Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/28ceb092-0092-4498-95b5-d4e6ae0b5d9f/.gitconfig'
+2026-10-10T05:33:38.6001540Z Temporarily overriding HOME='/Users/runner/work/_temp/28ceb092-0092-4498-95b5-d4e6ae0b5d9f' before making global git config changes
+2026-10-10T05:33:38.6003700Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-10T05:33:38.6006750Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools
+2026-10-10T05:33:38.6193460Z Deleting the contents of '/Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools'
+2026-10-10T05:33:38.6271090Z ##[group]Initializing the repository
+2026-10-10T05:33:38.6274830Z [command]/opt/homebrew/bin/git init /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools
+2026-10-10T05:33:38.6413450Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-10T05:33:38.6414430Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-10T05:33:38.6415200Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-10T05:33:38.6415650Z hint: call:
+2026-10-10T05:33:38.6415950Z hint:
+2026-10-10T05:33:38.6416190Z hint: 	git config --global init.defaultBranch <name>
+2026-10-10T05:33:38.6416460Z hint:
+2026-10-10T05:33:38.6416730Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-10T05:33:38.6417150Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-10T05:33:38.6417480Z hint:
+2026-10-10T05:33:38.6417640Z hint: 	git branch -m <name>
+2026-10-10T05:33:38.6417820Z hint:
+2026-10-10T05:33:38.6418090Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-10T05:33:38.6418650Z Initialized empty Git repository in /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/.git/
+2026-10-10T05:33:38.6419790Z [command]/opt/homebrew/bin/git remote add origin https://github.com/duckdb/extension-ci-tools
+2026-10-10T05:33:38.6492550Z ##[endgroup]
+2026-10-10T05:33:38.6493020Z ##[group]Disabling automatic garbage collection
+2026-10-10T05:33:38.6496280Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2026-10-10T05:33:38.6557570Z ##[endgroup]
+2026-10-10T05:33:38.6557870Z ##[group]Setting up auth
+2026-10-10T05:33:38.6562660Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-10T05:33:38.6622330Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-10T05:33:38.7477270Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-10T05:33:38.7537310Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-10T05:33:38.8272120Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T05:33:38.8331020Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-10T05:33:39.0199850Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-10T05:33:39.0436980Z ##[endgroup]
+2026-10-10T05:33:39.0467550Z ##[group]Fetching the repository
+2026-10-10T05:33:39.0502070Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/v1.5.6*:refs/remotes/origin/v1.5.6* +refs/tags/v1.5.6*:refs/tags/v1.5.6*
+2026-10-10T05:33:39.5201320Z From https://github.com/duckdb/extension-ci-tools
+2026-10-10T05:33:39.5201920Z  * [new branch]      v1.5.6     -> origin/v1.5.6
+2026-10-10T05:33:39.5203980Z ##[endgroup]
+2026-10-10T05:33:39.5204400Z ##[group]Determining the checkout info
+2026-10-10T05:33:39.5208750Z [command]/opt/homebrew/bin/git branch --list --remote origin/v1.5.6
+2026-10-10T05:33:39.5277930Z   origin/v1.5.6
+2026-10-10T05:33:39.5279630Z ##[endgroup]
+2026-10-10T05:33:39.5284310Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2026-10-10T05:33:39.5351290Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-10T05:33:39.5420160Z ##[group]Checking out the ref
+2026-10-10T05:33:39.5420700Z [command]/opt/homebrew/bin/git checkout --progress --force -B v1.5.6 refs/remotes/origin/v1.5.6
+2026-10-10T05:33:39.5668010Z Switched to a new branch 'v1.5.6'
+2026-10-10T05:33:39.5671370Z branch 'v1.5.6' set up to track 'origin/v1.5.6'.
+2026-10-10T05:33:39.5674360Z ##[endgroup]
+2026-10-10T05:33:39.5748910Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2026-10-10T05:33:39.5803710Z 3fd6109fc01555673b7c7123eba8d0d143fe8ce4
+2026-10-10T05:33:39.5880000Z ##[group]Run DUCKDB_GIT_VERSION=v1.5.6 make set_duckdb_version
+2026-10-10T05:33:39.5880340Z [36;1mDUCKDB_GIT_VERSION=v1.5.6 make set_duckdb_version[0m
+2026-10-10T05:33:39.6006540Z shell: /bin/bash -e {0}
+2026-10-10T05:33:39.6006760Z env:
+2026-10-10T05:33:39.6007040Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:33:39.6007560Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/vcpkg/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:33:39.6007980Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:33:39.6008200Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:33:39.6008600Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:33:39.6009150Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:33:39.6009530Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:33:39.6009730Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:33:39.6009950Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:33:39.6010100Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:33:39.6010250Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:33:39.6010430Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:33:39.6010640Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:33:39.6010780Z   GEN: ninja
+2026-10-10T05:33:39.6010910Z   BUILD_SHELL: 1
+2026-10-10T05:33:39.6011050Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:33:39.6011470Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:33:39.6012000Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:39.6012390Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+2026-10-10T05:33:39.6012770Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:39.6013110Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:39.6013460Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:39.6013720Z ##[endgroup]
+2026-10-10T05:33:40.4395210Z Makefile:33: warning: overriding commands for target `tidy-check'
+2026-10-10T05:33:40.4395930Z extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old commands for target `tidy-check'
+2026-10-10T05:33:40.4398290Z cd duckdb && git checkout v1.5.6
+2026-10-10T05:33:40.9769940Z HEAD is now at 069cc9f9b5b [Parquet] Backport of #25891 (#26162)
+2026-10-10T05:33:40.9821000Z ##[group]Run mkdir local_vcpkg_installation
+2026-10-10T05:33:40.9821310Z [36;1mmkdir local_vcpkg_installation[0m
+2026-10-10T05:33:40.9821550Z [36;1mcmake --version[0m
+2026-10-10T05:33:40.9821740Z [36;1mcd local_vcpkg_installation[0m
+2026-10-10T05:33:40.9821950Z [36;1mgit init[0m
+2026-10-10T05:33:40.9822220Z [36;1mgit remote add origin https://github.com/microsoft/vcpkg.git[0m
+2026-10-10T05:33:40.9822600Z [36;1mgit fetch origin 84bab45d415d22042bd0b9081aea57f362da3f35[0m
+2026-10-10T05:33:40.9823020Z [36;1mgit checkout 84bab45d415d22042bd0b9081aea57f362da3f35[0m
+2026-10-10T05:33:40.9823380Z [36;1m./bootstrap-vcpkg.sh[0m
+2026-10-10T05:33:40.9823790Z [36;1mecho "VCPKG_ROOT=/Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation" >> $GITHUB_ENV[0m
+2026-10-10T05:33:40.9824540Z [36;1mecho "VCPKG_TOOLCHAIN_PATH=/Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV[0m
+2026-10-10T05:33:40.9825300Z [36;1mecho "/Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation" >> $GITHUB_PATH[0m
+2026-10-10T05:33:40.9859710Z shell: /bin/bash -e {0}
+2026-10-10T05:33:40.9859890Z env:
+2026-10-10T05:33:40.9860160Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:33:40.9860690Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/vcpkg/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:33:40.9861310Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:33:40.9861550Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:33:40.9861980Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:33:40.9862560Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:33:40.9862950Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:33:40.9863150Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:33:40.9863330Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:33:40.9863520Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:33:40.9863700Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:33:40.9863910Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:33:40.9864160Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:33:40.9864350Z   GEN: ninja
+2026-10-10T05:33:40.9864540Z   BUILD_SHELL: 1
+2026-10-10T05:33:40.9864770Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:33:40.9865230Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:33:40.9865810Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:40.9866230Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+2026-10-10T05:33:40.9866640Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:40.9867020Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:40.9867400Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:40.9867680Z ##[endgroup]
+2026-10-10T05:33:41.0726370Z cmake version 4.4.3
+2026-10-10T05:33:41.0726560Z 
+2026-10-10T05:33:41.0726760Z CMake suite maintained and supported by Kitware (kitware.com/cmake).
+2026-10-10T05:33:41.0822790Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-10T05:33:41.0823320Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-10T05:33:41.0823810Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-10T05:33:41.0824120Z hint: call:
+2026-10-10T05:33:41.0824270Z hint:
+2026-10-10T05:33:41.0824600Z hint: 	git config --global init.defaultBranch <name>
+2026-10-10T05:33:41.0825000Z hint:
+2026-10-10T05:33:41.0825220Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-10T05:33:41.0825670Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-10T05:33:41.0825980Z hint:
+2026-10-10T05:33:41.0826600Z hint: 	git branch -m <name>
+2026-10-10T05:33:41.0826800Z hint:
+2026-10-10T05:33:41.0827090Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-10T05:33:41.0827700Z Initialized empty Git repository in /Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation/.git/
+2026-10-10T05:33:51.3798230Z From https://github.com/microsoft/vcpkg
+2026-10-10T05:33:51.3798590Z  * branch                  84bab45d415d22042bd0b9081aea57f362da3f35 -> FETCH_HEAD
+2026-10-10T05:33:53.0778780Z HEAD is now at 84bab45d41 [libics] Update to 1.7.0 (#48842)
+2026-10-10T05:33:53.1181520Z Downloading vcpkg-macos...
+2026-10-10T05:33:53.4560480Z vcpkg package management program version 2025-12-05-d84fb805651077f4ed3a97b61fbad2b513462f8b
+2026-10-10T05:33:53.4561040Z 
+2026-10-10T05:33:53.4561200Z See LICENSE.txt for license information.
+2026-10-10T05:33:53.4814560Z Telemetry
+2026-10-10T05:33:53.4815190Z ---------
+2026-10-10T05:33:53.4816150Z vcpkg collects usage data in order to help us improve your experience.
+2026-10-10T05:33:53.4816700Z The data collected by Microsoft is anonymous.
+2026-10-10T05:33:53.4817190Z You can opt-out of telemetry by re-running the bootstrap-vcpkg script with -disableMetrics,
+2026-10-10T05:33:53.4817850Z passing --disable-metrics to vcpkg on the command line,
+2026-10-10T05:33:53.4818310Z or by setting the VCPKG_DISABLE_METRICS environment variable.
+2026-10-10T05:33:53.4818550Z 
+2026-10-10T05:33:53.4818740Z Read more about vcpkg telemetry at docs/about/privacy.md
+2026-10-10T05:33:53.4963450Z ##[group]Run make configure_ci
+2026-10-10T05:33:53.4963680Z [36;1mmake configure_ci[0m
+2026-10-10T05:33:53.5010880Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-10T05:33:53.5011140Z env:
+2026-10-10T05:33:53.5011410Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:33:53.5011980Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:33:53.5012450Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:33:53.5012670Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:33:53.5013050Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:33:53.5013590Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:33:53.5013980Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:33:53.5014160Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:33:53.5014370Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:33:53.5014530Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:33:53.5014690Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:33:53.5014880Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:33:53.5015120Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:33:53.5015260Z   GEN: ninja
+2026-10-10T05:33:53.5015390Z   BUILD_SHELL: 1
+2026-10-10T05:33:53.5015540Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:33:53.5015990Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:33:53.5016550Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:53.5016950Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+2026-10-10T05:33:53.5017350Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:53.5017710Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:53.5018070Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:53.5018470Z   VCPKG_ROOT: /Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation
+2026-10-10T05:33:53.5018800Z   DUCKDB_GIT_VERSION: v1.5.6
+2026-10-10T05:33:53.5018980Z ##[endgroup]
+2026-10-10T05:33:53.5584480Z Makefile:33: warning: overriding commands for target `tidy-check'
+2026-10-10T05:33:53.5585090Z extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old commands for target `tidy-check'
+2026-10-10T05:33:53.5627640Z configure_ci step is skipped for this extension build...
+2026-10-10T05:33:53.5664990Z ##[group]Run EXTENSION_NAME=ossie EXTENSION_CANONICAL= ENABLE_EXTENSION_AUTOINSTALL=1 ENABLE_EXTENSION_AUTOLOADING=1 make release
+2026-10-10T05:33:53.5665920Z [36;1mEXTENSION_NAME=ossie EXTENSION_CANONICAL= ENABLE_EXTENSION_AUTOINSTALL=1 ENABLE_EXTENSION_AUTOLOADING=1 make release[0m
+2026-10-10T05:33:53.5701850Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-10T05:33:53.5702180Z env:
+2026-10-10T05:33:53.5702450Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:33:53.5703030Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:33:53.5703550Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:33:53.5703790Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:33:53.5704230Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:33:53.5704860Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:33:53.5705250Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:33:53.5705460Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:33:53.5705630Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:33:53.5705820Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:33:53.5705990Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:33:53.5706210Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:33:53.5706680Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:33:53.5706860Z   GEN: ninja
+2026-10-10T05:33:53.5706990Z   BUILD_SHELL: 1
+2026-10-10T05:33:53.5707160Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:33:53.5707610Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:33:53.5708240Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:53.5708670Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+2026-10-10T05:33:53.5709080Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:53.5709460Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:53.5709870Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:33:53.5710280Z   VCPKG_ROOT: /Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation
+2026-10-10T05:33:53.5710620Z ##[endgroup]
+2026-10-10T05:33:53.6244430Z Makefile:33: warning: overriding commands for target `tidy-check'
+2026-10-10T05:33:53.6245070Z extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old commands for target `tidy-check'
+2026-10-10T05:33:53.6247910Z mkdir -p build/release
+2026-10-10T05:33:53.6283580Z cmake -G "Ninja" -DFORCE_COLORED_OUTPUT=1 -DEXTENSION_STATIC_BUILD=1  -DDUCKDB_EXTENSION_CONFIGS='/Users/runner/work/duckdb-ossie/duckdb-ossie/extension_config.cmake'   -DOSX_BUILD_ARCH=arm64 -DRust_CARGO_TARGET=aarch64-apple-darwin  -DVCPKG_BUILD=1 -DCMAKE_TOOLCHAIN_FILE='/Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation/scripts/buildsystems/vcpkg.cmake' -DVCPKG_TARGET_TRIPLET='arm64-osx-release' -DVCPKG_HOST_TRIPLET='arm64-osx-release' -DDUCKDB_EXPLICIT_PLATFORM='osx_arm64' -DCUSTOM_LINKER= -DOVERRIDE_GIT_DESCRIBE="" -DUNITTEST_ROOT_DIRECTORY="/Users/runner/work/duckdb-ossie/duckdb-ossie/" -DBENCHMARK_ROOT_DIRECTORY="/Users/runner/work/duckdb-ossie/duckdb-ossie/" -DENABLE_UNITTEST_CPP_TESTS=FALSE -DENABLE_EXTENSION_AUTOLOADING=1 -DENABLE_EXTENSION_AUTOINSTALL=1 -DBUILD_EXTENSION_TEST_DEPS=default  -DVCPKG_MANIFEST_DIR='/Users/runner/work/duckdb-ossie/duckdb-ossie/' -DCMAKE_BUILD_TYPE=Release -S "./duckdb/" -B build/release
+2026-10-10T05:33:53.9686790Z -- Found Python3: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/bin/python3.11 (found version "3.11.9") found components: Interpreter
+2026-10-10T05:33:53.9771260Z -- Running vcpkg install
+2026-10-10T05:33:53.9817980Z All requested packages are currently installed.
+2026-10-10T05:33:53.9821080Z All requested installations completed successfully in: 44.2 us
+2026-10-10T05:33:54.3541930Z -- Running vcpkg install - done
+2026-10-10T05:33:55.0084630Z -- The C compiler identification is AppleClang 17.0.0.17000013
+2026-10-10T05:33:56.0108680Z -- The CXX compiler identification is AppleClang 17.0.0.17000013
+2026-10-10T05:33:56.0437970Z -- Detecting C compiler ABI info
+2026-10-10T05:33:56.1689210Z -- Detecting C compiler ABI info - done
+2026-10-10T05:33:56.2114340Z -- Check for working C compiler: /usr/bin/cc - skipped
+2026-10-10T05:33:56.2121710Z -- Detecting C compile features
+2026-10-10T05:33:56.2127130Z -- Detecting C compile features - done
+2026-10-10T05:33:56.2199440Z -- Detecting CXX compiler ABI info
+2026-10-10T05:33:56.3303980Z -- Detecting CXX compiler ABI info - done
+2026-10-10T05:33:56.3671810Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2026-10-10T05:33:56.3674180Z -- Detecting CXX compile features
+2026-10-10T05:33:56.3678810Z -- Detecting CXX compile features - done
+2026-10-10T05:33:56.3726550Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+2026-10-10T05:33:56.5408540Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+2026-10-10T05:33:56.5414950Z -- Found Threads: TRUE
+2026-10-10T05:33:56.5443810Z -- Using /opt/homebrew/bin/ccache as C compiler launcher
+2026-10-10T05:33:56.5444200Z -- Using /opt/homebrew/bin/ccache as C++ compiler launcher
+2026-10-10T05:33:56.5653350Z CMake Warning at CMakeLists.txt:226 (message):
+2026-10-10T05:33:56.5654180Z   Not disabling vptr sanitizer on M1 Macbook - set DISABLE_VPTR_SANITIZER
+2026-10-10T05:33:56.5654600Z   manually if you run into issues with false positives in the sanitizer
+2026-10-10T05:33:56.5654860Z 
+2026-10-10T05:33:56.5654860Z 
+2026-10-10T05:33:56.5654940Z -- building for OSX architecture: arm64
+2026-10-10T05:33:56.5756190Z -- Found Git: /opt/homebrew/bin/git (found version "2.55.0")
+2026-10-10T05:33:56.6472990Z -- GIT_COMMIT_HASH has length 11 different than the expected 10
+2026-10-10T05:33:56.6473380Z -- git hash 069cc9f9b5, version v1.5.6, extension folder v1.5.6
+2026-10-10T05:33:56.6474370Z -- Build workers: compile= link_release=4 link_non_release=2
+2026-10-10T05:33:56.6489380Z -- Extensions will be deployed to: /Users/runner/work/duckdb-ossie/duckdb-ossie/build/release/repository
+2026-10-10T05:33:56.6703800Z -- Load extension 'ossie' from '/Users/runner/work/duckdb-ossie/duckdb-ossie' @ b2d486a
+2026-10-10T05:33:56.6704840Z -- Load extension 'tpcds' from '/Users/runner/work/duckdb-ossie/duckdb-ossie/duckdb/extensions' @ v1.5.6
+2026-10-10T05:33:56.6714610Z -- Load extension 'core_functions' from '/Users/runner/work/duckdb-ossie/duckdb-ossie/duckdb/extensions' @ v1.5.6
+2026-10-10T05:33:56.6715520Z -- Load extension 'parquet' from '/Users/runner/work/duckdb-ossie/duckdb-ossie/duckdb/extensions' @ v1.5.6
+2026-10-10T05:33:56.6725150Z CMake Warning (deprecated) at /Users/runner/work/duckdb-ossie/duckdb-ossie/CMakeLists.txt:1 (cmake_minimum_required):
+2026-10-10T05:33:56.6725860Z   Compatibility with CMake < 3.10 will be removed from a future version of
+2026-10-10T05:33:56.6726310Z   CMake.
+2026-10-10T05:33:56.6726510Z 
+2026-10-10T05:33:56.6726770Z   Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+2026-10-10T05:33:56.6727290Z   to tell CMake that the project requires at least <min> but has been updated
+2026-10-10T05:33:56.6727720Z   to work with policies introduced by <max> or earlier.
+2026-10-10T05:33:56.6728190Z This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+2026-10-10T05:33:56.6728610Z to suppress it.
+2026-10-10T05:33:56.6728790Z 
+2026-10-10T05:33:56.8601880Z -- Extensions linked into DuckDB: [ossie, tpcds, core_functions, parquet]
+2026-10-10T05:33:58.0219430Z -- Configuring done (4.4s)
+2026-10-10T05:33:58.8952830Z CMake Warning (unused-cli):
+2026-10-10T05:33:58.8953080Z -- Generating done (0.9s)
+2026-10-10T05:33:58.8953630Z   Manually-specified variables were not used by the project:
+2026-10-10T05:33:58.8953990Z 
+2026-10-10T05:33:58.8954220Z     BENCHMARK_ROOT_DIRECTORY
+2026-10-10T05:33:58.8954530Z     BUILD_EXTENSION_TEST_DEPS
+2026-10-10T05:33:58.8955470Z     CUSTOM_LINKER
+2026-10-10T05:33:58.8956220Z     Rust_CARGO_TARGET
+2026-10-10T05:33:58.8956430Z     VCPKG_BUILD
+2026-10-10T05:33:58.8956540Z 
+2026-10-10T05:33:58.8956550Z 
+2026-10-10T05:33:58.8968310Z -- Build files have been written to: /Users/runner/work/duckdb-ossie/duckdb-ossie/build/release
+2026-10-10T05:33:58.9135160Z cmake --build build/release --config Release
+2026-10-10T05:33:59.1575930Z [1/542] Building CXX object third_party/hyperloglog/CMakeFiles/duckdb_hyperloglog.dir/sds.cpp.o
+2026-10-10T05:33:59.3346910Z [2/542] Building CXX object third_party/fsst/CMakeFiles/duckdb_fsst.dir/libfsst.cpp.o
+2026-10-10T05:33:59.3376340Z [3/542] Building CXX object third_party/fastpforlib/CMakeFiles/duckdb_fastpforlib.dir/bitpacking.cpp.o
+2026-10-10T05:33:59.3384220Z [4/542] Building CXX object third_party/fmt/CMakeFiles/duckdb_fmt.dir/format.cc.o
+2026-10-10T05:33:59.3394650Z [5/542] Building CXX object third_party/hyperloglog/CMakeFiles/duckdb_hyperloglog.dir/hyperloglog.cpp.o
+2026-10-10T05:33:59.3443450Z [6/542] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/postgres_parser.cpp.o
+2026-10-10T05:33:59.3762600Z [7/542] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_nodes_list.cpp.o
+2026-10-10T05:33:59.3874440Z [8/542] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_parser_scansup.cpp.o
+2026-10-10T05:33:59.3989570Z [9/542] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/pg_functions.cpp.o
+2026-10-10T05:33:59.4198200Z [10/542] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_nodes_makefuncs.cpp.o
+2026-10-10T05:33:59.4332100Z [11/542] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_nodes_value.cpp.o
+2026-10-10T05:33:59.5468960Z [12/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/mbedtls_wrapper.cpp.o
+2026-10-10T05:33:59.5776160Z [13/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/aes.cpp.o
+2026-10-10T05:33:59.6473100Z [14/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/asn1parse.cpp.o
+2026-10-10T05:33:59.6587880Z [15/542] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_common_keywords.cpp.o
+2026-10-10T05:33:59.6771080Z [16/542] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_parser_parser.cpp.o
+2026-10-10T05:33:59.7095620Z [17/542] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_parser_scan.cpp.o
+2026-10-10T05:33:59.7127960Z [18/542] Building CXX object third_party/libpg_query/CMakeFiles/duckdb_pg_query.dir/src_backend_parser_gram.cpp.o
+2026-10-10T05:33:59.7142230Z [19/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/asn1write.cpp.o
+2026-10-10T05:33:59.7154250Z [20/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/base64.cpp.o
+2026-10-10T05:33:59.7270170Z [21/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/bignum.cpp.o
+2026-10-10T05:33:59.7412370Z [22/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/constant_time.cpp.o
+2026-10-10T05:33:59.7418790Z [23/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/gcm.cpp.o
+2026-10-10T05:33:59.7426640Z [24/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/bignum_core.cpp.o
+2026-10-10T05:33:59.7448730Z [25/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/cipher_wrap.cpp.o
+2026-10-10T05:33:59.7560890Z [26/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/cipher.cpp.o
+2026-10-10T05:33:59.7729700Z [27/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/oid.cpp.o
+2026-10-10T05:33:59.7799600Z [28/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/md.cpp.o
+2026-10-10T05:33:59.7940530Z [29/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/pem.cpp.o
+2026-10-10T05:33:59.7948790Z [30/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/pk_wrap.cpp.o
+2026-10-10T05:33:59.8079570Z [31/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/pk.cpp.o
+2026-10-10T05:33:59.8116720Z [32/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/pkparse.cpp.o
+2026-10-10T05:33:59.8163180Z [33/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/platform.cpp.o
+2026-10-10T05:33:59.8181870Z [34/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/platform_util.cpp.o
+2026-10-10T05:33:59.8285700Z [35/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/rsa.cpp.o
+2026-10-10T05:33:59.8345060Z [36/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/rsa_alt_helpers.cpp.o
+2026-10-10T05:33:59.8347810Z [37/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/sha256.cpp.o
+2026-10-10T05:33:59.8360430Z [38/542] Building CXX object third_party/mbedtls/CMakeFiles/duckdb_mbedtls.dir/library/sha1.cpp.o
+2026-10-10T05:33:59.8376970Z [39/542] Building CXX object third_party/miniz/CMakeFiles/duckdb_miniz.dir/miniz.cpp.o
+2026-10-10T05:33:59.8600790Z [40/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/bitmap256.cc.o
+2026-10-10T05:33:59.8617710Z [41/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/compile.cc.o
+2026-10-10T05:33:59.8861570Z [42/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/bitstate.cc.o
+2026-10-10T05:33:59.8970860Z [43/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/dfa.cc.o
+2026-10-10T05:33:59.9094050Z [44/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/filtered_re2.cc.o
+2026-10-10T05:33:59.9206160Z [45/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/mimics_pcre.cc.o
+2026-10-10T05:33:59.9314920Z [46/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/nfa.cc.o
+2026-10-10T05:33:59.9315470Z [47/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/onepass.cc.o
+2026-10-10T05:33:59.9371310Z [48/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/perl_groups.cc.o
+2026-10-10T05:33:59.9489310Z [49/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/parse.cc.o
+2026-10-10T05:33:59.9621130Z [50/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/prefilter.cc.o
+2026-10-10T05:33:59.9726910Z [51/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/prefilter_tree.cc.o
+2026-10-10T05:33:59.9747130Z [52/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/prog.cc.o
+2026-10-10T05:33:59.9771280Z [53/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/re2.cc.o
+2026-10-10T05:33:59.9872900Z [54/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/regexp.cc.o
+2026-10-10T05:33:59.9963870Z [55/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/set.cc.o
+2026-10-10T05:34:00.0139940Z [56/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/simplify.cc.o
+2026-10-10T05:34:00.0296970Z [57/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/unicode_casefold.cc.o
+2026-10-10T05:34:00.0400090Z [58/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/unicode_groups.cc.o
+2026-10-10T05:34:00.0509070Z [59/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/util/rune.cc.o
+2026-10-10T05:34:00.0629330Z [60/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/stringpiece.cc.o
+2026-10-10T05:34:00.0731100Z [61/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/re2/tostring.cc.o
+2026-10-10T05:34:00.0837990Z [62/542] Building CXX object third_party/re2/CMakeFiles/duckdb_re2.dir/util/strutil.cc.o
+2026-10-10T05:34:00.0935080Z [63/542] Building CXX object third_party/utf8proc/CMakeFiles/duckdb_utf8proc.dir/utf8proc.cpp.o
+2026-10-10T05:34:00.1036490Z [64/542] Building CXX object third_party/yyjson/CMakeFiles/duckdb_yyjson.dir/yyjson.cpp.o
+2026-10-10T05:34:00.1114460Z [65/542] Building CXX object third_party/utf8proc/CMakeFiles/duckdb_utf8proc.dir/utf8proc_wrapper.cpp.o
+2026-10-10T05:34:00.1184860Z [66/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_compress_superblock.cpp.o
+2026-10-10T05:34:00.1274500Z [67/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstdmt_compress.cpp.o
+2026-10-10T05:34:00.1288110Z [68/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_double_fast.cpp.o
+2026-10-10T05:34:00.1396740Z [69/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_compress_sequences.cpp.o
+2026-10-10T05:34:00.1500780Z [70/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_fast.cpp.o
+2026-10-10T05:34:00.1611100Z [71/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_ldm.cpp.o
+2026-10-10T05:34:00.1716110Z [72/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/hist.cpp.o
+2026-10-10T05:34:00.1819700Z [73/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_compress.cpp.o
+2026-10-10T05:34:00.1921390Z [74/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_lazy.cpp.o
+2026-10-10T05:34:00.2017690Z [75/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_compress_literals.cpp.o
+2026-10-10T05:34:00.2120230Z [76/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/huf_compress.cpp.o
+2026-10-10T05:34:00.2231430Z [77/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/fse_compress.cpp.o
+2026-10-10T05:34:00.2268540Z [78/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/compress/zstd_opt.cpp.o
+2026-10-10T05:34:00.2286210Z [79/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/decompress/zstd_ddict.cpp.o
+2026-10-10T05:34:00.2291120Z [80/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/decompress/huf_decompress.cpp.o
+2026-10-10T05:34:00.2291860Z [81/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/decompress/zstd_decompress_block.cpp.o
+2026-10-10T05:34:00.2292640Z [82/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/decompress/zstd_decompress.cpp.o
+2026-10-10T05:34:00.2293340Z [83/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/entropy_common.cpp.o
+2026-10-10T05:34:00.2293980Z [84/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/fse_decompress.cpp.o
+2026-10-10T05:34:00.2294600Z [85/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/debug.cpp.o
+2026-10-10T05:34:00.2295210Z [86/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/xxhash.cpp.o
+2026-10-10T05:34:00.2295780Z [87/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/pool.cpp.o
+2026-10-10T05:34:00.2296390Z [88/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/threading.cpp.o
+2026-10-10T05:34:00.2297060Z [89/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/zstd_common.cpp.o
+2026-10-10T05:34:00.2297680Z [90/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/common/error_private.cpp.o
+2026-10-10T05:34:00.2298310Z [91/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/dict/divsufsort.cpp.o
+2026-10-10T05:34:00.2298890Z [92/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/dict/cover.cpp.o
+2026-10-10T05:34:00.2299480Z [93/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/dict/fastcover.cpp.o
+2026-10-10T05:34:00.2300320Z [94/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/dict/zdict.cpp.o
+2026-10-10T05:34:00.2300960Z [95/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/deprecated/zbuff_common.cpp.o
+2026-10-10T05:34:00.2301630Z [96/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/deprecated/zbuff_decompress.cpp.o
+2026-10-10T05:34:00.2302130Z [97/542] Generating duckdb_platform_out
+2026-10-10T05:34:00.2498960Z [98/542] Building CXX object third_party/zstd/CMakeFiles/duckdb_zstd.dir/deprecated/zbuff_compress.cpp.o
+2026-10-10T05:34:00.2839900Z [99/542] Building CXX object src/optimizer/compressed_materialization/CMakeFiles/duckdb_optimizer_compressed_materialization.dir/ub_duckdb_optimizer_compressed_materialization.cpp.o
+2026-10-10T05:34:00.3079950Z [100/542] Building CXX object src/optimizer/matcher/CMakeFiles/duckdb_optimizer_matcher.dir/ub_duckdb_optimizer_matcher.cpp.o
+2026-10-10T05:34:00.3183330Z [101/542] Building CXX object src/optimizer/join_order/CMakeFiles/duckdb_optimizer_join_order.dir/ub_duckdb_optimizer_join_order.cpp.o
+2026-10-10T05:34:00.3208120Z [102/542] Building CXX object src/optimizer/pullup/CMakeFiles/duckdb_optimizer_pullup.dir/ub_duckdb_optimizer_pullup.cpp.o
+2026-10-10T05:34:00.3668140Z [103/542] Building CXX object src/optimizer/CMakeFiles/duckdb_optimizer.dir/ub_duckdb_optimizer.cpp.o
+2026-10-10T05:34:00.3738770Z [104/542] Building CXX object src/optimizer/statistics/expression/CMakeFiles/duckdb_optimizer_statistics_expr.dir/ub_duckdb_optimizer_statistics_expr.cpp.o
+2026-10-10T05:34:00.3766810Z [105/542] Building CXX object src/optimizer/pushdown/CMakeFiles/duckdb_optimizer_pushdown.dir/ub_duckdb_optimizer_pushdown.cpp.o
+2026-10-10T05:34:00.3889250Z [106/542] Building CXX object src/optimizer/rule/CMakeFiles/duckdb_optimizer_rules.dir/ub_duckdb_optimizer_rules.cpp.o
+2026-10-10T05:34:00.4083950Z [107/542] Building CXX object src/optimizer/statistics/operator/CMakeFiles/duckdb_optimizer_statistics_op.dir/ub_duckdb_optimizer_statistics_op.cpp.o
+2026-10-10T05:34:00.4310650Z [108/542] Building CXX object src/planner/expression/CMakeFiles/duckdb_planner_expression.dir/ub_duckdb_planner_expression.cpp.o
+2026-10-10T05:34:00.4407720Z [109/542] Building CXX object src/planner/binder/expression/CMakeFiles/duckdb_bind_expression.dir/ub_duckdb_bind_expression.cpp.o
+2026-10-10T05:34:00.4508100Z [110/542] Building CXX object src/planner/CMakeFiles/duckdb_planner.dir/ub_duckdb_planner.cpp.o
+2026-10-10T05:34:00.4730630Z [111/542] Building CXX object src/planner/binder/query_node/CMakeFiles/duckdb_bind_query_node.dir/ub_duckdb_bind_query_node.cpp.o
+2026-10-10T05:34:00.5075820Z [112/542] Building CXX object src/planner/binder/tableref/CMakeFiles/duckdb_bind_tableref.dir/ub_duckdb_bind_tableref.cpp.o
+2026-10-10T05:34:00.5177520Z [113/542] Building CXX object src/planner/binder/statement/CMakeFiles/duckdb_bind_statement.dir/ub_duckdb_bind_statement.cpp.o
+2026-10-10T05:34:00.5281440Z [114/542] Building CXX object src/planner/expression_binder/CMakeFiles/duckdb_expression_binders.dir/ub_duckdb_expression_binders.cpp.o
+2026-10-10T05:34:00.5410110Z [115/542] Building CXX object src/planner/filter/CMakeFiles/duckdb_planner_filter.dir/ub_duckdb_planner_filter.cpp.o
+2026-10-10T05:34:00.5649890Z [116/542] Building CXX object src/planner/operator/CMakeFiles/duckdb_planner_operator.dir/ub_duckdb_planner_operator.cpp.o
+2026-10-10T05:34:00.5661350Z [117/542] Building CXX object src/planner/subquery/CMakeFiles/duckdb_planner_subquery.dir/ub_duckdb_planner_subquery.cpp.o
+2026-10-10T05:34:00.5766270Z [118/542] Building CXX object src/parser/CMakeFiles/duckdb_parser.dir/ub_duckdb_parser.cpp.o
+2026-10-10T05:34:00.5883880Z [119/542] Building CXX object src/parser/constraints/CMakeFiles/duckdb_constraints.dir/ub_duckdb_constraints.cpp.o
+2026-10-10T05:34:00.6090990Z [120/542] Building CXX object src/parser/expression/CMakeFiles/duckdb_expression.dir/ub_duckdb_expression.cpp.o
+2026-10-10T05:34:00.6193280Z [121/542] Building CXX object src/parser/query_node/CMakeFiles/duckdb_query_node.dir/ub_duckdb_query_node.cpp.o
+2026-10-10T05:34:00.6293680Z [122/542] Building CXX object src/parser/statement/CMakeFiles/duckdb_statement.dir/ub_duckdb_statement.cpp.o
+2026-10-10T05:34:00.6422160Z [123/542] Building CXX object src/parser/parsed_data/CMakeFiles/duckdb_parsed_data.dir/ub_duckdb_parsed_data.cpp.o
+2026-10-10T05:34:00.6530600Z [124/542] Building CXX object src/parser/transform/constraint/CMakeFiles/duckdb_transformer_constraint.dir/ub_duckdb_transformer_constraint.cpp.o
+2026-10-10T05:34:00.6652530Z [125/542] Building CXX object src/parser/tableref/CMakeFiles/duckdb_parser_tableref.dir/ub_duckdb_parser_tableref.cpp.o
+2026-10-10T05:34:00.6753180Z [126/542] Building CXX object src/parser/transform/expression/CMakeFiles/duckdb_transformer_expression.dir/ub_duckdb_transformer_expression.cpp.o
+2026-10-10T05:34:00.6856040Z [127/542] Building CXX object src/parser/transform/helpers/CMakeFiles/duckdb_transformer_helpers.dir/ub_duckdb_transformer_helpers.cpp.o
+2026-10-10T05:34:00.6958650Z [128/542] Building CXX object src/parser/transform/tableref/CMakeFiles/duckdb_transformer_tableref.dir/ub_duckdb_transformer_tableref.cpp.o
+2026-10-10T05:34:00.7060300Z [129/542] Building CXX object src/parser/transform/statement/CMakeFiles/duckdb_transformer_statement.dir/ub_duckdb_transformer_statement.cpp.o
+2026-10-10T05:34:00.7160430Z [130/542] Building CXX object src/function/CMakeFiles/duckdb_function.dir/ub_duckdb_function.cpp.o
+2026-10-10T05:34:00.7277910Z [131/542] Building CXX object src/function/aggregate/CMakeFiles/duckdb_func_aggr.dir/ub_duckdb_func_aggr.cpp.o
+2026-10-10T05:34:00.7378490Z [132/542] Building CXX object src/function/aggregate/distributive/CMakeFiles/duckdb_aggr_distr.dir/ub_duckdb_aggr_distr.cpp.o
+2026-10-10T05:34:00.7480120Z [133/542] Building CXX object src/function/cast/CMakeFiles/duckdb_func_cast.dir/ub_duckdb_func_cast.cpp.o
+2026-10-10T05:34:00.7583790Z [134/542] Building CXX object src/function/cast/union/CMakeFiles/duckdb_union_cast.dir/ub_duckdb_union_cast.cpp.o
+2026-10-10T05:34:00.7684610Z [135/542] Building CXX object src/function/cast/variant/CMakeFiles/duckdb_variant_cast.dir/ub_duckdb_variant_cast.cpp.o
+2026-10-10T05:34:00.7786070Z [136/542] Building CXX object src/function/pragma/CMakeFiles/duckdb_func_pragma.dir/ub_duckdb_func_pragma.cpp.o
+2026-10-10T05:34:00.7888710Z [137/542] Building CXX object src/function/scalar/CMakeFiles/duckdb_func_scalar.dir/ub_duckdb_func_scalar.cpp.o
+2026-10-10T05:34:00.8001100Z [138/542] Building CXX object src/function/scalar/compressed_materialization/CMakeFiles/duckdb_func_compressed_materialization.dir/ub_duckdb_func_compressed_materialization.cpp.o
+2026-10-10T05:34:00.8104030Z [139/542] Building CXX object src/function/scalar/date/CMakeFiles/duckdb_func_date.dir/ub_duckdb_func_date.cpp.o
+2026-10-10T05:34:00.8209050Z [140/542] Building CXX object src/function/scalar/generic/CMakeFiles/duckdb_func_generic_main.dir/ub_duckdb_func_generic_main.cpp.o
+2026-10-10T05:34:00.8310240Z [141/542] Building CXX object src/function/scalar/list/CMakeFiles/duckdb_func_list_nested.dir/ub_duckdb_func_list_nested.cpp.o
+2026-10-10T05:34:00.8411730Z [142/542] Building CXX object src/function/scalar/operator/CMakeFiles/duckdb_func_ops_main.dir/ub_duckdb_func_ops_main.cpp.o
+2026-10-10T05:34:00.8513080Z [143/542] Building CXX object src/function/scalar/sequence/CMakeFiles/duckdb_func_seq.dir/ub_duckdb_func_seq.cpp.o
+2026-10-10T05:34:00.8614440Z [144/542] Building CXX object src/function/scalar/map/CMakeFiles/duckdb_function_map.dir/ub_duckdb_function_map.cpp.o
+2026-10-10T05:34:00.8719680Z [145/542] Building CXX object src/function/scalar/string/CMakeFiles/duckdb_func_string_main.dir/ub_duckdb_func_string_main.cpp.o
+2026-10-10T05:34:00.8741890Z [146/542] Building CXX object src/function/scalar/string/regexp/CMakeFiles/duckdb_func_string_regexp.dir/ub_duckdb_func_string_regexp.cpp.o
+2026-10-10T05:34:00.8865990Z [147/542] Building CXX object src/function/scalar/variant/CMakeFiles/duckdb_func_variant_main.dir/ub_duckdb_func_variant_main.cpp.o
+2026-10-10T05:34:00.8976520Z [148/542] Building CXX object src/function/scalar/struct/CMakeFiles/duckdb_func_struct_main.dir/ub_duckdb_func_struct_main.cpp.o
+2026-10-10T05:34:00.9034150Z [149/542] Building CXX object src/function/scalar/system/CMakeFiles/duckdb_func_system.dir/ub_duckdb_func_system.cpp.o
+2026-10-10T05:34:00.9051450Z [150/542] Building CXX object src/function/scalar/geometry/CMakeFiles/duckdb_func_geometry.dir/ub_duckdb_func_geometry.cpp.o
+2026-10-10T05:34:00.9406270Z [151/542] Building CXX object src/function/table/CMakeFiles/duckdb_func_table.dir/ub_duckdb_func_table.cpp.o
+2026-10-10T05:34:00.9409120Z [152/542] Building CXX object src/function/table/system/CMakeFiles/duckdb_table_func_system.dir/ub_duckdb_table_func_system.cpp.o
+2026-10-10T05:34:00.9424840Z [153/542] Building CXX object src/function/table/version/CMakeFiles/duckdb_func_table_version.dir/ub_duckdb_func_table_version.cpp.o
+2026-10-10T05:34:00.9535380Z [154/542] Building CXX object src/function/table/arrow/CMakeFiles/duckdb_arrow_conversion.dir/ub_duckdb_arrow_conversion.cpp.o
+2026-10-10T05:34:00.9856910Z [155/542] Building CXX object src/function/window/CMakeFiles/duckdb_func_window.dir/ub_duckdb_func_window.cpp.o
+2026-10-10T05:34:00.9956970Z [156/542] Building CXX object src/function/variant/CMakeFiles/duckdb_function_variant.dir/ub_duckdb_function_variant.cpp.o
+2026-10-10T05:34:01.0060450Z [157/542] Building CXX object src/catalog/catalog_entry/CMakeFiles/duckdb_catalog_entries.dir/ub_duckdb_catalog_entries.cpp.o
+2026-10-10T05:34:01.0166890Z [158/542] Building CXX object src/catalog/CMakeFiles/duckdb_catalog.dir/ub_duckdb_catalog.cpp.o
+2026-10-10T05:34:01.0268390Z [159/542] Building CXX object src/catalog/catalog_entry/dependency/CMakeFiles/duckdb_catalog_entries_dependency.dir/ub_duckdb_catalog_entries_dependency.cpp.o
+2026-10-10T05:34:01.0389930Z [160/542] Building CXX object src/catalog/default/CMakeFiles/duckdb_catalog_default_entries.dir/ub_duckdb_catalog_default_entries.cpp.o
+2026-10-10T05:34:01.0495480Z [161/542] Building CXX object src/common/adbc/CMakeFiles/duckdb_adbc.dir/ub_duckdb_adbc.cpp.o
+2026-10-10T05:34:01.0597110Z [162/542] Building CXX object src/common/adbc/nanoarrow/CMakeFiles/duckdb_adbc_nanoarrow.dir/ub_duckdb_adbc_nanoarrow.cpp.o
+2026-10-10T05:34:01.0702700Z [163/542] Building CXX object src/common/allocator/CMakeFiles/duckdb_common_allocator.dir/ub_duckdb_common_allocator.cpp.o
+2026-10-10T05:34:01.0804080Z [164/542] Building CXX object src/common/arrow/CMakeFiles/duckdb_common_arrow.dir/ub_duckdb_common_arrow.cpp.o
+2026-10-10T05:34:01.0905660Z [165/542] Building CXX object src/common/arrow/appender/CMakeFiles/duckdb_common_arrow_appender.dir/ub_duckdb_common_arrow_appender.cpp.o
+2026-10-10T05:34:01.1009230Z [166/542] Building CXX object src/common/crypto/CMakeFiles/duckdb_common_crypto.dir/ub_duckdb_common_crypto.cpp.o
+2026-10-10T05:34:01.1113140Z [167/542] Building CXX object src/common/enums/CMakeFiles/duckdb_common_enums.dir/ub_duckdb_common_enums.cpp.o
+2026-10-10T05:34:01.1221910Z [168/542] Building CXX object src/common/exception/CMakeFiles/duckdb_common_exception.dir/ub_duckdb_common_exception.cpp.o
+2026-10-10T05:34:01.1323260Z [169/542] Building CXX object src/common/multi_file/CMakeFiles/duckdb_common_multi_file.dir/ub_duckdb_common_multi_file.cpp.o
+2026-10-10T05:34:01.1424710Z [170/542] Building CXX object src/common/operator/CMakeFiles/duckdb_common_operators.dir/ub_duckdb_common_operators.cpp.o
+2026-10-10T05:34:01.1530070Z [171/542] Building CXX object src/common/progress_bar/CMakeFiles/duckdb_progress_bar.dir/ub_duckdb_progress_bar.cpp.o
+2026-10-10T05:34:01.1632650Z [172/542] Building CXX object src/common/tree_renderer/CMakeFiles/duckdb_common_tree_renderer.dir/ub_duckdb_common_tree_renderer.cpp.o
+2026-10-10T05:34:01.1736560Z [173/542] Building CXX object src/common/row_operations/CMakeFiles/duckdb_row_operations.dir/ub_duckdb_row_operations.cpp.o
+2026-10-10T05:34:01.1847090Z [174/542] Building CXX object src/common/serializer/CMakeFiles/duckdb_common_serializer.dir/ub_duckdb_common_serializer.cpp.o
+2026-10-10T05:34:01.2031820Z [175/542] Building CXX object src/common/sort/CMakeFiles/duckdb_sort.dir/ub_duckdb_sort.cpp.o
+2026-10-10T05:34:01.2134500Z [176/542] Building CXX object src/common/types/column/CMakeFiles/duckdb_common_types_column.dir/ub_duckdb_common_types_column.cpp.o
+2026-10-10T05:34:01.2253700Z [177/542] Building CXX object src/common/types/CMakeFiles/duckdb_common_types.dir/ub_duckdb_common_types.cpp.o
+2026-10-10T05:34:01.2607020Z [178/542] Building CXX object src/common/types/row/CMakeFiles/duckdb_common_types_row.dir/ub_duckdb_common_types_row.cpp.o
+2026-10-10T05:34:01.2811850Z [179/542] Building CXX object src/common/types/variant/CMakeFiles/duckdb_common_variant.dir/ub_duckdb_common_variant.cpp.o
+2026-10-10T05:34:01.3104480Z [180/542] Building CXX object src/common/value_operations/CMakeFiles/duckdb_value_operations.dir/ub_duckdb_value_operations.cpp.o
+2026-10-10T05:34:01.3215930Z [181/542] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/boolean_operators.cpp.o
+2026-10-10T05:34:01.3333660Z [182/542] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/vector_cast.cpp.o
+2026-10-10T05:34:01.3462340Z [183/542] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/comparison_operators.cpp.o
+2026-10-10T05:34:01.3664160Z [184/542] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/vector_copy.cpp.o
+2026-10-10T05:34:01.3769400Z [185/542] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/generators.cpp.o
+2026-10-10T05:34:01.3871520Z [186/542] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/vector_hash.cpp.o
+2026-10-10T05:34:01.4152360Z [187/542] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/null_operations.cpp.o
+2026-10-10T05:34:01.4264810Z [188/542] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/vector_storage.cpp.o
+2026-10-10T05:34:01.4379560Z [189/542] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/numeric_inplace_operators.cpp.o
+2026-10-10T05:34:01.4483120Z [190/542] Building CXX object third_party/skiplist/CMakeFiles/duckdb_skiplistlib.dir/SkipList.cpp.o
+2026-10-10T05:34:01.4691550Z [191/542] Building CXX object src/logging/CMakeFiles/duckdb_logging.dir/ub_duckdb_logging.cpp.o
+2026-10-10T05:34:01.4760420Z [192/542] Building CXX object src/execution/CMakeFiles/duckdb_execution.dir/ub_duckdb_execution.cpp.o
+2026-10-10T05:34:01.4783000Z [193/542] Building CXX object src/common/vector_operations/CMakeFiles/duckdb_vector_operations.dir/is_distinct_from.cpp.o
+2026-10-10T05:34:01.4825240Z [194/542] Building CXX object src/execution/expression_executor/CMakeFiles/duckdb_expression_executor.dir/ub_duckdb_expression_executor.cpp.o
+2026-10-10T05:34:01.5297920Z [195/542] Building CXX object src/execution/nested_loop_join/CMakeFiles/duckdb_nested_loop_join.dir/ub_duckdb_nested_loop_join.cpp.o
+2026-10-10T05:34:01.5338690Z [196/542] Building CXX object src/execution/operator/csv_scanner/buffer_manager/CMakeFiles/duckdb_csv_buffer_manager.dir/ub_duckdb_csv_buffer_manager.cpp.o
+2026-10-10T05:34:01.5405900Z [197/542] Building CXX object src/execution/operator/csv_scanner/encode/CMakeFiles/duckdb_csv_encode.dir/ub_duckdb_csv_encode.cpp.o
+2026-10-10T05:34:01.5593490Z [198/542] Building CXX object src/execution/operator/aggregate/CMakeFiles/duckdb_operator_aggregate.dir/ub_duckdb_operator_aggregate.cpp.o
+2026-10-10T05:34:01.5711330Z [199/542] Building CXX object src/execution/operator/csv_scanner/scanner/CMakeFiles/duckdb_csv_scanner.dir/ub_duckdb_csv_scanner.cpp.o
+2026-10-10T05:34:01.5799270Z [200/542] Building CXX object src/execution/operator/csv_scanner/sniffer/CMakeFiles/duckdb_csv_sniffer.dir/ub_duckdb_csv_sniffer.cpp.o
+2026-10-10T05:34:01.6053800Z [201/542] Building CXX object src/execution/operator/csv_scanner/state_machine/CMakeFiles/duckdb_csv_state_machine.dir/ub_duckdb_csv_state_machine.cpp.o
+2026-10-10T05:34:01.6157420Z [202/542] Building CXX object src/execution/operator/csv_scanner/table_function/CMakeFiles/duckdb_operator_csv_table_function.dir/ub_duckdb_operator_csv_table_function.cpp.o
+2026-10-10T05:34:01.6187470Z [203/542] Building CXX object src/execution/operator/csv_scanner/util/CMakeFiles/duckdb_csv_util.dir/ub_duckdb_csv_util.cpp.o
+2026-10-10T05:34:01.6188250Z [204/542] Building CXX object src/execution/operator/filter/CMakeFiles/duckdb_operator_filter.dir/ub_duckdb_operator_filter.cpp.o
+2026-10-10T05:34:01.6487260Z [205/542] Building CXX object src/execution/operator/order/CMakeFiles/duckdb_operator_order.dir/ub_duckdb_operator_order.cpp.o
+2026-10-10T05:34:01.6509060Z [206/542] Building CXX object src/execution/operator/helper/CMakeFiles/duckdb_operator_helper.dir/ub_duckdb_operator_helper.cpp.o
+2026-10-10T05:34:01.6526070Z [207/542] Building CXX object src/execution/operator/join/CMakeFiles/duckdb_operator_join.dir/ub_duckdb_operator_join.cpp.o
+2026-10-10T05:34:01.6654400Z [208/542] Building CXX object src/execution/operator/persistent/CMakeFiles/duckdb_operator_persistent.dir/ub_duckdb_operator_persistent.cpp.o
+2026-10-10T05:34:01.6885160Z [209/542] Building CXX object src/execution/operator/scan/CMakeFiles/duckdb_operator_scan.dir/ub_duckdb_operator_scan.cpp.o
+2026-10-10T05:34:01.6931740Z [210/542] Building CXX object src/execution/operator/projection/CMakeFiles/duckdb_operator_projection.dir/ub_duckdb_operator_projection.cpp.o
+2026-10-10T05:34:01.7038520Z [211/542] Building CXX object src/execution/operator/schema/CMakeFiles/duckdb_operator_schema.dir/ub_duckdb_operator_schema.cpp.o
+2026-10-10T05:34:01.7054620Z [212/542] Building CXX object src/execution/operator/set/CMakeFiles/duckdb_operator_set.dir/ub_duckdb_operator_set.cpp.o
+2026-10-10T05:34:01.7348530Z [213/542] Building CXX object src/execution/physical_plan/CMakeFiles/duckdb_physical_plan.dir/ub_duckdb_physical_plan.cpp.o
+2026-10-10T05:34:01.7377280Z [214/542] Building CXX object src/execution/sample/CMakeFiles/duckdb_sample.dir/ub_duckdb_sample.cpp.o
+2026-10-10T05:34:01.7502120Z [215/542] Building CXX object src/execution/index/CMakeFiles/duckdb_execution_index.dir/ub_duckdb_execution_index.cpp.o
+2026-10-10T05:34:01.7508380Z [216/542] Building CXX object src/execution/index/art/CMakeFiles/duckdb_execution_index_art.dir/ub_duckdb_execution_index_art.cpp.o
+2026-10-10T05:34:01.7808930Z [217/542] Building CXX object src/main/capi/CMakeFiles/duckdb_main_capi.dir/ub_duckdb_main_capi.cpp.o
+2026-10-10T05:34:01.7852480Z [218/542] Building CXX object src/main/capi/cast/CMakeFiles/duckdb_main_capi_cast.dir/ub_duckdb_main_capi_cast.cpp.o
+2026-10-10T05:34:01.7869130Z [219/542] Building CXX object src/main/CMakeFiles/duckdb_main.dir/ub_duckdb_main.cpp.o
+2026-10-10T05:34:01.7979860Z [220/542] Building CXX object src/main/extension/CMakeFiles/duckdb_main_extension.dir/extension_alias.cpp.o
+2026-10-10T05:34:01.8253470Z [221/542] Building CXX object src/main/extension/CMakeFiles/duckdb_main_extension.dir/extension_helper.cpp.o
+2026-10-10T05:34:01.8260010Z [222/542] Building CXX object src/main/extension/CMakeFiles/duckdb_main_extension.dir/extension_load.cpp.o
+2026-10-10T05:34:01.8274530Z [223/542] Building CXX object src/main/extension/CMakeFiles/duckdb_main_extension.dir/extension_loader.cpp.o
+2026-10-10T05:34:01.8294260Z [224/542] Building CXX object src/main/extension/CMakeFiles/duckdb_main_extension.dir/extension_install.cpp.o
+2026-10-10T05:34:01.8723350Z [225/542] Building CXX object src/main/secret/CMakeFiles/duckdb_main_secret.dir/ub_duckdb_main_secret.cpp.o
+2026-10-10T05:34:01.8763660Z [226/542] Building CXX object src/main/settings/CMakeFiles/duckdb_main_settings.dir/ub_duckdb_main_settings.cpp.o
+2026-10-10T05:34:01.8880050Z [227/542] Building CXX object src/main/http/CMakeFiles/duckdb_common_http.dir/ub_duckdb_common_http.cpp.o
+2026-10-10T05:34:01.8993020Z [228/542] Building CXX object src/main/relation/CMakeFiles/duckdb_main_relation.dir/ub_duckdb_main_relation.cpp.o
+2026-10-10T05:34:01.9162140Z [229/542] Building CXX object src/main/chunk_scan_state/CMakeFiles/duckdb_main_chunk_scan_state.dir/ub_duckdb_main_chunk_scan_state.cpp.o
+2026-10-10T05:34:01.9180230Z [230/542] Building CXX object src/main/buffered_data/CMakeFiles/duckdb_main_buffered_data.dir/ub_duckdb_main_buffered_data.cpp.o
+2026-10-10T05:34:01.9581410Z [231/542] Building CXX object src/storage/CMakeFiles/duckdb_storage.dir/ub_duckdb_storage.cpp.o
+2026-10-10T05:34:01.9677450Z [232/542] Building CXX object src/storage/buffer/CMakeFiles/duckdb_storage_buffer.dir/ub_duckdb_storage_buffer.cpp.o
+2026-10-10T05:34:01.9779710Z [233/542] Building CXX object src/storage/checkpoint/CMakeFiles/duckdb_storage_checkpoint.dir/ub_duckdb_storage_checkpoint.cpp.o
+2026-10-10T05:34:02.0068980Z [234/542] Building CXX object src/parallel/CMakeFiles/duckdb_parallel.dir/ub_duckdb_parallel.cpp.o
+2026-10-10T05:34:02.0092200Z [235/542] Building CXX object src/storage/compression/chimp/CMakeFiles/duckdb_storage_compression_chimp.dir/ub_duckdb_storage_compression_chimp.cpp.o
+2026-10-10T05:34:02.0196010Z [236/542] Building CXX object src/storage/compression/alp/CMakeFiles/duckdb_storage_compression_alp.dir/ub_duckdb_storage_compression_alp.cpp.o
+2026-10-10T05:34:02.0297390Z [237/542] Building CXX object src/storage/compression/CMakeFiles/duckdb_storage_compression.dir/ub_duckdb_storage_compression.cpp.o
+2026-10-10T05:34:02.0496590Z [238/542] Building CXX object src/storage/compression/roaring/CMakeFiles/duckdb_storage_compression_roaring.dir/ub_duckdb_storage_compression_roaring.cpp.o
+2026-10-10T05:34:02.0516670Z [239/542] Building CXX object src/storage/metadata/CMakeFiles/duckdb_storage_metadata.dir/ub_duckdb_storage_metadata.cpp.o
+2026-10-10T05:34:02.0621920Z [240/542] Building CXX object src/storage/compression/dictionary/CMakeFiles/duckdb_storage_compression_dictionary.dir/ub_duckdb_storage_compression_dictionary.cpp.o
+2026-10-10T05:34:02.0743010Z [241/542] Building CXX object src/storage/compression/dict_fsst/CMakeFiles/duckdb_storage_compression_dict_fsst.dir/ub_duckdb_storage_compression_dict_fsst.cpp.o
+2026-10-10T05:34:02.0844670Z [242/542] Building CXX object src/storage/serialization/CMakeFiles/duckdb_storage_serialization.dir/ub_duckdb_storage_serialization.cpp.o
+2026-10-10T05:34:02.0946050Z [243/542] Building CXX object src/storage/statistics/CMakeFiles/duckdb_storage_statistics.dir/ub_duckdb_storage_statistics.cpp.o
+2026-10-10T05:34:02.1004280Z [244/542] Building CXX object src/storage/table/variant/CMakeFiles/duckdb_storage_table_variant.dir/ub_duckdb_storage_table_variant.cpp.o
+2026-10-10T05:34:02.1106010Z [245/542] Building CXX object src/storage/table/CMakeFiles/duckdb_storage_table.dir/ub_duckdb_storage_table.cpp.o
+2026-10-10T05:34:02.1316270Z [246/542] Building CXX object src/transaction/CMakeFiles/duckdb_transaction.dir/ub_duckdb_transaction.cpp.o
+2026-10-10T05:34:02.1341460Z [247/542] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/copied_statement_verifier.cpp.o
+2026-10-10T05:34:02.1449190Z [248/542] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/external_statement_verifier.cpp.o
+2026-10-10T05:34:02.1477940Z [249/542] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/fetch_row_verifier.cpp.o
+2026-10-10T05:34:02.1679360Z [250/542] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/prepared_statement_verifier.cpp.o
+2026-10-10T05:34:02.1713140Z [251/542] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/deserialized_statement_verifier.cpp.o
+2026-10-10T05:34:02.1832000Z [252/542] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/explain_statement_verifier.cpp.o
+2026-10-10T05:34:02.1933380Z [253/542] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/statement_verifier.cpp.o
+2026-10-10T05:34:02.2093800Z [254/542] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/no_operator_caching_verifier.cpp.o
+2026-10-10T05:34:02.2109440Z [255/542] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/parsed_statement_verifier.cpp.o
+2026-10-10T05:34:02.2125830Z [256/542] Building CXX object src/verification/CMakeFiles/duckdb_verification.dir/unoptimized_statement_verifier.cpp.o
+2026-10-10T05:34:02.2152230Z [257/542] Building CXX object extension/CMakeFiles/dummy_static_extension_loader.dir/loader/dummy_static_extension_loader.cpp.o
+2026-10-10T05:34:03.7520110Z [258/542] Linking CXX static library third_party/hyperloglog/libduckdb_hyperloglog.a
+2026-10-10T05:34:03.7622330Z [259/542] Linking CXX static library third_party/fsst/libduckdb_fsst.a
+2026-10-10T05:34:03.7745590Z [260/542] Linking CXX static library third_party/fmt/libduckdb_fmt.a
+2026-10-10T05:34:03.7984750Z [261/542] Linking CXX static library third_party/fastpforlib/libduckdb_fastpforlib.a
+2026-10-10T05:34:03.8404300Z [262/542] Linking CXX static library third_party/miniz/libduckdb_miniz.a
+2026-10-10T05:34:03.8521950Z [263/542] Linking CXX static library third_party/libpg_query/libduckdb_pg_query.a
+2026-10-10T05:34:03.8631400Z [264/542] Linking CXX static library third_party/mbedtls/libduckdb_mbedtls.a
+2026-10-10T05:34:03.8892250Z [265/542] Linking CXX static library third_party/re2/libduckdb_re2.a
+2026-10-10T05:34:03.9226660Z [266/542] Linking CXX static library third_party/skiplist/libduckdb_skiplistlib.a
+2026-10-10T05:34:03.9338690Z [267/542] Linking CXX static library third_party/utf8proc/libduckdb_utf8proc.a
+2026-10-10T05:34:03.9460840Z [268/542] Linking CXX static library third_party/yyjson/libduckdb_yyjson.a
+2026-10-10T05:34:04.0019330Z [269/542] Linking CXX static library third_party/zstd/libduckdb_zstd.a
+2026-10-10T05:34:04.3100640Z [270/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/parser.cpp.o
+2026-10-10T05:34:04.4306670Z [271/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/validate.cpp.o
+2026-10-10T05:34:04.6231140Z [272/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/graph.cpp.o
+2026-10-10T05:34:04.7035600Z [273/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/dialect.cpp.o
+2026-10-10T05:34:04.7137440Z [274/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/catalog.cpp.o
+2026-10-10T05:34:04.8979840Z [275/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/model/yaml.cpp.o
+2026-10-10T05:34:05.0630360Z [276/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/compile/compile.cpp.o
+2026-10-10T05:34:05.0754850Z [277/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/load.cpp.o
+2026-10-10T05:34:05.2145930Z [278/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/compile.cpp.o
+2026-10-10T05:34:05.5199730Z [279/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/query.cpp.o
+2026-10-10T05:34:05.5430710Z [280/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/functions/describe.cpp.o
+2026-10-10T05:34:05.6157460Z [281/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/population/population.cpp.o
+2026-10-10T05:34:05.8624460Z [282/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/parser.cpp.o
+2026-10-10T05:34:05.8843910Z [283/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/validate.cpp.o
+2026-10-10T05:34:06.1961720Z [284/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/catalog.cpp.o
+2026-10-10T05:34:06.2162620Z [285/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/graph.cpp.o
+2026-10-10T05:34:06.4677200Z [286/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/dialect.cpp.o
+2026-10-10T05:34:06.5004450Z [287/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/model/yaml.cpp.o
+2026-10-10T05:34:06.8473630Z [288/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/compile/compile.cpp.o
+2026-10-10T05:34:07.0202650Z [289/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/load.cpp.o
+2026-10-10T05:34:07.3643980Z [290/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/compile.cpp.o
+2026-10-10T05:34:07.3899160Z [291/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/describe.cpp.o
+2026-10-10T05:34:07.8332820Z [292/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/functions/query.cpp.o
+2026-10-10T05:34:07.8835840Z [293/542] Building CXX object extension/tpcds/CMakeFiles/tpcds_extension.dir/tpcds_extension.cpp.o
+2026-10-10T05:34:07.9236990Z [294/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/population/population.cpp.o
+2026-10-10T05:34:07.9340510Z [295/542] Building CXX object extension/tpcds/CMakeFiles/tpcds_loadable_extension.dir/tpcds_extension.cpp.o
+2026-10-10T05:34:07.9638230Z [296/542] Building CXX object extension/tpcds/dsdgen/CMakeFiles/dsdgen.dir/append_info-c.cpp.o
+2026-10-10T05:34:07.9740420Z [297/542] Building CXX object extension/tpcds/dsdgen/CMakeFiles/dsdgen.dir/dsdgen.cpp.o
+2026-10-10T05:34:08.0043060Z [298/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/skip_days.cpp.o
+2026-10-10T05:34:08.0146070Z [299/542] Building CXX object extension/tpcds/dsdgen/CMakeFiles/dsdgen.dir/dsdgen_helpers.cpp.o
+2026-10-10T05:34:08.0255120Z [300/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/address.cpp.o
+2026-10-10T05:34:08.0358230Z [301/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/build_support.cpp.o
+2026-10-10T05:34:08.0459960Z [302/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/date.cpp.o
+2026-10-10T05:34:08.0648550Z [303/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/dbgen_version.cpp.o
+2026-10-10T05:34:08.0749900Z [304/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/decimal.cpp.o
+2026-10-10T05:34:08.0851130Z [305/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/error_msg.cpp.o
+2026-10-10T05:34:08.0952400Z [306/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/dist.cpp.o
+2026-10-10T05:34:08.1054490Z [307/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/genrand.cpp.o
+2026-10-10T05:34:08.1181770Z [308/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/init.cpp.o
+2026-10-10T05:34:08.1283060Z [309/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/join.cpp.o
+2026-10-10T05:34:08.1384250Z [310/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/list.cpp.o
+2026-10-10T05:34:08.1485530Z [311/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/load.cpp.o
+2026-10-10T05:34:08.1586780Z [312/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/misc.cpp.o
+2026-10-10T05:34:08.1688020Z [313/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/nulls.cpp.o
+2026-10-10T05:34:08.1789290Z [314/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/parallel.cpp.o
+2026-10-10T05:34:08.1890630Z [315/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/permute.cpp.o
+2026-10-10T05:34:08.1992060Z [316/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/pricing.cpp.o
+2026-10-10T05:34:08.2093420Z [317/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/release.cpp.o
+2026-10-10T05:34:08.2217340Z [318/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/r_params.cpp.o
+2026-10-10T05:34:08.2318660Z [319/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/scd.cpp.o
+2026-10-10T05:34:08.2421890Z [320/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/scaling.cpp.o
+2026-10-10T05:34:08.2523270Z [321/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/sparse.cpp.o
+2026-10-10T05:34:08.2587820Z [322/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/StringBuffer.cpp.o
+2026-10-10T05:34:08.2688630Z [323/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/tdefs.cpp.o
+2026-10-10T05:34:08.2789410Z [324/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/tdef_functions.cpp.o
+2026-10-10T05:34:08.2890800Z [325/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/text.cpp.o
+2026-10-10T05:34:08.2992130Z [326/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_call_center.cpp.o
+2026-10-10T05:34:08.3093510Z [327/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_catalog_page.cpp.o
+2026-10-10T05:34:08.3193930Z [328/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_catalog_returns.cpp.o
+2026-10-10T05:34:08.3296730Z [329/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_catalog_sales.cpp.o
+2026-10-10T05:34:08.3397770Z [330/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_customer.cpp.o
+2026-10-10T05:34:08.3498650Z [331/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_customer_address.cpp.o
+2026-10-10T05:34:08.3600580Z [332/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_customer_demographics.cpp.o
+2026-10-10T05:34:08.3705140Z [333/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_datetbl.cpp.o
+2026-10-10T05:34:08.3804400Z [334/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_household_demographics.cpp.o
+2026-10-10T05:34:08.3905150Z [335/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_income_band.cpp.o
+2026-10-10T05:34:08.4006760Z [336/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_inventory.cpp.o
+2026-10-10T05:34:08.4107200Z [337/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_item.cpp.o
+2026-10-10T05:34:08.4208350Z [338/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_promotion.cpp.o
+2026-10-10T05:34:08.4309760Z [339/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_reason.cpp.o
+2026-10-10T05:34:08.4410040Z [340/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_ship_mode.cpp.o
+2026-10-10T05:34:08.4511520Z [341/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_store.cpp.o
+2026-10-10T05:34:08.4612770Z [342/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_store_returns.cpp.o
+2026-10-10T05:34:08.4713150Z [343/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_store_sales.cpp.o
+2026-10-10T05:34:08.4814540Z [344/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_timetbl.cpp.o
+2026-10-10T05:34:08.4914860Z [345/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_warehouse.cpp.o
+2026-10-10T05:34:08.5016280Z [346/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_web_page.cpp.o
+2026-10-10T05:34:08.5134170Z [347/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_web_returns.cpp.o
+2026-10-10T05:34:08.5234450Z [348/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_web_sales.cpp.o
+2026-10-10T05:34:08.5334790Z [349/542] Building CXX object extension/tpcds/dsdgen/dsdgen-c/CMakeFiles/dsdgen_c.dir/w_web_site.cpp.o
+2026-10-10T05:34:08.5437940Z [350/542] Building CXX object extension/core_functions/CMakeFiles/core_functions_extension.dir/core_functions_extension.cpp.o
+2026-10-10T05:34:08.5636970Z [351/542] Building CXX object extension/core_functions/CMakeFiles/core_functions_extension.dir/function_list.cpp.o
+2026-10-10T05:34:08.5738190Z [352/542] Building CXX object extension/core_functions/CMakeFiles/core_functions_extension.dir/lambda_functions.cpp.o
+2026-10-10T05:34:08.6040310Z [353/542] Building CXX object extension/core_functions/CMakeFiles/core_functions_loadable_extension.dir/core_functions_extension.cpp.o
+2026-10-10T05:34:08.6152790Z [354/542] Building CXX object extension/core_functions/CMakeFiles/core_functions_loadable_extension.dir/function_list.cpp.o
+2026-10-10T05:34:08.6363980Z [355/542] Building CXX object extension/core_functions/CMakeFiles/core_functions_loadable_extension.dir/lambda_functions.cpp.o
+2026-10-10T05:34:08.6464640Z [356/542] Building CXX object extension/core_functions/aggregate/algebraic/CMakeFiles/duckdb_core_functions_algebraic.dir/ub_duckdb_core_functions_algebraic.cpp.o
+2026-10-10T05:34:08.6765460Z [357/542] Building CXX object extension/core_functions/aggregate/distributive/CMakeFiles/duckdb_core_functions_distributive.dir/ub_duckdb_core_functions_distributive.cpp.o
+2026-10-10T05:34:08.7373980Z [358/542] Building CXX object extension/core_functions/aggregate/nested/CMakeFiles/duckdb_core_functions_nested.dir/ub_duckdb_core_functions_nested.cpp.o
+2026-10-10T05:34:08.7876430Z [359/542] Building CXX object extension/core_functions/aggregate/regression/CMakeFiles/duckdb_core_functions_regression.dir/ub_duckdb_core_functions_regression.cpp.o
+2026-10-10T05:34:08.8178430Z [360/542] Building CXX object extension/core_functions/scalar/array/CMakeFiles/duckdb_core_functions_array.dir/ub_duckdb_core_functions_array.cpp.o
+2026-10-10T05:34:08.8585210Z [361/542] Building CXX object extension/core_functions/scalar/bit/CMakeFiles/duckdb_core_functions_bit.dir/ub_duckdb_core_functions_bit.cpp.o
+2026-10-10T05:34:08.9087430Z [362/542] Building CXX object extension/core_functions/scalar/blob/CMakeFiles/duckdb_core_functions_blob.dir/ub_duckdb_core_functions_blob.cpp.o
+2026-10-10T05:34:08.9605450Z [363/542] Building CXX object extension/core_functions/scalar/date/CMakeFiles/duckdb_core_functions_date.dir/ub_duckdb_core_functions_date.cpp.o
+2026-10-10T05:34:08.9907540Z [364/542] Building CXX object extension/core_functions/scalar/debug/CMakeFiles/duckdb_core_functions_debug.dir/ub_duckdb_core_functions_debug.cpp.o
+2026-10-10T05:34:09.0220480Z [365/542] Building CXX object extension/core_functions/scalar/enum/CMakeFiles/duckdb_core_functions_enum.dir/ub_duckdb_core_functions_enum.cpp.o
+2026-10-10T05:34:09.0533630Z [366/542] Building CXX object extension/core_functions/scalar/generic/CMakeFiles/duckdb_core_functions_generic.dir/ub_duckdb_core_functions_generic.cpp.o
+2026-10-10T05:34:09.0935790Z [367/542] Building CXX object extension/core_functions/scalar/list/CMakeFiles/duckdb_core_functions_list.dir/ub_duckdb_core_functions_list.cpp.o
+2026-10-10T05:34:09.1337220Z [368/542] Building CXX object extension/core_functions/scalar/map/CMakeFiles/duckdb_core_functions_map.dir/ub_duckdb_core_functions_map.cpp.o
+2026-10-10T05:34:09.1965430Z [369/542] Building CXX object extension/core_functions/scalar/math/CMakeFiles/duckdb_core_functions_math.dir/ub_duckdb_core_functions_math.cpp.o
+2026-10-10T05:34:09.2374890Z [370/542] Building CXX object extension/core_functions/scalar/operators/CMakeFiles/duckdb_core_functions_operators.dir/ub_duckdb_core_functions_operators.cpp.o
+2026-10-10T05:34:09.2678230Z [371/542] Building CXX object extension/core_functions/scalar/random/CMakeFiles/duckdb_core_functions_random.dir/ub_duckdb_core_functions_random.cpp.o
+2026-10-10T05:34:09.3086450Z [372/542] Building CXX object extension/core_functions/scalar/string/CMakeFiles/duckdb_core_functions_string.dir/ub_duckdb_core_functions_string.cpp.o
+2026-10-10T05:34:09.3488600Z [373/542] Building CXX object extension/core_functions/scalar/struct/CMakeFiles/duckdb_core_functions_struct.dir/ub_duckdb_core_functions_struct.cpp.o
+2026-10-10T05:34:09.3780960Z [374/542] Building CXX object extension/core_functions/scalar/union/CMakeFiles/duckdb_core_functions_union.dir/ub_duckdb_core_functions_union.cpp.o
+2026-10-10T05:34:09.4280210Z [375/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/column_reader.cpp.o
+2026-10-10T05:34:09.4686240Z [376/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/column_writer.cpp.o
+2026-10-10T05:34:09.4940160Z [377/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_crypto.cpp.o
+2026-10-10T05:34:09.5342220Z [378/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_extension.cpp.o
+2026-10-10T05:34:09.5664460Z [379/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_file_metadata_cache.cpp.o
+2026-10-10T05:34:09.6160620Z [380/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_float16.cpp.o
+2026-10-10T05:34:09.6468300Z [381/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_multi_file_info.cpp.o
+2026-10-10T05:34:09.6770120Z [382/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_metadata.cpp.o
+2026-10-10T05:34:09.7086380Z [383/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_reader.cpp.o
+2026-10-10T05:34:09.7388420Z [384/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_field_id.cpp.o
+2026-10-10T05:34:09.7689240Z [385/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_statistics.cpp.o
+2026-10-10T05:34:09.8126410Z [386/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_timestamp.cpp.o
+2026-10-10T05:34:09.8530950Z [387/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_writer.cpp.o
+2026-10-10T05:34:09.9134740Z [388/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_shredding.cpp.o
+2026-10-10T05:34:09.9540080Z [389/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_column_schema.cpp.o
+2026-10-10T05:34:09.9941390Z [390/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/parquet_geometry.cpp.o
+2026-10-10T05:34:10.0243530Z [391/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/serialize_parquet.cpp.o
+2026-10-10T05:34:10.0648070Z [392/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/zstd_file_system.cpp.o
+2026-10-10T05:34:10.1053080Z [393/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/parquet/parquet_types.cpp.o
+2026-10-10T05:34:10.1361850Z [394/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/thrift/thrift/protocol/TProtocol.cpp.o
+2026-10-10T05:34:10.1662690Z [395/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/thrift/thrift/transport/TTransportException.cpp.o
+2026-10-10T05:34:10.1864410Z [396/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/thrift/thrift/transport/TBufferTransports.cpp.o
+2026-10-10T05:34:10.2164950Z [397/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/snappy/snappy.cc.o
+2026-10-10T05:34:10.2365440Z [398/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/snappy/snappy-sinksource.cc.o
+2026-10-10T05:34:10.2565850Z [399/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/lz4/lz4.cpp.o
+2026-10-10T05:34:10.2868580Z [400/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/dictionary_hash.cpp.o
+2026-10-10T05:34:10.3171140Z [401/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/backward_references_hq.cpp.o
+2026-10-10T05:34:10.3472590Z [402/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/histogram.cpp.o
+2026-10-10T05:34:10.3574010Z [403/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/memory.cpp.o
+2026-10-10T05:34:10.3772820Z [404/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/entropy_encode.cpp.o
+2026-10-10T05:34:10.3974510Z [405/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/compound_dictionary.cpp.o
+2026-10-10T05:34:10.4176330Z [406/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/compress_fragment_two_pass.cpp.o
+2026-10-10T05:34:10.4395530Z [407/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/block_splitter.cpp.o
+2026-10-10T05:34:10.4596150Z [408/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/command.cpp.o
+2026-10-10T05:34:10.4897880Z [409/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/encode.cpp.o
+2026-10-10T05:34:10.5098550Z [410/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/encoder_dict.cpp.o
+2026-10-10T05:34:10.5400860Z [411/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/cluster.cpp.o
+2026-10-10T05:34:10.5603090Z [412/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/backward_references.cpp.o
+2026-10-10T05:34:10.5803630Z [413/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/utf8_util.cpp.o
+2026-10-10T05:34:10.6004080Z [414/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/compress_fragment.cpp.o
+2026-10-10T05:34:10.6305500Z [415/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/fast_log.cpp.o
+2026-10-10T05:34:10.6607800Z [416/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/brotli_bit_stream.cpp.o
+2026-10-10T05:34:10.6707980Z [417/542] Building CXX object extension/ossie/CMakeFiles/ossie_extension.dir/src/ossie_extension.cpp.o
+2026-10-10T05:34:10.6809640Z [418/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/bit_cost.cpp.o
+2026-10-10T05:34:10.6911250Z [419/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/static_dict.cpp.o
+2026-10-10T05:34:10.7012920Z [420/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/literal_cost.cpp.o
+2026-10-10T05:34:10.7114540Z [421/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/enc/metablock.cpp.o
+2026-10-10T05:34:10.7216050Z [422/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/constants.cpp.o
+2026-10-10T05:34:10.7317520Z [423/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/dictionary.cpp.o
+2026-10-10T05:34:10.7419250Z [424/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/transform.cpp.o
+2026-10-10T05:34:10.7520840Z [425/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/platform.cpp.o
+2026-10-10T05:34:10.7622330Z [426/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/context.cpp.o
+2026-10-10T05:34:10.7723810Z [427/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/common/shared_dictionary.cpp.o
+2026-10-10T05:34:10.7825940Z [428/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/dec/state.cpp.o
+2026-10-10T05:34:10.7927520Z [429/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/dec/decode.cpp.o
+2026-10-10T05:34:10.8029080Z [430/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/dec/huffman.cpp.o
+2026-10-10T05:34:10.8130640Z [431/542] Building CXX object extension/parquet/CMakeFiles/parquet_extension.dir/__/__/third_party/brotli/dec/bit_reader.cpp.o
+2026-10-10T05:34:10.8232160Z [432/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/column_writer.cpp.o
+2026-10-10T05:34:10.8333620Z [433/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/column_reader.cpp.o
+2026-10-10T05:34:10.8519360Z [434/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_crypto.cpp.o
+2026-10-10T05:34:10.8620820Z [435/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_extension.cpp.o
+2026-10-10T05:34:10.8764810Z [436/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_file_metadata_cache.cpp.o
+2026-10-10T05:34:10.8866250Z [437/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_float16.cpp.o
+2026-10-10T05:34:10.9121090Z [438/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_multi_file_info.cpp.o
+2026-10-10T05:34:10.9223330Z [439/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_metadata.cpp.o
+2026-10-10T05:34:10.9470240Z [440/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_reader.cpp.o
+2026-10-10T05:34:10.9572380Z [441/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_field_id.cpp.o
+2026-10-10T05:34:10.9874720Z [442/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_statistics.cpp.o
+2026-10-10T05:34:10.9976960Z [443/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_timestamp.cpp.o
+2026-10-10T05:34:11.0224460Z [444/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_writer.cpp.o
+2026-10-10T05:34:11.0325860Z [445/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_shredding.cpp.o
+2026-10-10T05:34:11.0581460Z [446/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_column_schema.cpp.o
+2026-10-10T05:34:11.0683180Z [447/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/parquet_geometry.cpp.o
+2026-10-10T05:34:11.0950550Z [448/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/serialize_parquet.cpp.o
+2026-10-10T05:34:11.1052450Z [449/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/zstd_file_system.cpp.o
+2026-10-10T05:34:11.1251380Z [450/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/parquet/parquet_types.cpp.o
+2026-10-10T05:34:11.1352980Z [451/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/thrift/thrift/protocol/TProtocol.cpp.o
+2026-10-10T05:34:11.1552340Z [452/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/thrift/thrift/transport/TTransportException.cpp.o
+2026-10-10T05:34:11.1654170Z [453/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/thrift/thrift/transport/TBufferTransports.cpp.o
+2026-10-10T05:34:11.1956380Z [454/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/snappy/snappy.cc.o
+2026-10-10T05:34:11.2057970Z [455/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/snappy/snappy-sinksource.cc.o
+2026-10-10T05:34:11.2159800Z [456/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/lz4/lz4.cpp.o
+2026-10-10T05:34:11.2261380Z [457/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/dictionary_hash.cpp.o
+2026-10-10T05:34:11.2358220Z [458/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/histogram.cpp.o
+2026-10-10T05:34:11.2461970Z [459/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/backward_references_hq.cpp.o
+2026-10-10T05:34:11.2563270Z [460/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/memory.cpp.o
+2026-10-10T05:34:11.2664220Z [461/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/entropy_encode.cpp.o
+2026-10-10T05:34:11.2766060Z [462/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/compound_dictionary.cpp.o
+2026-10-10T05:34:11.2867690Z [463/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/compress_fragment_two_pass.cpp.o
+2026-10-10T05:34:11.2969460Z [464/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/block_splitter.cpp.o
+2026-10-10T05:34:11.3069640Z [465/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/command.cpp.o
+2026-10-10T05:34:11.3171400Z [466/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/encode.cpp.o
+2026-10-10T05:34:11.3272200Z [467/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/encoder_dict.cpp.o
+2026-10-10T05:34:11.3372710Z [468/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/cluster.cpp.o
+2026-10-10T05:34:11.3473400Z [469/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/backward_references.cpp.o
+2026-10-10T05:34:11.3575110Z [470/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/utf8_util.cpp.o
+2026-10-10T05:34:11.3677650Z [471/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/compress_fragment.cpp.o
+2026-10-10T05:34:11.3779340Z [472/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/fast_log.cpp.o
+2026-10-10T05:34:11.3881120Z [473/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/brotli_bit_stream.cpp.o
+2026-10-10T05:34:11.3982600Z [474/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/bit_cost.cpp.o
+2026-10-10T05:34:11.4082860Z [475/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/static_dict.cpp.o
+2026-10-10T05:34:11.4185360Z [476/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/literal_cost.cpp.o
+2026-10-10T05:34:11.4287150Z [477/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/enc/metablock.cpp.o
+2026-10-10T05:34:11.4387470Z [478/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/dictionary.cpp.o
+2026-10-10T05:34:11.4489080Z [479/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/constants.cpp.o
+2026-10-10T05:34:11.4590850Z [480/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/transform.cpp.o
+2026-10-10T05:34:11.4714890Z [481/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/platform.cpp.o
+2026-10-10T05:34:11.4816200Z [482/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/shared_dictionary.cpp.o
+2026-10-10T05:34:11.4916990Z [483/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/common/context.cpp.o
+2026-10-10T05:34:11.5018600Z [484/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/dec/state.cpp.o
+2026-10-10T05:34:11.5120290Z [485/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/dec/decode.cpp.o
+2026-10-10T05:34:11.5221920Z [486/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/dec/huffman.cpp.o
+2026-10-10T05:34:11.5323510Z [487/542] Building CXX object extension/parquet/CMakeFiles/parquet_loadable_extension.dir/__/__/third_party/brotli/dec/bit_reader.cpp.o
+2026-10-10T05:34:11.5424200Z [488/542] Building CXX object extension/parquet/decoder/CMakeFiles/duckdb_parquet_decoders.dir/ub_duckdb_parquet_decoders.cpp.o
+2026-10-10T05:34:11.5525610Z [489/542] Building CXX object extension/parquet/reader/CMakeFiles/duckdb_parquet_readers.dir/ub_duckdb_parquet_readers.cpp.o
+2026-10-10T05:34:11.5627770Z [490/542] Building CXX object extension/parquet/reader/variant/CMakeFiles/duckdb_parquet_reader_variant.dir/ub_duckdb_parquet_reader_variant.cpp.o
+2026-10-10T05:34:11.5750080Z [491/542] Building CXX object extension/parquet/writer/CMakeFiles/duckdb_parquet_writers.dir/ub_duckdb_parquet_writers.cpp.o
+2026-10-10T05:34:11.6051490Z [492/542] Building CXX object extension/parquet/writer/variant/CMakeFiles/duckdb_parquet_writer_variant.dir/ub_duckdb_parquet_writer_variant.cpp.o
+2026-10-10T05:34:11.6355610Z [493/542] Linking CXX static library extension/libdummy_static_extension_loader.a
+2026-10-10T05:34:11.6457320Z [494/542] Building CXX object extension/CMakeFiles/duckdb_generated_extension_loader.dir/__/codegen/src/generated_extension_loader.cpp.o
+2026-10-10T05:34:11.6658510Z [495/542] Building CXX object test/extension/CMakeFiles/loadable_extension_demo_loadable_extension.dir/loadable_extension_demo.cpp.o
+2026-10-10T05:34:11.6759310Z [496/542] Building CXX object test/extension/CMakeFiles/loadable_extension_optimizer_demo_loadable_extension.dir/loadable_extension_optimizer_demo.cpp.o
+2026-10-10T05:34:11.7060750Z [497/542] Building CXX object test/helpers/CMakeFiles/test_helpers.dir/test_helpers.cpp.o
+2026-10-10T05:34:11.7161010Z [498/542] Building CXX object test/helpers/CMakeFiles/test_helpers.dir/capi_tester.cpp.o
+2026-10-10T05:34:11.7261850Z [499/542] Building CXX object test/helpers/CMakeFiles/test_helpers.dir/pid.cpp.o
+2026-10-10T05:34:11.7363200Z [500/542] Building CXX object test/helpers/CMakeFiles/test_helpers.dir/test_config.cpp.o
+2026-10-10T05:34:11.7563660Z [501/542] Building CXX object tools/CMakeFiles/plan_serializer.dir/utils/plan_serializer.cpp.o
+2026-10-10T05:34:11.7664240Z [502/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_command_line_option.cpp.o
+2026-10-10T05:34:11.7865780Z [503/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_extension.cpp.o
+2026-10-10T05:34:11.8066360Z [504/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell.cpp.o
+2026-10-10T05:34:11.8167660Z [505/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_helpers.cpp.o
+2026-10-10T05:34:11.8268880Z [506/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_metadata_command.cpp.o
+2026-10-10T05:34:11.8469510Z [507/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_prompt.cpp.o
+2026-10-10T05:34:11.8569740Z [508/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_renderer.cpp.o
+2026-10-10T05:34:11.8770570Z [509/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_highlight.cpp.o
+2026-10-10T05:34:11.8971730Z [510/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_progress_bar.cpp.o
+2026-10-10T05:34:11.9073080Z [511/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_render_table_metadata.cpp.o
+2026-10-10T05:34:11.9174310Z [512/542] Building CXX object tools/shell/CMakeFiles/shell.dir/shell_windows.cpp.o
+2026-10-10T05:34:11.9476250Z [513/542] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/history.cpp.o
+2026-10-10T05:34:11.9577690Z [514/542] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/highlighting.cpp.o
+2026-10-10T05:34:11.9779450Z [515/542] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/linenoise.cpp.o
+2026-10-10T05:34:11.9900120Z [516/542] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/linenoise-c.cpp.o
+2026-10-10T05:34:12.0102050Z [517/542] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/terminal.cpp.o
+2026-10-10T05:34:12.0203530Z [518/542] Building CXX object tools/shell/linenoise/CMakeFiles/duckdb_linenoise.dir/rendering.cpp.o
+2026-10-10T05:34:12.0505350Z [519/542] Building CXX object test/CMakeFiles/unittest.dir/unittest.cpp.o
+2026-10-10T05:34:12.0706100Z [520/542] Linking CXX static library extension/libduckdb_generated_extension_loader.a
+2026-10-10T05:34:12.0807470Z [521/542] Building CXX object extension/ossie/CMakeFiles/ossie_loadable_extension.dir/src/ossie_extension.cpp.o
+2026-10-10T05:34:12.1116090Z [522/542] Building CXX object test/sqlite/CMakeFiles/test_sqlite.dir/ub_test_sqlite.cpp.o
+2026-10-10T05:34:12.1216290Z [523/542] Linking CXX static library test/helpers/libtest_helpers.a
+2026-10-10T05:34:12.1317460Z [524/542] Updating .cache/clangd (release)
+2026-10-10T05:34:24.3706870Z [525/542] Building CXX object src/common/CMakeFiles/duckdb_common.dir/ub_duckdb_common.cpp.o
+2026-10-10T05:34:24.9970550Z [526/542] Linking CXX static library src/libduckdb_static.a
+2026-10-10T05:34:25.1673930Z [527/542] Linking CXX static library extension/tpcds/libtpcds_extension.a
+2026-10-10T05:34:25.2115080Z [528/542] Linking CXX static library extension/ossie/libossie_extension.a
+2026-10-10T05:34:25.3402130Z [529/542] Linking CXX static library extension/parquet/libparquet_extension.a
+2026-10-10T05:34:25.6732260Z [530/542] Linking CXX shared library extension/parquet/parquet.duckdb_extension
+2026-10-10T05:34:25.6833950Z [531/542] Linking CXX shared library extension/tpcds/tpcds.duckdb_extension
+2026-10-10T05:34:25.7181480Z [532/542] Linking CXX shared library extension/ossie/ossie.duckdb_extension
+2026-10-10T05:34:25.7782940Z [533/542] Linking CXX shared library test/extension/loadable_extension_demo.duckdb_extension
+2026-10-10T05:34:25.9287250Z [534/542] Linking CXX shared library test/extension/loadable_extension_optimizer_demo.duckdb_extension
+2026-10-10T05:34:31.9932600Z [535/542] Building CXX object extension/core_functions/aggregate/holistic/CMakeFiles/duckdb_core_functions_holistic.dir/ub_duckdb_core_functions_holistic.cpp.o
+2026-10-10T05:34:32.1152710Z [536/542] Linking CXX static library extension/core_functions/libcore_functions_extension.a
+2026-10-10T05:34:32.3399370Z [537/542] Linking CXX shared library extension/core_functions/core_functions.duckdb_extension
+2026-10-10T05:34:32.5616200Z [538/542] repository
+2026-10-10T05:34:32.8422850Z [539/542] Linking CXX executable tools/plan_serializer
+2026-10-10T05:34:32.8723870Z [540/542] Linking CXX executable test/unittest
+2026-10-10T05:34:32.9647520Z [541/542] Linking CXX executable duckdb
+2026-10-10T05:34:32.9678410Z [542/542] Linking CXX shared library src/libduckdb.dylib
+2026-10-10T05:34:32.9974550Z ##[group]Run eval "$(jq -r '.test_env_variables // {} | to_entries[] | "export \(.key)=\(.value | @sh)"' <<< '{}')"
+2026-10-10T05:34:32.9975550Z [36;1meval "$(jq -r '.test_env_variables // {} | to_entries[] | "export \(.key)=\(.value | @sh)"' <<< '{}')"[0m
+2026-10-10T05:34:32.9976120Z [36;1mmake test_release[0m
+2026-10-10T05:34:33.0042010Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-10T05:34:33.0042340Z env:
+2026-10-10T05:34:33.0042730Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:34:33.0043410Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:34:33.0043930Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:34:33.0044260Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:34:33.0044680Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:34:33.0045480Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:34:33.0046030Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:34:33.0046290Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:34:33.0046560Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:34:33.0046760Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:34:33.0046980Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:34:33.0047240Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:34:33.0047530Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:34:33.0047770Z   GEN: ninja
+2026-10-10T05:34:33.0048000Z   BUILD_SHELL: 1
+2026-10-10T05:34:33.0048200Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:34:33.0048710Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:34:33.0054780Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:34:33.0055280Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+2026-10-10T05:34:33.0055760Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:34:33.0056180Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:34:33.0056690Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:34:33.0057200Z   VCPKG_ROOT: /Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation
+2026-10-10T05:34:33.0057650Z   SUBSET_EXTENSIONS_TESTS: regular
+2026-10-10T05:34:33.0057960Z ##[endgroup]
+2026-10-10T05:34:33.0746850Z Makefile:33: warning: overriding commands for target `tidy-check'
+2026-10-10T05:34:33.0747480Z extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old commands for target `tidy-check'
+2026-10-10T05:34:33.0750230Z cmake --build build/release --target ossie_state_test
+2026-10-10T05:34:33.4660630Z [1/2] Building CXX object extension/ossie/CMakeFiles/ossie_state_test.dir/test/cpp/state_snapshot_test.cpp.o
+2026-10-10T05:34:33.6970860Z [2/2] Linking CXX executable extension/ossie/ossie_state_test
+2026-10-10T05:34:33.6979430Z ./build/release/extension/ossie/ossie_state_test "/Users/runner/work/duckdb-ossie/duckdb-ossie/"
+2026-10-10T05:34:33.7344580Z PASS: 19 checks; controlled publication, lifetime, compile behavior, cross-connection timing
+2026-10-10T05:34:33.7346490Z cmake --build build/release --target ossie_metric_grain_test
+2026-10-10T05:34:34.0134540Z [1/2] Building CXX object extension/ossie/CMakeFiles/ossie_metric_grain_test.dir/test/cpp/metric_grain_test.cpp.o
+2026-10-10T05:34:34.2373740Z [2/2] Linking CXX executable extension/ossie/ossie_metric_grain_test
+2026-10-10T05:34:34.2383610Z ./build/release/extension/ossie/ossie_metric_grain_test "/Users/runner/work/duckdb-ossie/duckdb-ossie/"
+2026-10-10T05:34:34.2717260Z PASS: fact grain: amount_sum
+2026-10-10T05:34:34.2717570Z PASS: fact grain: amount_avg
+2026-10-10T05:34:34.2717890Z PASS: fact grain: value_count
+2026-10-10T05:34:34.2718210Z PASS: fact grain: record_count
+2026-10-10T05:34:34.2719560Z PASS: fact grain: eligible_amount
+2026-10-10T05:34:34.2719910Z PASS: fact grain: dimension_scalar
+2026-10-10T05:34:34.2720440Z PASS: fact grain: wrapped_fact
+2026-10-10T05:34:34.2720800Z PASS: fact grain: constant_field_sum
+2026-10-10T05:34:34.2721140Z PASS: fact grain: quoted_fact
+2026-10-10T05:34:34.2721440Z PASS: independent metrics all have designated fact grain
+2026-10-10T05:34:34.2722160Z PASS: case-insensitive declared metric and dataset
+2026-10-10T05:34:34.2722620Z PASS: core dimension metric independently compiles
+2026-10-10T05:34:34.2723260Z PASS: reject different/absent grain: dimension_count
+2026-10-10T05:34:34.2723920Z PASS: reject different/absent grain: dimension_distinct
+2026-10-10T05:34:34.2724650Z PASS: reject different/absent grain: mixed
+2026-10-10T05:34:34.2725130Z PASS: reject different/absent grain: wrapped_mixed
+2026-10-10T05:34:34.2725560Z PASS: reject different/absent grain: scalar
+2026-10-10T05:34:34.2725890Z PASS: reject different/absent grain: unknown_function
+2026-10-10T05:34:34.2726250Z PASS: reject grainless aggregate: star
+2026-10-10T05:34:34.2726540Z PASS: reject grainless aggregate: with_star
+2026-10-10T05:34:34.2726890Z PASS: reject grainless aggregate: one
+2026-10-10T05:34:34.2727410Z PASS: new checker does not infer standalone COUNT(*) grain from another metric
+2026-10-10T05:34:34.2727840Z PASS: existing core grainless inheritance retained
+2026-10-10T05:34:34.2728240Z PASS: existing core in-metric grainless inheritance retained
+2026-10-10T05:34:34.2728640Z PASS: window rejected by shared analysis
+2026-10-10T05:34:34.2728930Z PASS: unknown metric rejected
+2026-10-10T05:34:34.2729270Z PASS: unknown designated dataset rejected
+2026-10-10T05:34:34.2729540Z PASS: empty request rejected
+2026-10-10T05:34:34.2729880Z PASS: designated grain does not replace fan-out planning
+2026-10-10T05:34:34.2730490Z PASS: designated grain does not replace ambiguity planning
+2026-10-10T05:34:34.2730870Z PASS: validation leaves original model and SQL unchanged
+2026-10-10T05:34:34.2731260Z PASS: native binding fixture created
+2026-10-10T05:34:34.2731650Z PASS: nested aggregates still require physical binder refusal
+2026-10-10T05:34:34.2732010Z PASS: valid original query executes after grain checks
+2026-10-10T05:34:34.2732480Z PASS: group membership, totals and counts match independent hand-derived oracle
+2026-10-10T05:34:34.2732980Z PASS: all designated fact metrics execute
+2026-10-10T05:34:34.2733320Z PASS: exact fact metrics/CASE/constant field match hand oracle
+2026-10-10T05:34:34.2733680Z PASS: AVG and wrapped ratio match hand oracle
+2026-10-10T05:34:34.2734110Z PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: nested_star
+2026-10-10T05:34:34.2734740Z PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: hidden_sum_metric
+2026-10-10T05:34:34.2735400Z PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: hidden_window_metric
+2026-10-10T05:34:34.2736050Z PASS: unrecognized aggregate requires separate strict expression whitelist; binder alone is insufficient
+2026-10-10T05:34:34.2736580Z PASS: 42 designated-grain controls
+2026-10-10T05:34:34.2736980Z cmake --build build/release --target ossie_population_capture_test
+2026-10-10T05:34:34.5501480Z [1/2] Building CXX object extension/ossie/CMakeFiles/ossie_population_capture_test.dir/test/cpp/population_capture_test.cpp.o
+2026-10-10T05:34:34.7842960Z [2/2] Linking CXX executable extension/ossie/ossie_population_capture_test
+2026-10-10T05:34:34.7845740Z ./build/release/extension/ossie/ossie_population_capture_test "/Users/runner/work/duckdb-ossie/duckdb-ossie/"
+2026-10-10T05:34:34.8794420Z PASS: 158 checks; deterministic production capture, capture/prepublish cancel, callback failure; threads=4/1
+2026-10-10T05:34:34.8798030Z ./build/release/"/test/unittest" ""test/"*"
+2026-10-10T05:34:34.8978660Z Filters: test/*
+2026-10-10T05:34:34.8978810Z 
+2026-10-10T05:34:34.9183790Z [0/23] (0%): test/sql/ossie_join_research.test
+2026-10-10T05:34:34.9271290Z [1/23] (4%): test/sql/ossie_field_expansion.test
+2026-10-10T05:34:34.9340820Z [2/23] (8%): test/sql/ossie_describe.test
+2026-10-10T05:34:34.9537680Z [3/23] (13%): test/sql/ossie_loader_contract.test
+2026-10-10T05:34:34.9600180Z [4/23] (17%): test/sql/ossie_relationships.test
+2026-10-10T05:34:34.9786710Z [5/23] (21%): test/sql/ossie_population_expressions.test
+2026-10-10T05:34:35.0121180Z [6/23] (26%): test/sql/ossie_population.test
+2026-10-10T05:34:35.0303520Z [7/23] (30%): test/sql/ossie_population_result.test
+2026-10-10T05:34:35.0456930Z [8/23] (34%): test/sql/ossie_population_discovery.test
+2026-10-10T05:34:35.0516060Z [9/23] (39%): test/sql/ossie_population_errors.test
+2026-10-10T05:34:35.0660360Z [10/23] (43%): test/sql/ossie_sql_2026.test
+2026-10-10T05:34:35.0780860Z [11/23] (47%): test/sql/ossie_yaml.test
+2026-10-10T05:34:35.0959570Z [12/23] (52%): test/sql/ossie_population_plan.test
+2026-10-10T05:34:35.4324160Z [13/23] (56%): test/sql/ossie_differential.test
+2026-10-10T05:34:35.4774150Z [14/23] (60%): test/sql/ossie_function_metadata.test
+2026-10-10T05:34:35.4875360Z [15/23] (65%): test/sql/ossie_conformance.test
+2026-10-10T05:34:35.5088710Z [16/23] (69%): test/sql/ossie_population_dates.test
+2026-10-10T05:34:35.5178900Z [17/23] (73%): test/sql/ossie_compile.test
+2026-10-10T05:34:35.5434840Z [18/23] (78%): test/sql/ossie_joined_population.test
+2026-10-10T05:34:35.5499800Z [19/23] (82%): test/sql/ossie_grain.test
+2026-10-10T05:34:35.5576710Z [20/23] (86%): test/sql/ossie_load.test
+2026-10-10T05:34:35.5621750Z [21/23] (91%): test/sql/ossie.test
+2026-10-10T05:34:35.5692090Z [22/23] (95%): test/sql/ossie_validate.test
+2026-10-10T05:34:35.5692560Z [23/23] (100%): test/sql/ossie_validate.test
+2026-10-10T05:34:35.5693210Z ===============================================================================
+2026-10-10T05:34:35.5694070Z All tests passed (840 assertions in 23 test cases)
+2026-10-10T05:34:35.5694460Z 
+2026-10-10T05:34:35.5778430Z ##[group]Run actions/upload-artifact@v4
+2026-10-10T05:34:35.5778650Z with:
+2026-10-10T05:34:35.5778810Z   if-no-files-found: error
+2026-10-10T05:34:35.5778990Z   name: ossie-v1.5.6-extension-osx_arm64
+2026-10-10T05:34:35.5779280Z   path: build/release/extension/ossie/ossie.duckdb_extension
+
+2026-10-10T05:34:35.5779560Z   compression-level: 6
+2026-10-10T05:34:35.5779730Z   overwrite: false
+2026-10-10T05:34:35.5779890Z   include-hidden-files: false
+2026-10-10T05:34:35.5780060Z env:
+2026-10-10T05:34:35.5780310Z   VCPKG_BINARY_SOURCES: clear;http,https://vcpkg-cache.duckdb.org,read
+2026-10-10T05:34:35.5780870Z   VCPKG_TOOLCHAIN_PATH: /Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation/scripts/buildsystems/vcpkg.cmake
+2026-10-10T05:34:35.5781330Z   VCPKG_TARGET_TRIPLET: arm64-osx-release
+2026-10-10T05:34:35.5781550Z   VCPKG_HOST_TRIPLET: arm64-osx-release
+2026-10-10T05:34:35.5781950Z   VCPKG_OVERLAY_PORTS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/vcpkg_ports
+2026-10-10T05:34:35.5782490Z   VCPKG_OVERLAY_TRIPLETS: /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools/toolchains
+2026-10-10T05:34:35.5782870Z   USE_MERGED_VCPKG_MANIFEST: 
+2026-10-10T05:34:35.5783060Z   AWS_ACCESS_KEY_ID: 
+2026-10-10T05:34:35.5783210Z   AWS_SECRET_ACCESS_KEY: 
+2026-10-10T05:34:35.5783370Z   AWS_ENDPOINT_URL: 
+2026-10-10T05:34:35.5783530Z   AWS_DEFAULT_REGION: 
+2026-10-10T05:34:35.5783720Z   AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+2026-10-10T05:34:35.5783960Z   OSX_BUILD_ARCH: arm64
+2026-10-10T05:34:35.5784120Z   GEN: ninja
+2026-10-10T05:34:35.5784260Z   BUILD_SHELL: 1
+2026-10-10T05:34:35.5784410Z   DUCKDB_PLATFORM: osx_arm64
+2026-10-10T05:34:35.5784850Z   INTEL_HOMEBREW_INSTALLER: https://raw.githubusercontent.com/Homebrew/install/0f5b7666a65fc2d1a2615549f02771353c250f9a/install.sh
+2026-10-10T05:34:35.5785380Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:34:35.5785800Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+2026-10-10T05:34:35.5786200Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:34:35.5786560Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:34:35.5786920Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+2026-10-10T05:34:35.5787310Z   VCPKG_ROOT: /Users/runner/work/duckdb-ossie/duckdb-ossie/local_vcpkg_installation
+2026-10-10T05:34:35.5787640Z ##[endgroup]
+2026-10-10T05:34:35.8956810Z (node:10013) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-10T05:34:35.8957470Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-10T05:34:35.8991010Z With the provided path, there will be 1 file uploaded
+2026-10-10T05:34:35.8993740Z Artifact name is valid!
+2026-10-10T05:34:35.8994260Z Root directory input is valid!
+2026-10-10T05:34:40.9175080Z Attempt 1 of 5 failed with error: Request timeout: /twirp/github.actions.results.api.v1.ArtifactService/CreateArtifact. Retrying request in 3000 ms...
+2026-10-10T05:34:48.9235420Z Attempt 2 of 5 failed with error: Request timeout: /twirp/github.actions.results.api.v1.ArtifactService/CreateArtifact. Retrying request in 6648 ms...
+2026-10-10T05:35:00.5794380Z Attempt 3 of 5 failed with error: Request timeout: /twirp/github.actions.results.api.v1.ArtifactService/CreateArtifact. Retrying request in 8528 ms...
+2026-10-10T05:35:14.1111860Z Attempt 4 of 5 failed with error: Request timeout: /twirp/github.actions.results.api.v1.ArtifactService/CreateArtifact. Retrying request in 13944 ms...
+2026-10-10T05:35:33.0605660Z ##[error]Failed to CreateArtifact: Failed to make request after 5 attempts: Request timeout: /twirp/github.actions.results.api.v1.ArtifactService/CreateArtifact
+2026-10-10T05:35:51.1873060Z Post job cleanup.
+2026-10-10T05:35:51.3337650Z [command]/opt/homebrew/bin/git version
+2026-10-10T05:35:51.3548270Z git version 2.55.0
+2026-10-10T05:35:51.3567750Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/72e88e33-f659-44ef-95a1-fbe493591ee3/.gitconfig'
+2026-10-10T05:35:51.3575650Z Temporarily overriding HOME='/Users/runner/work/_temp/72e88e33-f659-44ef-95a1-fbe493591ee3' before making global git config changes
+2026-10-10T05:35:51.3576360Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-10T05:35:51.3579070Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/duckdb-ossie/duckdb-ossie/extension-ci-tools
+2026-10-10T05:35:51.3693560Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-10T05:35:51.3755830Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-10T05:35:51.4719770Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-10T05:35:51.4768930Z http.https://github.com/.extraheader
+2026-10-10T05:35:51.4775570Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-10T05:35:51.4868170Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-10T05:35:51.5927050Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T05:35:51.5979300Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-10T05:35:51.7619330Z Post job cleanup.
+2026-10-10T05:35:51.8890370Z ##[group]ccache stats
+2026-10-10T05:35:51.8953890Z [command]/opt/homebrew/bin/ccache -s
+2026-10-10T05:35:51.9284430Z Cacheable calls:   512 / 512 (100.0%)
+2026-10-10T05:35:51.9285080Z   Hits:            507 / 512 (99.02%)
+2026-10-10T05:35:51.9285510Z     Direct:        476 / 507 (93.89%)
+2026-10-10T05:35:51.9285790Z     Preprocessed:   31 / 507 ( 6.11%)
+2026-10-10T05:35:51.9286040Z   Misses:            5 / 512 ( 0.98%)
+2026-10-10T05:35:51.9286290Z Local storage:
+2026-10-10T05:35:51.9286510Z   Cache size (GB): 0.0 / 0.5 ( 9.86%)
+2026-10-10T05:35:51.9286760Z   Hits:            507 / 512 (99.02%)
+2026-10-10T05:35:51.9287000Z   Misses:            5 / 512 ( 0.98%)
+2026-10-10T05:35:51.9300200Z [command]/opt/homebrew/bin/ccache --version
+2026-10-10T05:35:51.9370750Z ccache version 4.14
+2026-10-10T05:35:51.9378500Z Features: crsh-storage file-storage http-storage redis+unix-storage redis-storage remote-storage
+2026-10-10T05:35:51.9378860Z 
+2026-10-10T05:35:51.9379120Z Copyright (C) 2002-2007 Andrew Tridgell
+2026-10-10T05:35:51.9379540Z Copyright (C) 2009-2026 Joel Rosdahl and other contributors
+2026-10-10T05:35:51.9379800Z 
+2026-10-10T05:35:51.9380050Z See <https://ccache.dev/credits.html> for a complete list of contributors.
+2026-10-10T05:35:51.9380380Z 
+2026-10-10T05:35:51.9380610Z This program is free software; you can redistribute it and/or modify it under
+2026-10-10T05:35:51.9381080Z the terms of the GNU General Public License as published by the Free Software
+2026-10-10T05:35:51.9381560Z Foundation; either version 3 of the License, or (at your option) any later
+2026-10-10T05:35:51.9381920Z version.
+2026-10-10T05:35:51.9382300Z ##[endgroup]
+2026-10-10T05:35:51.9579660Z Save cache using key "ccache-ccache-extension-distribution-osx_arm64-v1.5.6-2026-10-10T05:35:51.951Z".
+2026-10-10T05:35:51.9726280Z [command]/opt/homebrew/bin/gtar --posix -cf cache.tzst --exclude cache.tzst -P -C /Users/runner/work/duckdb-ossie/duckdb-ossie --files-from manifest.txt --delay-directory-restore --use-compress-program zstdmt
+2026-10-10T05:35:53.7509800Z Sent 23330816 of 46742613 (49.9%), 22.2 MBs/sec
+2026-10-10T05:35:54.2296890Z Sent 46742613 of 46742613 (100.0%), 30.1 MBs/sec
+2026-10-10T05:35:54.4958570Z Post job cleanup.
+2026-10-10T05:35:54.5856840Z [command]/opt/homebrew/bin/git version
+2026-10-10T05:35:54.5917090Z git version 2.55.0
+2026-10-10T05:35:54.5933790Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/9e04d63f-d484-4fb2-8367-b013a471e48b/.gitconfig'
+2026-10-10T05:35:54.5939760Z Temporarily overriding HOME='/Users/runner/work/_temp/9e04d63f-d484-4fb2-8367-b013a471e48b' before making global git config changes
+2026-10-10T05:35:54.5940520Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-10T05:35:54.5943370Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/duckdb-ossie/duckdb-ossie
+2026-10-10T05:35:54.6016140Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-10T05:35:54.6077210Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-10T05:35:54.6797260Z Entering 'duckdb'
+2026-10-10T05:35:54.7036350Z Entering 'extension-ci-tools'
+2026-10-10T05:35:54.7222070Z Entering 'third_party/fkYAML'
+2026-10-10T05:35:54.7422590Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-10T05:35:54.7470490Z http.https://github.com/.extraheader
+2026-10-10T05:35:54.7476030Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-10T05:35:54.7536750Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-10T05:35:54.8208190Z Entering 'duckdb'
+2026-10-10T05:35:54.8329060Z http.https://github.com/.extraheader
+2026-10-10T05:35:54.8447540Z Entering 'extension-ci-tools'
+2026-10-10T05:35:54.8638410Z Entering 'third_party/fkYAML'
+2026-10-10T05:35:54.8754170Z http.https://github.com/.extraheader
+2026-10-10T05:35:54.8875550Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T05:35:54.8930360Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-10T05:35:54.9596350Z Entering 'duckdb'
+2026-10-10T05:35:54.9705980Z file:/Users/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/duckdb/config	remote.origin.url
+2026-10-10T05:35:54.9793930Z Entering 'extension-ci-tools'
+2026-10-10T05:35:54.9945740Z file:.git/config	remote.origin.url
+2026-10-10T05:35:55.0047000Z Entering 'third_party/fkYAML'
+2026-10-10T05:35:55.0247750Z file:/Users/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/third_party/fkYAML/config	remote.origin.url
+2026-10-10T05:35:55.0492720Z [command]/opt/homebrew/bin/git config --file /Users/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/duckdb/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T05:35:55.0796690Z [command]/opt/homebrew/bin/git config --file .git/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T05:35:55.1065470Z [command]/opt/homebrew/bin/git config --file /Users/runner/work/duckdb-ossie/duckdb-ossie/.git/modules/third_party/fkYAML/config --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-10T05:35:55.1512370Z Cleaning up orphan processes
+2026-10-10T05:35:56.4749490Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
