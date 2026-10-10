@@ -1,0 +1,35 @@
+{
+  "scope": "OSSIE-REQ-001 first bounded live Agent attempt",
+  "execution_head": "2d304bfdf4036be12e5381e4417c6548a4e6c0bc",
+  "execution_dirty": "",
+  "result": "authentication blocked; Agent acceptance unfinished",
+  "attempted_model_requests": 1,
+  "model_selected_tool_calls": 0,
+  "provider_http_status": 401,
+  "returned_usage": "unknown",
+  "scenes_completed": 0,
+  "later_scenes": "not started",
+  "event_counts": {
+    "trusted_setup": 1,
+    "rpc_request": 7,
+    "rpc_response": 7,
+    "discovered_context": 1,
+    "provider_request": 1
+  },
+  "configuration_check": {
+    "baseURL_matches_private_file": true,
+    "model_matches_private_file": true,
+    "key_matches_private_file_in_original_launch": false,
+    "all_three_match_after_clearing_inherited_variables": true
+  },
+  "interpretation": "An inherited key overrode the selected private-file key. HTTP 401 does not establish that the private-file key is invalid. Detailed provider error body was not retained by the adapter.",
+  "original_files_sha256": {
+    "baseline/events.jsonl": "2ea53c6c4991eec42ac2b0fdcc6994708f03ae9e9cf0ef20e1884e066861e8b3",
+    "baseline/failure.json": "44736e403ac9963b86f0f32e72d978a93bb23b9f74ef88a65a2ba19a5aaedde4",
+    "failure.json": "fc0fa53ae8082b8df5d134f1f77f57a59a7c0b9790cc7f6046f30f49e61ca234",
+    "run.json": "15c1b8e2cc6ffe32f0e9c04d9d25ff99712bf44088507fb214c5216aace8804a"
+  },
+  "preservation": "Original run retained in ignored private directory; no retry or credential change.",
+  "next_action": "User decision for one corrected-launch attempt with inherited OpenAI variables cleared, same approved limits and a fresh directory.",
+  "remote_mutated": false
+}

@@ -943,3 +943,14 @@ previously selected private configuration, preserving the first raw result in
 ignored local evidence. Evaluate numerical gates and independently review scope,
 rules and actual tool-response references. No automatic retry, push or scope
 expansion is authorized.
+
+### First live attempt blocked — 2026-10-10
+
+Baseline MCP discovery completed; the first model request returned HTTP 401. No
+model-selected tool call or scene completed. Original clean-head evidence is
+retained privately with [public hash-bound findings](docs/research/ossie-req-001/agent-live-first-controls/summary.json).
+Inherited OPENAI_API_KEY overrode the selected .env_test key. Clearing inherited
+OpenAI variables loads all three selected values correctly, verified without a
+network request. Provider authentication with the selected key remains untested.
+No retry occurred; usage/billing are unknown. The next action requires a user
+decision for one corrected-launch attempt at the same limits.
