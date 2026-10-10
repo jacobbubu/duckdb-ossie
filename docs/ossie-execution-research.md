@@ -860,7 +860,7 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 
 ### OSSIE-REQ-001：最小 Agent harness 实施 checkpoint（2026-10-10）
 
-用户要求继续，并指定OpenAI兼容网关 `https://api.openai.com/v1/`、模型 `configured-tool-capable-model`、凭据环境变量 `OPENAI_API_KEY`。本轮实施既定三场景的Bun/TS显式循环与本地控制，不改C++/MCP/资产。先完成无模型prepare、工具参数原样转发、预算/错误终止/首次结果保存及独立oracle/人工评审入口；真实网关调用和费用单独记录，不将配置可用当协议兼容或Agent通过。凭据只从环境读取，不保存请求认证头。验证采用可注入本地provider/RPC控制及真实MCP准备，mock不能证明自主模型。门禁与失败保留，原始prompt及历史证据不覆盖。
+用户要求继续，并指定本地兼容服务、模型和本地凭据来源；具体配置已移至非提交的本地文件，公共接口现统一为OpenAI命名。本轮实施既定三场景的Bun/TS显式循环与本地控制，不改C++/MCP/资产。先完成无模型prepare、工具参数原样转发、预算/错误终止/首次结果保存及独立oracle/人工评审入口；真实网关调用和费用单独记录，不将配置可用当协议兼容或Agent通过。凭据只从环境读取，不保存请求认证头。验证采用可注入本地provider/RPC控制及真实MCP准备，mock不能证明自主模型。门禁与失败保留，原始prompt及历史证据不覆盖。
 
 ### 最小 Agent harness 本地完成，真实调用预算待明确（2026-10-10）
 
@@ -881,3 +881,15 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 只读Advisor反证后Lead落实隔离/续接/记录约束；requested Astra/high，有效backend/effort/usage/billing unknown，见[审阅](research/ossie-req-001/agent-responses-controls/advisor-review.md)。迁移脚本中断后的旧chatProvider import失败保留；最终59Bun/238expects、typecheck/format通过，三场景真实MCP prepare通过，源码hash与[准备证据](research/ossie-req-001/agent-responses-controls/prepare/summary.json)绑定。原chat阶段证据不覆盖。
 
 本地协议修正包完成，只本地提交；未请求内网模型服务，网关Responses及store/continuation兼容性未验证。下一必要仍是用户明确接受token/调用/时间预算，然后单次三场景真实运行和人工语义审阅。用户提供端点不等于已确认待决预算。P1/分页/main合并/发布未启动。
+
+### OSSIE-REQ-001：开源配置边界修正 checkpoint（2026-10-10）
+
+用户要求公共程序采用OPENAI_BASE_URL/OPENAI_MODEL/OPENAI_API_KEY，内部服务配置仅保存在不提交的.env_test。本轮去除硬编码内部服务与模型、专用Key变量和固定目标限制，提供通用示例并显式通过Bun --env-file读取本地测试配置。同步清理当前跟踪的说明/测试/准备报告中的内部配置；原始准备记录保持字节不变、移入忽略的本地证据目录，公开文件标为脱敏衍生物并更新文件校验清单。不重写Git历史，不推送或调用模型。验证通用HTTPS配置、缺失模型/标准Key、credential URL拒绝、忽略规则、已跟踪内容无内部配置以及现有Bun/真实MCP prepare。
+
+### 开源配置修正包完成，历史清理待交付前处理（2026-10-10）
+
+公共入口只读OPENAI_BASE_URL/OPENAI_MODEL/OPENAI_API_KEY；BASE_URL默认官方API根地址，可选择其他无凭据HTTPS兼容地址；MODEL须显式指定，Key仅--run必需。移除内部网关/模型常量及专用Key变量，不硬锁目标。用户明确要求的.env_test已创建为0600且Git忽略，显式bun --env-file=.env_test加载；公开.env_test.example只有通用占位配置。实际凭据不写入证据或stdout，模型仍未调用。
+
+当前跟踪的说明和三份准备run.json中内部配置已脱敏；run.json显式标为公开衍生物、绑定原始SHA256，不再将占位值冒充实际服务。旧原始记录按字节保存到忽略的本地证据目录，更新公开校验清单；[脱敏关联](research/ossie-req-001/agent-public-config-controls/redaction.json)保留边界。原始输入/业务资产不改。59Bun/239expects、typecheck/format通过，加载本地测试文件的三场景真实MCP准备通过，公开仅保存不含配置的summary。
+
+当前配置/工作树脱敏工作包完成，本地提交、不推送。此前未推送的Git历史仍包含旧网关/模型记录（没有Key值），未改写历史；推送前需要清理未推送历史并复核完整待推范围，不能只检查当前树。既定实际模型预算与三场景Agent验收仍待独立推进，P1/分页不启动。

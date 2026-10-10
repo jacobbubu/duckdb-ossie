@@ -1,0 +1,31 @@
+{
+  "scope": "current tracked files; no Git history rewrite",
+  "originals": "immutable local copies in ignored .local-agent-evidence",
+  "derivatives": [
+    {
+      "path": "docs/agent-minimal-acceptance.md",
+      "original_sha256": "5c2f0c2b2056494e8be821bb51312058be27994130f35586d95f9a26356790e5",
+      "public_sha256": "9fff9d2a1716ad5b9add58f29a6f7fa72c85871de6c29915e66737436a23e264"
+    },
+    {
+      "path": "docs/ossie-execution-research.md",
+      "original_sha256": "bf89dcd1733a4966bf5d4f186a00c1337355132eaeeb1231806687c50970a571",
+      "public_sha256": "ff56348d55ea0b225c07c67cb1928bc42b578d38e82ded428e733d240a5a9461"
+    },
+    {
+      "path": "docs/research/ossie-req-001/agent-harness-controls/prepare-final/run.json",
+      "original_sha256": "8e3642ebff65b9ffeab1b344cf4d8fb3d8d26ce2a65b1e7ff5ac4e87d1b5c3ec",
+      "public_sha256": "5773bb4a9be4b931c72843da0dc0cb4d43ce012ae3038c8f46d9dc9bd82dd337"
+    },
+    {
+      "path": "docs/research/ossie-req-001/agent-harness-controls/prepare/run.json",
+      "original_sha256": "2b831eee6ea45a6449c7f22a9f54932e7ce75a899e79a16286281e84a28efc39",
+      "public_sha256": "b21cfc3ff9e0d7eb4ebe3ee9e583cb91485e12489a4cfbfe8866aaf390293bf3"
+    },
+    {
+      "path": "docs/research/ossie-req-001/agent-responses-controls/prepare/run.json",
+      "original_sha256": "062dc45550701bb1eaea93daeba7fbc9dcdd22927958670efb4066bb3fc7d043",
+      "public_sha256": "80d0ee72950a4d01e734f85d6b835a393a02ba17359d9933628695e9837df6f0"
+    }
+  ]
+}

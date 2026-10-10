@@ -905,3 +905,16 @@ read-only review and final source-bound evidence are retained in
 This protocol correction package is complete locally. No provider request was made;
 live gateway compatibility and Agent behavior remain unverified. The pending budget
 choice is unchanged; endpoint correction does not approve it.
+
+### Public OpenAI configuration — 2026-10-10
+
+The user requires generic open-source configuration: OPENAI_BASE_URL,
+OPENAI_MODEL and OPENAI_API_KEY. Private service/model/key values live only in
+ignored local .env_test; .env_test.example supplies public placeholders. Fixed
+internal destination/model/key-variable bindings are removed. Current tracked
+configuration references are redacted derivatives with immutable originals kept
+locally outside Git; source business inputs are unchanged. All 59 tooling tests/239
+assertions, typecheck/format and explicit local-env three-scene MCP preparation
+pass. No model call occurred. Older unpublished commits still contain prior service
+and model references; clean that unpublished history before any push and inspect
+the complete outgoing history. Current-tree cleanup alone is not history cleanup.

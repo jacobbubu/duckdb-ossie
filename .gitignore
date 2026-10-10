@@ -8,3 +8,7 @@ testext
 .Rhistory
 
 node_modules/
+
+# Local model credentials and immutable private experiment records
+.env_test
+.local-agent-evidence/

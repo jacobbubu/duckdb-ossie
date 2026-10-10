@@ -80,7 +80,7 @@ Advisor 建议保留三场景与显式循环，先修正上述场景门禁、独
 
 ## 最小程序已实现，本地验证完成，真实调用待运行
 
-用户选定OpenAI兼容网关 `https://api.openai.com/v1/`、模型 `configured-tool-capable-model`，明确复用 `OPENAI_API_KEY`。凭据仅在 `--run` 时从环境读入，认证头不进入归档；无凭据文件写入、SDK或其他新增依赖。按用户补充端点采用 Responses API，实际目标为 `https://api.openai.com/v1/responses`。参照官方 [function calling](https://developers.openai.com/api/docs/guides/function-calling) 和 [conversation state](https://developers.openai.com/api/docs/guides/conversation-state)：input、function_call/function_call_output与call_id、completed/incomplete状态。网关实际兼容性尚未验证，不因“兼容”名称假定它支持全部参数；原Chat Completions实现已移除，不静默回退。
+用户选定本地兼容服务与模型，实际值只保存在本地测试配置中，公开接口统一为 `OPENAI_BASE_URL`、`OPENAI_MODEL` 和 `OPENAI_API_KEY`。凭据仅在 `--run` 时从环境读入，认证头不进入归档；初始实现未写凭据文件；当前本地 `.env_test` 约定见后文，无SDK或其他新增依赖。按用户补充端点采用 Responses API，实际目标由 `OPENAI_BASE_URL` 追加 `responses` 得到。参照官方 [function calling](https://developers.openai.com/api/docs/guides/function-calling) 和 [conversation state](https://developers.openai.com/api/docs/guides/conversation-state)：input、function_call/function_call_output与call_id、completed/incomplete状态。网关实际兼容性尚未验证，不因“兼容”名称假定它支持全部参数；原Chat Completions实现已移除，不静默回退。
 
 实现入口为 `scripts/agent_acceptance.ts`，模型调用循环为 `scripts/agent_loop.ts`。`--prepare`只做三场景的真实MCP发现；`--run`才调用模型。每次必须指定新的输出目录；固定prompt、二进制/源码/CSV/定义哈希、git HEAD及dirty状态、实际MCP版本/二进制身份、每轮模型可见请求/响应、原始工具参数/RPC响应及失败逐步归档。模型私有reasoning字段不保存；不发送oracle。最后才独立核对答案与引用的实际执行列，口径/规则/引用语义仍需人工审阅；`pending human review`不能当作通过。
 
@@ -109,7 +109,7 @@ bun scripts/agent_acceptance.ts --run --token-budget-only \
 [本地控制证据](research/ossie-req-001/agent-harness-controls/prepare/summary.json)：三场景独立真实MCP发现通过，没有模型调用。50 Bun tests/167 expects、TS类型、格式与现有架构检查通过，新增7项控制为模拟provider/RPC，并非真实Agent验收。首次typecheck因Bun fetch额外preconnect属性导致注入类型不匹配，已保留错误并修正为可调用签名，随后检查通过。生产C++、MCP接口、正式资产与既有独立oracle未修改。本轮只本地提交；下一必要证据为一次有界真实网关运行及完整人工口径审阅。
 
 
-只读实现审阅后的最终本地验证：54 Bun tests/184 expects、typecheck/format通过，三场景真实准备重跑通过，见[最终准备结果](research/ossie-req-001/agent-harness-controls/prepare-final/summary.json)与[审阅和修正](research/ossie-req-001/agent-harness-controls/advisor-review.md)。拒绝环境变量中的其他网关/模型；带凭据或query的URL在归档前拒绝；事件含时间戳/耗时；准备与模型共用场景deadline；当时Chat协议仅正常stop才可评审最终答案（当前Responses以completed状态为依据），数值失败在summary中明确fail。没有真实模型请求，本地程序完成与Agent验收完成分开。
+只读实现审阅后的最终本地验证：54 Bun tests/184 expects、typecheck/format通过，三场景真实准备重跑通过，见[最终准备结果](research/ossie-req-001/agent-harness-controls/prepare-final/summary.json)与[审阅和修正](research/ossie-req-001/agent-harness-controls/advisor-review.md)。该历史阶段曾限制网关/模型；当前已改为通用标准配置（见后文）；带凭据或query的URL在归档前拒绝；事件含时间戳/耗时；准备与模型共用场景deadline；当时Chat协议仅正常stop才可评审最终答案（当前Responses以completed状态为依据），数值失败在summary中明确fail。没有真实模型请求，本地程序完成与Agent验收完成分开。
 
 
 ## Responses 端点修正与当前状态
@@ -119,3 +119,18 @@ bun scripts/agent_acceptance.ts --run --token-budget-only \
 设置store:true依赖网关保存单场景状态，避免本地重放或归档私有reasoning；不声称网关没有存储推理。服务端持久化和续接是否可用仍需观察，不支持则停止。归档的入站响应明确为公开字段投影，保留输出索引/顺序、item/call IDs、状态、消息phase、usage及错误/不完整原因；出站请求保存精确序列化body。输入bytes限制只约束本次传输大小，不能当作服务端累积context或费用上限。
 
 [Responses控制与准备证据](research/ossie-req-001/agent-responses-controls/prepare/summary.json)通过59Bun/238expects、typecheck/format及三场景真实MCP准备；[只读协议审阅](research/ossie-req-001/agent-responses-controls/advisor-review.md)的隔离/续接/记录约束已由Lead核对和落实。迁移编辑脚本首次中断导致测试仍引用旧chatProvider，错误保留，更新测试后通过。历史Chat验证不覆盖，生产C++/MCP/资产未改。真实模型仍未调用；预算方式仍待用户明确接受，不把端点纠正视作预算确认。
+
+## 开源配置约定（当前）
+
+公共程序只读取 `OPENAI_BASE_URL`、`OPENAI_MODEL`、`OPENAI_API_KEY`。BASE_URL默认 `https://api.openai.com/v1/`，可配置其他HTTPS兼容服务；MODEL必须显式选择，Key仅真实运行时必需。BASE_URL是以`/v1/`结尾的API根地址，程序追加`responses`，不能填完整`/responses`地址。不绑定公司的网关、模型或专用Key变量；环境变量是本程序约定，其中MODEL并不是OpenAI SDK自动选模型的功能。
+
+复制 `.env_test.example` 为 Git 忽略的 `.env_test` 并填写个人配置，显式加载：
+
+```sh
+bun --env-file=.env_test scripts/agent_acceptance.ts --prepare \
+  --cli /absolute/path/to/stock/duckdb \
+  --extension build/release/extension/ossie/ossie.duckdb_extension \
+  --out /tmp/ossie-agent-prepare-new
+```
+
+真实运行时改为 `--run --token-budget-only`，仍须先确认预算。程序不自动加载专用配置文件，不自动运行模型。`.env_test`权限设为0600；私有配置和原始本地实验记录不提交。历史公开准备记录已标为脱敏衍生物，哈希关联的原始字节保存在忽略的本地目录；公开值是占位值，不能据此推断当时实际服务配置。当前跟踪文件清理不代表Git旧提交历史已改写。

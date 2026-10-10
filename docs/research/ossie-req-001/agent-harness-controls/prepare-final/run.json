@@ -36,7 +36,7 @@
     "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/baseline-results.json": "f286859729b7cf0b99a0c8ee022bff79940b495b9486f1148c0fd975cafaef23"
   },
   "configuration_redaction": {
-    "status": "public redacted derivative; original in local history bundle",
+    "status": "public redacted derivative; original retained locally outside Git",
     "original_sha256": "8e3642ebff65b9ffeab1b344cf4d8fb3d8d26ce2a65b1e7ff5ac4e87d1b5c3ec"
   }
 }

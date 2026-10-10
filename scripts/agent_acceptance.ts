@@ -32,16 +32,14 @@ const shaFiles = (paths: string[]) =>
 export function experimentConfiguration(
   env: Record<string, string | undefined>,
 ) {
-  const selectedBase =
-    "https://api.openai.com/v1/";
-  const selectedModel = "configured-tool-capable-model";
-  const baseURL = providerBaseURL(env.OPENAI_BASE_URL ?? selectedBase);
-  const model = env.OPENAI_MODEL ?? selectedModel;
-  assert(
-    baseURL === selectedBase,
-    "provider differs from user-selected gateway",
+  const baseURL = providerBaseURL(
+    env.OPENAI_BASE_URL ?? "https://api.openai.com/v1/",
   );
-  assert(model === selectedModel, "model differs from user-selected model");
+  const model = env.OPENAI_MODEL?.trim();
+  assert(
+    model,
+    "OPENAI_MODEL required; select a tool-capable model explicitly",
+  );
   return { baseURL, model };
 }
 export function checkAnswer(

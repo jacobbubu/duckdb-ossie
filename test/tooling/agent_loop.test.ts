@@ -291,23 +291,38 @@ test("correct-looking final numbers without executed citations cannot pass", () 
   ).toThrow("cited executed");
 });
 
-test("credential-bearing URLs and unrelated ambient gateway/model overrides are rejected", () => {
+test("standard OpenAI configuration accepts compatible HTTPS services and rejects credential-bearing URLs", () => {
   for (const url of [
     "https://key@example.test/v1/",
     "https://example.test/v1/?key=secret",
     "http://example.test/v1/",
   ]) {
     expect(() => providerBaseURL(url)).toThrow();
-    expect(() => experimentConfiguration({ OPENAI_BASE_URL: url })).toThrow();
+    expect(() =>
+      experimentConfiguration({
+        OPENAI_BASE_URL: url,
+        OPENAI_MODEL: "test-model",
+      }),
+    ).toThrow();
   }
-  expect(() =>
-    experimentConfiguration({ OPENAI_BASE_URL: "https://other.test/v1/" }),
-  ).toThrow("user-selected gateway");
-  expect(() =>
-    experimentConfiguration({ OPENAI_MODEL: "unapproved-model" }),
-  ).toThrow("user-selected model");
-  expect(experimentConfiguration({}).model).toBe("configured-tool-capable-model");
+  expect(
+    experimentConfiguration({
+      OPENAI_BASE_URL: "https://compatible.example.test/v1",
+      OPENAI_MODEL: "custom-model",
+    }),
+  ).toEqual({
+    baseURL: "https://compatible.example.test/v1/",
+    model: "custom-model",
+  });
+  expect(
+    experimentConfiguration({ OPENAI_MODEL: "selected-model" }).baseURL,
+  ).toBe("https://api.openai.com/v1/");
+  expect(() => experimentConfiguration({})).toThrow("OPENAI_MODEL required");
+  expect(() => experimentConfiguration({ OPENAI_MODEL: "  " })).toThrow(
+    "OPENAI_MODEL required",
+  );
 });
+
 test("shared scene deadline prevents setup from borrowing more time or starting after expiry", async () => {
   let started = false;
   await expect(
