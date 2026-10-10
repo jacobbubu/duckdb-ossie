@@ -814,3 +814,17 @@ Ubuntu18.1.3 clang-tidy已在population.cpp发现137处大括号、4处range-cop
 JSONString以原始char追加字符串、显式unsigned char用于分类；不改JSON编码或降低规则。实际重建后Mac产物hash仍为13d5317fb860f9ad81437a0a86cb8c996d7742a026f927f7b503c0fadf340c95（优化后的产物与前包字节相同，不声称源码未变）。signed/unsigned-char各256字节（含控制/quote/backslash/高位字节）独立输出期望通过，-Werror/-Wconversion编译通过；原生19/42/158和SQL840/23通过；stock typed24含UTF-8/转义/真实MCP、error54通过；clang-format11.0.1和diff whitespace检查通过。首次辅助harness自身int转换/输出循环-Wconversion失败，显式转换修复后通过；typed首次因stock CLI未在PATH失败，使用原独立CLI后通过，未放宽检查。
 
 原CI tidy失败日志及byte脚本/结果、typed/error同产物报告保存在docs/research/ossie-req-001/ci-amd64-tidy/。当前工作包仅本地验证完成，远端tidy/构建/完整验收仍必要；沿用户该fork分支push和CI跟进授权提交推送修复，新push触发现有工作流，不改设置、不合并或发布。历史证据及失败日志不覆盖。
+
+### 修复推送后的远端验证 checkpoint（2026-10-10）
+
+修复提交96ac9682bb2a5750f6b8a3e7b8f98fb151d25d0f已正常推送；push自动创建run38016307549：https://github.com/jacobbubu/duckdb-ossie/actions/runs/38016307549 ，初查queued。旧run38015505660的tidy已确定失败，其日志已归档；取消旧运行以避免继续构建已被替代的提交。当前源码本地检查通过，远端新tidy/构建及CI gate仍待结果，不称远端通过。本段状态记录留本地，避免为运行状态重复推送触发新一轮CI。
+
+### OSSIE-REQ-001：远端 MSVC 原生测试构建环境 checkpoint（2026-10-10）
+
+新run38016307549已完成：tidy/format/project通过，LinuxAMD64/ARM64及两种Mac、三种Wasm构建job成功；WindowsMSVC在Test extension阶段首次编译ossie_state_test，找不到标准库memory（C1083），MinGW因矩阵fail-fast取消；整个build failure使stock artifact/MCP被跳过，CI gate失败。上游v1.5.6 workflow的Build extension cmd步骤调用vcvars；后续Test extension bash没有该环境。现原生目标EXCLUDE_FROM_ALL导致后续才编译，故按MSVC条件纳入主构建，保留所有测试和严格门禁，不修改上游或远端权限。验证本地CMake/原生检查及下一轮实际MSVC编译运行；无本地Windows，不能声称本地MSVC通过。失败原日志/tmp/ossie-ci-38016307549-failed.log保留。
+
+同时更正Linux覆盖说明：上游workflow对linux_arm64明确跳过inside/outside tests，因此该远端job成功目前只证明ARM64构建；本地UbuntuARM64原生/SQL完整验收已有独立证据，远端独立P0仍配置LinuxAMD64和MacARM64。剩余必要为Windows修复后的CI gate及这些实际产物验收，不扩大Linux版本/P1/分页。
+
+### MSVC 原生目标构建阶段修复本地交付（2026-10-10）
+
+CMake仅在MSVC时将三个既有原生目标纳入ALL，编译发生于上游已初始化vcvars的主构建；其他工具链仍显式构建，测试调用/门禁保持。本地实际重新configure/build及19state/42grain/158capture通过，固定format-check通过；没有本地Windows，MSVC分支与运行仍待远端。失败日志、上轮各job状态、本地CMake/format/native日志保存docs/research/ossie-req-001/ci-msvc-environment/。沿已授权fork开发分支提交推送触发下一轮CI；整体远端验收尚缺Windows通过后的artifact-load/MCP与CI gate。本包不改业务源码、不扩测试发行版、不合并或发布。
