@@ -957,3 +957,28 @@ run38027392941 attempt2已completed/success，验证远端b2d486a4bec4941531e8a8
 复用既有Advisor一轮只读架构反证（requested Astra/high；effective backend/effort/usage/billing未知）。Lead核对固定规范、身份绑定/plan/discovery源码和版本政策，落实有限DATE、collation/coercion拒绝、COUNT(nonNULL user_id)等价观察count（不扩通用COUNT*）、AST级限制和新旧兼容矩阵。独立普通SQL验证空集/全NULL/NULL分类、tuple完整重复与冲突、raw大小写/空格/Unicode，以及typed tuple2个/不安全拼接1个碰撞反例，通过；这些不是production loader验收。草图JSON语法/跨文档引用/role数量/链接树检查通过；当前本地检查Python runtime无jsonschema，未安装依赖，完整固定schema校验未跑，须在实施前补齐门禁。
 
 契约/设计包完成，本轮未修改生产代码或旧契约/原始fixture/实验字节，未推送或调用模型。下一具体工作为用户指示后本地实现新profile：固定schema及全批身份预检、随后对象/指标与v2元信息、最后独立SQL/精确逐行及旧profile回归；中间loader接受不能称可交付。多事件/修订/日历/as-of/窗口/混合粒度/分页仍在原issue作为后续。
+
+### 固定schema门禁与最小观察profile实施 checkpoint（2026-10-10）
+
+用户明确授权先补齐固定schema校验，再开始本地观察profile实现，保留两个旧profile行为和回归保护。沿现设计落实Bun/TS离线Draft2020校验、哈希固定schema、失败拒绝控制；门禁通过后才实现新opt-in daily-observation profile、全批typed身份与冻结查询/发现/plan边界。旧profile分支/版本兼容必须用同产物原生/SQL/stock/MCP回归核对。仍不推送/合并/发布、不新增模型调用或分页。遇到实际偏离先保留失败、更新本计划，再处理；不把schema接受或中间loader视为功能完成。
+
+固定schema首门禁实际拒绝旧ontology草图，6个二元关系缺required verbalizes；core/mapping接受，原草图字节及新first-draft-failure.json保留。另首次新增控制的Bun fetch mock因preconnect属性类型转换报错，修正注入类型后验证。实现fixture另存test/fixtures/population-observation并补齐6个verbalizes，两个阈值只改变正式规则。未修改固定schemas或放宽required；待新fixture门禁通过再进C++实现。
+
+固定 schema 门禁完成：threshold10/20 的三个新 fixture 均通过；离线构建、错误文档、schema 篡改三个 Bun 控制和类型检查通过。IRI 负例改为上游明确声明 `format: iri` 的根 prefixes，未擅自给概念 iri 增加格式约束。原草图缺 verbalizes 的六项失败保持不变。门禁只证明固定 schema 接受，下面开始独立 profile 实现和执行验证。
+
+实现首轮 stock smoke 保留一次实际失败：重复 tuple 校验最初用了外层 count 子查询，但 FrozenSQL 的约定是替换当前 SELECT 的 FROM，导致被替换后的 count 统计整批8行并错误拒绝。改为直接分组/HAVING 的冻结 SELECT，检查其返回重复组行数；未修改旧冻结适配器。重建后八行有效观察加载成功，五指标返回6观察/3用户/5有效金额/31.00/6.2。随后继续完整负例和回归，不把 smoke 当验收完成。
+
+本轮 bounded Advisor（复用原 reviewer，无写入/无嵌套委派）指出全批tuple、旧OneToOne循环、指标AST与metadata路径的风险；Lead逐项落实独立分支、plain字段约束、统一请求入口与v2发现。请求 Astra/high；有效backend/effort、usage和billing未知，审阅本身未运行测试。
+
+本轮额外保留验证失败与修正：身份边界oracle手写用户数8，但实际输入仅7个不同字符串；改为从明确的测试User字符串集合独立计算分母，14个观察/7个用户通过。首次make test使用旧unittest二进制，故新profile未知/API仍2.0；重建unittest后复测。首次P0 stock CLI把全局函数总数写死19，新增v2后20触发失败；改为检查包含原19及新v2的20个具名必需入口，不放宽任何原行为断言。原失败输出保留，后续报告独立目录。
+
+本地最小观察profile实施验收完成，详见 [使用契约](population-observation.md) 和 [verification.json](research/ossie-req-001/observation-schema-controls/verification.json)。固定schema四项控制覆盖两套fixture哈希/文档形状；校验和报告都使用同次读取的bytes，避免SHA与验证对象不对应。stock1.5.6产物21项观察检查/47项拒绝通过；24 SQL用例931断言、63 Bun控制、19状态/42粒度/206捕获原生检查通过。新增原生观察控制覆盖threads4/1、候选发布期间并发读取、冻结后源更新、prepared旧快照、取消及重复加载失败保留。旧两profile完整A1-A8/stock CLI/MCP/typed回归在同一SHA产物通过，接口兼容增加为2.1.0；旧objects/discovery/plan-v1保持。新profile单独conceptsv2/planv2解释tuple与引用User身份及统计分母。
+
+SQL metadata库存测试还要求21注册/19名字；新增v2后应22/20，更新明确库存后全931断言通过，原失败日志已存本地hash-bound记录。第一次完整P0失败目录迁至ignored原始证据目录保留，最终成功目录独立公开；未覆写旧历史报告。此阶段只证明本地观察SQLprofile及旧回归，未证明新profile的MCP/真实Agent使用，也未执行远端CI/tidy。下一必要工作是审阅该本地切片，然后再单独授权新MCP/Agent集成；不自动扩展通用P1或分页，不推送。
+
+最终身份复核发现并真实复现 GLOBAL default_collation=nocase 可使未声明collation的A/a在私有Engine中被错误合并，说明仅检查物理VARCHAR的collation不够。已在新profile的私有Engine会话固定binary，并把加载时Engine创建移到profile确定之后；不修改用户/global设置或旧profile。探针显示SET LOCAL在1.5.6未实现，SET SESSION有效且其他连接保持GLOBAL nocase。增加全局默认在加载前/加载后变化、User计数、产品分组与过滤的控制；后续对最终源码重新构建验证。此前通过报告仅属于各自SHA产物，保持原件。
+
+
+2026-10-11 最终收敛：[verification-final.json](research/ossie-req-001/observation-schema-controls/verification-final.json) 对最终b012058e产物记录25观察检查/48拒绝、19状态/42粒度/210捕获原生检查、24 SQL/931断言、63 Bun及格式/类型/架构通过。同SHA下旧两profile完整A1-A8、stock CLI/MCP/typed通过。新增默认nocase/noaccent负环境、真实拼接碰撞及prepared控制；Engine私有SESSION固定binary，caller/global配置不变，外层SQL仍遵循调用方。按既定设计补齐组件relationship与嵌套User.id referent，旧v2适配保留原dataset/field；计划/能力声明内部binary。中间legacy原件迁至ignored本地归档，逐文件哈希全同，公开[存档索引](research/ossie-req-001/observation-schema-controls/intermediate-evidence.json)与最终证据，未覆写任何原始记录。
+
+本地切片完成且可审阅；远端CI/tidy、新profile MCP/真实Agent仍未验收，后续需要单独授权相关工作。未推送、未增加模型请求或通用P1/分页。

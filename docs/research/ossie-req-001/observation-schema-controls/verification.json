@@ -1,0 +1,85 @@
+{
+  "scope": "Fixed schema and local minimal observation profile, plus both legacy profiles regression",
+  "artifact_sha256": "13addd19a8d1ab8ac3139e94c38fcfcc36a14ad9e7370c26192c8da828521ac3",
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "native": {
+    "state_checks": 19,
+    "grain_checks": 42,
+    "capture_checks": 206,
+    "scheduler_threads": [
+      4,
+      1
+    ],
+    "sql_cases": 24,
+    "sql_assertions": 931,
+    "passed": true
+  },
+  "tooling": {
+    "bun_tests": 63,
+    "typecheck": true,
+    "format": true,
+    "architecture": true
+  },
+  "observation": {
+    "positive_checks": 21,
+    "normalized_refusals": 47,
+    "report": "docs/research/ossie-req-001/observation-schema-controls/observation-artifact-final-results.json",
+    "report_sha256": "2696715fb3babea7aa98e052d200d8cf8e8fe0d8d06f687154af88c7bc6e46f2"
+  },
+  "legacy": {
+    "conclusion": "PASS scoped A1-A8 including existing MCP/typed carriers",
+    "report": "docs/research/ossie-req-001/observation-legacy-controls-final/acceptance.json",
+    "report_sha256": "85f9bb45ad93d05cb069715b0b61f9c24b067abdf8fd4b8767119cdf06a7a01b"
+  },
+  "retained_local_originals": {
+    ".local-agent-evidence/observation-implementation-20261010/build.log": "372c213d17c8a96edf37c2cbbf4f31c42fcf204704551bae9a5e4d0d11861391",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/cli-dependencies.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/core-mcp.log": "d2432264f935c32cc555a71999dd97f9dad6647fb4fa3615441a560ffd9fd591",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/correspondence.log": "09e0f26f5fde32e64582874b634f342bfe86d20b29abfeb0738016a66110236a",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/date.log": "f77544fb09879c9cebc5fb67d907aec56c78cfdcdb270fedacf871146ac3dabe",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/discovery.log": "26588b6d0988093289c476b71a75f8b9e92ad3135990344356e4b5c8455ae14c",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/error.log": "b925a124626f69df2208de5b4c13271948993cb955acbbbaf9e475f3675e816b",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/expression.log": "37858a439bb197b434446d302e617bb2d1bcf12e5db9ab1b9f8f86febd590fed",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/failure.json": "1a07fbcb0ba7fee2124b8d12ee1677e5e8a560a1becba3c91e7a26cc9bd747b8",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/join_research.log": "72017119ecf8fe1ed7f373d13990f0a0887df23a24f433fc755cd15f28dd2ecd",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/joined_population.log": "8791c5678ed2442f2d4a5cc13dd6917b59791b64d0ecdeb94d7ba07b453a5886",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/loader.log": "16c799a2f6b955c49f7dee9abacbc1704c784765ca93a12292080fb73f228c0a",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/mcp.log": "c5ed9d6f88bee8e97e448a6c2242ba6a51ce1f6f225f32b28c1554bb4d8c255d",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-correspondence-artifact-results.json": "09e0f26f5fde32e64582874b634f342bfe86d20b29abfeb0738016a66110236a",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-date-artifact-results.json": "f77544fb09879c9cebc5fb67d907aec56c78cfdcdb270fedacf871146ac3dabe",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-discovery-artifact-results.json": "26588b6d0988093289c476b71a75f8b9e92ad3135990344356e4b5c8455ae14c",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-error-artifact-results.json": "b925a124626f69df2208de5b4c13271948993cb955acbbbaf9e475f3675e816b",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-expression-artifact-results.json": "37858a439bb197b434446d302e617bb2d1bcf12e5db9ab1b9f8f86febd590fed",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-join_research-artifact-results.json": "72017119ecf8fe1ed7f373d13990f0a0887df23a24f433fc755cd15f28dd2ecd",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-joined_population-artifact-results.json": "8791c5678ed2442f2d4a5cc13dd6917b59791b64d0ecdeb94d7ba07b453a5886",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-loader-artifact-results.json": "16c799a2f6b955c49f7dee9abacbc1704c784765ca93a12292080fb73f228c0a",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-mcp-results.json": "c5ed9d6f88bee8e97e448a6c2242ba6a51ce1f6f225f32b28c1554bb4d8c255d",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-plan-artifact-results.json": "4d889d4f5b1a250e308d450620bc89b1b532fb43c7c0de3eb741d0ff7aba1eee",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-population-artifact-results.json": "b56d559b14680e3f1cadc4a7d81e0087286967658760beaeb2a1f5282fb0ab22",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-final-typed_population-artifact-results.json": "cd53497039dd6518fde14e8d1febbc01cf9a3fd238bc1316b6a29d5e45e2a1fa",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/p0-replay-population-artifact-results.json": "1ac20a10465b8d16a63c0b30a716a126c8c450b3d8480f288417eea07d938fca",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/plan.log": "4d889d4f5b1a250e308d450620bc89b1b532fb43c7c0de3eb741d0ff7aba1eee",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/population.log": "b56d559b14680e3f1cadc4a7d81e0087286967658760beaeb2a1f5282fb0ab22",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/replay.log": "1ac20a10465b8d16a63c0b30a716a126c8c450b3d8480f288417eea07d938fca",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/stock-cli.log": "73b85c610c1217603154d15bb562f8f8ae0e0ed1e69f5b1623ae64e83f922d43",
+    ".local-agent-evidence/observation-implementation-20261010/legacy-first-failure/typed_population.log": "cd53497039dd6518fde14e8d1febbc01cf9a3fd238bc1316b6a29d5e45e2a1fa",
+    ".local-agent-evidence/observation-implementation-20261010/native-sql-complete.log": "80e59c3aa504c85a30cfccdb0e31d1fef37a8a0160e1d47e32759b6112873f94",
+    ".local-agent-evidence/observation-implementation-20261010/native-sql-first-failure.log": "7fe7bd712c38d6895141d2092f591252397edbe8ea35a1828a16fd86cb3b09f9",
+    ".local-agent-evidence/observation-implementation-20261010/native-sql-metadata-failure.log": "a6fc56b5583d2b7954f10960fc720bfce994b58806fb7bf10915341ae4fe0906",
+    ".local-agent-evidence/observation-implementation-20261010/quality-complete.log": "9fb295ff554e47b094bf92d5bcefe1ebbecb91493f450ace2982502959680ee0",
+    ".local-agent-evidence/observation-implementation-20261010/smoke.log": "b72db1a8950068cae308b6345cf400414c7357e92745b0a2e7f08555d98d0e9a"
+  },
+  "failures_retained": [
+    "original schema sketches miss six verbalizes",
+    "FrozenSQL outer count replaced FROM and falsely rejected valid batch; fixed direct grouped SELECT",
+    "identity oracle expected eight Users but its exact input has seven; independent Set fixes premise",
+    "old unittest binary did not contain new profile; rebuilt",
+    "stock global function count and SQL registration inventory required update for additive function"
+  ],
+  "limitations": [
+    "local macOS stock 1.5.6 only; remote Linux/macOS CI and authoritative tidy not run",
+    "new profile MCP/live Agent not accepted",
+    "no pagination or general ontology execution"
+  ],
+  "remote_mutated": false
+}

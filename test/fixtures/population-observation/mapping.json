@@ -1,0 +1,139 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "daily_observation_mapping",
+  "ontology_ref": {
+    "name": "daily_observation_ontology"
+  },
+  "semantic_model_ref": {
+    "name": "daily_observation_demo"
+  },
+  "concept_mappings": [
+    {
+      "concept": "User",
+      "object_mappings": [
+        {
+          "referent_mappings": [
+            {
+              "relationship": "id",
+              "expression": "observations.user_id"
+            }
+          ]
+        }
+      ],
+      "link_mappings": [
+        {
+          "object_mapping": {
+            "referent_mappings": [
+              {
+                "relationship": "id",
+                "expression": "observations.user_id"
+              }
+            ]
+          },
+          "children": [
+            {
+              "relationship": "id",
+              "object_mapping": {
+                "concept": "String",
+                "expression": "observations.user_id"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "DailyObservation",
+      "object_mappings": [
+        {
+          "referent_mappings": [
+            {
+              "relationship": "user",
+              "referent_mappings": [
+                {
+                  "relationship": "id",
+                  "expression": "observations.user_id"
+                }
+              ]
+            },
+            {
+              "relationship": "date",
+              "expression": "observations.ds"
+            },
+            {
+              "relationship": "product",
+              "expression": "observations.product"
+            }
+          ]
+        }
+      ],
+      "link_mappings": [
+        {
+          "object_mapping": {
+            "referent_mappings": [
+              {
+                "relationship": "user",
+                "referent_mappings": [
+                  {
+                    "relationship": "id",
+                    "expression": "observations.user_id"
+                  }
+                ]
+              },
+              {
+                "relationship": "date",
+                "expression": "observations.ds"
+              },
+              {
+                "relationship": "product",
+                "expression": "observations.product"
+              }
+            ]
+          },
+          "children": [
+            {
+              "relationship": "user",
+              "object_mapping": {
+                "concept": "User",
+                "referent_mappings": [
+                  {
+                    "relationship": "id",
+                    "expression": "observations.user_id"
+                  }
+                ]
+              }
+            },
+            {
+              "relationship": "date",
+              "object_mapping": {
+                "concept": "Date",
+                "expression": "observations.ds"
+              }
+            },
+            {
+              "relationship": "product",
+              "object_mapping": {
+                "concept": "String",
+                "expression": "observations.product"
+              }
+            },
+            {
+              "relationship": "amount",
+              "object_mapping": {
+                "concept": "Decimal",
+                "expression": "observations.amount_usd"
+              }
+            },
+            {
+              "relationship": "classification_value",
+              "object_mapping": {
+                "concept": "Integer",
+                "expression": "observations.classification_value"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

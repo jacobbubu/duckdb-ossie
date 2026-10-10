@@ -1,0 +1,29 @@
+82 |   const state = () =>
+83 |     db.one(
+84 |       "SELECT snapshot_id,content_sha256,ontology_sha256 FROM ossie_population_capabilities()",
+85 |     );
+86 |   const check = (label: string, fn: () => void) => {
+87 |     fn();
+         ^
+AssertionError: Expected values to be strictly deep-equal:
++ actual - expected
+
+  [
+    14,
++   7,
+-   8,
+    14,
+    '14.00'
+  ]
+
+ generatedMessage: true,
+     actual: [ 14, 7, 14, "14.00" ],
+   expected: [ 14, 8, 14, "14.00" ],
+   operator: "deepStrictEqual",
+       code: "ERR_ASSERTION"
+
+      at check (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_observation_artifact.ts:87:5)
+      at verifyObservation (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_observation_artifact.ts:605:5)
+      at processTicksAndRejections (native:7:39)
+
+Bun v1.3.11 (macOS arm64)

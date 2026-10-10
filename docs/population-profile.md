@@ -222,3 +222,11 @@ hashes and results are in [r3-date-population-artifact-results.json](research/os
 The current [research record](ossie-execution-research.md) tracks remaining work;
 [Expression evidence](research/ossie-req-001/r3-expression-artifact-results.json) records
 this slice's actual arithmetic and rejection controls. This slice does not complete P0, multi-table safe joins, calendar or A1–A8 acceptance.
+
+## Daily observation profile
+
+The opt-in [`daily-observation-population-v1`](population-observation.md) supports
+repeated Users across dates/products with a typed observation tuple. It has a
+separate loader contract and structured concepts-v2/plan-v2 metadata. The scalar
+and joined profiles described above retain their identity, object columns and
+plan-v1 contracts.

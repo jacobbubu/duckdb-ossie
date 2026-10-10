@@ -1,0 +1,1232 @@
+{
+  "passed": true,
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "736f2a9bcaa16ddd19ee12d257698a7e578906a7f87a09749e732b4b44593787",
+  "artifact_loaded_in_stock_node_bindings": true,
+  "checks": [
+    "valid batch preserves all eight observations",
+    "all products: independent counts, cents sum and nonnull mean",
+    "X across dates",
+    "Jan31 only",
+    "Feb1 only",
+    "null-only amount",
+    "empty scalar",
+    "date/product groups",
+    "root has no qualification rule",
+    "structured identities, queryability and raw capture counts",
+    "plan-v2 explains observation vs referenced User identity",
+    "typed objects preserve tuple columns without synthetic IDs",
+    "active capabilities declare restrictions",
+    "threshold20 changes qualification only",
+    "rule reload retains source/core/mapping bytes",
+    "prepared query keeps old qualified snapshot",
+    "source mutation does not change frozen query",
+    "binary identities and framed tuple collisions stay distinct",
+    "caller global nocase remains unchanged",
+    "internal identity filter stays case-sensitive under global nocase",
+    "internal product groups stay binary under global nocase",
+    "prepared and fresh queries retain binary after global change",
+    "NULL qualification is excluded",
+    "empty captured batch publishes zero counts",
+    "old scalar profile and prepared observation discovery/query coexist"
+  ],
+  "refusals": [
+    {
+      "label": "legacy concepts refuses tuple profile",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "ossie_concepts",
+        "stage": "capability",
+        "reason": "compound identity requires ossie_concepts_v2",
+        "missing_capability": "compound identity requires ossie_concepts_v2",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=ossie_concepts stage=capability reason=compound identity requires ossie_concepts_v2 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_objects User referent-only",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_objects_json User referent-only",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_query User referent-only",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_query rejects observations.user_id group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.user_id",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.user_id stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_query rejects observations.amount_usd group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.amount_usd",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.amount_usd stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_query rejects observations.classification_value group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.classification_value",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.classification_value stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_query rejects computed date group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "MAPPING_INVALID",
+        "object": "observations.ds + 1",
+        "stage": "mapping",
+        "reason": "mapping must be a single dataset.field reference",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.ds + 1 stage=mapping reason=mapping must be a single dataset.field reference missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_query_json User referent-only",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_query_json rejects observations.user_id group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.user_id",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.user_id stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_query_json rejects observations.amount_usd group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.amount_usd",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.amount_usd stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_query_json rejects observations.classification_value group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.classification_value",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.classification_value stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_query_json rejects computed date group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "MAPPING_INVALID",
+        "object": "observations.ds + 1",
+        "stage": "mapping",
+        "reason": "mapping must be a single dataset.field reference",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.ds + 1 stage=mapping reason=mapping must be a single dataset.field reference missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_compile User referent-only",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_compile rejects observations.user_id group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.user_id",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.user_id stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_compile rejects observations.amount_usd group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.amount_usd",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.amount_usd stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_compile rejects observations.classification_value group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.classification_value",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.classification_value stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "ossie_concept_compile rejects computed date group",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "MAPPING_INVALID",
+        "object": "observations.ds + 1",
+        "stage": "mapping",
+        "reason": "mapping must be a single dataset.field reference",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.ds + 1 stage=mapping reason=mapping must be a single dataset.field reference missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "unsupported entity navigation filter",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "reference",
+        "stage": "bind",
+        "reason": "mapping must reference a declared field in the single root dataset",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=reference stage=bind reason=mapping must reference a declared field in the single root dataset missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "identical duplicate below rule",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch contains duplicate observation tuple; identical and conflicting records both refused",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch contains duplicate observation tuple; identical and conflicting records both refused missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "conflicting duplicate below rule",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch contains duplicate observation tuple; identical and conflicting records both refused",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch contains duplicate observation tuple; identical and conflicting records both refused missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "empty User",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch requires nonempty raw String User/product and finite nonnull DATE",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch requires nonempty raw String User/product and finite nonnull DATE missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "null User",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch requires nonempty raw String User/product and finite nonnull DATE",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch requires nonempty raw String User/product and finite nonnull DATE missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "empty product",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch requires nonempty raw String User/product and finite nonnull DATE",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch requires nonempty raw String User/product and finite nonnull DATE missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "null product",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch requires nonempty raw String User/product and finite nonnull DATE",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch requires nonempty raw String User/product and finite nonnull DATE missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "null DATE",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch requires nonempty raw String User/product and finite nonnull DATE",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch requires nonempty raw String User/product and finite nonnull DATE missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "infinite DATE",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch requires nonempty raw String User/product and finite nonnull DATE",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch requires nonempty raw String User/product and finite nonnull DATE missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "negative infinite DATE",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch requires nonempty raw String User/product and finite nonnull DATE",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch requires nonempty raw String User/product and finite nonnull DATE missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "collated User",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "SNAPSHOT_REJECTED",
+        "object": "user_id",
+        "stage": "snapshot",
+        "reason": "unsupported physical column type or collation",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=user_id stage=snapshot reason=unsupported physical column type or collation missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "collated product",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "SNAPSHOT_REJECTED",
+        "object": "product",
+        "stage": "snapshot",
+        "reason": "unsupported physical column type or collation",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=product stage=snapshot reason=unsupported physical column type or collation missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "TIMESTAMP DATE coercion",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "SNAPSHOT_REJECTED",
+        "object": "ds",
+        "stage": "snapshot",
+        "reason": "unsupported physical column type or collation",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=ds stage=snapshot reason=unsupported physical column type or collation missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "numeric User coercion",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "user_id",
+        "stage": "bind",
+        "reason": "logical datatype incompatible with bound physical expression type",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=user_id stage=bind reason=logical datatype incompatible with bound physical expression type missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "metric shape SUM(DISTINCT observations.amount_usd)",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "amount_sum",
+        "stage": "capability",
+        "reason": "unsupported or repeated observation metric shape",
+        "missing_capability": "unsupported or repeated observation metric shape",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=amount_sum stage=capability reason=unsupported or repeated observation metric shape missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "metric shape AVG(DISTINCT observations.amount_usd)",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "amount_sum",
+        "stage": "capability",
+        "reason": "unsupported or repeated observation metric shape",
+        "missing_capability": "unsupported or repeated observation metric shape",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=amount_sum stage=capability reason=unsupported or repeated observation metric shape missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "metric shape COUNT(DISTINCT observations.amount_usd)",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "amount_sum",
+        "stage": "capability",
+        "reason": "unsupported or repeated observation metric shape",
+        "missing_capability": "unsupported or repeated observation metric shape",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=amount_sum stage=capability reason=unsupported or repeated observation metric shape missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "metric shape SUM(observations.amount_usd)/NULLIF(COUNT(DISTINCT observations.user_id),0)",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "amount_sum",
+        "stage": "capability",
+        "reason": "single aggregate argument required",
+        "missing_capability": "single aggregate argument required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=amount_sum stage=capability reason=single aggregate argument required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "metric shape COUNT(observations.product)",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "amount_sum",
+        "stage": "capability",
+        "reason": "unsupported or repeated observation metric shape",
+        "missing_capability": "unsupported or repeated observation metric shape",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=amount_sum stage=capability reason=unsupported or repeated observation metric shape missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "computed identity",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "user_id",
+        "stage": "identity",
+        "reason": "identity components must be distinct plain columns",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=user_id stage=identity reason=identity components must be distinct plain columns missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "computed amount hidden under field",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "amount_usd",
+        "stage": "capability",
+        "reason": "observation roles require distinct untransformed physical columns",
+        "missing_capability": "observation roles require distinct untransformed physical columns",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=amount_usd stage=capability reason=observation roles require distinct untransformed physical columns missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "primary key omits product",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "declared primary key must match typed observation tuple",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=declared primary key must match typed observation tuple missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "User mapping mismatch",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "MAPPING_INVALID",
+        "object": "User",
+        "stage": "mapping",
+        "reason": "User identity override",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=mapping reason=User identity override missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "User link mismatch",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "MAPPING_INVALID",
+        "object": "User",
+        "stage": "mapping",
+        "reason": "User id link mismatch",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=mapping reason=User id link mismatch missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "nested User mismatch",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "MAPPING_INVALID",
+        "object": "DailyObservation",
+        "stage": "mapping",
+        "reason": "observation identity override",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=mapping reason=observation identity override missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "observation scalar link override",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "MAPPING_INVALID",
+        "object": "product",
+        "stage": "mapping",
+        "reason": "identity link override",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=product stage=mapping reason=identity link override missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "unsupported formal OR rule",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "QualifiedObservation",
+        "stage": "capability",
+        "reason": "qualification must be class integer >= integer constant",
+        "missing_capability": "qualification must be class integer >= integer constant",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=QualifiedObservation stage=capability reason=qualification must be class integer >= integer constant missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "unsupported formal amount rule",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "QualifiedObservation",
+        "stage": "capability",
+        "reason": "qualification must be class integer >= integer constant",
+        "missing_capability": "qualification must be class integer >= integer constant",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=QualifiedObservation stage=capability reason=qualification must be class integer >= integer constant missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "unsupported noninteger threshold",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "QualifiedObservation",
+        "stage": "capability",
+        "reason": "qualification must be class integer >= integer constant",
+        "missing_capability": "qualification must be class integer >= integer constant",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=QualifiedObservation stage=capability reason=qualification must be class integer >= integer constant missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "true tuple duplicate under global nocase",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch contains duplicate observation tuple; identical and conflicting records both refused",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch contains duplicate observation tuple; identical and conflicting records both refused missing_capability=bounded population profile"
+      }
+    }
+  ],
+  "results": [
+    {
+      "label": "all products: independent counts, cents sum and nonnull mean",
+      "actual": [
+        [
+          6,
+          3,
+          5,
+          "31.00",
+          6.2
+        ]
+      ]
+    },
+    {
+      "label": "X across dates",
+      "actual": [
+        [
+          4,
+          3,
+          3,
+          "20.00",
+          6.666666666666667
+        ]
+      ]
+    },
+    {
+      "label": "Jan31 only",
+      "actual": [
+        [
+          1,
+          1,
+          1,
+          "10.00",
+          10
+        ]
+      ]
+    },
+    {
+      "label": "Feb1 only",
+      "actual": [
+        [
+          5,
+          3,
+          4,
+          "21.00",
+          5.25
+        ]
+      ]
+    },
+    {
+      "label": "null-only amount",
+      "actual": [
+        [
+          1,
+          1,
+          0,
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "label": "empty scalar",
+      "actual": [
+        [
+          0,
+          0,
+          0,
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "label": "date/product groups",
+      "actual": [
+        [
+          "2026-02-01",
+          "X",
+          3,
+          3,
+          2,
+          "10.00",
+          5
+        ],
+        [
+          "2026-02-01",
+          "Y",
+          2,
+          2,
+          2,
+          "11.00",
+          5.5
+        ],
+        [
+          "2026-01-31",
+          "X",
+          1,
+          1,
+          1,
+          "10.00",
+          10
+        ]
+      ]
+    },
+    {
+      "label": "threshold20 changes qualification only",
+      "actual": [
+        [
+          3,
+          1,
+          3,
+          "17.00",
+          5.666666666666667
+        ]
+      ]
+    }
+  ],
+  "plan": {
+    "schema_version": "ossie-population-plan-v2",
+    "phase": "generated semantic SELECT AST",
+    "executed": false,
+    "physical_plan": false,
+    "sql_replayable": false,
+    "request_kind": "metrics",
+    "profile": "daily-observation-population-v1",
+    "engine": {
+      "dialect": "DUCKDB",
+      "version": "v1.5.6",
+      "source_id": "069cc9f9b5"
+    },
+    "definitions": {
+      "core": {
+        "name": "daily_observation_demo",
+        "version": "0.2.0.dev0",
+        "sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77"
+      },
+      "ontology": {
+        "name": "daily_observation_ontology",
+        "version": "0.2.0.dev0",
+        "sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e"
+      },
+      "mapping": {
+        "name": "daily_observation_mapping",
+        "version": "0.2.0.dev0",
+        "sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228"
+      },
+      "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+    },
+    "snapshot": {
+      "id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+      "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+      "captured_population_rows": 8,
+      "row_order_sensitive": true,
+      "filtered_rows_computed": false
+    },
+    "concept": {
+      "name": "QualifiedObservation",
+      "root": "DailyObservation",
+      "formal_rule": {
+        "owner": "QualifiedObservation",
+        "applied": true,
+        "input_language": "profile scalar SQL subset (no core dialect lowering)",
+        "declared_sql": "DailyObservation.classification_value >= 10",
+        "resolved_definition_sql": "(observations.classification_value >= 10)"
+      }
+    },
+    "identity": {
+      "concept": "DailyObservation",
+      "components": [
+        {
+          "dataset": "observations",
+          "field": "user_id",
+          "bound_type": "VARCHAR"
+        },
+        {
+          "dataset": "observations",
+          "field": "ds",
+          "bound_type": "DATE"
+        },
+        {
+          "dataset": "observations",
+          "field": "product",
+          "bound_type": "VARCHAR"
+        }
+      ],
+      "entity_equals_record": true,
+      "scope": "unique daily observation tuple in the entire captured batch",
+      "internal_string_comparison": "binary",
+      "referenced_entity": {
+        "concept": "User",
+        "components": [
+          {
+            "dataset": "observations",
+            "field": "user_id",
+            "bound_type": "VARCHAR"
+          }
+        ],
+        "entity_equals_record": false,
+        "projection": "distinct User IDs in the requested observation scope",
+        "objects_queryable": false,
+        "metrics_queryable": false
+      }
+    },
+    "grain": {
+      "population_input_dataset": "observations",
+      "declared_primary_key": [
+        "user_id",
+        "ds",
+        "product"
+      ],
+      "aggregation_scope": "effective WHERE before GROUP BY",
+      "basis": "validated sole source dataset"
+    },
+    "capture_join": null,
+    "inputs": [
+      {
+        "dataset": "observations",
+        "source": "memory.main.observations",
+        "captured_rows": 8,
+        "sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35"
+      }
+    ],
+    "metrics": [
+      {
+        "name": "observation_count",
+        "declared_datatype": "Integer",
+        "expression": {
+          "selected_dialect": "OSSIE_SQL_2026",
+          "available_dialects": [
+            "OSSIE_SQL_2026"
+          ],
+          "declared_sql": "COUNT(observations.user_id)",
+          "parsed_lowered_sql": "count(observations.user_id)"
+        }
+      },
+      {
+        "name": "user_count",
+        "declared_datatype": "Integer",
+        "expression": {
+          "selected_dialect": "OSSIE_SQL_2026",
+          "available_dialects": [
+            "OSSIE_SQL_2026"
+          ],
+          "declared_sql": "COUNT(DISTINCT observations.user_id)",
+          "parsed_lowered_sql": "count(DISTINCT observations.user_id)"
+        }
+      },
+      {
+        "name": "amount_value_count",
+        "declared_datatype": "Integer",
+        "expression": {
+          "selected_dialect": "OSSIE_SQL_2026",
+          "available_dialects": [
+            "OSSIE_SQL_2026"
+          ],
+          "declared_sql": "COUNT(observations.amount_usd)",
+          "parsed_lowered_sql": "count(observations.amount_usd)"
+        }
+      },
+      {
+        "name": "amount_sum",
+        "declared_datatype": "Decimal",
+        "expression": {
+          "selected_dialect": "OSSIE_SQL_2026",
+          "available_dialects": [
+            "OSSIE_SQL_2026"
+          ],
+          "declared_sql": "SUM(observations.amount_usd)",
+          "parsed_lowered_sql": "sum(observations.amount_usd)"
+        }
+      },
+      {
+        "name": "mean_observation_amount",
+        "declared_datatype": "Float",
+        "expression": {
+          "selected_dialect": "OSSIE_SQL_2026",
+          "available_dialects": [
+            "OSSIE_SQL_2026"
+          ],
+          "declared_sql": "AVG(observations.amount_usd)",
+          "parsed_lowered_sql": "avg(observations.amount_usd)"
+        }
+      }
+    ],
+    "declared_fields": [
+      {
+        "dataset": "observations",
+        "name": "user_id",
+        "declared_datatype": "String",
+        "is_time": false,
+        "is_time_explicit": false,
+        "expression": {
+          "selected_dialect": "OSSIE_SQL_2026",
+          "available_dialects": [
+            "OSSIE_SQL_2026"
+          ],
+          "declared_sql": "user_id",
+          "parsed_lowered_sql": "user_id"
+        }
+      },
+      {
+        "dataset": "observations",
+        "name": "ds",
+        "declared_datatype": "Date",
+        "is_time": true,
+        "is_time_explicit": false,
+        "expression": {
+          "selected_dialect": "OSSIE_SQL_2026",
+          "available_dialects": [
+            "OSSIE_SQL_2026"
+          ],
+          "declared_sql": "ds",
+          "parsed_lowered_sql": "ds"
+        }
+      },
+      {
+        "dataset": "observations",
+        "name": "product",
+        "declared_datatype": "String",
+        "is_time": false,
+        "is_time_explicit": false,
+        "expression": {
+          "selected_dialect": "OSSIE_SQL_2026",
+          "available_dialects": [
+            "OSSIE_SQL_2026"
+          ],
+          "declared_sql": "product",
+          "parsed_lowered_sql": "product"
+        }
+      },
+      {
+        "dataset": "observations",
+        "name": "amount_usd",
+        "declared_datatype": "Decimal",
+        "is_time": false,
+        "is_time_explicit": false,
+        "expression": {
+          "selected_dialect": "OSSIE_SQL_2026",
+          "available_dialects": [
+            "OSSIE_SQL_2026"
+          ],
+          "declared_sql": "amount_usd",
+          "parsed_lowered_sql": "amount_usd"
+        }
+      },
+      {
+        "dataset": "observations",
+        "name": "classification_value",
+        "declared_datatype": "Integer",
+        "is_time": false,
+        "is_time_explicit": false,
+        "expression": {
+          "selected_dialect": "OSSIE_SQL_2026",
+          "available_dialects": [
+            "OSSIE_SQL_2026"
+          ],
+          "declared_sql": "classification_value",
+          "parsed_lowered_sql": "classification_value"
+        }
+      }
+    ],
+    "filters": {
+      "input_language": "profile scalar SQL subset (no core dialect lowering)",
+      "requested_sql": [],
+      "effective_where_sql": "(observations.classification_value >= 10)"
+    },
+    "time": {
+      "range_inferred": false,
+      "basis": "effective WHERE and declared time roles only"
+    },
+    "generated_ast": {
+      "from_sql": "\"system\".main._ossie_snapshot_rows() AS observations",
+      "projections": [
+        {
+          "ordinal": 1,
+          "alias": "observation_count",
+          "sql": "\"system\".main.count(observations.user_id)"
+        },
+        {
+          "ordinal": 2,
+          "alias": "user_count",
+          "sql": "\"system\".main.count(DISTINCT observations.user_id)"
+        },
+        {
+          "ordinal": 3,
+          "alias": "amount_value_count",
+          "sql": "\"system\".main.count(observations.amount_usd)"
+        },
+        {
+          "ordinal": 4,
+          "alias": "amount_sum",
+          "sql": "\"system\".main.sum(observations.amount_usd)"
+        },
+        {
+          "ordinal": 5,
+          "alias": "mean_observation_amount",
+          "sql": "\"system\".main.avg(observations.amount_usd)"
+        }
+      ],
+      "group_by_sql": []
+    },
+    "result_contract": {
+      "ordering": "unspecified",
+      "groups": "sparse",
+      "query_paging": false,
+      "query_truncation": false,
+      "calendar_completion": false,
+      "empty_ungrouped_count": 0,
+      "empty_ungrouped_sum_avg": null
+    },
+    "limitations": [
+      "Parser AST explanation, not a bound physical or optimizer plan",
+      "Captured row counts do not measure filtered population, groups or aggregate denominators",
+      "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+      "Separate compile/query calls may bind different snapshots after reload",
+      "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+    ]
+  },
+  "concepts": [
+    {
+      "concept": "DailyObservation",
+      "parent": null,
+      "derived_by": null,
+      "identity_components_json": "[{\"dataset\":\"observations\",\"field\":\"user_id\",\"bound_type\":\"VARCHAR\"},{\"dataset\":\"observations\",\"field\":\"ds\",\"bound_type\":\"DATE\"},{\"dataset\":\"observations\",\"field\":\"product\",\"bound_type\":\"VARCHAR\"}]",
+      "referenced_entity_identity_json": "{\"concept\":\"User\",\"components\":[{\"dataset\":\"observations\",\"field\":\"user_id\",\"bound_type\":\"VARCHAR\"}],\"entity_equals_record\":false,\"projection\":\"distinct User IDs in the requested observation scope\",\"objects_queryable\":false,\"metrics_queryable\":false}",
+      "objects_queryable": true,
+      "metrics_queryable": true,
+      "captured_observation_rows": "8",
+      "captured_user_count": "4",
+      "profile": "daily-observation-population-v1",
+      "source": "memory.main.observations",
+      "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+      "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+      "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+      "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+      "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+      "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+    },
+    {
+      "concept": "QualifiedObservation",
+      "parent": "DailyObservation",
+      "derived_by": "DailyObservation.classification_value >= 10",
+      "identity_components_json": "[{\"dataset\":\"observations\",\"field\":\"user_id\",\"bound_type\":\"VARCHAR\"},{\"dataset\":\"observations\",\"field\":\"ds\",\"bound_type\":\"DATE\"},{\"dataset\":\"observations\",\"field\":\"product\",\"bound_type\":\"VARCHAR\"}]",
+      "referenced_entity_identity_json": "{\"concept\":\"User\",\"components\":[{\"dataset\":\"observations\",\"field\":\"user_id\",\"bound_type\":\"VARCHAR\"}],\"entity_equals_record\":false,\"projection\":\"distinct User IDs in the requested observation scope\",\"objects_queryable\":false,\"metrics_queryable\":false}",
+      "objects_queryable": true,
+      "metrics_queryable": true,
+      "captured_observation_rows": "8",
+      "captured_user_count": "4",
+      "profile": "daily-observation-population-v1",
+      "source": "memory.main.observations",
+      "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+      "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+      "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+      "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+      "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+      "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+    },
+    {
+      "concept": "User",
+      "parent": null,
+      "derived_by": null,
+      "identity_components_json": "[{\"dataset\":\"observations\",\"field\":\"user_id\",\"bound_type\":\"VARCHAR\"}]",
+      "referenced_entity_identity_json": null,
+      "objects_queryable": false,
+      "metrics_queryable": false,
+      "captured_observation_rows": "8",
+      "captured_user_count": "4",
+      "profile": "daily-observation-population-v1",
+      "source": "memory.main.observations",
+      "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+      "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+      "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+      "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+      "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+      "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+    }
+  ],
+  "final_snapshot": [
+    "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:19",
+    "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+    "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e"
+  ],
+  "source_hashes": {
+    "src/compile/compile.cpp": "dec2c6a72ac178b9ef16cd2796d7b8dc15ff88542ddbf8266fff60beca3ef460",
+    "src/functions/compile.cpp": "0ced88a9668b3334bd241aaade5a17995869f01f69c5ff219caa86aed9eff419",
+    "src/functions/describe.cpp": "beca66aba1855721ab72ae06ecafff7f46a1a3cb9f148b3e18d4245b64b5c5c3",
+    "src/functions/load.cpp": "940ea630f93f4b6ebe45b9a49879416f7ffba6c693557f9211d4f968ceb219ba",
+    "src/functions/query.cpp": "a4e9721e1723d03b4dedd79ef67db675ca7d4ce0fd01025450975fcfb8390488",
+    "src/include/ossie/catalog.hpp": "31a14b4b8680e9303902508ffd2975a426894df96a2cf212468483a552a38d51",
+    "src/include/ossie/compile.hpp": "6cab076df7d19429934d75f9389036aa5f435709387f1df8a34944f3160d0d84",
+    "src/include/ossie/describe_functions.hpp": "bb7417d8892a606a23f5862dd146dcf0dafd9666ea7005c0b3eb483c1e25414c",
+    "src/include/ossie/dialect.hpp": "3bff6bde0ece193c5ec6bdf51f6470e5eafabb88cf0aff101caf7d0579603dac",
+    "src/include/ossie/functions.hpp": "21e4cae9e69b336add2cb33be9829167353f03e699ff040e398a5ce2a3b0cae1",
+    "src/include/ossie/graph.hpp": "620a388ad927e71534f83d29daf19ea07e1b52d6c05239197a89e510c6293ac5",
+    "src/include/ossie/model.hpp": "0f51d181d2e2a7b280639133f86274a9e9b50542ae5f545103ecf2d86c05d4cd",
+    "src/include/ossie/parser.hpp": "8e339cb4addb44d37873b820d3ddee0bc1d974e1d1c61dbb535850b709009df5",
+    "src/include/ossie/population_testing.hpp": "995ae3a68e711ac080d4bb36e9af935b11787508682453225741ae68eaa6f0f3",
+    "src/include/ossie/state.hpp": "ed1d0e9966aca2a949072afea36ad7b1f9150b349691cc5eaffca26811b12f25",
+    "src/include/ossie/validate.hpp": "b460c6e776d9c9c2d5aa579b54a2808cff7bec1a98e81e108717c5bd898e40bc",
+    "src/include/ossie/yaml.hpp": "7409822d510d4d09a12a699c7ad95d7e869d5cafcb05c0ddafe29ca95eb88351",
+    "src/include/ossie_extension.hpp": "382f683e705384688bb6928a9b3dae0a359923f4257d8f75835c6d052f366f12",
+    "src/model/catalog.cpp": "095735539374ed0a04a071f7b2d4af0eb137ffeb4bf94f1c2df42a619344612a",
+    "src/model/dialect.cpp": "cba1454964c879092926fb8ff2920a4fcb4c46dd04f82acbbcc5e162906aaaf7",
+    "src/model/graph.cpp": "da654783f170010c6ada5a0c538053104ae9bbbb00c6aa647050fd4a65fe5292",
+    "src/model/parser.cpp": "efb44a16d4d8d0ed84b5918161ce651629073e6b7556bb3ce0260a89bea46a19",
+    "src/model/validate.cpp": "557ce77b1c86ab7bb6070e840ea232c014524b59b91047d3b1542816181b5d22",
+    "src/model/yaml.cpp": "a0418e52478e8ea608dff4d42fa61f4b44895c0958a4272283e3d8339374df0d",
+    "src/ossie_extension.cpp": "62b6b2022ab4a721dc7316cf3d9e8d35e0889bce6b2d7092822fbcf716bb797e",
+    "src/population/population.cpp": "e15b5ebbf0dbd06f27c5bf4722a083203551ae4b57b5294ef0ca1b14ab07435b",
+    "test/fixtures/population-observation/bundle-10.json": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a",
+    "test/fixtures/population-observation/bundle-20.json": "b1c61aed4539201e40a3778f2f125fbb8372c562d6d419a4eb5b6d526aa8420b",
+    "test/fixtures/population-observation/core.json": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+    "test/fixtures/population-observation/mapping.json": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+    "test/fixtures/population-observation/ontology-20.json": "b6aca7da28e4f0d3a2e00c2dc238f2b620964492d30b26f1f12c807f789d76ec",
+    "test/fixtures/population-observation/ontology.json": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+    "docs/research/ossie-req-001/multi-period-research/observations.csv": "bfd38a0130028fe5829aa45e40dce8ac12e228cc2cc61e2f08f293493764f441",
+    "scripts/verify_observation_artifact.ts": "93e1f263fc5c9edb8728d755e70018f34b7c9bdab57afc02804d4bf70e82b432",
+    "scripts/check_fixed_schema.ts": "3127a91280fdc284af173cee2a46e2515db9412f889089a2a4698a7fdc347b1a"
+  },
+  "scope": "Local observation SQL profile and legacy regression; no new MCP or live Agent acceptance"
+}

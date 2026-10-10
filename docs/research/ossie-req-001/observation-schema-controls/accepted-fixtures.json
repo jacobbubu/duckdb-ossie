@@ -1,0 +1,37 @@
+{
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "schemas": {
+    "core": [
+      "core-spec/ossie-schema.json",
+      "5b9cf15d31057e2b7363194b1c254a6b669fc412b3f8f402d4efbdcfa25fcc87"
+    ],
+    "ontology": [
+      "ontology/ontology.json",
+      "52421ba8161385a4d0117eac2a76863d2ef21ef3434a95334b6b1564371fe149"
+    ],
+    "mapping": [
+      "ontology/mapping.json",
+      "8db74be12cda94e23240cc502bb2ac0580b69a05431fda35ee0c9e8b7e6f096b"
+    ]
+  },
+  "remote_resolution": false,
+  "documents": {
+    "core": {
+      "sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+      "accepted": true,
+      "errors": []
+    },
+    "ontology": {
+      "sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+      "accepted": true,
+      "errors": []
+    },
+    "mapping": {
+      "sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+      "accepted": true,
+      "errors": []
+    }
+  },
+  "passed": true,
+  "scope": "JSON Schema acceptance only; not profile binding or execution"
+}

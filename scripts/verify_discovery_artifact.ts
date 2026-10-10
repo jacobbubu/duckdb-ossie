@@ -31,7 +31,7 @@ export async function verify(artifact: string) {
     );
     const capabilities = JSON.parse(String(capability!.capabilities_json));
     check("version and active snapshot", () => {
-      assert.equal(capability!.api_version, "2.0.0");
+      assert.equal(capability!.api_version, "2.1.0");
       assert.equal(
         capability!.discovery_schema,
         "ossie-population-discovery-v1",

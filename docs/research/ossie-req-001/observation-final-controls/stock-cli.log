@@ -1,0 +1,70 @@
+1
+[1mossie end-to-end functionality check[0m
+mode: stock CLI v1.5.6 + loadable artifact   [FAITHFUL]
+
+[1m== J0  installable, and the surface registers[0m
+  [32mPASS [0m extension reports loaded
+  [32mPASS [0m required Ossie functions registered
+
+[1m== J1  using it wrong fails usefully[0m
+  [32mPASS [0m ossie_query names the fix
+  [32mPASS [0m ossie_compile names the fix
+
+[1m== J2  load a model against real tables[0m
+  [32mPASS [0m TPC-DS data present
+  [32mPASS [0m model loads and every source resolves
+  [32mPASS [0m a wrong rebind reports all unresolved sources at once
+
+[1m== J3  an agent can discover the vocabulary[0m
+  [32mPASS [0m 5 metrics
+  [32mPASS [0m 31 fields
+  [32mPASS [0m all 5 datasets resolve
+  [32mPASS [0m synonyms populated
+  [32mPASS [0m cardinality derived: 4 many_to_one
+  [32mPASS [0m time dimension flagged
+  [32mPASS [0m computed field flagged
+
+[1m== J4  the answer is CORRECT, not merely non-erroring[0m
+  [32mPASS [0m ungrouped metric == plain SUM
+  [32mPASS [0m grouped by brand == hand-written join (symmetric EXCEPT)
+  [32mPASS [0m a filter pulls in a 2nd join and still matches
+  [32mPASS [0m computed dimension (no such column on the table) works
+  [32mPASS [0m documented INNER shortfall == exactly the NULL-FK sales
+
+[1m== J5  ossie_compile is first-class: copy the SQL out, run it, same rows[0m
+  [32mPASS [0m hand-run compiled SQL == ossie_query rows
+  [32mPASS [0m compile works with no tables at all (pre-rebind)
+
+[1m== J6  refusals -- the reason to trust this with an agent[0m
+  [32mPASS [0m multi-grain refused, both grains named
+  [32mPASS [0m 2nd multi-grain metric refused
+  [32mPASS [0m mixing a clean metric with a multi-grain one refused
+  [32mPASS [0m COUNT(*) metric alone refused (no grain to group by)
+  [32mPASS [0m scalar reference to a 2nd dataset COMPILES (not a fan-out)
+  [32mPASS [0m fan-out join refused, relationship named
+  [32mPASS [0m ambiguous join path refused, endpoints named
+  [32mPASS [0m unknown metric suggests a candidate
+  [32mPASS [0m unknown dimension suggests a candidate
+  [32mPASS [0m subquery in a filter refused unconditionally
+  [32mPASS [0m window function in a filter refused
+
+[1m== J6b  malformed models rejected at LOAD, not at query time[0m
+  [32mPASS [0m invalid/dangling_relationship rejected at load
+  [32mPASS [0m invalid/malformed_expression rejected at load
+  [32mPASS [0m invalid/unqualified_metric rejected at load
+
+[1m== J7  filter policy is fixed at load, not widenable per request[0m
+  [32mPASS [0m function call refused when the flag is off
+  [32mPASS [0m same filter permitted when the flag is on
+  [32mPASS [0m LIKE is an operator, so it passes with the flag off
+
+[1m== Nested computed fields[0m
+  [32mPASS [0m nested computed field resolves transitively
+
+[1m== MCP publication (optional)[0m
+  [32mPASS [0m model published as an MCP resource (server.sql path)
+
+[1m--------------------------------------------------[0m
+PASS 40   FAIL 0   SKIP 0
+stock CLI v1.5.6 + loadable artifact   [FAITHFUL]
+[32mFUNCTIONALITY CHECK GREEN[0m

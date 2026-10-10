@@ -1,0 +1,92 @@
+{
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "schemas": {
+    "core": [
+      "core-spec/ossie-schema.json",
+      "5b9cf15d31057e2b7363194b1c254a6b669fc412b3f8f402d4efbdcfa25fcc87"
+    ],
+    "ontology": [
+      "ontology/ontology.json",
+      "52421ba8161385a4d0117eac2a76863d2ef21ef3434a95334b6b1564371fe149"
+    ],
+    "mapping": [
+      "ontology/mapping.json",
+      "8db74be12cda94e23240cc502bb2ac0580b69a05431fda35ee0c9e8b7e6f096b"
+    ]
+  },
+  "remote_resolution": false,
+  "documents": {
+    "core": {
+      "sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+      "accepted": true,
+      "errors": []
+    },
+    "ontology": {
+      "sha256": "a8e847a304eb0f5f3c61a50380163a351dc808390686afe35ca53b6b3868f74c",
+      "accepted": false,
+      "errors": [
+        {
+          "instancePath": "/ontology/0/relationships/0",
+          "schemaPath": "#/required",
+          "keyword": "required",
+          "params": {
+            "missingProperty": "verbalizes"
+          },
+          "message": "must have required property 'verbalizes'"
+        },
+        {
+          "instancePath": "/ontology/1/relationships/0",
+          "schemaPath": "#/required",
+          "keyword": "required",
+          "params": {
+            "missingProperty": "verbalizes"
+          },
+          "message": "must have required property 'verbalizes'"
+        },
+        {
+          "instancePath": "/ontology/1/relationships/1",
+          "schemaPath": "#/required",
+          "keyword": "required",
+          "params": {
+            "missingProperty": "verbalizes"
+          },
+          "message": "must have required property 'verbalizes'"
+        },
+        {
+          "instancePath": "/ontology/1/relationships/2",
+          "schemaPath": "#/required",
+          "keyword": "required",
+          "params": {
+            "missingProperty": "verbalizes"
+          },
+          "message": "must have required property 'verbalizes'"
+        },
+        {
+          "instancePath": "/ontology/1/relationships/3",
+          "schemaPath": "#/required",
+          "keyword": "required",
+          "params": {
+            "missingProperty": "verbalizes"
+          },
+          "message": "must have required property 'verbalizes'"
+        },
+        {
+          "instancePath": "/ontology/1/relationships/4",
+          "schemaPath": "#/required",
+          "keyword": "required",
+          "params": {
+            "missingProperty": "verbalizes"
+          },
+          "message": "must have required property 'verbalizes'"
+        }
+      ]
+    },
+    "mapping": {
+      "sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+      "accepted": true,
+      "errors": []
+    }
+  },
+  "passed": false,
+  "scope": "JSON Schema acceptance only; not profile binding or execution"
+}

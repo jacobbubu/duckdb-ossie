@@ -122,6 +122,9 @@ jobs:
       - name: Reproduce complete bounded acceptance against the same artifact
         run: bun scripts/run_p0_acceptance.ts downloaded/ossie.duckdb_extension quality-reports
 
+      - name: Verify minimal daily observation profile against the same artifact
+        run: bun scripts/verify_observation_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/observation-artifact-results.json
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:

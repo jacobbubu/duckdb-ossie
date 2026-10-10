@@ -1,0 +1,15 @@
+testing built extension: /Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release/extension/ossie/ossie.duckdb_extension
+PASS initialize handshake
+PASS only semantic_query exposed
+PASS query refused
+PASS export refused
+PASS resources vocabulary
+PASS resource URI ossie://model/metrics
+PASS actual vocabulary resource ossie://model/metrics
+PASS resource URI ossie://model/dimensions
+PASS actual vocabulary resource ossie://model/dimensions
+PASS requested columns and data rows
+PASS grain refusal delivered
+PASS control handshake
+PASS without disabling flags query/export exposed
+all MCP checks passed

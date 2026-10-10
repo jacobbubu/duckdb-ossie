@@ -1,0 +1,108 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "daily_observation_ontology",
+  "ontology": [
+    {
+      "concept": "User",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne",
+          "verbalizes": [
+            "{User} has id {String}"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "DailyObservation",
+      "type": "EntityType",
+      "identify_by": [
+        "user",
+        "date",
+        "product"
+      ],
+      "relationships": [
+        {
+          "name": "user",
+          "roles": [
+            {
+              "concept": "User"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{DailyObservation} has user {User}"
+          ]
+        },
+        {
+          "name": "date",
+          "roles": [
+            {
+              "concept": "Date"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{DailyObservation} has date {Date}"
+          ]
+        },
+        {
+          "name": "product",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{DailyObservation} has product {String}"
+          ]
+        },
+        {
+          "name": "amount",
+          "roles": [
+            {
+              "concept": "Decimal"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{DailyObservation} has amount {Decimal}"
+          ]
+        },
+        {
+          "name": "classification_value",
+          "roles": [
+            {
+              "concept": "Integer"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{DailyObservation} has classification_value {Integer}"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "QualifiedObservation",
+      "type": "EntityType",
+      "extends": [
+        "DailyObservation"
+      ],
+      "derived_by": [
+        "DailyObservation.classification_value >= 10"
+      ]
+    }
+  ]
+}

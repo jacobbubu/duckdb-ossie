@@ -1028,3 +1028,81 @@ local validator was available and no dependencies installed.
 Design package complete. Next authorized action is review of this concrete design;
 local implementation requires a further user instruction. Old source/experiment
 bytes preserved; no push, new model call or production change.
+
+### Fixed schema gate and local observation implementation authorized — 2026-10-10
+
+User explicitly authorized fixed schema checks followed by the minimal local
+observation profile, retaining both existing profiles. Offline Ajv Draft2020
+validation binds three schemas to the fixed spec commit and byte hashes. Original
+drafts failed six required `verbalizes` checks; immutable failure report remains.
+New threshold10/20 fixtures pass all three schemas. Three tooling controls pass
+(offline construction/validation, malformed documents, tampered schema rejection),
+and TypeScript checking passes. The malformed IRI control uses root prefixes:
+concept iri is only a string in the pinned schema, so its format was not presumed.
+Schema acceptance establishes document shape only. Next necessary work is separate
+production profile binding, whole-batch typed identity validation, query/metadata
+implementation and same-artifact old/new regression checks. No push or live call.
+
+### Local daily observation profile verified — 2026-10-10
+
+[Local SQL implementation and contract](docs/population-observation.md) completed
+within the authorized slice. Separate profile binding validates exact mapping
+correspondence, raw typed User/date/product tuples and all five aggregate shapes.
+Whole-batch duplicate/empty/NULL/nonfinite identity refuses before publication;
+repeated Users are projected distinctly without removing observations. User is
+referent-only, date/product grouping is bounded, objects expose tuple columns.
+Concepts-v2/plan-v2 separate observation and referenced User identity; API2.1 is
+additive, old profiles preserve object columns/legacy discovery and plan-v1.
+Fixed offline schemas use hash-verified bytes for registration and validation;
+both threshold bundles have recurring hash/schema controls. Original drafts and
+failed schema report remain immutable.
+
+[Hash-bound local verification](docs/research/ossie-req-001/observation-schema-controls/verification.json):
+21 observation checks/47 normalized refusals pass against stock Node DuckDB1.5.6;
+independent CSV cents/tuple/User oracles confirm 6/3/5, USD31.00 and mean6.2.
+Typed identity collisions, NULL/empty, threshold20, source mutation, prepared
+queries, and failed load retention pass. Native controls pass 19 state/42 grain/
+206 capture assertions, including new-profile concurrency and cancellation at
+threads4/1. All24 SQL cases/931 assertions and63 Bun controls pass, with format,
+typecheck and architecture checks. Same artifact hash13addd19a8d1ab8ac3139e94c38fcfcc36a14ad9e7370c26192c8da828521ac3
+passes [archived intermediate legacy A1–A8 acceptance](docs/research/ossie-req-001/observation-schema-controls/intermediate-evidence.json)
+including stock CLI/MCP and typed result regressions. Failures/corrections remain
+recorded with local originals and public hashes.
+
+This work package is complete locally; it does not complete all P1 requirements.
+The existing CI matrix now includes the new observation verifier, but no remote
+CI/tidy run is claimed. Next necessity is review of this local slice before
+separately authorizing new-profile MCP/Agent integration or remote delivery.
+Pagination, general ontology/entity navigation and user-level derived measures
+remain outside the slice. No push, release or additional live model call occurred.
+
+
+### Final observation identity closure — 2026-10-11
+
+Final review reproduced a global default-collation defect after the earlier
+scoped passes: uncollated source columns still inherited nocase in private
+connections. New-profile Engines now pin binary in their own SESSION before
+any binding/execution, including initial load after profile selection. Caller
+and global defaults stay unchanged; explicit source collations still refuse.
+Source capture SELECT has no comparisons and retains raw values. Bounded Advisor
+clarification covered connection/binding scope; Lead verified SESSION isolation
+(the pinned engine rejects SET LOCAL). Outer caller SQL retains caller semantics.
+Concepts/plan metadata now include ordered identity relationship roles and nested
+User.id referents, plus internal comparison semantics. Legacy v2 adaptation
+retains original dataset/field provenance instead of generated flattened names.
+
+[Final hash-bound verification](docs/research/ossie-req-001/observation-schema-controls/verification-final.json)
+uses artifact b012058ed30639a899ad20efdff18a5cd637077408c4b65d570b40d87dbf8db3:
+25 positive observation checks,48 normalized refusals; global nocase/noaccent,
+true typed tuple duplicates, binary filter/group/count and prepared controls pass.
+19 state/42 grain/210 capture native checks,24 SQL cases/931 assertions and63 Bun
+controls plus format/typecheck/architecture pass. [Final legacy A1–A8 and MCP/CLI
+regression](docs/research/ossie-req-001/observation-final-controls/acceptance.json)
+passes on that same artifact. Intermediate legacy originals are preserved locally
+with [byte hashes and archive locations](docs/research/ossie-req-001/observation-schema-controls/intermediate-evidence.json),
+not overwritten or presented as final-source evidence.
+
+Authorized local work package is complete. Remaining project needs are review,
+then separately authorized new-profile MCP/Agent integration and eventual remote
+CI/delivery; these are not required to claim this local SQL slice complete. No
+push, release, new model request, paging or broader P1 capability is included.

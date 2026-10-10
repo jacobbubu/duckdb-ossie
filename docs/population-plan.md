@@ -1,7 +1,8 @@
 # Population compile explanation
 
 `ossie_concept_compile` now returns `plan_json` with the project-specific schema
-version `ossie-population-plan-v1`. It describes the generated semantic SELECT AST
+version `ossie-population-plan-v1` for scalar/join profiles and
+[`ossie-population-plan-v2`](population-observation.md) for daily observations. It describes the generated semantic SELECT AST
 and the immutable definition/data bundle used to build it. This is our extension
 contract, independent of Ossie document versions and the MCP protocol version.
 

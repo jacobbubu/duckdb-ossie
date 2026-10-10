@@ -26,6 +26,7 @@
 #include "duckdb/parser/expression/case_expression.hpp"
 #include "duckdb/parser/expression/columnref_expression.hpp"
 #include "duckdb/parser/expression/conjunction_expression.hpp"
+#include "duckdb/parser/expression/comparison_expression.hpp"
 #include "duckdb/parser/expression/constant_expression.hpp"
 #include "duckdb/parser/expression/function_expression.hpp"
 #include "duckdb/parser/expression/type_expression.hpp"
@@ -58,6 +59,7 @@ namespace {
 
 constexpr const char *PROFILE = "gaap-scalar-population-v1";
 constexpr const char *JOIN_PROFILE = "fact-dimension-population-v1";
+constexpr const char *OBSERVATION_PROFILE = "daily-observation-population-v1";
 constexpr idx_t MAX_ROWS = 10000;
 constexpr idx_t MAX_BYTES = idx_t(16) * 1024 * 1024;
 uint64_t NextBatchSequence() {
@@ -390,6 +392,9 @@ struct Bundle {
 	string manifest_hash, core_hash, ontology_hash, mapping_hash;
 	string snapshot_id, content_hash, original_rule;
 	idx_t rows = 0;
+	string user_concept, user_id_relation, identity_relation, amount_field, class_field;
+	vector<string> observation_identity, observation_relationships;
+	idx_t user_count = 0;
 	vector<Attribute> attributes;
 	unique_ptr<ParsedExpression> rule;
 	weak_ptr<Bundle> owner;
@@ -406,7 +411,16 @@ unique_ptr<Connection> Engine(Bundle &bundle) {
 	if (!database) {
 		Fail("bundle", "execute", "containing database has closed");
 	}
-	return make_uniq<Connection>(*database);
+	auto engine = make_uniq<Connection>(*database);
+	if (bundle.profile == OBSERVATION_PROFILE) {
+		// Pin the private connection only: global/caller defaults must not merge raw identities.
+		auto configured = engine->Query("SET SESSION default_collation='binary'");
+		if (configured->HasError()) {
+			NormalizeError(configured->GetErrorObject(), "observation collation", "snapshot",
+			               ExceptionType::INVALID_INPUT);
+		}
+	}
+	return engine;
 }
 
 class PopulationState : public ObjectCacheEntry {
@@ -711,6 +725,7 @@ void Definitions(Bundle &bundle, yyjson_val *ontology, yyjson_val *mapping) {
 		Fail(bundle.root, "capability", "single identity relationship required");
 	}
 	auto id_relation = ArrayText(identity[0]);
+	bundle.identity_relation = id_relation;
 	case_insensitive_set_t relation_names;
 	for (auto relationship : Array(parent, "relationships", true)) {
 		Keys(relationship,
@@ -1379,6 +1394,344 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 	}
 }
 
+// Opt-in observation profile: typed tuple identity, with a referent-only User.
+// Keep scalar and joined profile validation unchanged.
+void ObservationDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping) {
+	Keys(ontology, {"version", "name", "description", "ai_context", "ontology", "requires"}, "ontology");
+	Version(ontology);
+	Empty(ontology, "requires", "ontology");
+	yyjson_val *user = nullptr, *observation = nullptr, *derived = nullptr;
+	auto concepts = Array(ontology, "ontology", true);
+	case_insensitive_set_t names;
+	for (auto c : concepts) {
+		Keys(c,
+		     {"concept", "type", "description", "ai_context", "identify_by", "extends", "derived_by", "requires",
+		      "relationships"},
+		     "concept");
+		Empty(c, "requires", "concept");
+		if (Text(c, "type") != "EntityType" || !names.insert(Text(c, "concept")).second) {
+			Fail("ontology", "capability", "three distinct entity concepts required");
+		}
+		if (!Array(c, "extends").empty()) {
+			if (derived) {
+				Fail("ontology", "capability", "single derived observation required");
+			}
+			derived = c;
+		} else if (Array(c, "identify_by").size() == 1) {
+			if (user) {
+				Fail("ontology", "capability", "single referenced User required");
+			}
+			user = c;
+		} else if (Array(c, "identify_by").size() == 3) {
+			if (observation) {
+				Fail("ontology", "capability", "single observation root required");
+			}
+			observation = c;
+		} else {
+			Fail("ontology", "capability", "User and three-component observation identities required");
+		}
+	}
+	if (concepts.size() != 3 || !user || !observation || !derived) {
+		Fail("ontology", "capability", "profile requires User, observation and derived observation");
+	}
+	b.user_concept = Text(user, "concept");
+	b.root = Text(observation, "concept");
+	b.derived = Text(derived, "concept");
+	b.user_id_relation = ArrayText(Array(user, "identify_by", true)[0]);
+	auto inheritance = Array(derived, "extends", true);
+	if (inheritance.size() != 1 || ArrayText(inheritance[0]) != b.root) {
+		Fail(b.derived, "capability", "single inheritance from observation required");
+	}
+	Empty(derived, "identify_by", b.derived);
+	Empty(derived, "relationships", b.derived);
+	Empty(user, "derived_by", b.user_concept);
+	Empty(observation, "derived_by", b.root);
+	auto relationship_target = [&](yyjson_val *r, const string &multiplicity) {
+		Keys(r, {"name", "roles", "multiplicity", "description", "ai_context", "verbalizes", "requires", "derived_by"},
+		     "relationship");
+		Empty(r, "requires", "relationship");
+		Empty(r, "derived_by", "relationship");
+		auto roles = Array(r, "roles", true);
+		if (roles.size() != 1 || Text(r, "multiplicity") != multiplicity) {
+			Fail(Text(r, "name"), "capability", "unsupported relationship role or multiplicity");
+		}
+		Keys(roles[0], {"concept"}, "role");
+		return Text(roles[0], "concept");
+	};
+	auto ur = Array(user, "relationships", true);
+	if (ur.size() != 1 || Text(ur[0], "name") != b.user_id_relation ||
+	    relationship_target(ur[0], "OneToOne") != "String") {
+		Fail(b.user_concept, "capability", "referenced User has only a OneToOne String identity");
+	}
+	vector<string> identity_relations;
+	for (auto id : Array(observation, "identify_by", true)) {
+		identity_relations.push_back(ArrayText(id));
+	}
+	b.observation_relationships = identity_relations;
+	case_insensitive_set_t relation_names, targets;
+	for (auto r : Array(observation, "relationships", true)) {
+		auto name = Text(r, "name"), target = relationship_target(r, "ManyToOne");
+		if (!relation_names.insert(name).second || !targets.insert(target).second ||
+		    (target != b.user_concept && target != "Date" && target != "String" && target != "Decimal" &&
+		     target != "Integer")) {
+			Fail(name, "capability", "observation requires one User, Date, String, Decimal and Integer relationship");
+		}
+		b.attributes.push_back({name, target, "", false});
+	}
+	if (b.attributes.size() != 5) {
+		Fail(b.root, "capability", "five observation relationships required");
+	}
+	vector<string> identity_targets;
+	for (auto &name : identity_relations) {
+		string target;
+		for (auto &a : b.attributes) {
+			if (a.name == name) {
+				target = a.target;
+			}
+		}
+		identity_targets.push_back(target);
+	}
+	if (identity_targets != vector<string> {b.user_concept, "Date", "String"}) {
+		Fail(b.root, "identity", "observation identity order must be User, Date, product String");
+	}
+	Keys(mapping,
+	     {"version", "name", "description", "ontology_ref", "semantic_model_ref", "concept_mappings",
+	      "custom_extensions"},
+	     "mapping");
+	Version(mapping);
+	Keys(Member(mapping, "ontology_ref"), {"name", "iri"}, "ontology reference");
+	Keys(Member(mapping, "semantic_model_ref"), {"name", "iri"}, "core reference");
+	if (Text(Member(mapping, "ontology_ref"), "name") != Text(ontology, "name") ||
+	    Text(Member(mapping, "semantic_model_ref"), "name") != b.model.name) {
+		Fail("mapping", "bind", "document reference name mismatch");
+	}
+	// A nested User referent has exactly its id. It is not another link-tree layer.
+	auto user_referent = [&](yyjson_val *object) {
+		auto refs = Array(object, "referent_mappings", true);
+		if (refs.size() != 1) {
+			Fail(b.user_concept, "mapping", "single User identity referent required");
+		}
+		Keys(refs[0], {"relationship", "expression"}, "User referent");
+		if (Text(refs[0], "relationship") != b.user_id_relation) {
+			Fail(b.user_concept, "mapping", "User identity relationship mismatch");
+		}
+		return LogicalField(b, Text(refs[0], "expression"));
+	};
+	auto observation_referent = [&](yyjson_val *object) {
+		Keys(object, {"concept", "referent_mappings"}, "observation object");
+		if (Member(object, "concept") && Text(object, "concept") != b.root) {
+			Fail(b.root, "mapping", "observation concept override");
+		}
+		auto refs = Array(object, "referent_mappings", true);
+		if (refs.size() != 3) {
+			Fail(b.root, "mapping", "three observation referents required");
+		}
+		vector<string> fields;
+		for (idx_t i = 0; i < refs.size(); i++) {
+			if (Text(refs[i], "relationship") != identity_relations[i]) {
+				Fail(b.root, "mapping", "observation referent order mismatch");
+			}
+			if (i == 0) {
+				Keys(refs[i], {"relationship", "referent_mappings"}, "nested User referent");
+				fields.push_back(user_referent(refs[i]));
+			} else {
+				Keys(refs[i], {"relationship", "expression"}, "scalar identity referent");
+				fields.push_back(LogicalField(b, Text(refs[i], "expression")));
+			}
+		}
+		return fields;
+	};
+	auto mappings = Array(mapping, "concept_mappings", true);
+	if (mappings.size() != 2) {
+		Fail("mapping", "capability", "only User and root observation mappings required");
+	}
+	case_insensitive_set_t mapped;
+	string user_field;
+	for (auto cm : mappings) {
+		Keys(cm, {"concept", "object_mappings", "link_mappings"}, "concept mapping");
+		auto concept = Text(cm, "concept");
+		if (!mapped.insert(concept).second || (concept != b.root && concept != b.user_concept)) {
+			Fail(concept, "mapping", "unexpected concept mapping");
+		}
+		auto objects = Array(cm, "object_mappings", true), links = Array(cm, "link_mappings", true);
+		if (objects.size() != 1 || links.size() != 1) {
+			Fail(concept, "mapping", "single object and link tree required");
+		}
+		Keys(links[0], {"object_mapping", "children"}, "root link tree");
+		auto children = Array(links[0], "children", true);
+		if (concept == b.user_concept) {
+			for (auto object : {objects[0], Member(links[0], "object_mapping")}) {
+				Keys(object, {"concept", "referent_mappings"}, "User object");
+				if (Member(object, "concept") && Text(object, "concept") != b.user_concept) {
+					Fail(concept, "mapping", "User concept override");
+				}
+				auto field = user_referent(object);
+				if (!user_field.empty() && user_field != field) {
+					Fail(concept, "mapping", "User identity override");
+				}
+				user_field = field;
+			}
+			if (children.size() != 1) {
+				Fail(concept, "mapping", "User has only its identity link");
+			}
+			Keys(children[0], {"relationship", "object_mapping"}, "User identity link");
+			auto object = Member(children[0], "object_mapping");
+			Keys(object, {"concept", "expression"}, "User id value");
+			if (Text(children[0], "relationship") != b.user_id_relation || Text(object, "concept") != "String" ||
+			    LogicalField(b, Text(object, "expression")) != user_field) {
+				Fail(concept, "mapping", "User id link mismatch");
+			}
+		} else {
+			b.observation_identity = observation_referent(objects[0]);
+			if (observation_referent(Member(links[0], "object_mapping")) != b.observation_identity) {
+				Fail(concept, "mapping", "observation identity override");
+			}
+			case_insensitive_set_t bound;
+			for (auto link : children) {
+				Keys(link, {"relationship", "object_mapping"}, "observation link");
+				auto name = Text(link, "relationship");
+				Attribute *a = nullptr;
+				for (auto &candidate : b.attributes) {
+					if (candidate.name == name) {
+						a = &candidate;
+					}
+				}
+				if (!a || !bound.insert(name).second) {
+					Fail(name, "mapping", "unknown or duplicate observation link");
+				}
+				auto object = Member(link, "object_mapping");
+				if (a->target == b.user_concept) {
+					Keys(object, {"concept", "referent_mappings"}, "User link object");
+					a->field = user_referent(object);
+				} else {
+					Keys(object, {"concept", "expression"}, "scalar link object");
+					a->field = LogicalField(b, Text(object, "expression"));
+				}
+				if (Text(object, "concept") != a->target || b.model.datasets[0].FindField(a->field)->datatype !=
+				                                                (a->target == b.user_concept ? "String" : a->target)) {
+					Fail(name, "mapping", "target concept or logical datatype mismatch");
+				}
+			}
+			if (bound.size() != b.attributes.size()) {
+				Fail(concept, "mapping", "every observation relationship must be bound");
+			}
+		}
+	}
+	if (user_field != b.observation_identity[0]) {
+		Fail(b.user_concept, "mapping", "nested and root User identities must agree");
+	}
+	for (auto &a : b.attributes) {
+		for (idx_t i = 0; i < identity_relations.size(); i++) {
+			if (a.name == identity_relations[i] && a.field != b.observation_identity[i]) {
+				Fail(a.name, "mapping", "identity link override");
+			}
+		}
+		if (a.target == "Decimal") {
+			b.amount_field = a.field;
+		}
+		if (a.target == "Integer") {
+			b.class_field = a.field;
+		}
+	}
+	b.identity = user_field;
+	// Reject casts/computed identity; compare native typed columns, never concatenated strings.
+	vector<string> physical;
+	case_insensitive_set_t distinct_fields;
+	for (auto &field : b.observation_identity) {
+		auto tree = FieldTree(b, field);
+		if (tree->GetExpressionClass() != ExpressionClass::COLUMN_REF || !distinct_fields.insert(field).second) {
+			Fail(field, "identity", "identity components must be distinct plain columns");
+		}
+		physical.push_back(tree->Cast<ColumnRefExpression>().column_names.back());
+	}
+	if (b.model.datasets[0].primary_key != physical) {
+		Fail(b.root, "identity", "declared primary key must match typed observation tuple");
+	}
+	case_insensitive_set_t bound_fields, physical_fields;
+	for (auto &a : b.attributes) {
+		auto tree = FieldTree(b, a.field);
+		if (tree->GetExpressionClass() != ExpressionClass::COLUMN_REF || !bound_fields.insert(a.field).second ||
+		    !physical_fields.insert(tree->Cast<ColumnRefExpression>().column_names.back()).second) {
+			Fail(a.field, "capability", "observation roles require distinct untransformed physical columns");
+		}
+	}
+	if (b.model.datasets[0].fields.size() != 5) {
+		Fail(b.root, "capability", "observation profile declares only its five bound fields");
+	}
+	// Each allowed aggregate form must be present exactly once; names are not capability checks.
+	case_insensitive_set_t metric_shapes;
+	for (auto &m : b.model.metrics) {
+		auto tree = m.expression.tree->Copy();
+		ExpandMetric(b, tree);
+		if (tree->GetExpressionClass() != ExpressionClass::FUNCTION) {
+			Fail(m.name, "capability", "only five direct observation aggregate forms supported");
+		}
+		auto &f = tree->Cast<FunctionExpression>();
+		auto name = StringUtil::Lower(f.function_name);
+		if (f.children.size() != 1) {
+			Fail(m.name, "capability", "single aggregate argument required");
+		}
+		string field;
+		for (const auto &candidate : {b.identity, b.amount_field}) {
+			if (f.children[0]->Equals(*FieldTree(b, candidate))) {
+				field = candidate;
+			}
+		}
+		bool valid = (name == "count" && field == b.identity) ||
+		             (!f.distinct && field == b.amount_field && (name == "count" || name == "sum" || name == "avg"));
+		auto shape = name + ":" + (f.distinct ? "distinct:" : "all:") + field;
+		if (!valid || !metric_shapes.insert(shape).second) {
+			Fail(m.name, "capability", "unsupported or repeated observation metric shape");
+		}
+	}
+	if (metric_shapes.size() != 5) {
+		Fail("metrics", "capability", "all five observation aggregate forms required");
+	}
+	auto rules = Array(derived, "derived_by", true);
+	if (rules.size() != 1) {
+		Fail(b.derived, "rule", "single observation qualification rule required");
+	}
+	b.original_rule = ArrayText(rules[0]);
+	b.rule = Parse(b.original_rule);
+	Strict(*b.rule);
+	Resolve(b, b.rule, true);
+	if (b.rule->GetExpressionType() != ExpressionType::COMPARE_GREATERTHANOREQUALTO) {
+		Fail(b.derived, "capability", "qualification must be class integer >= integer constant");
+	}
+	auto &comparison = b.rule->Cast<ComparisonExpression>();
+	if (!comparison.left->Equals(*FieldTree(b, b.class_field)) ||
+	    comparison.right->GetExpressionClass() != ExpressionClass::CONSTANT ||
+	    !comparison.right->Cast<ConstantExpression>().value.type().IsIntegral() ||
+	    comparison.right->Cast<ConstantExpression>().value.IsNull()) {
+		Fail(b.derived, "capability", "qualification must be class integer >= integer constant");
+	}
+}
+
+void ObservationIdentityPreflight(ClientContext &context, Bundle &b, Connection &engine) {
+	auto &dataset = b.model.datasets[0];
+	auto u = FieldTree(b, b.observation_identity[0])->ToString();
+	auto d = FieldTree(b, b.observation_identity[1])->ToString();
+	auto p = FieldTree(b, b.observation_identity[2])->ToString();
+	auto source = " FROM main.ossie_snapshot AS " + Quote(dataset.name);
+	auto bad =
+	    Run(context, engine,
+	        FrozenSQL(b, "SELECT count(*)" + source + " WHERE " + u + " IS NULL OR " + u + " = '' OR " + d +
+	                         " IS NULL OR NOT system.main.isfinite(" + d + ") OR " + p + " IS NULL OR " + p + " = ''"))
+	        ->Fetch();
+	if (bad->GetValue(0, 0).GetValue<int64_t>() != 0) {
+		Fail(b.root, "identity", "entire batch requires nonempty raw String User/product and finite nonnull DATE");
+	}
+	auto duplicates = Run(context, engine,
+	                      FrozenSQL(b, "SELECT " + u + ", " + d + ", " + p + source + " GROUP BY " + u + ", " + d +
+	                                       ", " + p + " HAVING system.main.count(*) > 1"));
+	if (duplicates->Cast<MaterializedQueryResult>().RowCount() != 0) {
+		Fail(b.root, "identity",
+		     "entire batch contains duplicate observation tuple; identical and conflicting records both refused");
+	}
+	auto users = Run(context, engine, FrozenSQL(b, "SELECT count(DISTINCT " + u + ")" + source))->Fetch();
+	b.user_count = static_cast<idx_t>(users->GetValue(0, 0).GetValue<int64_t>());
+}
+
 shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_path) {
 	if (!context.transaction.IsAutoCommit()) {
 		Fail("bundle", "snapshot", "load requires committed native tables outside an explicit transaction");
@@ -1386,8 +1739,6 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	auto bundle = make_shared_ptr<Bundle>();
 	bundle->owner = bundle;
 	bundle->database = context.db;
-	auto engine = Engine(*bundle);
-
 	auto manifest_bytes = Read(context, manifest_path);
 	Document manifest(manifest_bytes);
 	manifest.NoNUL();
@@ -1398,9 +1749,10 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	         ? std::initializer_list<const char *> {"profile", "core", "ontology", "mapping", "join"}
 	         : std::initializer_list<const char *> {"profile", "core", "ontology", "mapping"},
 	     "bundle manifest");
-	if (bundle->profile != PROFILE && bundle->profile != JOIN_PROFILE) {
+	if (bundle->profile != PROFILE && bundle->profile != JOIN_PROFILE && bundle->profile != OBSERVATION_PROFILE) {
 		Fail("profile", "capability", "unknown implementation profile");
 	}
+	auto engine = Engine(*bundle);
 	bundle->manifest_hash = Hash(*engine, manifest_bytes);
 	auto &fs = FileSystem::GetFileSystem(context);
 	auto slash = manifest_path.find_last_of("/\\");
@@ -1460,7 +1812,11 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		CompileToSQL(bundle->model, {metric.name}, {}, {}, CompileOptions());
 	}
 	Document ontology(ontology_bytes), mapping(mapping_bytes);
-	Definitions(*bundle, ontology.Root(), mapping.Root());
+	if (bundle->profile == OBSERVATION_PROFILE) {
+		ObservationDefinitions(*bundle, ontology.Root(), mapping.Root());
+	} else {
+		Definitions(*bundle, ontology.Root(), mapping.Root());
+	}
 	bundle->ontology_name = Text(ontology.Root(), "name");
 	bundle->ontology_version = Text(ontology.Root(), "version");
 	bundle->mapping_name = Text(mapping.Root(), "name");
@@ -1471,13 +1827,14 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 			Fail(entry.first[0], "bind", "dataset and concept namespaces must be distinct");
 		}
 	}
-	if (StringUtil::CIEquals(dataset.name, bundle->root) || StringUtil::CIEquals(dataset.name, bundle->derived)) {
+	if (StringUtil::CIEquals(dataset.name, bundle->root) || StringUtil::CIEquals(dataset.name, bundle->derived) ||
+	    (!bundle->user_concept.empty() && StringUtil::CIEquals(dataset.name, bundle->user_concept))) {
 		Fail(dataset.name, "bind", "dataset and concept namespaces must be distinct");
 	}
-	if (bundle->profile == PROFILE) {
+	if (bundle->profile == PROFILE || bundle->profile == OBSERVATION_PROFILE) {
 		bundle->original_source = dataset.source_bound;
 	}
-	if (bundle->profile == PROFILE) {
+	if (bundle->profile == PROFILE || bundle->profile == OBSERVATION_PROFILE) {
 		auto parts = QualifiedName::ParseComponents(dataset.source_bound);
 		if (parts.size() != 3) {
 			Fail(dataset.name, "snapshot", "fully qualified catalog.schema.table source required");
@@ -1583,6 +1940,10 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		bundle->metric_types[metric.name] = bound->GetTypes()[0].ToString();
 	}
 	CheckBoolean(*bundle, *bundle->rule);
+	if (bundle->profile == OBSERVATION_PROFILE) {
+		ObservationIdentityPreflight(context, *bundle, *engine);
+		return bundle;
+	}
 	for (auto &attribute : bundle->attributes) {
 		auto sql = "SELECT count(*) - count(" + FieldTree(*bundle, attribute.field)->ToString() + "), count(" +
 		           FieldTree(*bundle, attribute.field)->ToString() + ") - count(DISTINCT " +
@@ -1598,6 +1959,9 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 }
 
 unique_ptr<ParsedExpression> Population(Bundle &bundle, const string &concept, const vector<string> &filters) {
+	if (bundle.profile == OBSERVATION_PROFILE && concept == bundle.user_concept) {
+		Fail(concept, "capability", "User is referent-only; direct objects and metrics queries unsupported");
+	}
 	if (concept != bundle.root && concept != bundle.derived) {
 		Fail(concept, "bind", "unknown executable concept");
 	}
@@ -1634,6 +1998,12 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 		options.population_source = source.get();
 		vector<string> translated;
 		for (auto &dimension : dimensions) {
+			if (bundle.profile == OBSERVATION_PROFILE) {
+				auto field = LogicalField(bundle, dimension);
+				if (field != bundle.observation_identity[1] && field != bundle.observation_identity[2]) {
+					Fail(dimension, "capability", "observation grouping supports only date and product fields");
+				}
+			}
 			if (bundle.provenance.empty()) {
 				translated.push_back(dimension);
 			} else {
@@ -1652,10 +2022,12 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 		return statement;
 	}
 	auto select = make_uniq<SelectNode>();
-	for (auto name : {"entity_id", "record_id"}) {
-		auto id = FieldTree(bundle, bundle.identity);
-		id->SetAlias(name);
-		select->select_list.push_back(std::move(id));
+	if (bundle.profile != OBSERVATION_PROFILE) {
+		for (auto name : {"entity_id", "record_id"}) {
+			auto id = FieldTree(bundle, bundle.identity);
+			id->SetAlias(name);
+			select->select_list.push_back(std::move(id));
+		}
 	}
 	for (auto &field : bundle.model.datasets[0].fields) {
 		auto expression = FieldTree(bundle, field.name);
@@ -1678,6 +2050,42 @@ string JSONStrings(const vector<string> &values) {
 		result += JSONString(values[i]);
 	}
 	return result + "]";
+}
+
+string IdentityComponents(const Bundle &b, bool user) {
+	vector<string> fields = b.profile == OBSERVATION_PROFILE
+	                            ? (user ? vector<string> {b.identity} : b.observation_identity)
+	                            : vector<string> {b.identity};
+	string json = "[";
+	for (idx_t i = 0; i < fields.size(); i++) {
+		if (i) {
+			json += ",";
+		}
+		string dataset = b.model.datasets[0].name, field = fields[i];
+		for (const auto &entry : b.provenance) {
+			if (entry.second == fields[i]) {
+				dataset = entry.first[0];
+				field = entry.first[1];
+			}
+		}
+		auto relationship = b.profile == OBSERVATION_PROFILE
+		                        ? (user ? b.user_id_relation : b.observation_relationships[i])
+		                        : b.identity_relation;
+		json += "{\"relationship\":" + JSONString(relationship) + ",\"dataset\":" + JSONString(dataset) +
+		        ",\"field\":" + JSONString(field) + ",\"bound_type\":" + JSONString(b.field_types.at(fields[i]));
+		if (b.profile == OBSERVATION_PROFILE && !user && i == 0) {
+			json += ",\"referent\":{\"concept\":" + JSONString(b.user_concept) +
+			        ",\"relationship\":" + JSONString(b.user_id_relation) + "}";
+		}
+		json += "}";
+	}
+	return json + "]";
+}
+
+string ReferencedUserIdentity(const Bundle &b) {
+	return "{\"concept\":" + JSONString(b.user_concept) + ",\"components\":" + IdentityComponents(b, true) +
+	       ",\"entity_equals_record\":false,\"projection\":\"distinct User IDs in the requested observation "
+	       "scope\",\"objects_queryable\":false,\"metrics_queryable\":false}";
 }
 
 string DefinitionExpression(const ModelExpression &expression) {
@@ -1710,7 +2118,9 @@ string PlanJSON(const Bundle &bundle, const SelectStatement &statement, const st
 	auto rule = bundle.rule->Copy();
 	EngineFunctions(*rule);
 	string result =
-	    "{\"schema_version\":\"ossie-population-plan-v1\","
+	    "{\"schema_version\":" +
+	    JSONString(bundle.profile == OBSERVATION_PROFILE ? "ossie-population-plan-v2" : "ossie-population-plan-v1") +
+	    ","
 	    "\"phase\":\"generated semantic SELECT AST\",\"executed\":false,\"physical_plan\":false,"
 	    "\"sql_replayable\":false,\"request_kind\":" +
 	    JSONString(objects ? "objects" : "metrics") + ",\"profile\":" + JSONString(bundle.profile) +
@@ -1729,11 +2139,16 @@ string PlanJSON(const Bundle &bundle, const SelectStatement &statement, const st
 	    ",\"input_language\":\"profile scalar SQL subset (no core dialect lowering)\","
 	    "\"declared_sql\":" +
 	    JSONString(bundle.original_rule) + ",\"resolved_definition_sql\":" + JSONString(rule->ToString()) +
-	    "}},\"identity\":{\"field\":" + JSONString(OriginalName(bundle, bundle.identity)) +
-	    ",\"dataset\":" + JSONString(identity_dataset) + ",\"logical_field\":" + JSONString(identity_field) +
-	    ",\"entity_equals_record\":true,\"scope\":\"one observation per identity in captured batch\"},"
-	    "\"grain\":{\"population_input_dataset\":" +
-	    JSONString(bundle.model.datasets[0].name) +
+	    "}},\"identity\":" +
+	    (bundle.profile == OBSERVATION_PROFILE
+	         ? "{\"concept\":" + JSONString(bundle.root) + ",\"components\":" + IdentityComponents(bundle, false) +
+	               ",\"entity_equals_record\":true,\"scope\":\"unique daily observation tuple in the entire captured "
+	               "batch\",\"internal_string_comparison\":\"binary\",\"referenced_entity\":" +
+	               ReferencedUserIdentity(bundle) + "},"
+	         : "{\"field\":" + JSONString(OriginalName(bundle, bundle.identity)) +
+	               ",\"dataset\":" + JSONString(identity_dataset) + ",\"logical_field\":" + JSONString(identity_field) +
+	               ",\"entity_equals_record\":true,\"scope\":\"one observation per identity in captured batch\"},") +
+	    "\"grain\":{\"population_input_dataset\":" + JSONString(bundle.model.datasets[0].name) +
 	    ",\"declared_primary_key\":" + JSONStrings(input_dataset->primary_key) +
 	    ",\"aggregation_scope\":\"effective WHERE before GROUP BY\",\"basis\":" +
 	    JSONString(bundle.profile == JOIN_PROFILE ? "validated fact grain before flattening"
@@ -1813,6 +2228,7 @@ struct PopulationBind : TableFunctionData {
 	bool load = false;
 	bool compile = false;
 	bool discover = false;
+	bool discover_v2 = false;
 	bool encoded = false;
 	bool objects = false;
 	string concept;
@@ -1854,6 +2270,34 @@ unique_ptr<FunctionData> DiscoverBind(ClientContext &context, TableFunctionBindI
 	auto result = make_uniq<PopulationBind>();
 	result->bundle = Current(context);
 	result->discover = true;
+	result->discover_v2 = input.table_function.name == "ossie_concepts_v2";
+	if (!result->discover_v2 && result->bundle->profile == OBSERVATION_PROFILE) {
+		Fail("ossie_concepts", "capability", "compound identity requires ossie_concepts_v2");
+	}
+	if (result->discover_v2) {
+		names = {"concept",
+		         "parent",
+		         "derived_by",
+		         "identity_components_json",
+		         "referenced_entity_identity_json",
+		         "objects_queryable",
+		         "metrics_queryable",
+		         "captured_observation_rows",
+		         "captured_user_count",
+		         "profile",
+		         "source",
+		         "snapshot_id",
+		         "content_sha256",
+		         "core_sha256",
+		         "ontology_sha256",
+		         "mapping_sha256",
+		         "manifest_sha256"};
+		types = vector<LogicalType>(5, LogicalType::VARCHAR);
+		types.insert(types.end(),
+		             {LogicalType::BOOLEAN, LogicalType::BOOLEAN, LogicalType::BIGINT, LogicalType::BIGINT});
+		types.insert(types.end(), 8, LogicalType::VARCHAR);
+		return std::move(result);
+	}
 	names = {"concept",         "parent",         "identity_field", "derived_by",      "profile",
 	         "snapshot_id",     "content_sha256", "core_sha256",    "ontology_sha256", "mapping_sha256",
 	         "manifest_sha256", "source",         "records"};
@@ -1863,7 +2307,7 @@ unique_ptr<FunctionData> DiscoverBind(ClientContext &context, TableFunctionBindI
 }
 
 // Versioned separately from the Ossie document and diagnostic plan schema.
-constexpr const char *POPULATION_API_VERSION = "2.0.0";
+constexpr const char *POPULATION_API_VERSION = "2.1.0";
 
 unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBindInput &input,
                                         vector<LogicalType> &types, vector<string> &names) {
@@ -1974,11 +2418,14 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 		}
 	} else {
 		string capabilities =
-		    "{\"scope\":\"bound frozen bundle\",\"concepts\":" + JSONStrings({b.root, b.derived}) +
+		    "{\"scope\":\"bound frozen bundle\",\"concepts\":" +
+		    JSONStrings(b.profile == OBSERVATION_PROFILE ? vector<string> {b.user_concept, b.root, b.derived}
+		                                                 : vector<string> {b.root, b.derived}) +
 		    ",\"engine\":{\"version\":" + JSONString(DuckDB::LibraryVersion()) +
 		    ",\"source_id\":" + JSONString(DuckDB::SourceID()) +
 		    "},"
-		    "\"supported_profiles\":[\"gaap-scalar-population-v1\",\"fact-dimension-population-v1\"],"
+		    "\"supported_profiles\":[\"gaap-scalar-population-v1\",\"fact-dimension-population-v1\",\"daily-"
+		    "observation-population-v1\"],"
 		    "\"validation\":\"all declarations pass load AST/type/individual expression binding preflight; "
 		    "fields projected together; each metric without grouping; combined requests require separate binding\","
 		    "\"input_limits\":{\"rows_per_input\":" +
@@ -1988,7 +2435,11 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 		    ",\"peak_memory_bound\":false},"
 		    "\"request_limits\":{\"metrics\":64,\"dimensions\":256,\"filters\":64},"
 		    "\"execution\":{\"source\":\"committed native DuckDB tables\",\"reload\":\"explicit operator reload\","
-		    "\"identity\":\"one observation per entity per batch\",\"filters\":\"strict scalar predicates narrow the "
+		    "\"identity\":" +
+		    JSONString(b.profile == OBSERVATION_PROFILE
+		                   ? "typed User/date/product observation tuple; repeated User allowed"
+		                   : "one observation per entity per batch") +
+		    ",\"filters\":\"strict scalar predicates narrow the "
 		    "concept rule\","
 		    "\"time\":\"DATE; no inferred range or calendar completion\",\"live_query_join\":false,"
 		    "\"capture_join\":" +
@@ -2008,8 +2459,27 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 		    "\"MCP missing argument/unknown tool/protocol\",\"cancellation/fatal/internal/OOM/unknown native "
 		    "failures\"]},"
 		    "\"arbitrary_ontology_execution\":false,\"cross_call_reload_atomicity\":false}";
+		capabilities.pop_back();
+		capabilities += ",\"concept_discovery\":{\"function\":" +
+		                JSONString(b.profile == OBSERVATION_PROFILE ? "ossie_concepts_v2" : "ossie_concepts") +
+		                ",\"schema\":" +
+		                JSONString(b.profile == OBSERVATION_PROFILE ? "ossie-population-concepts-v2"
+		                                                            : "ossie-population-discovery-v1") +
+		                "}";
+		if (b.profile == OBSERVATION_PROFILE) {
+			capabilities +=
+			    ",\"observation_contract\":{\"groupable_fields\":" +
+			    JSONStrings({OriginalName(b, b.observation_identity[1]), OriginalName(b, b.observation_identity[2])}) +
+			    ",\"internal_string_comparison\":\"binary\",\"user_queryable\":false,\"user_count_scope\":"
+			    "\"existential distinct projection of qualifying "
+			    "observations in requested scope\",\"mean_denominator\":\"nonnull observation "
+			    "amounts\",\"metric_forms\":\"COUNT(user), COUNT(DISTINCT user), COUNT(amount), SUM(amount), "
+			    "AVG(amount)\"}";
+		}
+		capabilities += "}";
 		append({Value(POPULATION_API_VERSION), Value("ossie-population-discovery-v1"),
-		        Value("ossie-population-plan-v1"), Value(b.definition_model.spec_version), Value(capabilities)});
+		        Value(b.profile == OBSERVATION_PROFILE ? "ossie-population-plan-v2" : "ossie-population-plan-v1"),
+		        Value(b.definition_model.spec_version), Value(capabilities)});
 	}
 }
 
@@ -2210,8 +2680,24 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 		VocabularyRows(data, result->rows);
 	} else if (data.discover) {
 		auto &b = *data.bundle;
-		for (const auto &concept : {b.root, b.derived}) {
+		vector<string> concepts = data.discover_v2 && b.profile == OBSERVATION_PROFILE
+		                              ? vector<string> {b.user_concept, b.root, b.derived}
+		                              : vector<string> {b.root, b.derived};
+		for (const auto &concept : concepts) {
 			bool derived = concept == b.derived;
+			if (data.discover_v2) {
+				bool user = concept == b.user_concept;
+				result->rows.push_back(
+				    {Value(concept), derived ? Value(b.root) : Value(LogicalType::VARCHAR),
+				     derived ? Value(b.original_rule) : Value(LogicalType::VARCHAR), Value(IdentityComponents(b, user)),
+				     b.profile == OBSERVATION_PROFILE && !user ? Value(ReferencedUserIdentity(b))
+				                                               : Value(LogicalType::VARCHAR),
+				     Value::BOOLEAN(!user), Value::BOOLEAN(!user), Value::BIGINT(static_cast<int64_t>(b.rows)),
+				     Value::BIGINT(static_cast<int64_t>(b.profile == OBSERVATION_PROFILE ? b.user_count : b.rows)),
+				     Value(b.profile), Value(b.original_source), Value(b.snapshot_id), Value(b.content_hash),
+				     Value(b.core_hash), Value(b.ontology_hash), Value(b.mapping_hash), Value(b.manifest_hash)});
+				continue;
+			}
 			result->rows.push_back({Value(concept), derived ? Value(b.root) : Value(LogicalType::VARCHAR),
 			                        Value(OriginalName(b, b.identity)),
 			                        derived ? Value(b.original_rule) : Value(LogicalType::VARCHAR), Value(b.profile),
@@ -2268,7 +2754,7 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 		if (name == "ossie_bundle_load") {
 			return LoadBind(context, input, types, names);
 		}
-		if (name == "ossie_concepts") {
+		if (name == "ossie_concepts" || name == "ossie_concepts_v2") {
 			return DiscoverBind(context, input, types, names);
 		}
 		if (name == "ossie_population_metrics" || name == "ossie_population_fields" ||
@@ -2331,7 +2817,7 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	RegisterDescribe(
 	    loader, TableFunction("ossie_bundle_load", {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
 	    "Load a hash-bound local core/ontology/mapping bundle for gaap-scalar-population-v1 or "
-	    "fact-dimension-population-v1. Captures a "
+	    "fact-dimension-population-v1 or daily-observation-population-v1. Captures a "
 	    "committed native table into a frozen typed observation batch (AST dependency required) and "
 	    "preflights entire-batch "
 	    "identity before publishing. Requires autocommit, one dataset or an explicit INTEGER-key "
@@ -2342,6 +2828,11 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	                 "Discover the two executable concepts in the current frozen batch, with parent, identity, rule, "
 	                 "definition hashes, source and snapshot identity. Database-wide state is captured at binding.",
 	                 "SELECT * FROM ossie_concepts()");
+	RegisterDescribe(loader, TableFunction("ossie_concepts_v2", {}, ScanBoundary, BindBoundary, InitBoundary),
+	                 "Discover structured typed identities, referenced entity identities, queryability and full-batch "
+	                 "observation/User counts. Counts describe capture, not qualifying request scope. Supports all "
+	                 "population profiles.",
+	                 "SELECT * FROM ossie_concepts_v2()");
 	for (auto name : {"ossie_population_metrics", "ossie_population_fields", "ossie_population_capabilities"}) {
 		RegisterDescribe(
 		    loader, TableFunction(name, {}, ScanBoundary, BindBoundary, InitBoundary),
@@ -2353,7 +2844,8 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	RegisterDescribe(
 	    loader,
 	    traced(TableFunction("ossie_objects", {LogicalType::VARCHAR, list}, ScanBoundary, BindBoundary, InitBoundary)),
-	    "Return entity_id, record_id and every logical field for a concept in the bound immutable batch. "
+	    "Return every logical field for an executable concept in the bound immutable batch. Scalar/join profiles add "
+	    "entity_id and record_id; observation profile preserves typed tuple columns. "
 	    "Strict scalar filters can only narrow population. No implicit sorting, paging or truncation.",
 	    "SELECT * FROM ossie_objects('ValidUser', [])");
 	RegisterDescribe(loader,

@@ -35,7 +35,10 @@ the literal output key `dimension.label`, not a SQL expression. Separate dataset
 and field columns retain provenance even when names contain dots or quotes.
 Joined bundles retain original namespaces and computed definitions, rather than
 generated flattened names. No ontology attribute catalogue is added here;
-formal concept rules and identities remain in `ossie_concepts()`.
+formal concept rules and identities remain in `ossie_concepts()` for scalar/join
+profiles and [`ossie_concepts_v2()`](population-observation.md) for compound
+observation identities. Field declarations do not establish grouping capability;
+the observation profile permits only its date/product fields as dimensions.
 
 `load_preflight_validated=true` means fields passed the existing combined field
 projection type binding, and each metric passed individual no-group binding,
@@ -48,9 +51,10 @@ output names and other request combinations still require request binding.
 Unsupported declarations reject the whole load; no unavailable-definition list
 is synthesized. Time flags describe declared/defaulted roles, not calendar support.
 
-Capabilities return one row with `api_version=2.0.0`,
+Capabilities return one row with `api_version=2.1.0`,
 `discovery_schema=ossie-population-discovery-v1`,
-`plan_schema=ossie-population-plan-v1`, `ossie_spec_version=0.2.0.dev0`,
+`plan_schema=ossie-population-plan-v1` for scalar/join profiles (`plan-v2` for
+the observation profile), `ossie_spec_version=0.2.0.dev0`,
 `capabilities_json`, and the shared trace columns. These are separate identities:
 
 - API version describes this project's public population SQL contract and its

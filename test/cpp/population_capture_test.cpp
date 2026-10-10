@@ -230,6 +230,66 @@ void Controls(const string &root, int threads) {
 	      "observer removed; reload succeeds");
 	Check(Scalar(reader, TOTAL) == "154.01", "final valid snapshot query");
 }
+void ObservationControls(const string &root, int threads) {
+	DuckDB database(nullptr);
+	Connection loader(database), writer(database), reader(database);
+	Query(reader, "SET threads=" + std::to_string(threads));
+	Query(writer, "CREATE TABLE observations(observation_id VARCHAR,user_id VARCHAR,ds DATE,product VARCHAR,amount_usd "
+	              "DECIMAL(18,2),classification_value INTEGER)");
+	Query(writer, "INSERT INTO observations SELECT * FROM read_csv(" +
+	                  Literal(root + "docs/research/ossie-req-001/multi-period-research/observations.csv") +
+	                  ",header=true)");
+	auto load10 =
+	    "CALL ossie_bundle_load(" + Literal(root + "test/fixtures/population-observation/bundle-10.json") + ")";
+	auto load20 =
+	    "CALL ossie_bundle_load(" + Literal(root + "test/fixtures/population-observation/bundle-20.json") + ")";
+	const string total = "SELECT amount_sum FROM ossie_concept_query('QualifiedObservation',['amount_sum'],[],[])";
+	const string snapshot = "SELECT snapshot_id FROM ossie_concepts_v2() WHERE concept='DailyObservation'";
+	Query(writer, "SET GLOBAL default_collation='nocase'");
+	Query(loader, load10);
+	Check(Scalar(reader, "SELECT current_setting('default_collation')") == "nocase",
+	      "observation private engine leaves global collation unchanged");
+	auto before = Scalar(reader, snapshot);
+	auto prepared = reader.Prepare(total);
+	Check(!prepared->HasError(), "observation prepared bind");
+	Check(Scalar(reader, total) == "31.00", "observation initial sum");
+	Query(writer, "UPDATE observations SET amount_usd=11 WHERE observation_id='o4'");
+	{
+		Attempt attempt(loader, load20, PopulationLoadCheckpoint::BEFORE_PUBLISH);
+		attempt.gate.Wait();
+		Check(Scalar(reader, snapshot) == before && Scalar(reader, total) == "31.00",
+		      "observation readers keep old bundle while load waits");
+		Check(Scalar(reader, "SELECT captured_user_count FROM ossie_concepts_v2() WHERE concept='User'") == "4",
+		      "observation old captured User set");
+		Query(writer, "UPDATE observations SET amount_usd=777 WHERE observation_id='o4'");
+		attempt.Finish();
+		Check(attempt.result && !attempt.result->HasError(), "observation valid candidate publishes");
+	}
+	Check(Scalar(reader, total) == "18.00", "observation source mutation after freeze is excluded");
+	Check(Scalar(reader, snapshot) != before, "observation atomic publication changes snapshot");
+	auto original = prepared->Execute();
+	Check(!original->HasError() && original->Fetch()->GetValue(0, 0).ToString() == "31.00",
+	      "observation prepared old bundle remains executable");
+	before = Scalar(reader, snapshot);
+	{
+		Attempt attempt(loader, load10, PopulationLoadCheckpoint::BEFORE_PUBLISH);
+		attempt.gate.Wait();
+		loader.Interrupt();
+		attempt.Finish();
+		Check(attempt.result && attempt.result->HasError() &&
+		          attempt.result->GetErrorObject().Type() == ExceptionType::INTERRUPT,
+		      "observation cancellation keeps native interrupt");
+	}
+	Check(Scalar(reader, snapshot) == before && Scalar(reader, total) == "18.00",
+	      "observation cancellation retains old complete bundle");
+	Query(writer, "INSERT INTO observations SELECT * FROM observations WHERE observation_id='o1'");
+	auto failed = loader.Query(load10);
+	Check(failed->HasError() && failed->GetError().find("duplicate observation tuple") != string::npos,
+	      "native observation duplicate preflight refuses");
+	Check(Scalar(reader, snapshot) == before && Scalar(reader, total) == "18.00",
+	      "native failed tuple preflight retains old bundle");
+}
+
 } // namespace
 int main(int argc, char **argv) {
 	try {
@@ -240,6 +300,8 @@ int main(int argc, char **argv) {
 			root += '/';
 		Controls(root, 4);
 		Controls(root, 1);
+		ObservationControls(root, 4);
+		ObservationControls(root, 1);
 		std::cout
 		    << "PASS: " << checks
 		    << " checks; deterministic production capture, capture/prepublish cancel, callback failure; threads=4/1\n";

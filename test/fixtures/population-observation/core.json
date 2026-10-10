@@ -1,0 +1,145 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "daily_observation_demo",
+  "description": "Design draft only. Single daily snapshot per user/date/product. Synthetic additive amount USD, not GAAP or cumulative YTD.",
+  "datasets": [
+    {
+      "name": "observations",
+      "source": "memory.main.observations",
+      "primary_key": [
+        "user_id",
+        "ds",
+        "product"
+      ],
+      "fields": [
+        {
+          "name": "user_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "user_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ds",
+          "datatype": "Date",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "ds"
+              }
+            ]
+          }
+        },
+        {
+          "name": "product",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "product"
+              }
+            ]
+          }
+        },
+        {
+          "name": "amount_usd",
+          "datatype": "Decimal",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "amount_usd"
+              }
+            ]
+          }
+        },
+        {
+          "name": "classification_value",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "classification_value"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "observation_count",
+      "datatype": "Integer",
+      "description": "Counts over the selected observation scope; see contract.",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "COUNT(observations.user_id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "user_count",
+      "datatype": "Integer",
+      "description": "Counts over the selected observation scope; see contract.",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "COUNT(DISTINCT observations.user_id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "amount_value_count",
+      "datatype": "Integer",
+      "description": "Counts over the selected observation scope; see contract.",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "COUNT(observations.amount_usd)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "amount_sum",
+      "datatype": "Decimal",
+      "description": "USD; additive per-observation synthetic amount; NULL excluded from AVG.",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "SUM(observations.amount_usd)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "mean_observation_amount",
+      "datatype": "Float",
+      "description": "USD; additive per-observation synthetic amount; NULL excluded from AVG.",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "AVG(observations.amount_usd)"
+          }
+        ]
+      }
+    }
+  ]
+}
