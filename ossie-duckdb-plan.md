@@ -1511,3 +1511,10 @@ A1–A8在joined_population超限拒绝文案处失败。实际拒绝发生，�
 探针固定binary及Prepare非溢出执行证据的限制明确。下一授权动作是公开多事实/
 窗口查询/编译解释/发现、私有Engine与JSON完整输出，再MCP/无模型；整个原P1
 及状态历史待答、最终tidy/跨平台/历史审计不缩减。未推送或调用模型。
+
+双事实公开接口恢复checkpoint（e39637e，干净）：[实施契约新增接口段](docs/research/ossie-req-001/p1-program-research/implementation-contract.md)
+冻结五专用函数、真实32/16/128上限、独立common分母AST、空结果保留分母、
+BC/全有限DATE规范往返、原始身份排序和完整1MiB输出、单RPC冻结及未执行
+计划/发现边界。Advisor只读反证建议采纳，尚未注册或实现新公开接口；下一
+原授权动作是按此契约实现分母/严格请求/私有Engine查询与解释发现，再实际
+插件/原生控制/MCP/无模型验收。原完整P1和业务待答保持，禁止模型/推送。
