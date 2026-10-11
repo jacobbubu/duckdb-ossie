@@ -28,12 +28,12 @@ WHERE starts_with(function_name, 'ossie_') AND (examples IS NULL OR len(examples
 ----
 0
 
-# All twenty-four registrations are present: twenty-two names, with ossie_query contributing three overloads.
+# Twenty-five registrations: twenty-three names, with ossie_query contributing three overloads.
 query II
 SELECT count(*), count(DISTINCT function_name) FROM duckdb_functions()
 WHERE starts_with(function_name, 'ossie_');
 ----
-24	22
+25	23
 
 # Each ossie_query overload resolves to its own description rather than falling through to none.
 query II

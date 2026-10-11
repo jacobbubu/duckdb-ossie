@@ -1,0 +1,67 @@
+Filters: test/sql/*
+
+[0/26] (0%): test/sql/ossie_join_research.test
+[1/26] (3%): test/sql/ossie_field_expansion.test
+[2/26] (7%): test/sql/ossie_describe.test
+[3/26] (11%): test/sql/ossie_loader_contract.test
+[4/26] (15%): test/sql/ossie_population_relation_load.test
+1. test/sql/ossie_population_relation_load.test:16
+================================================================================
+Query unexpectedly failed (test/sql/ossie_population_relation_load.test:16)
+ (test/sql/ossie_population_relation_load.test:16)!
+================================================================================
+SELECT json_extract_string(program_json,'$.profile'), json_extract_string(program_json,'$.captured_rows'), json_extract_string(program_json,'$.load_constraints_validated'), json_extract_string(program_json,'$.query_executed'), json_extract_string(program_json,'$.relations[1].dependencies[0]') FROM ossie_relation_program();
+================================================================================
+Actual result:
+================================================================================
+Catalog Error: Scalar Function with name "json_extract_string" is not in the catalog, but it exists in the json extension.
+
+Please try installing and loading the json extension by running:
+INSTALL json;
+LOAD json;
+
+Alternatively, consider enabling auto-install and auto-load by running:
+SET autoinstall_known_extensions=1;
+SET autoload_known_extensions=1;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+unittest is a Catch v2.13.7 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+test/sql/ossie_population_relation_load.test
+-------------------------------------------------------------------------------
+/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release/test/sqlite/../../../../duckdb/test/sqlite/test_sqllogictest.cpp:212
+...............................................................................
+
+test/sql/ossie_population_relation_load.test:16: FAILED:
+explicitly with message:
+  0
+
+
+[5/26] (19%): test/sql/ossie_relationships.test
+[6/26] (23%): test/sql/ossie_population_observation.test
+[7/26] (26%): test/sql/ossie_population_expressions.test
+[8/26] (30%): test/sql/ossie_population.test
+[9/26] (34%): test/sql/ossie_population_daily_users.test
+[10/26] (38%): test/sql/ossie_population_result.test
+[11/26] (42%): test/sql/ossie_population_discovery.test
+[12/26] (46%): test/sql/ossie_population_errors.test
+[13/26] (50%): test/sql/ossie_sql_2026.test
+[14/26] (53%): test/sql/ossie_yaml.test
+[15/26] (57%): test/sql/ossie_population_plan.test
+[16/26] (61%): test/sql/ossie_differential.test
+[17/26] (65%): test/sql/ossie_function_metadata.test
+[18/26] (69%): test/sql/ossie_conformance.test
+[19/26] (73%): test/sql/ossie_population_dates.test
+[20/26] (76%): test/sql/ossie_compile.test
+[21/26] (80%): test/sql/ossie_joined_population.test
+[22/26] (84%): test/sql/ossie_grain.test
+[23/26] (88%): test/sql/ossie_load.test
+[24/26] (92%): test/sql/ossie.test
+[25/26] (96%): test/sql/ossie_validate.test
+[26/26] (100%): test/sql/ossie_validate.test
+===============================================================================
+test cases:  26 |  25 passed | 1 failed
+assertions: 963 | 962 passed | 1 failed
+

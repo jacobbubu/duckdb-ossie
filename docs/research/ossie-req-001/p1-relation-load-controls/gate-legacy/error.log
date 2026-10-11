@@ -1,0 +1,665 @@
+{
+  "artifact_sha256": "64da84ff47d3ec1563e327f2fc40179624ea3ff7accf50ad8aed031b45f2c1d8",
+  "verifier_sha256": "9cce01abd3088b9a5566cb2785cc8880f85cc6b114de16186dabf11be573959b",
+  "source_sha256": {
+    "src/population/population.cpp": "ab50f95d3504a12dc450ad16544c684192251d71223d3f969dac3144a7ad48a6",
+    "src/model/parser.cpp": "efb44a16d4d8d0ed84b5918161ce651629073e6b7556bb3ce0260a89bea46a19",
+    "scripts/population_error.ts": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff"
+  },
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "checks": [
+    "unloaded ossie_concepts",
+    "unloaded ossie_population_metrics",
+    "unloaded ossie_population_fields",
+    "unloaded ossie_population_capabilities",
+    "JSON list null",
+    "JSON list {}",
+    "JSON list 1",
+    "JSON list \"x\"",
+    "JSON list [1]",
+    "JSON list [true]",
+    "JSON list [null]",
+    "JSON list [{}]",
+    "JSON list [[]]",
+    "JSON list [\"ok\",null]",
+    "JSON list [",
+    "JSON list [] trailing",
+    "SQL NULL list",
+    "strict helper preserves special and length-aware NUL string bytes",
+    "valid empty list is explicit",
+    "ossie_objects unknown quoted concept",
+    "ossie_concept_query unknown quoted concept",
+    "ossie_concept_compile unknown quoted concept",
+    "core metric resolution wrapped",
+    "core dimension resolution wrapped",
+    "SQL NULL list member wrapped",
+    "unknown attribute",
+    "scalar AST refusal",
+    "parser preserves actual rule stage",
+    "conversion execute envelope",
+    "request capability",
+    "missing file load",
+    "load failure preserves frozen bundle",
+    "load preserves inner capability stage",
+    "hash failure stage",
+    "core string array load refusal",
+    "hash-valid malformed core retains frozen bundle",
+    "population profile still refuses NUL core metadata",
+    "NUL profile refusal retains previous frozen bundle",
+    "strict core optional scalar type",
+    "hash-valid core scalar refusal preserves frozen bundle",
+    "unknown core field in hash-valid bundle",
+    "unknown core property refuses without replacing frozen bundle",
+    "malformed extension in hash-valid bundle",
+    "malformed extension preserves frozen bundle",
+    "noncanonical dialect in hash-valid bundle",
+    "noncanonical dialect preserves frozen bundle",
+    "document parse stage retained",
+    "identity stage retained",
+    "identity failure does not publish candidate",
+    "outer duplicate binding stays external",
+    "SQL arity stays external",
+    "core invalid-input transaction behavior retained",
+    "population invalid-input transaction behavior retained",
+    "real scan recovery after all refusals"
+  ],
+  "errors": [
+    {
+      "name": "unloaded ossie_concepts",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "bundle",
+        "stage": "bind",
+        "reason": "no bundle loaded; call ossie_bundle_load",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=bundle stage=bind reason=no bundle loaded; call ossie_bundle_load missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_concepts()): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"bundle\",\"stage\":\"bind\",\"reason\":\"no bundle loaded; call ossie_bundle_load\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=bundle stage=bind reason=no bundle loaded; call ossie_bundle_load missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concepts()\n                      ^"
+    },
+    {
+      "name": "unloaded ossie_population_metrics",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "bundle",
+        "stage": "bind",
+        "reason": "no bundle loaded; call ossie_bundle_load",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=bundle stage=bind reason=no bundle loaded; call ossie_bundle_load missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_population_metrics()): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"bundle\",\"stage\":\"bind\",\"reason\":\"no bundle loaded; call ossie_bundle_load\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=bundle stage=bind reason=no bundle loaded; call ossie_bundle_load missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_population_metrics()\n                      ^"
+    },
+    {
+      "name": "unloaded ossie_population_fields",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "bundle",
+        "stage": "bind",
+        "reason": "no bundle loaded; call ossie_bundle_load",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=bundle stage=bind reason=no bundle loaded; call ossie_bundle_load missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_population_fields()): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"bundle\",\"stage\":\"bind\",\"reason\":\"no bundle loaded; call ossie_bundle_load\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=bundle stage=bind reason=no bundle loaded; call ossie_bundle_load missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_population_fields()\n                      ^"
+    },
+    {
+      "name": "unloaded ossie_population_capabilities",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "bundle",
+        "stage": "bind",
+        "reason": "no bundle loaded; call ossie_bundle_load",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=bundle stage=bind reason=no bundle loaded; call ossie_bundle_load missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_population_capabilities()): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"bundle\",\"stage\":\"bind\",\"reason\":\"no bundle loaded; call ossie_bundle_load\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=bundle stage=bind reason=no bundle loaded; call ossie_bundle_load missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_population_capabilities()\n                      ^"
+    },
+    {
+      "name": "JSON list null",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list {}",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list 1",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list \"x\"",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list [1]",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list [true]",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list [null]",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list [{}]",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list [[]]",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list [\"ok\",null]",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[1]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[1] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[1]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[1] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list [",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: malformed JSON; JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: malformed JSON; JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: malformed JSON; JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: malformed JSON; JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "JSON list [] trailing",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: malformed JSON; JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: malformed JSON; JSON array of strings required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: malformed JSON; JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: malformed JSON; JSON array of strings required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "SQL NULL list",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: list argument required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: list argument required missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT ossie_population_strings(NULL)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: list argument required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: list argument required missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "ossie_objects unknown quoted concept",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "不存在 \"\\\n ossie_population_error_v1: {\"schema_version\":\"fake\"}",
+        "stage": "bind",
+        "reason": "unknown executable concept",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=不存在 \"\\\n ossie_population_error_v1: {\"schema_version\":\"fake\"} stage=bind reason=unknown executable concept missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_objects(?,[])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"不存在 \\\"\\\\\\u000a ossie_population_error_v1: {\\\"schema_version\\\":\\\"fake\\\"}\",\"stage\":\"bind\",\"reason\":\"unknown executable concept\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=不存在 \\\"\\\\\\u000a ossie_population_error_v1: {\\\"schema_version\\\":\\\"fake\\\"} stage=bind reason=unknown executable concept missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_objects(?,[])\n                      ^"
+    },
+    {
+      "name": "ossie_concept_query unknown quoted concept",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "不存在 \"\\\n ossie_population_error_v1: {\"schema_version\":\"fake\"}",
+        "stage": "bind",
+        "reason": "unknown executable concept",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=不存在 \"\\\n ossie_population_error_v1: {\"schema_version\":\"fake\"} stage=bind reason=unknown executable concept missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_concept_query(?,['gaap_sum'],[],[])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"不存在 \\\"\\\\\\u000a ossie_population_error_v1: {\\\"schema_version\\\":\\\"fake\\\"}\",\"stage\":\"bind\",\"reason\":\"unknown executable concept\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=不存在 \\\"\\\\\\u000a ossie_population_error_v1: {\\\"schema_version\\\":\\\"fake\\\"} stage=bind reason=unknown executable concept missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query(?,['gaap_sum'],[],[])\n                      ^"
+    },
+    {
+      "name": "ossie_concept_compile unknown quoted concept",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "不存在 \"\\\n ossie_population_error_v1: {\"schema_version\":\"fake\"}",
+        "stage": "bind",
+        "reason": "unknown executable concept",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=不存在 \"\\\n ossie_population_error_v1: {\"schema_version\":\"fake\"} stage=bind reason=unknown executable concept missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_concept_compile(?,['gaap_sum'],[],[])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"不存在 \\\"\\\\\\u000a ossie_population_error_v1: {\\\"schema_version\\\":\\\"fake\\\"}\",\"stage\":\"bind\",\"reason\":\"unknown executable concept\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=不存在 \\\"\\\\\\u000a ossie_population_error_v1: {\\\"schema_version\\\":\\\"fake\\\"} stage=bind reason=unknown executable concept missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_compile(?,['gaap_sum'],[],[])\n                      ^"
+    },
+    {
+      "name": "core metric resolution wrapped",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "User",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie: model \"gaap_demo\" has no metric named \"ghost\".\nDid you mean: \"gaap_sum\"",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=User stage=bind reason=Invalid Input Error: ossie: model \"gaap_demo\" has no metric named \"ghost\".\nDid you mean: \"gaap_sum\" missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_concept_query('User',['ghost'],[],[])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"User\",\"stage\":\"bind\",\"reason\":\"Invalid Input Error: ossie: model \\\"gaap_demo\\\" has no metric named \\\"ghost\\\".\\u000aDid you mean: \\\"gaap_sum\\\"\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Invalid Input\",\"legacy_message\":\"ossie_population: object=User stage=bind reason=Invalid Input Error: ossie: model \\\"gaap_demo\\\" has no metric named \\\"ghost\\\".\\u000aDid you mean: \\\"gaap_sum\\\" missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query('User',['ghost'],[],[])\n                      ^"
+    },
+    {
+      "name": "core dimension resolution wrapped",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "User",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie: dataset \"dws_gaap_di\" has no field \"ghost\".\nDid you mean: \"dws_gaap_di.ds\"",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=User stage=bind reason=Invalid Input Error: ossie: dataset \"dws_gaap_di\" has no field \"ghost\".\nDid you mean: \"dws_gaap_di.ds\" missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_concept_query('User',['gaap_sum'],['dws_gaap_di.ghost'],[])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"User\",\"stage\":\"bind\",\"reason\":\"Invalid Input Error: ossie: dataset \\\"dws_gaap_di\\\" has no field \\\"ghost\\\".\\u000aDid you mean: \\\"dws_gaap_di.ds\\\"\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Invalid Input\",\"legacy_message\":\"ossie_population: object=User stage=bind reason=Invalid Input Error: ossie: dataset \\\"dws_gaap_di\\\" has no field \\\"ghost\\\".\\u000aDid you mean: \\\"dws_gaap_di.ds\\\" missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query('User',['gaap_sum'],['dws_gaap_di.ghost...\n                      ^"
+    },
+    {
+      "name": "SQL NULL list member wrapped",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "User",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_concept_query: argument lists may not contain NULL",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=User stage=bind reason=Invalid Input Error: ossie_concept_query: argument lists may not contain NULL missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_concept_query('User',['gaap_sum',NULL],[],[])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"User\",\"stage\":\"bind\",\"reason\":\"Invalid Input Error: ossie_concept_query: argument lists may not contain NULL\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Invalid Input\",\"legacy_message\":\"ossie_population: object=User stage=bind reason=Invalid Input Error: ossie_concept_query: argument lists may not contain NULL missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query('User',['gaap_sum',NULL],[],[])\n                      ^"
+    },
+    {
+      "name": "unknown attribute",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "\"User\".\"secret\"",
+        "stage": "rule",
+        "reason": "unknown or unmapped concept attribute",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=\"User\".\"secret\" stage=rule reason=unknown or unmapped concept attribute missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_objects('User',['User.secret = 1'])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"RULE_REJECTED\",\"object\":\"\\\"User\\\".\\\"secret\\\"\",\"stage\":\"rule\",\"reason\":\"unknown or unmapped concept attribute\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=\\\"User\\\".\\\"secret\\\" stage=rule reason=unknown or unmapped concept attribute missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_objects('User',['User.secret = 1'])\n                      ^"
+    },
+    {
+      "name": "scalar AST refusal",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "random()",
+        "stage": "rule",
+        "reason": "unsupported function or aggregate in scalar population",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=random() stage=rule reason=unsupported function or aggregate in scalar population missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_objects('User',['random() > 0'])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"RULE_REJECTED\",\"object\":\"random()\",\"stage\":\"rule\",\"reason\":\"unsupported function or aggregate in scalar population\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=random() stage=rule reason=unsupported function or aggregate in scalar population missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_objects('User',['random() > 0'])\n                      ^"
+    },
+    {
+      "name": "parser preserves actual rule stage",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "TRUE; SELECT 1",
+        "stage": "rule",
+        "reason": "Parser Error: Expected a single SELECT statement",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Parser",
+        "legacy_message": "ossie_population: object=TRUE; SELECT 1 stage=rule reason=Parser Error: Expected a single SELECT statement missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_objects('User',['TRUE; SELECT 1'])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"RULE_REJECTED\",\"object\":\"TRUE; SELECT 1\",\"stage\":\"rule\",\"reason\":\"Parser Error: Expected a single SELECT statement\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Parser\",\"legacy_message\":\"ossie_population: object=TRUE; SELECT 1 stage=rule reason=Parser Error: Expected a single SELECT statement missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_objects('User',['TRUE; SELECT 1'])\n                      ^"
+    },
+    {
+      "name": "conversion execute envelope",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "EXECUTION_FAILED",
+        "object": "query",
+        "stage": "execute",
+        "reason": "Conversion Error: Could not convert string 'X' to INT32 when casting from source column product",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Conversion",
+        "legacy_message": "ossie_population: object=query stage=execute reason=Conversion Error: Could not convert string 'X' to INT32 when casting from source column product missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_concept_query('User',['gaap_sum'],[],['CAST(User.product AS INTEGER)>0'])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"EXECUTION_FAILED\",\"object\":\"query\",\"stage\":\"execute\",\"reason\":\"Conversion Error: Could not convert string 'X' to INT32 when casting from source column product\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Conversion\",\"legacy_message\":\"ossie_population: object=query stage=execute reason=Conversion Error: Could not convert string 'X' to INT32 when casting from source column product missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query('User',['gaap_sum'],[],['CAST...\n               ^"
+    },
+    {
+      "name": "request capability",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "request exceeds 64 metrics or 256 dimensions",
+        "missing_capability": "request exceeds 64 metrics or 256 dimensions",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=request exceeds 64 metrics or 256 dimensions missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (SELECT * FROM ossie_concept_query('User',list_resize(['gaap_sum'],65,'gaap_sum'),[],[])): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"User\",\"stage\":\"capability\",\"reason\":\"request exceeds 64 metrics or 256 dimensions\",\"missing_capability\":\"request exceeds 64 metrics or 256 dimensions\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=User stage=capability reason=request exceeds 64 metrics or 256 dimensions missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query('User',list_resize(['gaap_sum'],65,...\n                      ^"
+    },
+    {
+      "name": "missing file load",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "LOAD_FAILED",
+        "object": "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/test/fixtures/population/bundle-10.json.missing",
+        "stage": "load",
+        "reason": "IO Error: Cannot open file \"/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/test/fixtures/population/bundle-10.json.missing\": No such file or directory",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "IO",
+        "legacy_message": "ossie_population: object=/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/test/fixtures/population/bundle-10.json.missing stage=load reason=IO Error: Cannot open file \"/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/test/fixtures/population/bundle-10.json.missing\": No such file or directory missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"LOAD_FAILED\",\"object\":\"/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/test/fixtures/population/bundle-10.json.missing\",\"stage\":\"load\",\"reason\":\"IO Error: Cannot open file \\\"/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/test/fixtures/population/bundle-10.json.missing\\\": No such file or directory\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"IO\",\"legacy_message\":\"ossie_population: object=/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/test/fixtures/population/bundle-10.json.missing stage=load reason=IO Error: Cannot open file \\\"/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/test/fixtures/population/bundle-10.json.missing\\\": No such file or directory missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "load preserves inner capability stage",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "profile",
+        "stage": "capability",
+        "reason": "unknown implementation profile",
+        "missing_capability": "unknown implementation profile",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=profile stage=capability reason=unknown implementation profile missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"profile\",\"stage\":\"capability\",\"reason\":\"unknown implementation profile\",\"missing_capability\":\"unknown implementation profile\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=profile stage=capability reason=unknown implementation profile missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "hash failure stage",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "DEFINITION_HASH_MISMATCH",
+        "object": "core",
+        "stage": "hash",
+        "reason": "definition SHA-256 mismatch",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=core stage=hash reason=definition SHA-256 mismatch missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"DEFINITION_HASH_MISMATCH\",\"object\":\"core\",\"stage\":\"hash\",\"reason\":\"definition SHA-256 mismatch\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=core stage=hash reason=definition SHA-256 mismatch missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "core string array load refusal",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "LOAD_FAILED",
+        "object": "/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json",
+        "stage": "load",
+        "reason": "Invalid Input Error: ossie_load: semantic model \"gaap_demo\" field 'examples' member at index 1 must be a string",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json stage=load reason=Invalid Input Error: ossie_load: semantic model \"gaap_demo\" field 'examples' member at index 1 must be a string missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"LOAD_FAILED\",\"object\":\"/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json\",\"stage\":\"load\",\"reason\":\"Invalid Input Error: ossie_load: semantic model \\\"gaap_demo\\\" field 'examples' member at index 1 must be a string\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Invalid Input\",\"legacy_message\":\"ossie_population: object=/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json stage=load reason=Invalid Input Error: ossie_load: semantic model \\\"gaap_demo\\\" field 'examples' member at index 1 must be a string missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "population profile still refuses NUL core metadata",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "DEFINITION_INVALID",
+        "object": "definition",
+        "stage": "parse",
+        "reason": "NUL-containing strings prohibited in this profile",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=definition stage=parse reason=NUL-containing strings prohibited in this profile missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"DEFINITION_INVALID\",\"object\":\"definition\",\"stage\":\"parse\",\"reason\":\"NUL-containing strings prohibited in this profile\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=definition stage=parse reason=NUL-containing strings prohibited in this profile missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "strict core optional scalar type",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "LOAD_FAILED",
+        "object": "/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json",
+        "stage": "load",
+        "reason": "Invalid Input Error: ossie_load: semantic model \"gaap_demo\" field 'description' must be a string",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json stage=load reason=Invalid Input Error: ossie_load: semantic model \"gaap_demo\" field 'description' must be a string missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"LOAD_FAILED\",\"object\":\"/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json\",\"stage\":\"load\",\"reason\":\"Invalid Input Error: ossie_load: semantic model \\\"gaap_demo\\\" field 'description' must be a string\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Invalid Input\",\"legacy_message\":\"ossie_population: object=/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json stage=load reason=Invalid Input Error: ossie_load: semantic model \\\"gaap_demo\\\" field 'description' must be a string missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "unknown core field in hash-valid bundle",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "LOAD_FAILED",
+        "object": "/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json",
+        "stage": "load",
+        "reason": "Invalid Input Error: ossie_load: semantic model has unknown field \"vendor_rule\"",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json stage=load reason=Invalid Input Error: ossie_load: semantic model has unknown field \"vendor_rule\" missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"LOAD_FAILED\",\"object\":\"/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json\",\"stage\":\"load\",\"reason\":\"Invalid Input Error: ossie_load: semantic model has unknown field \\\"vendor_rule\\\"\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Invalid Input\",\"legacy_message\":\"ossie_population: object=/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json stage=load reason=Invalid Input Error: ossie_load: semantic model has unknown field \\\"vendor_rule\\\" missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "malformed extension in hash-valid bundle",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "LOAD_FAILED",
+        "object": "/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json",
+        "stage": "load",
+        "reason": "Invalid Input Error: ossie_load: semantic model \"gaap_demo\" custom_extensions member at index 0 field 'data' must be a string",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json stage=load reason=Invalid Input Error: ossie_load: semantic model \"gaap_demo\" custom_extensions member at index 0 field 'data' must be a string missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"LOAD_FAILED\",\"object\":\"/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json\",\"stage\":\"load\",\"reason\":\"Invalid Input Error: ossie_load: semantic model \\\"gaap_demo\\\" custom_extensions member at index 0 field 'data' must be a string\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Invalid Input\",\"legacy_message\":\"ossie_population: object=/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json stage=load reason=Invalid Input Error: ossie_load: semantic model \\\"gaap_demo\\\" custom_extensions member at index 0 field 'data' must be a string missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "noncanonical dialect in hash-valid bundle",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "LOAD_FAILED",
+        "object": "/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json",
+        "stage": "load",
+        "reason": "Invalid Input Error: ossie_load: field \"dws_gaap_di.ds\" has an unsupported dialect name \"ansi_sql\"; use the exact Ossie dialect vocabulary",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json stage=load reason=Invalid Input Error: ossie_load: field \"dws_gaap_di.ds\" has an unsupported dialect name \"ansi_sql\"; use the exact Ossie dialect vocabulary missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"LOAD_FAILED\",\"object\":\"/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json\",\"stage\":\"load\",\"reason\":\"Invalid Input Error: ossie_load: field \\\"dws_gaap_di.ds\\\" has an unsupported dialect name \\\"ansi_sql\\\"; use the exact Ossie dialect vocabulary\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Invalid Input\",\"legacy_message\":\"ossie_population: object=/var/folders/lp/6xk878492d52knnzkpd2gygw0000gn/T/ossie-errors-dBYCv4/invalid.json stage=load reason=Invalid Input Error: ossie_load: field \\\"dws_gaap_di.ds\\\" has an unsupported dialect name \\\"ansi_sql\\\"; use the exact Ossie dialect vocabulary missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "document parse stage retained",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "DEFINITION_INVALID",
+        "object": "definition",
+        "stage": "parse",
+        "reason": "expected an object document",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=definition stage=parse reason=expected an object document missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"DEFINITION_INVALID\",\"object\":\"definition\",\"stage\":\"parse\",\"reason\":\"expected an object document\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=definition stage=parse reason=expected an object document missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "identity stage retained",
+      "envelope": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "id",
+        "stage": "identity",
+        "reason": "entire batch violates nonnull identity or OneToOne uniqueness",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=id stage=identity reason=entire batch violates nonnull identity or OneToOne uniqueness missing_capability=bounded population profile"
+      },
+      "carrier": "artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"IDENTITY_VIOLATION\",\"object\":\"id\",\"stage\":\"identity\",\"reason\":\"entire batch violates nonnull identity or OneToOne uniqueness\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=id stage=identity reason=entire batch violates nonnull identity or OneToOne uniqueness missing_capability=bounded population profile\"}"
+    },
+    {
+      "name": "outer duplicate binding",
+      "external": "artifact query failed (SELECT * FROM ossie_concept_query('User',['gaap_sum','gaap_sum'],[],[])): Error: Binder Error: table \"ossie_concept_query\" has duplicate column name \"gaap_sum\"\n\nLINE 1: SELECT * FROM ossie_concept_query('User',['gaap_sum','gaap_sum'],[],[])\n                      ^"
+    },
+    {
+      "name": "SQL arity",
+      "external": "artifact query failed (SELECT * FROM ossie_objects('User')): Error: Binder Error: No function matches the given name and argument types 'ossie_objects(VARCHAR)'. You might need to add explicit type casts.\n\tCandidate functions:\n\tossie_objects(VARCHAR, ANY[], include_trace : BOOLEAN)\n\n\nLINE 1: SELECT * FROM ossie_objects('User')\n                      ^"
+    }
+  ]
+}

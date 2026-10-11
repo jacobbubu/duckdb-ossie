@@ -1,0 +1,644 @@
+{
+  "passed": true,
+  "scope": "daily SQL execution and logical compile only; not all P1",
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "64da84ff47d3ec1563e327f2fc40179624ea3ff7accf50ad8aed031b45f2c1d8",
+  "checks": [
+    "original-two-days",
+    "all-two-days",
+    "X-two-days",
+    "Y-two-days",
+    "XY-two-days",
+    "single-first-day",
+    "single-last-day",
+    "global-missing-day",
+    "outside-only-day",
+    "new-formal-rule-20",
+    "literal-unmatched-product",
+    "empty-capture",
+    "capability operation, version, singleton target and MCP boundary",
+    "366 inclusive days with leap year accepted",
+    "strict finite Gregorian year endpoints accepted",
+    "compile strict request parity and raw product escaping",
+    "64 subset products accepted",
+    "256 decoded product bytes accepted",
+    "256 UTF-8 multibyte product bytes accepted",
+    "exact16KiB request accepted",
+    "raw Unicode/case/quote/backslash/control/NUL members and products retain binary identity under caller nocase",
+    "all permits source product domain greater than64",
+    "large complete member succeeds below1MiB",
+    "exact1MiB complete result accepted including metadata",
+    "compile succeeds without computing oversized execution members",
+    "result budget refusal retains bundle",
+    "16KiB supported rule metadata compiles without truncation",
+    "failed oversized rule load retains complete prior plan",
+    "supported rule budget refuses at loader and valid reload recovers",
+    "compile uses captured bundle after source table dropped"
+  ],
+  "refusals": [
+    {
+      "label": "invalid shape 0",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "start_date",
+        "stage": "arguments",
+        "reason": "string required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=start_date stage=arguments reason=string required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "invalid shape 1",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "products.values",
+        "stage": "arguments",
+        "reason": "nonempty array of distinct raw strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=products.values stage=arguments reason=nonempty array of distinct raw strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "invalid shape 2",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "JSON object required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=JSON object required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "invalid shape 3",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "products",
+        "stage": "arguments",
+        "reason": "all must not include values",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=products stage=arguments reason=all must not include values missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "invalid shape 4",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "products.values",
+        "stage": "arguments",
+        "reason": "duplicate decoded raw product",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=products.values stage=arguments reason=duplicate decoded raw product missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "invalid shape 5",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "products.values[0]",
+        "stage": "arguments",
+        "reason": "string required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=products.values[0] stage=arguments reason=string required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "invalid shape 6",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "start_date",
+        "stage": "arguments",
+        "reason": "exact YYYY-MM-DD required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=start_date stage=arguments reason=exact YYYY-MM-DD required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "invalid shape 7",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "undeclared JSON object key",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=undeclared JSON object key missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "duplicate escaped root key",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "duplicate JSON object key",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=duplicate JSON object key missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "duplicate nested key",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "duplicate JSON object key",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=duplicate JSON object key missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "trailing JSON",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "strict JSON request required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=strict JSON request required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "invalid day",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "start_date",
+        "stage": "arguments",
+        "reason": "finite Gregorian date in years 0001..9999 required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=start_date stage=arguments reason=finite Gregorian date in years 0001..9999 required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "invalid leap date",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "start_date",
+        "stage": "arguments",
+        "reason": "finite Gregorian date in years 0001..9999 required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=start_date stage=arguments reason=finite Gregorian date in years 0001..9999 required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "year zero",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "start_date",
+        "stage": "arguments",
+        "reason": "finite Gregorian date in years 0001..9999 required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=start_date stage=arguments reason=finite Gregorian date in years 0001..9999 required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "inverted dates",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "date_range",
+        "stage": "arguments",
+        "reason": "start_date must not exceed end_date",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=date_range stage=arguments reason=start_date must not exceed end_date missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "unsupported User",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "daily_user_set",
+        "stage": "capability",
+        "reason": "current registered qualified daily observation concept required",
+        "missing_capability": "current registered qualified daily observation concept required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set stage=capability reason=current registered qualified daily observation concept required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "unsupported DailyObservation",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "daily_user_set",
+        "stage": "capability",
+        "reason": "current registered qualified daily observation concept required",
+        "missing_capability": "current registered qualified daily observation concept required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set stage=capability reason=current registered qualified daily observation concept required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "unsupported unknown",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "daily_user_set",
+        "stage": "capability",
+        "reason": "current registered qualified daily observation concept required",
+        "missing_capability": "current registered qualified daily observation concept required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set stage=capability reason=current registered qualified daily observation concept required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "compile duplicate decoded key",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "duplicate JSON object key",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=duplicate JSON object key missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "compile invalid day",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "start_date",
+        "stage": "arguments",
+        "reason": "finite Gregorian date in years 0001..9999 required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=start_date stage=arguments reason=finite Gregorian date in years 0001..9999 required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "compile 367 days",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.inclusive_days",
+        "stage": "resource",
+        "reason": "maximum=366 actual=367",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.inclusive_days stage=resource reason=maximum=366 actual=367 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "compile 16KiB+1",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.request_json_utf8_bytes",
+        "stage": "resource",
+        "reason": "maximum=16384 actual=16385",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.request_json_utf8_bytes stage=resource reason=maximum=16384 actual=16385 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "compile unsupported User",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "daily_user_set",
+        "stage": "capability",
+        "reason": "current registered qualified daily observation concept required",
+        "missing_capability": "current registered qualified daily observation concept required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set stage=capability reason=current registered qualified daily observation concept required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "367 days",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.inclusive_days",
+        "stage": "resource",
+        "reason": "maximum=366 actual=367",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.inclusive_days stage=resource reason=maximum=366 actual=367 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "65 products",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.subset_products",
+        "stage": "resource",
+        "reason": "maximum=64 actual=65",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.subset_products stage=resource reason=maximum=64 actual=65 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "257 product bytes",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.product_decoded_utf8_bytes",
+        "stage": "resource",
+        "reason": "maximum=256 actual=257",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.product_decoded_utf8_bytes stage=resource reason=maximum=256 actual=257 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "258 multibyte product bytes",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.product_decoded_utf8_bytes",
+        "stage": "resource",
+        "reason": "maximum=256 actual=258",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.product_decoded_utf8_bytes stage=resource reason=maximum=256 actual=258 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "16KiB+1 request",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.request_json_utf8_bytes",
+        "stage": "resource",
+        "reason": "maximum=16384 actual=16385",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.request_json_utf8_bytes stage=resource reason=maximum=16384 actual=16385 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "simultaneous64x256 byte products exceed request limit",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.request_json_utf8_bytes",
+        "stage": "resource",
+        "reason": "maximum=16384 actual=16667",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.request_json_utf8_bytes stage=resource reason=maximum=16384 actual=16667 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "SQL NULL",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "daily_user_set",
+        "stage": "arguments",
+        "reason": "concept and request_json required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set stage=arguments reason=concept and request_json required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "exact1MiB+1 complete result refuses",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.result_json_utf8_bytes",
+        "stage": "resource",
+        "reason": "maximum=1048576 actual=1048577",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.result_json_utf8_bytes stage=resource reason=maximum=1048576 actual=1048577 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "result includes metadata and refuses above1MiB",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.result_json_utf8_bytes",
+        "stage": "resource",
+        "reason": "maximum=1048576 actual=1048577",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.result_json_utf8_bytes stage=resource reason=maximum=1048576 actual=1048577 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "control escaping exceeds1MiB",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "daily_user_set.result_json_utf8_bytes",
+        "stage": "resource",
+        "reason": "maximum=1048576 actual=1048577",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=daily_user_set.result_json_utf8_bytes stage=resource reason=maximum=1048576 actual=1048577 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "label": "16KiB+1 rule rejected at loader before plan encoding",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "expression",
+        "stage": "rule",
+        "reason": "request/rule exceeds 16 KiB SQL limit",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=expression stage=rule reason=request/rule exceeds 16 KiB SQL limit missing_capability=bounded population profile"
+      }
+    }
+  ],
+  "results": [
+    {
+      "case": "original-two-days",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"1\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[\"B\"]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"2\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": [
+        "B"
+      ]
+    },
+    {
+      "case": "all-two-days",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:2\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"5\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[\"B\",\"E\",\"F\",\"H\",\"K\"]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:2\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"2\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": [
+        "B",
+        "E",
+        "F",
+        "H",
+        "K"
+      ]
+    },
+    {
+      "case": "X-two-days",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"subset\",\"values\":[\"X\"]}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:3\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"4\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[\"B\",\"F\",\"H\",\"K\"]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"subset\",\"values\":[\"X\"]}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:3\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"2\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": [
+        "B",
+        "F",
+        "H",
+        "K"
+      ]
+    },
+    {
+      "case": "Y-two-days",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"subset\",\"values\":[\"Y\"]}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:4\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"1\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[\"K\"]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"subset\",\"values\":[\"Y\"]}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:4\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"2\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": [
+        "K"
+      ]
+    },
+    {
+      "case": "XY-two-days",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"subset\",\"values\":[\"X\",\"Y\"]}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:5\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"5\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[\"B\",\"E\",\"F\",\"H\",\"K\"]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"subset\",\"values\":[\"X\",\"Y\"]}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:5\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"2\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": [
+        "B",
+        "E",
+        "F",
+        "H",
+        "K"
+      ]
+    },
+    {
+      "case": "single-first-day",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-01-31\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"1\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:6\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"6\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[\"B\",\"E\",\"F\",\"G\",\"H\",\"K\"]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-01-31\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"1\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:6\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"1\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": [
+        "B",
+        "E",
+        "F",
+        "G",
+        "H",
+        "K"
+      ]
+    },
+    {
+      "case": "single-last-day",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-02-01\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"1\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:7\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"7\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[\"A\",\"B\",\"C\",\"E\",\"F\",\"H\",\"K\"]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-02-01\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"1\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:7\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"1\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": [
+        "A",
+        "B",
+        "C",
+        "E",
+        "F",
+        "H",
+        "K"
+      ]
+    },
+    {
+      "case": "global-missing-day",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-02\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"3\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:8\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"0\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-02\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"3\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:8\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"3\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": []
+    },
+    {
+      "case": "outside-only-day",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-02-03\",\"end_date\":\"2026-02-03\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"1\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:9\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"1\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[\"J\"]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-02-03\",\"end_date\":\"2026-02-03\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"1\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:9\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"1\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": [
+        "J"
+      ]
+    },
+    {
+      "case": "new-formal-rule-20",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 20\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:10\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"b6aca7da28e4f0d3a2e00c2dc238f2b620964492d30b26f1f12c807f789d76ec\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"b1c61aed4539201e40a3778f2f125fbb8372c562d6d419a4eb5b6d526aa8420b\",\"member_count\":\"2\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[\"B\",\"K\"]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 20\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:10\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"b6aca7da28e4f0d3a2e00c2dc238f2b620964492d30b26f1f12c807f789d76ec\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"b1c61aed4539201e40a3778f2f125fbb8372c562d6d419a4eb5b6d526aa8420b\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 20)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"2\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": [
+        "B",
+        "K"
+      ]
+    },
+    {
+      "case": "literal-unmatched-product",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"subset\",\"values\":[\"Z\"]}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:11\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"0\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"subset\",\"values\":[\"Z\"]}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:11\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"2\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": []
+    },
+    {
+      "case": "empty-capture",
+      "result_json": "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:12\",\"content_sha256\":\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"member_count\":\"0\",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte ascending\",\"members\":[]}",
+      "plan_json": "{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\",\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false,\"concept\":\"QualifiedObservation\",\"user_concept\":\"User\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"required_day_count\":\"2\",\"eligibility_semantics\":\"every_calendar_day_exists_qualifying_observation\",\"qualification_rule\":{\"concept\":\"QualifiedObservation\",\"declared_sql\":\"DailyObservation.classification_value >= 10\"},\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:12\",\"content_sha256\":\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\",\"phase\":\"bound qualified observation projection and explicit calendar User reduction\",\"qualified_projection_sql\":\"SELECT observations.user_id, observations.ds, observations.product FROM \\\"system\\\".main._ossie_snapshot_rows() AS observations WHERE (observations.classification_value >= 10)\",\"bound_identity\":[{\"field\":\"observations.user_id\",\"role\":\"user\",\"bound_type\":\"VARCHAR\"},{\"field\":\"observations.ds\",\"role\":\"date\",\"bound_type\":\"DATE\"},{\"field\":\"observations.product\",\"role\":\"product\",\"bound_type\":\"VARCHAR\"}],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB AST\",\"qualification\":\"TRUE only\"},{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":\"2\"},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":1048576,\"truncated\":false}],\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\",\"Internal frozen AST dependency prevents ordinary SQL replay\",\"Compile does not calculate members, validate success result size or ensure execution completion\",\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":1048576}",
+      "independent_members": []
+    },
+    {
+      "case": "maximum supported rule in plan",
+      "rule_padding": 16342,
+      "plan_bytes": 18927,
+      "plan_sha256": "06d9e6c40067964cc1f1ea3a58c7c8f24648f2373a67aed8fec2dfd820755ea5",
+      "ontology_sha256": "5565f2d45cf0b7c2272472d079a413191ed05d45d0ce3f501ab33f19c6df9d55"
+    }
+  ],
+  "input_sha256": "3c0c4cc77140a84e01ec45d90e4386ffe01ac2a302ba5d79cb3ebc1152a2166f",
+  "limitations": "No native cancellation, MCP or full legacy regression proof in this report; hard time/memory/wire caps and exact1MiB plan encoding boundary unclaimed; oversized rule injection is rejected by existing16KiB loader rule limit."
+}

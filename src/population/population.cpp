@@ -3,6 +3,7 @@
 #include "ossie/describe_functions.hpp"
 #include "ossie/parser.hpp"
 #include "ossie/population_testing.hpp"
+#include "ossie/relation_program.hpp"
 #include "ossie/yaml.hpp"
 #include "duckdb/catalog/catalog.hpp"
 #include "duckdb/catalog/entry_lookup_info.hpp"
@@ -64,6 +65,7 @@ namespace {
 constexpr const char *PROFILE = "gaap-scalar-population-v1";
 constexpr const char *JOIN_PROFILE = "fact-dimension-population-v1";
 constexpr const char *OBSERVATION_PROFILE = "daily-observation-population-v1";
+constexpr const char *RELATION_PROFILE = "observation-relation-program-v1";
 constexpr idx_t MAX_ROWS = 10000;
 constexpr idx_t DAILY_REQUEST_BYTES = 16384;
 constexpr idx_t DAILY_RESULT_BYTES = 1048576;
@@ -82,6 +84,9 @@ constexpr const char *ERROR_MARKER = "ossie_population_error_v1: ";
 constexpr const char *ERROR_INFO = "ossie_population_error_json";
 
 string ErrorCode(const string &stage) {
+	if (stage == "constraint") {
+		return "CONSTRAINT_VIOLATION";
+	}
 	if (stage == "resource") {
 		return "RESOURCE_LIMIT_EXCEEDED";
 	}
@@ -388,6 +393,8 @@ struct CaptureEvidence {
 };
 
 struct Bundle {
+	unique_ptr<RelationProgram> relation_program;
+	RelationProgramInput relation_input;
 	Model model;
 	// Parsed/lowered definition model, before replacing source names and flattening fields.
 	Model definition_model;
@@ -424,7 +431,7 @@ unique_ptr<Connection> Engine(Bundle &bundle) {
 		Fail("bundle", "execute", "containing database has closed");
 	}
 	auto engine = make_uniq<Connection>(*database);
-	if (bundle.profile == OBSERVATION_PROFILE) {
+	if (bundle.profile == OBSERVATION_PROFILE || bundle.profile == RELATION_PROFILE) {
 		// Pin the private connection only: global/caller defaults must not merge raw identities.
 		auto configured = engine->Query("SET SESSION default_collation='binary'");
 		if (configured->HasError()) {
@@ -1416,6 +1423,7 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 // Opt-in observation profile: typed tuple identity, with a referent-only User.
 // Keep scalar and joined profile validation unchanged.
 void ObservationDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping) {
+	bool program = b.profile == RELATION_PROFILE;
 	Keys(ontology, {"version", "name", "description", "ai_context", "ontology", "requires"}, "ontology");
 	Version(ontology);
 	Empty(ontology, "requires", "ontology");
@@ -1427,7 +1435,9 @@ void ObservationDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping
 		     {"concept", "type", "description", "ai_context", "identify_by", "extends", "derived_by", "requires",
 		      "relationships"},
 		     "concept");
-		Empty(c, "requires", "concept");
+		if (!program || Array(c, "identify_by").size() != 3) {
+			Empty(c, "requires", "concept");
+		}
 		if (Text(c, "type") != "EntityType" || !names.insert(Text(c, "concept")).second) {
 			Fail("ontology", "capability", "three distinct entity concepts required");
 		}
@@ -1456,6 +1466,11 @@ void ObservationDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping
 	b.user_concept = Text(user, "concept");
 	b.root = Text(observation, "concept");
 	b.derived = Text(derived, "concept");
+	if (program) {
+		for (auto constraint : Array(observation, "requires")) {
+			b.relation_input.requires.push_back(ArrayText(constraint));
+		}
+	}
 	b.user_id_relation = ArrayText(Array(user, "identify_by", true)[0]);
 	auto inheritance = Array(derived, "extends", true);
 	if (inheritance.size() != 1 || ArrayText(inheritance[0]) != b.root) {
@@ -1489,8 +1504,33 @@ void ObservationDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping
 	b.observation_relationships = identity_relations;
 	case_insensitive_set_t relation_names, targets;
 	for (auto r : Array(observation, "relationships", true)) {
+		if (program && !relation_names.insert(Text(r, "name")).second) {
+			Fail(Text(r, "name"), "capability", "duplicate mapped or derived relationship name");
+		}
+		if (program && !Array(r, "derived_by").empty()) {
+			Keys(r,
+			     {"name", "roles", "multiplicity", "description", "ai_context", "verbalizes", "requires", "derived_by"},
+			     "derived relationship");
+			auto roles = Array(r, "roles", true);
+			if (roles.size() != 1) {
+				Fail(Text(r, "name"), "capability", "single User role required");
+			}
+			Keys(roles[0], {"concept"}, "role");
+			RelationDeclaration declaration;
+			declaration.name = Text(r, "name");
+			declaration.role_concept = Text(roles[0], "concept");
+			declaration.multiplicity = Text(r, "multiplicity");
+			for (auto rule : Array(r, "derived_by", true)) {
+				declaration.derived_by.push_back(ArrayText(rule));
+			}
+			for (auto constraint : Array(r, "requires")) {
+				declaration.requires.push_back(ArrayText(constraint));
+			}
+			b.relation_input.declarations.push_back(std::move(declaration));
+			continue;
+		}
 		auto name = Text(r, "name"), target = relationship_target(r, "ManyToOne");
-		if (!relation_names.insert(name).second || !targets.insert(target).second ||
+		if ((!program && !relation_names.insert(name).second) || !targets.insert(target).second ||
 		    (target != b.user_concept && target != "Date" && target != "String" && target != "Decimal" &&
 		     target != "Integer")) {
 			Fail(name, "capability", "observation requires one User, Date, String, Decimal and Integer relationship");
@@ -1768,7 +1808,8 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	         ? std::initializer_list<const char *> {"profile", "core", "ontology", "mapping", "join"}
 	         : std::initializer_list<const char *> {"profile", "core", "ontology", "mapping"},
 	     "bundle manifest");
-	if (bundle->profile != PROFILE && bundle->profile != JOIN_PROFILE && bundle->profile != OBSERVATION_PROFILE) {
+	if (bundle->profile != PROFILE && bundle->profile != JOIN_PROFILE && bundle->profile != OBSERVATION_PROFILE &&
+	    bundle->profile != RELATION_PROFILE) {
 		Fail("profile", "capability", "unknown implementation profile");
 	}
 	auto engine = Engine(*bundle);
@@ -1831,7 +1872,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		CompileToSQL(bundle->model, {metric.name}, {}, {}, CompileOptions());
 	}
 	Document ontology(ontology_bytes), mapping(mapping_bytes);
-	if (bundle->profile == OBSERVATION_PROFILE) {
+	if (bundle->profile == OBSERVATION_PROFILE || bundle->profile == RELATION_PROFILE) {
 		ObservationDefinitions(*bundle, ontology.Root(), mapping.Root());
 	} else {
 		Definitions(*bundle, ontology.Root(), mapping.Root());
@@ -1850,10 +1891,10 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	    (!bundle->user_concept.empty() && StringUtil::CIEquals(dataset.name, bundle->user_concept))) {
 		Fail(dataset.name, "bind", "dataset and concept namespaces must be distinct");
 	}
-	if (bundle->profile == PROFILE || bundle->profile == OBSERVATION_PROFILE) {
+	if (bundle->profile == PROFILE || bundle->profile == OBSERVATION_PROFILE || bundle->profile == RELATION_PROFILE) {
 		bundle->original_source = dataset.source_bound;
 	}
-	if (bundle->profile == PROFILE || bundle->profile == OBSERVATION_PROFILE) {
+	if (bundle->profile == PROFILE || bundle->profile == OBSERVATION_PROFILE || bundle->profile == RELATION_PROFILE) {
 		auto parts = QualifiedName::ParseComponents(dataset.source_bound);
 		if (parts.size() != 3) {
 			Fail(dataset.name, "snapshot", "fully qualified catalog.schema.table source required");
@@ -1959,8 +2000,54 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		bundle->metric_types[metric.name] = bound->GetTypes()[0].ToString();
 	}
 	CheckBoolean(*bundle, *bundle->rule);
-	if (bundle->profile == OBSERVATION_PROFILE) {
+	if (bundle->profile == OBSERVATION_PROFILE || bundle->profile == RELATION_PROFILE) {
 		ObservationIdentityPreflight(context, *bundle, *engine);
+		if (bundle->profile == RELATION_PROFILE) {
+			auto &input = bundle->relation_input;
+			input.root = bundle->root;
+			input.user_concept = bundle->user_concept;
+			input.dataset = dataset.name;
+			input.user_column = FieldTree(*bundle, bundle->identity)->Cast<ColumnRefExpression>().column_names.back();
+			for (auto &attribute : bundle->attributes) {
+				if (attribute.target == bundle->user_concept) {
+					input.mapped_user_relation = attribute.name;
+				}
+				if (attribute.target == "Integer") {
+					auto field = dataset.FindField(attribute.field);
+					idx_t index = 0;
+					while (&dataset.fields[index] != field) {
+						index++;
+					}
+					input.scalars.push_back(
+					    {attribute.name,
+					     FieldTree(*bundle, attribute.field)->Cast<ColumnRefExpression>().column_names.back(),
+					     prepared->GetTypes()[index]});
+				}
+			}
+			bundle->relation_program = ErrorBoundary(
+			    bundle->root, "rule", [&]() { return make_uniq<RelationProgram>(BindRelationProgram(input)); });
+			auto source = " FROM main.ossie_snapshot AS " + Quote(dataset.name);
+			auto check = [&](const ParsedExpression &constraint, const ParsedExpression *population,
+			                 const string &object) {
+				auto clause = population ? "(" + population->ToString() + ") IS TRUE AND " : string();
+				auto query = Run(context, *engine,
+				                 FrozenSQL(*bundle, "SELECT count(*)" + source + " WHERE " + clause + "(" +
+				                                        constraint.ToString() + ") IS DISTINCT FROM TRUE"))
+				                 ->Fetch();
+				if (query->GetValue(0, 0).GetValue<int64_t>() != 0) {
+					Fail(object, "constraint", "entire declared population violates requires; snapshot not published");
+				}
+			};
+			for (auto &constraint : bundle->relation_program->root_constraints) {
+				check(*constraint, nullptr, bundle->root);
+			}
+			for (auto &relation : bundle->relation_program->relations) {
+				CheckBoolean(*bundle, *relation.predicate);
+				for (auto &constraint : relation.constraints) {
+					check(*constraint, relation.predicate.get(), relation.name);
+				}
+			}
+		}
 		return bundle;
 	}
 	for (auto &attribute : bundle->attributes) {
@@ -2423,6 +2510,7 @@ struct PopulationBind : TableFunctionData {
 	bool objects = false;
 	bool daily = false;
 	bool daily_compile = false;
+	bool relation_discovery = false;
 	DailyRequest daily_request;
 	vector<LogicalType> daily_input_types;
 	string concept;
@@ -2442,6 +2530,19 @@ shared_ptr<Bundle> Current(ClientContext &context) {
 	auto bundle = PopulationState::Get(context).GetBundle();
 	if (!bundle) {
 		Fail("bundle", "bind", "no bundle loaded; call ossie_bundle_load");
+	}
+	return bundle;
+}
+
+shared_ptr<Bundle> LegacyCurrent(ClientContext &context, const string &operation) {
+	auto bundle = Current(context);
+	auto observer = context.registered_state->Get<PopulationLegacyBindObserver>(PopulationLegacyBindObserver::KEY);
+	if (observer) {
+		observer->Observe();
+	}
+	if (bundle->profile == RELATION_PROFILE) {
+		Fail(operation, "capability",
+		     "relation program profile currently exposes only program discovery; relation objects interface pending");
 	}
 	return bundle;
 }
@@ -2502,7 +2603,7 @@ unique_ptr<FunctionData> LoadBind(ClientContext &context, TableFunctionBindInput
 unique_ptr<FunctionData> DiscoverBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
                                       vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
-	result->bundle = Current(context);
+	result->bundle = LegacyCurrent(context, input.table_function.name);
 	result->discover = true;
 	result->discover_v2 = input.table_function.name == "ossie_concepts_v2";
 	if (!result->discover_v2 && result->bundle->profile == OBSERVATION_PROFILE) {
@@ -2546,7 +2647,7 @@ constexpr const char *POPULATION_API_VERSION = "2.2.0";
 unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBindInput &input,
                                         vector<LogicalType> &types, vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
-	result->bundle = Current(context);
+	result->bundle = LegacyCurrent(context, input.table_function.name);
 	result->vocabulary = input.table_function.name;
 	if (result->vocabulary == "ossie_population_metrics") {
 		names = {"name",
@@ -2745,7 +2846,7 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
                                      vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
-	result->bundle = Current(context);
+	result->bundle = LegacyCurrent(context, input.table_function.name);
 	if (input.inputs[0].IsNull()) {
 		Fail("concept", "bind", "concept required");
 	}
@@ -3064,6 +3165,54 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 			throw InterruptException();
 		}
 		PopulationState::Get(context).SetBundle(std::move(bundle));
+	} else if (data.relation_discovery) {
+		auto &b = *data.bundle;
+		auto &program = *b.relation_program;
+		vector<string> identity_types;
+		for (auto &field : b.observation_identity) {
+			identity_types.push_back(b.field_types.at(field));
+		}
+		string json =
+		    "{\"schema_version\":\"ossie-relation-program-v1\",\"profile\":" + JSONString(b.profile) +
+		    ",\"snapshot_id\":" + JSONString(b.snapshot_id) + ",\"content_sha256\":" + JSONString(b.content_hash) +
+		    ",\"core_sha256\":" + JSONString(b.core_hash) + ",\"ontology_sha256\":" + JSONString(b.ontology_hash) +
+		    ",\"mapping_sha256\":" + JSONString(b.mapping_hash) +
+		    ",\"manifest_sha256\":" + JSONString(b.manifest_hash) + ",\"root\":" + JSONString(program.root) +
+		    ",\"target_concept\":" + JSONString(program.target_concept) +
+		    ",\"mapped_user_relation\":" + JSONString(program.mapped_user_relation) +
+		    ",\"root_identity_fields\":" + JSONStrings(b.observation_identity) +
+		    ",\"root_identity_bound_types\":" + JSONStrings(identity_types) +
+		    ",\"captured_rows\":" + JSONString(to_string(b.rows)) +
+		    ",\"source_types_bound\":true,\"load_constraints_validated\":true,\"query_executed\":false,"
+		    "\"root_constraints\":" +
+		    JSONStrings(b.relation_input.requires) + ",\"relations\":[";
+		for (idx_t i = 0; i < program.relations.size(); i++) {
+			auto &relation = program.relations[i];
+			if (i) {
+				json += ",";
+			}
+			vector<string> constraints;
+			for (auto &constraint : relation.constraints) {
+				constraints.push_back(constraint->ToString());
+			}
+			json += "{\"name\":" + JSONString(relation.name) +
+			        ",\"target_concept\":" + JSONString(relation.target_concept) +
+			        ",\"dependencies\":" + JSONStrings(relation.dependencies) +
+			        ",\"dependency_depth\":" + to_string(relation.dependency_depth) +
+			        ",\"derived_by\":" + JSONStrings(relation.rules) +
+			        ",\"bound_predicate\":" + JSONString(relation.predicate->ToString()) +
+			        ",\"link_constraints\":" + JSONStrings(constraints) + "}";
+		}
+		json += "],\"objects_queryable\":false,\"mcp_registered\":false,\"constraint_scope\":\"entire root or actual "
+		        "complete relation links before atomic publish\","
+		        "\"predicate_sql_replayable\":false,\"json_byte_limit\":1048576}";
+		if (json.size() > DAILY_RESULT_BYTES) {
+			Fail("relation_program", "resource", "complete program JSON exceeds 1MiB");
+		}
+		if (context.IsInterrupted()) {
+			throw InterruptException();
+		}
+		result->rows.push_back({Value(json)});
 	} else if (!data.vocabulary.empty()) {
 		VocabularyRows(data, result->rows);
 	} else if (data.discover) {
@@ -3145,6 +3294,17 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 		object = input.inputs[0].GetValue<string>();
 	}
 	return ErrorBoundary(object, "bind", [&]() {
+		if (name == "ossie_relation_program") {
+			auto result = make_uniq<PopulationBind>();
+			result->bundle = Current(context);
+			if (!result->bundle->relation_program) {
+				Fail(name, "capability", "relation program profile required");
+			}
+			result->relation_discovery = true;
+			types = {LogicalType::VARCHAR};
+			names = {"program_json"};
+			return unique_ptr<FunctionData>(std::move(result));
+		}
 		if (name == "ossie_daily_users_json" || name == "ossie_daily_users_compile") {
 			return DailyBind(context, input, types, names);
 		}
@@ -3204,6 +3364,11 @@ void JSONListFunction(DataChunk &args, ExpressionState &, Vector &result) {
 } // namespace
 
 void RegisterPopulationFunctions(ExtensionLoader &loader) {
+	RegisterDescribe(loader, TableFunction("ossie_relation_program", {}, ScanBoundary, BindBoundary, InitBoundary),
+	                 "Discover bound nonrecursive relationship declarations, typed root/User, dependencies and "
+	                 "full-population load constraint validation in observation-relation-program-v1. Frozen snapshot; "
+	                 "no object query execution. Complete JSON at most1MiB.",
+	                 "SELECT * FROM ossie_relation_program()");
 	loader.RegisterFunction(
 	    TableFunction("_ossie_snapshot_rows", {}, FrozenScanFunction, FrozenBindFunction, FrozenInit));
 	RegisterDescribe(
@@ -3233,7 +3398,8 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	RegisterDescribe(
 	    loader, TableFunction("ossie_bundle_load", {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
 	    "Load a hash-bound local core/ontology/mapping bundle for gaap-scalar-population-v1 or "
-	    "fact-dimension-population-v1 or daily-observation-population-v1. Captures a "
+	    "fact-dimension-population-v1 or daily-observation-population-v1 or observation-relation-program-v1. Captures "
+	    "a "
 	    "committed native table into a frozen typed observation batch (AST dependency required) and "
 	    "preflights entire-batch "
 	    "identity before publishing. Requires autocommit, one dataset or an explicit INTEGER-key "

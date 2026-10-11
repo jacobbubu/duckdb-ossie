@@ -1,0 +1,17 @@
+cli-dependencies
+loader
+population
+expression
+date
+join_research
+joined_population
+plan
+discovery
+error
+typed_population
+correspondence
+mcp
+replay
+core-mcp
+stock-cli
+PASS scoped A1-A8: /Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/p1-relation-load-controls/legacy/acceptance.json

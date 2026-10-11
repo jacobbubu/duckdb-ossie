@@ -376,6 +376,96 @@ void ObservationControls(const string &root, int threads) {
 	      "daily failed whole-batch tuple reload retains usable prior batch");
 }
 
+class LegacyBindObserver : public PopulationLegacyBindObserver {
+public:
+	explicit LegacyBindObserver(Gate &gate_p) : gate(gate_p) {
+	}
+	void Observe() override {
+		gate.Block();
+	}
+	Gate &gate;
+};
+
+void RelationBindControls(const string &root, int threads) {
+	DuckDB database(nullptr);
+	Connection loader(database), reader(database);
+	Query(reader, "SET threads=" + std::to_string(threads));
+	Query(loader, "CREATE TABLE observations(observation_id VARCHAR,user_id VARCHAR,ds DATE,product VARCHAR,amount_usd "
+	              "DECIMAL(18,2),classification_value INTEGER)");
+	Query(loader,
+	      "INSERT INTO observations VALUES('a','A','2026-01-01','X',1,10),('b','B','2026-02-01','X',NULL,NULL)");
+	auto old_load =
+	    "CALL ossie_bundle_load(" + Literal(root + "test/fixtures/population-observation/bundle-10.json") + ")";
+	auto new_load =
+	    "CALL ossie_bundle_load(" + Literal(root + "test/fixtures/population-relation-program/bundle.json") + ")";
+	for (bool old_first : {true, false}) {
+		Query(loader, old_first ? old_load : new_load);
+		Gate gate;
+		reader.context->registered_state->Insert(PopulationLegacyBindObserver::KEY,
+		                                         make_shared_ptr<LegacyBindObserver>(gate));
+		unique_ptr<MaterializedQueryResult> result;
+		std::exception_ptr failure;
+		std::thread worker([&] {
+			try {
+				result = reader.Query("SELECT count(*) FROM ossie_objects('QualifiedObservation',[])");
+			} catch (...) {
+				failure = std::current_exception();
+			}
+		});
+		try {
+			gate.Wait();
+			Query(loader, old_first ? new_load : old_load);
+			gate.Release();
+			worker.join();
+			reader.context->registered_state->Remove(PopulationLegacyBindObserver::KEY);
+		} catch (...) {
+			gate.Release();
+			if (worker.joinable()) {
+				worker.join();
+			}
+			reader.context->registered_state->Remove(PopulationLegacyBindObserver::KEY);
+			throw;
+		}
+		if (failure) {
+			std::rethrow_exception(failure);
+		}
+		if (old_first) {
+			Check(result && !result->HasError() && result->GetValue(0, 0).GetValue<int64_t>() == 1,
+			      "legacy bind and gate use same old snapshot across concurrent relation publication");
+			auto fresh = reader.Query("SELECT * FROM ossie_objects('QualifiedObservation',[])");
+			Check(fresh->HasError() && fresh->GetError().find("UNSUPPORTED_CAPABILITY") != string::npos,
+			      "fresh legacy bind refuses published relation profile");
+		} else {
+			Check(result && result->HasError() && result->GetError().find("UNSUPPORTED_CAPABILITY") != string::npos,
+			      "captured relation profile remains refused across concurrent old-profile publication");
+			Check(Scalar(reader, "SELECT count(*) FROM ossie_objects('QualifiedObservation',[])") == "1",
+			      "fresh legacy bind recovers on newly published old profile");
+		}
+	}
+	Query(loader, old_load);
+	auto old_snapshot = Scalar(reader, "SELECT snapshot_id FROM ossie_concepts_v2() WHERE concept='DailyObservation'");
+	{
+		Attempt attempt(loader, new_load, PopulationLoadCheckpoint::BEFORE_PUBLISH);
+		attempt.gate.Wait();
+		Check(Scalar(reader, "SELECT snapshot_id FROM ossie_concepts_v2() WHERE concept='DailyObservation'") ==
+		          old_snapshot,
+		      "validated relation candidate remains unpublished at prepublish checkpoint");
+		loader.Interrupt();
+		attempt.Finish();
+		Check(attempt.result && attempt.result->HasError() &&
+		          attempt.result->GetErrorObject().Type() == ExceptionType::INTERRUPT,
+		      "relation prepublish cancellation preserves native interrupt");
+	}
+	Check(Scalar(reader, "SELECT snapshot_id FROM ossie_concepts_v2() WHERE concept='DailyObservation'") ==
+	          old_snapshot,
+	      "cancelled relation candidate preserves old complete profile");
+	Query(loader, new_load);
+	Check(Scalar(reader,
+	             "SELECT contains(program_json,'\"load_constraints_validated\":true') FROM ossie_relation_program()") ==
+	          "true",
+	      "relation load recovers after cancellation");
+}
+
 } // namespace
 int main(int argc, char **argv) {
 	try {
@@ -388,6 +478,8 @@ int main(int argc, char **argv) {
 		Controls(root, 1);
 		ObservationControls(root, 4);
 		ObservationControls(root, 1);
+		RelationBindControls(root, 4);
+		RelationBindControls(root, 1);
 		std::cout
 		    << "PASS: " << checks
 		    << " checks; deterministic production capture, capture/prepublish cancel, callback failure; threads=4/1\n";

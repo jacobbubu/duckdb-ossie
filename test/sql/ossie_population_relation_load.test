@@ -1,0 +1,53 @@
+# name: test/sql/ossie_population_relation_load.test
+# description: opt-in relation program captures types and rejects entire-root constraint violations
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE observations(observation_id VARCHAR, user_id VARCHAR, ds DATE, product VARCHAR, amount_usd DECIMAL(18,2), classification_value INTEGER);
+
+statement ok
+INSERT INTO observations VALUES ('a','A','2026-01-01','X',1,10),('b','A','2026-02-01','Y',NULL,5),('c','B','2026-02-01','X',NULL,NULL);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population-relation-program/bundle.json');
+
+query IIIII
+SELECT contains(program_json,'"profile":"observation-relation-program-v1"')::INTEGER, contains(program_json,'"captured_rows":"3"')::INTEGER, contains(program_json,'"load_constraints_validated":true')::INTEGER, contains(program_json,'"query_executed":false')::INTEGER, contains(program_json,'"dependencies":["qualified_user"]')::INTEGER FROM ossie_relation_program();
+----
+1	1	1	1	1
+
+statement ok
+CREATE TABLE prior_snapshot AS SELECT program_json FROM ossie_relation_program();
+
+statement ok
+INSERT INTO observations VALUES ('bad','BAD','2026-02-01','X',NULL,-1);
+
+statement error
+CALL ossie_bundle_load('test/fixtures/population-relation-program/bundle.json');
+----
+CONSTRAINT_VIOLATION
+
+query I
+SELECT ((SELECT program_json FROM ossie_relation_program()) = (SELECT program_json FROM prior_snapshot))::INTEGER;
+----
+1
+
+statement error
+SELECT * FROM ossie_objects('DailyObservation', []);
+----
+UNSUPPORTED_CAPABILITY
+
+statement error
+SELECT * FROM ossie_population_capabilities();
+----
+UNSUPPORTED_CAPABILITY
+
+statement ok
+DROP TABLE observations;
+
+query I
+SELECT contains(program_json,'"captured_rows":"3"')::INTEGER FROM ossie_relation_program();
+----
+1

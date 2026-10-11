@@ -1,0 +1,813 @@
+{
+  "profile": "fact-dimension-population-v1",
+  "artifact_sha256": "ee606ddef9ee482cb0bdb90cc089c548c5a02a17704f976b5e989495c66c362b",
+  "version": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "fixture_sha256": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878",
+  "source_sha256": {
+    "scripts/verify_joined_population_artifact.ts": "59c4a1bb0393187daaee7cbdcdbee7f2aabf64d444cdf8b7b3c782296ec7234a",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "test/fixtures/safe-join-research/rows.sql": "ea9ac378b27a6638090d269f770eeb711f6ec2d7a0bba02d2ef935cc3f8078fa",
+    "test/fixtures/joined-population/core.json": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878",
+    "test/fixtures/joined-population/ontology.json": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+    "test/fixtures/joined-population/mapping.json": "fede2d077986e8c46162973f87b750afcd1420e8229d480d175a6c7acee4dcfd",
+    "test/fixtures/joined-population/bundle.json": "4af4f7bed9a5d179e849d1ff68ebd82f276c584e96cb1b0d5520c2b073289890"
+  },
+  "refusals": 24,
+  "checked": [
+    "referenced duplicate",
+    "unused duplicate",
+    "NULL dimension",
+    "missing FK",
+    "NULL FK",
+    "out of scope FK",
+    "duplicate fact",
+    "NULL identity",
+    "key coercion",
+    "empty fact bad dimension",
+    "empty dimension",
+    "too many unused dimensions",
+    "joined output budget",
+    "input bytes including unused",
+    "different attached database",
+    "dimension grain",
+    "hidden aggregate",
+    "unknown aggregate",
+    "nested aggregate",
+    "grainless count",
+    "reverse relation",
+    "LEFT policy",
+    "dimension identity",
+    "same native source table"
+  ],
+  "totals": [
+    6,
+    5,
+    "55.01",
+    11.002
+  ],
+  "valid_ids": [
+    "f1",
+    "f2",
+    "f5",
+    "f6"
+  ],
+  "source_updates_frozen": true,
+  "prepared_reload_frozen": true,
+  "unused_dimension_hash": true,
+  "parent_alive_close": true,
+  "cancellation_preserves_bundle": true,
+  "cancellation_evidence": {
+    "native_interrupt_calls": 1,
+    "diagnostic": "Error: INTERRUPT Error: Interrupted!",
+    "before": [
+      [
+        "d77db4cbcae958531475340a6150fd95e92baf5aa26af0bb4f15b13bd8a947ef:12",
+        "d77db4cbcae958531475340a6150fd95e92baf5aa26af0bb4f15b13bd8a947ef"
+      ],
+      [
+        "d77db4cbcae958531475340a6150fd95e92baf5aa26af0bb4f15b13bd8a947ef:12",
+        "d77db4cbcae958531475340a6150fd95e92baf5aa26af0bb4f15b13bd8a947ef"
+      ]
+    ],
+    "after": [
+      [
+        "d77db4cbcae958531475340a6150fd95e92baf5aa26af0bb4f15b13bd8a947ef:12",
+        "d77db4cbcae958531475340a6150fd95e92baf5aa26af0bb4f15b13bd8a947ef"
+      ],
+      [
+        "d77db4cbcae958531475340a6150fd95e92baf5aa26af0bb4f15b13bd8a947ef:12",
+        "d77db4cbcae958531475340a6150fd95e92baf5aa26af0bb4f15b13bd8a947ef"
+      ]
+    ],
+    "recovery_total": [
+      6,
+      5,
+      "55.01",
+      11.002
+    ],
+    "phase": "not deterministically injected by this stock verifier"
+  },
+  "quoted_sources_and_columns": true,
+  "computed_fields_and_ratio": true,
+  "plan_provenance_controls": {
+    "quoted": {
+      "schema_version": "ossie-population-plan-v1",
+      "phase": "generated semantic SELECT AST",
+      "executed": false,
+      "physical_plan": false,
+      "sql_replayable": false,
+      "request_kind": "metrics",
+      "profile": "fact-dimension-population-v1",
+      "engine": {
+        "dialect": "DUCKDB",
+        "version": "v1.5.6",
+        "source_id": "069cc9f9b5"
+      },
+      "definitions": {
+        "core": {
+          "name": "joined_population",
+          "version": "0.2.0.dev0",
+          "sha256": "65db49fe1484ed0dfa8cf0df558d48682f56cd7beba9d6fd7e992388659e9c43"
+        },
+        "ontology": {
+          "name": "joined_ontology",
+          "version": "0.2.0.dev0",
+          "sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613"
+        },
+        "mapping": {
+          "name": "joined_mapping",
+          "version": "0.2.0.dev0",
+          "sha256": "a161647b036ac16e1ee54a12fb529053990e4163650048080742947f9e6f236b"
+        },
+        "manifest_sha256": "79a77a25038fb03821061d36b5a680f4d3f7c05ede8fed43e34fb9aab77bd14b"
+      },
+      "snapshot": {
+        "id": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce:13",
+        "content_sha256": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce",
+        "captured_population_rows": 6,
+        "row_order_sensitive": true,
+        "filtered_rows_computed": false
+      },
+      "concept": {
+        "name": "User",
+        "root": "User",
+        "formal_rule": {
+          "owner": "ValidUser",
+          "applied": false,
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "declared_sql": "User.active AND User.eligible",
+          "resolved_definition_sql": "(\"Fact \"\"Sales\"._ossie_column_3 AND \"Fact \"\"Sales\"._ossie_column_6)"
+        }
+      },
+      "identity": {
+        "field": "Fact \"Sales.id",
+        "dataset": "Fact \"Sales",
+        "logical_field": "id",
+        "entity_equals_record": true,
+        "scope": "one observation per identity in captured batch"
+      },
+      "grain": {
+        "population_input_dataset": "Fact \"Sales",
+        "declared_primary_key": [
+          "id"
+        ],
+        "aggregation_scope": "effective WHERE before GROUP BY",
+        "basis": "validated fact grain before flattening"
+      },
+      "capture_join": {
+        "relationship": "fact_dimension",
+        "from_dataset": "Fact \"Sales",
+        "to_dataset": "Dim\"Region",
+        "from_column": "key\"a",
+        "to_column": "key\"a",
+        "type": "INNER",
+        "missing": "reject",
+        "validation_scope": "entire captured inputs before request filters",
+        "execution_stage": "load-time frozen lookup; no live query join"
+      },
+      "inputs": [
+        {
+          "dataset": "Fact \"Sales",
+          "source": "memory.main.r6_fact",
+          "captured_rows": 6,
+          "sha256": "c10ad6105c8785847155842a645adf19a86bd01dcdb941007e7d34631f55c7bd"
+        },
+        {
+          "dataset": "Dim\"Region",
+          "source": "memory.main.r6_dimension",
+          "captured_rows": 4,
+          "sha256": "31cb4bffe7c2edc00fd46c5c9c5431092c0168dc4c0dea8b6e03705f5d4fe68c"
+        }
+      ],
+      "metrics": [
+        {
+          "name": "amount_sum",
+          "declared_datatype": "",
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "SUM(\"Fact \"\"Sales\".amount)",
+            "parsed_lowered_sql": "sum(\"Fact \"\"Sales\".amount)"
+          }
+        }
+      ],
+      "declared_fields": [
+        {
+          "dataset": "Fact \"Sales",
+          "name": "id",
+          "declared_datatype": "String",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "id",
+            "parsed_lowered_sql": "id"
+          }
+        },
+        {
+          "dataset": "Fact \"Sales",
+          "name": "dim_id",
+          "declared_datatype": "Integer",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "\"key\"\"a\"",
+            "parsed_lowered_sql": "\"key\"\"a\""
+          }
+        },
+        {
+          "dataset": "Fact \"Sales",
+          "name": "amount",
+          "declared_datatype": "Decimal",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "amount",
+            "parsed_lowered_sql": "amount"
+          }
+        },
+        {
+          "dataset": "Fact \"Sales",
+          "name": "active",
+          "declared_datatype": "Boolean",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "active",
+            "parsed_lowered_sql": "active"
+          }
+        },
+        {
+          "dataset": "Dim\"Region",
+          "name": "id",
+          "declared_datatype": "Integer",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "\"key\"\"a\"",
+            "parsed_lowered_sql": "\"key\"\"a\""
+          }
+        },
+        {
+          "dataset": "Dim\"Region",
+          "name": "label",
+          "declared_datatype": "String",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "label",
+            "parsed_lowered_sql": "\"label\""
+          }
+        },
+        {
+          "dataset": "Dim\"Region",
+          "name": "eligible",
+          "declared_datatype": "Boolean",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "eligible",
+            "parsed_lowered_sql": "eligible"
+          }
+        }
+      ],
+      "filters": {
+        "input_language": "profile scalar SQL subset (no core dialect lowering)",
+        "requested_sql": [],
+        "effective_where_sql": null
+      },
+      "time": {
+        "range_inferred": false,
+        "basis": "effective WHERE and declared time roles only"
+      },
+      "generated_ast": {
+        "from_sql": "\"system\".main._ossie_snapshot_rows() AS \"Fact \"\"Sales\"",
+        "projections": [
+          {
+            "ordinal": 1,
+            "alias": "amount_sum",
+            "sql": "\"system\".main.sum(\"Fact \"\"Sales\"._ossie_column_2)"
+          }
+        ],
+        "group_by_sql": []
+      },
+      "result_contract": {
+        "ordering": "unspecified",
+        "groups": "sparse",
+        "query_paging": false,
+        "query_truncation": false,
+        "calendar_completion": false,
+        "empty_ungrouped_count": 0,
+        "empty_ungrouped_sum_avg": null
+      },
+      "limitations": [
+        "Parser AST explanation, not a bound physical or optimizer plan",
+        "Captured row counts do not measure filtered population, groups or aggregate denominators",
+        "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+        "Separate compile/query calls may bind different snapshots after reload",
+        "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+      ]
+    },
+    "computed": {
+      "schema_version": "ossie-population-plan-v1",
+      "phase": "generated semantic SELECT AST",
+      "executed": false,
+      "physical_plan": false,
+      "sql_replayable": false,
+      "request_kind": "metrics",
+      "profile": "fact-dimension-population-v1",
+      "engine": {
+        "dialect": "DUCKDB",
+        "version": "v1.5.6",
+        "source_id": "069cc9f9b5"
+      },
+      "definitions": {
+        "core": {
+          "name": "joined_population",
+          "version": "0.2.0.dev0",
+          "sha256": "989f7ee4dc89854d50d8bf7050fdcbd3e6f2f8381d70db202eee8eab89cc3686"
+        },
+        "ontology": {
+          "name": "joined_ontology",
+          "version": "0.2.0.dev0",
+          "sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613"
+        },
+        "mapping": {
+          "name": "joined_mapping",
+          "version": "0.2.0.dev0",
+          "sha256": "fede2d077986e8c46162973f87b750afcd1420e8229d480d175a6c7acee4dcfd"
+        },
+        "manifest_sha256": "50a95f6dd88c94ded1fc567b6b815550cfec38190360518999d4c6fb595a58e1"
+      },
+      "snapshot": {
+        "id": "94e60c33c36a307849f7b0b1d811074a41a82ebdf0834910178b0be7d29cd254:15",
+        "content_sha256": "94e60c33c36a307849f7b0b1d811074a41a82ebdf0834910178b0be7d29cd254",
+        "captured_population_rows": 6,
+        "row_order_sensitive": true,
+        "filtered_rows_computed": false
+      },
+      "concept": {
+        "name": "User",
+        "root": "User",
+        "formal_rule": {
+          "owner": "ValidUser",
+          "applied": false,
+          "input_language": "profile scalar SQL subset (no core dialect lowering)",
+          "declared_sql": "User.active AND User.eligible",
+          "resolved_definition_sql": "(fact._ossie_column_3 AND fact._ossie_column_6)"
+        }
+      },
+      "identity": {
+        "field": "fact.id",
+        "dataset": "fact",
+        "logical_field": "id",
+        "entity_equals_record": true,
+        "scope": "one observation per identity in captured batch"
+      },
+      "grain": {
+        "population_input_dataset": "fact",
+        "declared_primary_key": [
+          "id"
+        ],
+        "aggregation_scope": "effective WHERE before GROUP BY",
+        "basis": "validated fact grain before flattening"
+      },
+      "capture_join": {
+        "relationship": "fact_dimension",
+        "from_dataset": "fact",
+        "to_dataset": "dimension",
+        "from_column": "dim_id",
+        "to_column": "id",
+        "type": "INNER",
+        "missing": "reject",
+        "validation_scope": "entire captured inputs before request filters",
+        "execution_stage": "load-time frozen lookup; no live query join"
+      },
+      "inputs": [
+        {
+          "dataset": "fact",
+          "source": "memory.main.r6_fact",
+          "captured_rows": 6,
+          "sha256": "0d52313773e86796abaf4b433a835adf5446862bf54e559ea99f21a0318e335e"
+        },
+        {
+          "dataset": "dimension",
+          "source": "memory.main.r6_dimension",
+          "captured_rows": 4,
+          "sha256": "4a79235280ea3dacbeb7f6ee6376e9b26ab39995a93015824600ac1db21be196"
+        }
+      ],
+      "metrics": [
+        {
+          "name": "ratio",
+          "declared_datatype": "",
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "SUM(fact.amount)/NULLIF(COUNT(fact.id),0)",
+            "parsed_lowered_sql": "(sum(fact.amount) / \"nullif\"(count(fact.id), 0))"
+          }
+        }
+      ],
+      "declared_fields": [
+        {
+          "dataset": "fact",
+          "name": "id",
+          "declared_datatype": "String",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "id",
+            "parsed_lowered_sql": "id"
+          }
+        },
+        {
+          "dataset": "fact",
+          "name": "dim_id",
+          "declared_datatype": "Integer",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "dim_id",
+            "parsed_lowered_sql": "dim_id"
+          }
+        },
+        {
+          "dataset": "fact",
+          "name": "amount",
+          "declared_datatype": "Decimal",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "amount + CAST(0 AS DECIMAL(18,2))",
+            "parsed_lowered_sql": "(amount + CAST(0 AS DECIMAL(18, 2)))"
+          }
+        },
+        {
+          "dataset": "fact",
+          "name": "active",
+          "declared_datatype": "Boolean",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "active",
+            "parsed_lowered_sql": "active"
+          }
+        },
+        {
+          "dataset": "dimension",
+          "name": "id",
+          "declared_datatype": "Integer",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "id",
+            "parsed_lowered_sql": "id"
+          }
+        },
+        {
+          "dataset": "dimension",
+          "name": "label",
+          "declared_datatype": "String",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "CASE WHEN eligible THEN label ELSE NULL END",
+            "parsed_lowered_sql": "CASE  WHEN (eligible) THEN (\"label\") ELSE NULL END"
+          }
+        },
+        {
+          "dataset": "dimension",
+          "name": "eligible",
+          "declared_datatype": "Boolean",
+          "is_time": false,
+          "is_time_explicit": false,
+          "expression": {
+            "selected_dialect": "ANSI_SQL",
+            "available_dialects": [
+              "ANSI_SQL"
+            ],
+            "declared_sql": "eligible",
+            "parsed_lowered_sql": "eligible"
+          }
+        }
+      ],
+      "filters": {
+        "input_language": "profile scalar SQL subset (no core dialect lowering)",
+        "requested_sql": [],
+        "effective_where_sql": null
+      },
+      "time": {
+        "range_inferred": false,
+        "basis": "effective WHERE and declared time roles only"
+      },
+      "generated_ast": {
+        "from_sql": "\"system\".main._ossie_snapshot_rows() AS fact",
+        "projections": [
+          {
+            "ordinal": 1,
+            "alias": "dimension.label",
+            "sql": "CASE  WHEN (fact._ossie_column_6) THEN (fact._ossie_column_5) ELSE NULL END"
+          },
+          {
+            "ordinal": 2,
+            "alias": "ratio",
+            "sql": "(\"system\".main.sum((fact._ossie_column_2 + CAST(0 AS DECIMAL(18, 2)))) / \"system\".main.\"nullif\"(\"system\".main.count(fact._ossie_column_0), 0))"
+          }
+        ],
+        "group_by_sql": [
+          "CASE  WHEN (fact._ossie_column_6) THEN (fact._ossie_column_5) ELSE NULL END"
+        ]
+      },
+      "result_contract": {
+        "ordering": "unspecified",
+        "groups": "sparse",
+        "query_paging": false,
+        "query_truncation": false,
+        "calendar_completion": false,
+        "empty_ungrouped_count": 0,
+        "empty_ungrouped_sum_avg": null
+      },
+      "limitations": [
+        "Parser AST explanation, not a bound physical or optimizer plan",
+        "Captured row counts do not measure filtered population, groups or aggregate denominators",
+        "Frozen scan requires its internal AST dependency; SQL text cannot be replayed",
+        "Separate compile/query calls may bind different snapshots after reload",
+        "No guarantee of exact JSON numeric transport or external renderer truncation behavior"
+      ]
+    }
+  },
+  "discovery_quoted_fields": [
+    {
+      "dataset": "Fact \"Sales",
+      "name": "id",
+      "qualified_name": "\"Fact \"\"Sales\".id",
+      "object_column": "Fact \"Sales.id",
+      "datatype": "String",
+      "bound_type": "VARCHAR",
+      "label": "",
+      "description": "",
+      "expression": "id",
+      "selected_dialect": "ANSI_SQL",
+      "available_dialects_json": "[\"ANSI_SQL\"]",
+      "synonyms_json": "[]",
+      "examples_json": "[]",
+      "instructions": "",
+      "ai_context_json": "",
+      "custom_extensions_json": "",
+      "is_time": false,
+      "is_time_explicit": false,
+      "is_computed": false,
+      "load_preflight_validated": true,
+      "execution_verified": false,
+      "profile": "fact-dimension-population-v1",
+      "snapshot_id": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce:13",
+      "content_sha256": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce",
+      "core_sha256": "65db49fe1484ed0dfa8cf0df558d48682f56cd7beba9d6fd7e992388659e9c43",
+      "ontology_sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+      "mapping_sha256": "a161647b036ac16e1ee54a12fb529053990e4163650048080742947f9e6f236b",
+      "manifest_sha256": "79a77a25038fb03821061d36b5a680f4d3f7c05ede8fed43e34fb9aab77bd14b"
+    },
+    {
+      "dataset": "Fact \"Sales",
+      "name": "dim_id",
+      "qualified_name": "\"Fact \"\"Sales\".dim_id",
+      "object_column": "Fact \"Sales.dim_id",
+      "datatype": "Integer",
+      "bound_type": "INTEGER",
+      "label": "",
+      "description": "",
+      "expression": "\"key\"\"a\"",
+      "selected_dialect": "ANSI_SQL",
+      "available_dialects_json": "[\"ANSI_SQL\"]",
+      "synonyms_json": "[]",
+      "examples_json": "[]",
+      "instructions": "",
+      "ai_context_json": "",
+      "custom_extensions_json": "",
+      "is_time": false,
+      "is_time_explicit": false,
+      "is_computed": true,
+      "load_preflight_validated": true,
+      "execution_verified": false,
+      "profile": "fact-dimension-population-v1",
+      "snapshot_id": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce:13",
+      "content_sha256": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce",
+      "core_sha256": "65db49fe1484ed0dfa8cf0df558d48682f56cd7beba9d6fd7e992388659e9c43",
+      "ontology_sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+      "mapping_sha256": "a161647b036ac16e1ee54a12fb529053990e4163650048080742947f9e6f236b",
+      "manifest_sha256": "79a77a25038fb03821061d36b5a680f4d3f7c05ede8fed43e34fb9aab77bd14b"
+    },
+    {
+      "dataset": "Fact \"Sales",
+      "name": "amount",
+      "qualified_name": "\"Fact \"\"Sales\".amount",
+      "object_column": "Fact \"Sales.amount",
+      "datatype": "Decimal",
+      "bound_type": "DECIMAL(18,2)",
+      "label": "",
+      "description": "",
+      "expression": "amount",
+      "selected_dialect": "ANSI_SQL",
+      "available_dialects_json": "[\"ANSI_SQL\"]",
+      "synonyms_json": "[]",
+      "examples_json": "[]",
+      "instructions": "",
+      "ai_context_json": "",
+      "custom_extensions_json": "",
+      "is_time": false,
+      "is_time_explicit": false,
+      "is_computed": false,
+      "load_preflight_validated": true,
+      "execution_verified": false,
+      "profile": "fact-dimension-population-v1",
+      "snapshot_id": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce:13",
+      "content_sha256": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce",
+      "core_sha256": "65db49fe1484ed0dfa8cf0df558d48682f56cd7beba9d6fd7e992388659e9c43",
+      "ontology_sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+      "mapping_sha256": "a161647b036ac16e1ee54a12fb529053990e4163650048080742947f9e6f236b",
+      "manifest_sha256": "79a77a25038fb03821061d36b5a680f4d3f7c05ede8fed43e34fb9aab77bd14b"
+    },
+    {
+      "dataset": "Fact \"Sales",
+      "name": "active",
+      "qualified_name": "\"Fact \"\"Sales\".active",
+      "object_column": "Fact \"Sales.active",
+      "datatype": "Boolean",
+      "bound_type": "BOOLEAN",
+      "label": "",
+      "description": "",
+      "expression": "active",
+      "selected_dialect": "ANSI_SQL",
+      "available_dialects_json": "[\"ANSI_SQL\"]",
+      "synonyms_json": "[]",
+      "examples_json": "[]",
+      "instructions": "",
+      "ai_context_json": "",
+      "custom_extensions_json": "",
+      "is_time": false,
+      "is_time_explicit": false,
+      "is_computed": false,
+      "load_preflight_validated": true,
+      "execution_verified": false,
+      "profile": "fact-dimension-population-v1",
+      "snapshot_id": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce:13",
+      "content_sha256": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce",
+      "core_sha256": "65db49fe1484ed0dfa8cf0df558d48682f56cd7beba9d6fd7e992388659e9c43",
+      "ontology_sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+      "mapping_sha256": "a161647b036ac16e1ee54a12fb529053990e4163650048080742947f9e6f236b",
+      "manifest_sha256": "79a77a25038fb03821061d36b5a680f4d3f7c05ede8fed43e34fb9aab77bd14b"
+    },
+    {
+      "dataset": "Dim\"Region",
+      "name": "id",
+      "qualified_name": "\"Dim\"\"Region\".id",
+      "object_column": "Dim\"Region.id",
+      "datatype": "Integer",
+      "bound_type": "INTEGER",
+      "label": "",
+      "description": "",
+      "expression": "\"key\"\"a\"",
+      "selected_dialect": "ANSI_SQL",
+      "available_dialects_json": "[\"ANSI_SQL\"]",
+      "synonyms_json": "[]",
+      "examples_json": "[]",
+      "instructions": "",
+      "ai_context_json": "",
+      "custom_extensions_json": "",
+      "is_time": false,
+      "is_time_explicit": false,
+      "is_computed": true,
+      "load_preflight_validated": true,
+      "execution_verified": false,
+      "profile": "fact-dimension-population-v1",
+      "snapshot_id": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce:13",
+      "content_sha256": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce",
+      "core_sha256": "65db49fe1484ed0dfa8cf0df558d48682f56cd7beba9d6fd7e992388659e9c43",
+      "ontology_sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+      "mapping_sha256": "a161647b036ac16e1ee54a12fb529053990e4163650048080742947f9e6f236b",
+      "manifest_sha256": "79a77a25038fb03821061d36b5a680f4d3f7c05ede8fed43e34fb9aab77bd14b"
+    },
+    {
+      "dataset": "Dim\"Region",
+      "name": "label",
+      "qualified_name": "\"Dim\"\"Region\".\"label\"",
+      "object_column": "Dim\"Region.label",
+      "datatype": "String",
+      "bound_type": "VARCHAR",
+      "label": "",
+      "description": "",
+      "expression": "label",
+      "selected_dialect": "ANSI_SQL",
+      "available_dialects_json": "[\"ANSI_SQL\"]",
+      "synonyms_json": "[]",
+      "examples_json": "[]",
+      "instructions": "",
+      "ai_context_json": "",
+      "custom_extensions_json": "",
+      "is_time": false,
+      "is_time_explicit": false,
+      "is_computed": false,
+      "load_preflight_validated": true,
+      "execution_verified": false,
+      "profile": "fact-dimension-population-v1",
+      "snapshot_id": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce:13",
+      "content_sha256": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce",
+      "core_sha256": "65db49fe1484ed0dfa8cf0df558d48682f56cd7beba9d6fd7e992388659e9c43",
+      "ontology_sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+      "mapping_sha256": "a161647b036ac16e1ee54a12fb529053990e4163650048080742947f9e6f236b",
+      "manifest_sha256": "79a77a25038fb03821061d36b5a680f4d3f7c05ede8fed43e34fb9aab77bd14b"
+    },
+    {
+      "dataset": "Dim\"Region",
+      "name": "eligible",
+      "qualified_name": "\"Dim\"\"Region\".eligible",
+      "object_column": "Dim\"Region.eligible",
+      "datatype": "Boolean",
+      "bound_type": "BOOLEAN",
+      "label": "",
+      "description": "",
+      "expression": "eligible",
+      "selected_dialect": "ANSI_SQL",
+      "available_dialects_json": "[\"ANSI_SQL\"]",
+      "synonyms_json": "[]",
+      "examples_json": "[]",
+      "instructions": "",
+      "ai_context_json": "",
+      "custom_extensions_json": "",
+      "is_time": false,
+      "is_time_explicit": false,
+      "is_computed": false,
+      "load_preflight_validated": true,
+      "execution_verified": false,
+      "profile": "fact-dimension-population-v1",
+      "snapshot_id": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce:13",
+      "content_sha256": "fe04000774e3807d540976895c49feefaa899eef79e16c5ce2e9e1d44d3384ce",
+      "core_sha256": "65db49fe1484ed0dfa8cf0df558d48682f56cd7beba9d6fd7e992388659e9c43",
+      "ontology_sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613",
+      "mapping_sha256": "a161647b036ac16e1ee54a12fb529053990e4163650048080742947f9e6f236b",
+      "manifest_sha256": "79a77a25038fb03821061d36b5a680f4d3f7c05ede8fed43e34fb9aab77bd14b"
+    }
+  ],
+  "limits": "canonical input/result; not peak memory",
+  "concurrent_capture": "not deterministically injected by this verifier"
+}

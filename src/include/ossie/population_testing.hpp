@@ -22,5 +22,11 @@ public:
 	virtual void Observe(PopulationDailyCheckpoint checkpoint) = 0;
 };
 
+class PopulationLegacyBindObserver : public ClientContextState {
+public:
+	static constexpr const char *KEY = "ossie_population_legacy_bind_observer";
+	virtual void Observe() = 0;
+};
+
 } // namespace ossie
 } // namespace duckdb

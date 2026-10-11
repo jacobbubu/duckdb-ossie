@@ -1407,3 +1407,15 @@ No further live requests, source changes, remote CI, push/merge/release occur.
 A1–A8/MCP与观察/每日无模型回归通过，测试接入native CI入口但远端未执行。
 下一实施为加载器接入、实际类型预检、完整根/link约束与原子发布，再做完整对象/
 解释发现/MCP和独立link oracle；混合粒度/窗口/业务决策和全P1/tidy/历史审计仍必需。
+
+关系profile加载恢复checkpoint（615974a）：将binder接入冻结类型预检及完整根/
+link约束，原子发布前检查；先独立program发现，旧查询对新profile明确拒绝。
+完整关系对象/解释/MCP在后续切片，不能缩减五类P1。旧profile不改，Lead实施。
+
+关系profile加载工作包完成：[契约](docs/research/ossie-req-001/p1-relation-load-controls/contract.md)
+及最终7检查/14拒绝为实际类型、全根/link约束、失败旧snapshot、prepared跨reload。
+program发现明确未查询对象；旧接口对新profile拒绝。修复门禁/绑定两次Current
+竞态，native280含确定双连接双向切换和关系发布前取消/恢复；26SQL/975断言、
+旧native/Bun/质量/同最终SHA旧A1–A8/MCP/观察和每日模拟通过。CI命令增加但没有
+推送或远端结果。下一必要实施为完整关系对象的源tuple/typed目标、解释与发现、
+18/7全link独立oracle及MCP；原其他P1/状态历史决策/tidy/历史审计继续保留。

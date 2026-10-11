@@ -1,0 +1,139 @@
+{
+  "mode": "simulated",
+  "scene": "baseline",
+  "final": {
+    "content": "{\"status\":\"answered\",\"scope\":\"2026-01-31 through 2026-02-01 inclusive; all products\",\"definition\":\"current observation qualification; User is existential distinct in requested scope; AVG uses nonnull observation amounts\",\"unit\":\"USD\",\"observation_count\":\"6\",\"user_count\":\"3\",\"amount_value_count\":\"5\",\"amount_sum\":\"31.00\",\"mean_observation_amount\":\"6.2\",\"daily_user_counts\":null,\"evidence_ids\":[\"ossie://population/concepts\",\"tool-1\"],\"limitations\":[\"scripted test response with oracle-derived answer; not model autonomy or business acceptance\"]}",
+    "calls": 1,
+    "rounds": 2
+  },
+  "evaluation": {
+    "numerical_gate": "pass",
+    "executed_support": "pass",
+    "claims": [
+      {
+        "status": "pass",
+        "scene": "baseline",
+        "evidence_id": "tool-1",
+        "metric": "observation_count",
+        "day": null,
+        "args": {
+          "concept": "QualifiedObservation",
+          "metrics": "[\"observation_count\",\"user_count\",\"amount_value_count\",\"amount_sum\",\"mean_observation_amount\"]",
+          "dimensions": "[]",
+          "filters": "[\"observations.ds >= DATE '2026-01-31' AND observations.ds < DATE '2026-02-02'\"]"
+        },
+        "binding": {
+          "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+          "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+        },
+        "scope_proof": "normalized literal date bounds and no product/User narrowing; independently verified hash-pinned membership",
+        "semantic_review": "required"
+      },
+      {
+        "status": "pass",
+        "scene": "baseline",
+        "evidence_id": "tool-1",
+        "metric": "user_count",
+        "day": null,
+        "args": {
+          "concept": "QualifiedObservation",
+          "metrics": "[\"observation_count\",\"user_count\",\"amount_value_count\",\"amount_sum\",\"mean_observation_amount\"]",
+          "dimensions": "[]",
+          "filters": "[\"observations.ds >= DATE '2026-01-31' AND observations.ds < DATE '2026-02-02'\"]"
+        },
+        "binding": {
+          "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+          "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+        },
+        "scope_proof": "normalized literal date bounds and no product/User narrowing; independently verified hash-pinned membership",
+        "semantic_review": "required"
+      },
+      {
+        "status": "pass",
+        "scene": "baseline",
+        "evidence_id": "tool-1",
+        "metric": "amount_value_count",
+        "day": null,
+        "args": {
+          "concept": "QualifiedObservation",
+          "metrics": "[\"observation_count\",\"user_count\",\"amount_value_count\",\"amount_sum\",\"mean_observation_amount\"]",
+          "dimensions": "[]",
+          "filters": "[\"observations.ds >= DATE '2026-01-31' AND observations.ds < DATE '2026-02-02'\"]"
+        },
+        "binding": {
+          "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+          "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+        },
+        "scope_proof": "normalized literal date bounds and no product/User narrowing; independently verified hash-pinned membership",
+        "semantic_review": "required"
+      },
+      {
+        "status": "pass",
+        "scene": "baseline",
+        "evidence_id": "tool-1",
+        "metric": "amount_sum",
+        "day": null,
+        "args": {
+          "concept": "QualifiedObservation",
+          "metrics": "[\"observation_count\",\"user_count\",\"amount_value_count\",\"amount_sum\",\"mean_observation_amount\"]",
+          "dimensions": "[]",
+          "filters": "[\"observations.ds >= DATE '2026-01-31' AND observations.ds < DATE '2026-02-02'\"]"
+        },
+        "binding": {
+          "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+          "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+        },
+        "scope_proof": "normalized literal date bounds and no product/User narrowing; independently verified hash-pinned membership",
+        "semantic_review": "required"
+      },
+      {
+        "status": "pass",
+        "scene": "baseline",
+        "evidence_id": "tool-1",
+        "metric": "mean_observation_amount",
+        "day": null,
+        "args": {
+          "concept": "QualifiedObservation",
+          "metrics": "[\"observation_count\",\"user_count\",\"amount_value_count\",\"amount_sum\",\"mean_observation_amount\"]",
+          "dimensions": "[]",
+          "filters": "[\"observations.ds >= DATE '2026-01-31' AND observations.ds < DATE '2026-02-02'\"]"
+        },
+        "binding": {
+          "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+          "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+        },
+        "scope_proof": "normalized literal date bounds and no product/User narrowing; independently verified hash-pinned membership",
+        "semantic_review": "required"
+      }
+    ],
+    "semantic_review": "required: scope/rule/unit/denominator/explanation and witness-only scope proof",
+    "overall": "pending semantic review"
+  },
+  "semantic_verdict": "pending",
+  "manual_checks": [
+    "object/scope/unit/registered rule and denominators",
+    "actual response and column references",
+    "interval distinct is not sum of daily counts",
+    "registered capability refusal without replacement"
+  ]
+}

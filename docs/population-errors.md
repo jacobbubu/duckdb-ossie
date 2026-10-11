@@ -26,7 +26,7 @@ are diagnostics from a known failure carrier, not proof of trusted origin.
 | `legacy_message` | Previous human diagnostic shape, retained for transition |
 
 Stages/codes: `capability` → `UNSUPPORTED_CAPABILITY`, `identity` →
-`IDENTITY_VIOLATION`, `execute` → `EXECUTION_FAILED`, `load` → `LOAD_FAILED`,
+`IDENTITY_VIOLATION`, `constraint` → `CONSTRAINT_VIOLATION`, `execute` → `EXECUTION_FAILED`, `load` → `LOAD_FAILED`,
 `snapshot` → `SNAPSHOT_REJECTED`, `mapping` → `MAPPING_INVALID`, `rule` →
 `RULE_REJECTED`, `parse` → `DEFINITION_INVALID`, `hash` →
 `DEFINITION_HASH_MISMATCH`; remaining request/binding stages → `INVALID_REQUEST`.
