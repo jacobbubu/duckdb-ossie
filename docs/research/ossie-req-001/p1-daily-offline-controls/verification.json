@@ -1,0 +1,67 @@
+{
+  "scope": "P1 daily-only supportive no-model integration/replay; complete P1 unachieved",
+  "baseline": "982d803",
+  "artifact_sha256": "86fb826ba49ae9ec4318231ce9ac9c0c614066712d3d43d63a26c64784335b4b",
+  "reused_native_evidence": "../p1-daily-plan-controls/verification.json",
+  "reused_native_evidence_sha256": "2d63d6ee7327a97fae9dbea4d8ef187982702b7a13024c6d9d56a94b09c12a6f",
+  "sources_sha256": {
+    ".github/workflows/MainDistributionPipeline.yml": "7426b2c77a9e02e0ba879ba1c50a9a81a1547febf48ddf663845ce72b0d9a3e2",
+    "scripts/daily_mcp.ts": "9e84c7c2166046ad7d44f1fdfd35475ac17bb8445d866db0f14bb029807d2821",
+    "scripts/daily_agent_contract.ts": "a20a0ce15776ee1e77a74e934f7b1dfeea6349eac2a12d77dd119f1d7a2f446d",
+    "scripts/daily_agent_rehearsal.ts": "8cff60983aff996b5a16eee6742b8c17593be081041763d5d32e978a00a2c371",
+    "scripts/daily_agent_replay.ts": "0d156ac95c00d4f565a4e23bf51da744e7dc9c32b8f24e0e3e14286e0a257a54",
+    "scripts/verify_daily_agent_offline.ts": "d764fcd2bf7e73781282a0145297f40368cfe2e6a27b80ba2039b8d6b73862af",
+    "test/tooling/daily_agent.test.ts": "06c254583f72a14deea940e5b6444f75c9dae982eb50e8ec0e921786595bf50c",
+    "docs/population-daily-users.md": "b192b85f20b3089c54fd291e7c0800c39c576fbb5e75a63e17e576aca542f996",
+    "docs/ossie-execution-research.md": "812bf86a2bd760e78c63e50f59ba266ee799287ecc6c077b74f26488314441ce",
+    "ossie-duckdb-plan.md": "86d377da17e30702699d37534f60cd3933492e902c4e57b3013c0c3995007d9d"
+  },
+  "evidence_sha256": {
+    "advisor-disposition.json": "ce224800fd530ad3d30218875d1a8f048f0c0af7bf309cc2eab3db616bdc50ff",
+    "architecture.log": "2156cc40e9017725962fdb6a1a8fc1c560086aeabe7dffd152cc61e0787396d2",
+    "bun.log": "c80a576ca8eee7e2684c3908b258f7965a431152d71363876b3c4dc71295effa",
+    "candidate-private-audit.json": "c280973767a6ae937e7ea1432364188b6b5f28e8da09d7496f7858638c45ad80",
+    "failed-typecheck.log": "489aa040cfdc4658c16fa9ec3592acde7a414dd075907e1dff2e94736d7f2f17",
+    "failure-disposition.json": "728c681324ee87cad6fd8af5273904e5fd81d369111c404207f2b7c0f78b35ed",
+    "final-receipt.json": "7d088099d1b877f6fcdaf92b5f092bf0396098f953d930fd2825d46160a09f2a",
+    "final-run.log": "b8d644a1df6e7c94a81ad54e67ce81208304ec3769637c565025cef683b123fb",
+    "format.log": "89b1264c8c3a787cd3a2b4de12aef0c722fff2f133072cc3b44269c35cd0c21c",
+    "mcp-regression.json": "7a9a6c09c66837a97018905fd8c589318ac7e8d204dd0d3e8bec2d8f173c1518",
+    "mcp-regression.log": "5e77a90b630e6a058eb2c22a0217f8f956e3634f6b4603bade4cdfbe2d2c9a7e",
+    "receipt.json": "9340d1292cc3c86a8a38f98416c30cb5bfe937b3d20a6938e585aecaf1f163a9",
+    "run.log": "b8d644a1df6e7c94a81ad54e67ce81208304ec3769637c565025cef683b123fb",
+    "typecheck-final.log": "4e8da542ccbffd70e1bacfda01f640a7a15c66d87fc2b7d4f58af694e973c17c",
+    "unit.log": "d7b6abc6d9852b052d1a2bbe1f36967da1faff1b99642e7d0001458371dcf0bc"
+  },
+  "passed": {
+    "scenes": 5,
+    "simulated_completion_requests": 14,
+    "actual_tool_calls": 9,
+    "real_model_requests": 0,
+    "ordered_replay": true,
+    "re_sealed_forgeries_refused": 18,
+    "incomplete_archive_refused": true,
+    "coherent_semantic_and_dispatcher_unit_controls": 6,
+    "bun_tests": 110,
+    "bun_expects": 468,
+    "final_typecheck_format_architecture": true,
+    "daily_mcp_regression_checks": 16,
+    "daily_mcp_refusals": 28
+  },
+  "limitations": [
+    "Scripted tool parameters/output do not prove model understanding, autonomy or reliability",
+    "Hash seal is compatible observation storage container; separate daily schema and content gates required",
+    "Public receipt is selected synthetic evidence, not raw transcript/wire",
+    "Current replay requires archived current-source/fixture hashes; first receipt/code retained, not rewritten",
+    "No whole process deadline/memory/wire/fee guarantee",
+    "No new C++/native run or remote CI/tidy/push/model calls"
+  ],
+  "remaining_necessities": [
+    "State and half-open historical relationship business decisions",
+    "Temporal/history/window/nonrecursive relationships and requires implementation",
+    "Mixed-grain/multi-fact/cohort combination implementation",
+    "SQL2026 compatibility matrix and corresponding complete interfaces",
+    "Full P1 current-artifact verification/quality/tidy/outgoing-history audit/local delivery"
+  ],
+  "remote_mutated": false
+}

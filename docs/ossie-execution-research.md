@@ -76,6 +76,41 @@ Advisor只读反证，Lead负责实施与独立控制。验证来源表删除/�
 这个服务实际暴露的工具集合。实测成员/解释/trace/错误/未知工具和解码反例；
 后续无模型支持式演练与CI仍必需。无模型调用/推送，业务决策依赖仍等待答复。
 
+### P1每日支持式无模型演练 checkpoint（2026-10-11）
+
+恢复982d803与干净worktree，前轮progress为实际MCP/decoder/CI命令提交。沿原issue
+补独立每日模拟入口/离线重放：复用agentLoop/注入Responses解析、private hash容器，
+不改原观察四场景业务协议和raw。独立daily run schema，seal沿已有兼容存储容器，
+不冒充原四场景验收；公开仅选取receipt/hash，不复制完整raw。固定all/X/缺日/规则20
+场景由实际工具输出生成scripted答案，手列oracle只在门禁，不进模型上下文；compile
+不算成员，拒绝引用plan充当答案。原始事件/出站body/实际RPC顺序完整封存，重放
+逐事件重新运行shared loop/解码/引用/范围追溯并拒绝失败或篡改，不启动MCP或模型。
+复用Advisor只读反证，Lead实施。真实模型/配置读取/推送不授权，其他P1矩阵不缩减。
+
+### P1每日支持式无模型演练完成（2026-10-11）
+
+[契约](population-daily-users.md)及[最终选择性receipt](research/ossie-req-001/p1-daily-offline-controls/final-receipt.json)
+/[验证](research/ossie-req-001/p1-daily-offline-controls/verification.json)记录all/X/缺日/
+规则20/compile-only五个独立真实MCP上下文。14次注入completion、9个实际工具调用、
+真实模型0；结果来自actual tool output，独立手列oracle比较完整成员。预期答案/
+oracle不进上下文；baseline/changed-rule问题相同，规则差别只来自冻结定义。
+compile-only明确not_executed，不给成员/人数，正确oracle人数仍不能凭compile通过。
+strict replay重新解析Responses公共投影、current源码/fixture、完整provider/tool/RPC
+顺序、调用/回复ID、实际参数、tool output、最终引用/范围/规则/trace和终态；
+18重新封存的伪记录仍拒绝，incomplete单独失败封存且无法完整重放。
+
+复用原PrivateArchive/verifyArchive的observation-named hash容器，daily run/replay
+契约独立，未调用旧exporter或改原观察四场景协议/raw。公开仅receipt，不冒充raw
+transcript/wire；手列语义gate/存储完整性/真实模型能力分开。模拟与重放明确注入
+transport，无live/config入口；每loop沿既有预算，discovery无整体硬deadline保证。
+六组unit损坏控制与全110Bun/468expects、最终类型/格式/架构、每日MCP16/28回归
+通过。首轮动态Object.fromEntries测试类型TS2339失败原件保留，明确JsonObject后
+通过，未改运行值/oracle。Advisor建议由Lead核实，未审最终driver/运行测试，
+requested Astra/high及effective backend/effort/usage/billing未知另记。
+CI加入五场景无模型命令，没有远端运行/新tidy证据；artifact/C++不改，同SHA旧
+原生/SQL/MCP证据复用。完整P1仍active；下一转非递归关系/requires及时间/混合
+粒度规范承载研究，业务状态/历史关系决策尚待答，不静默实施；其余五项仍必需。
+
 ### P1每日MCP接口本地完成（2026-10-11）
 
 [契约](population-daily-users.md)与[证据](research/ossie-req-001/p1-daily-mcp-controls/verification.json)

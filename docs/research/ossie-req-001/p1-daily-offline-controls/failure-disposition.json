@@ -1,0 +1,6 @@
+{
+  "failure": "TypeScript inferred the object built with dynamic Object.fromEntries without its later test-mutated fields, producing two TS2339 errors in new unit test",
+  "raw": "failed-typecheck.log",
+  "resolution": "Annotate the dynamic test answer as JsonObject; runtime contents/oracle unchanged; final typecheck passes",
+  "first_receipt": "receipt.json preserves pre-final budget metadata source hashes; final-receipt.json binds current code; neither original archive overwritten"
+}

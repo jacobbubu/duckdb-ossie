@@ -1,0 +1,27 @@
+{
+  "advisor": "/root/review_agent_acceptance",
+  "requested_model": "gpt-6-astra",
+  "requested_effort": "high",
+  "effective_backend": "unknown",
+  "effective_effort": "unknown",
+  "usage": "unknown",
+  "billing": "unknown",
+  "review_scope": "Bounded read-only architecture review before implementation, not execution of new tests",
+  "accepted": [
+    "Separate simulated transport, scripted numeric correctness and real Agent capability",
+    "Compile-only classified not_executed, never unsupported or inferred member answer",
+    "Separate daily run/replay contract on compatible private hash container; no observation exporter",
+    "Request scope and successful executed citation linked; full hand member oracle outside context",
+    "Strict event exhaustion/source inventory/Responses reparse, no default model transport fallback"
+  ],
+  "lead_verification": [
+    "Five actual MCP contexts;14 simulated completions/9 actual tool calls, zero live model requests",
+    "18 re-sealed synthetic mutation records refuse ordered replay and independent incomplete run remains failed",
+    "Unit controls compare coherent wrong members to independent hand oracle, equal empty wrong scope, wrong rule/trace, correct-number compile-only, unrelated citation",
+    "Shared dispatcher rejects object request and unknown outer fields before RPC"
+  ],
+  "limitations": [
+    "Advisor did not review final driver or run checks; Lead implementation/evidence responsible",
+    "Effective backend/effort/usage/billing unavailable"
+  ]
+}

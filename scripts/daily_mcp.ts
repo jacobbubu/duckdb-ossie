@@ -55,13 +55,14 @@ export async function withDailySession<T>(
   threshold: number,
   dataset: string,
   action: (session: DailySession) => Promise<T>,
+  onEvent?: (event: JsonObject) => void,
 ) {
   return temporary("ossie-daily-mcp-", async (directory) => {
     const path = join(directory, "server.sql");
     writeFileSync(path, dailySetup(artifact, threshold, dataset));
     const server = new RpcProcess([cli, "-unsigned", "-bail", "-init", path]);
     try {
-      return await action(new DailySession(server));
+      return await action(new DailySession(server, onEvent));
     } finally {
       await server.close();
     }
@@ -70,12 +71,19 @@ export async function withDailySession<T>(
 export class DailySession {
   private id = 0;
   readonly events: JsonObject[] = [];
-  constructor(readonly server: RpcProcess) {}
+  constructor(
+    readonly server: RpcProcess,
+    readonly onEvent?: (event: JsonObject) => void,
+  ) {}
+  private record(event: JsonObject) {
+    this.events.push(event);
+    this.onEvent?.(event);
+  }
   async rpc(method: string, params?: unknown) {
     const id = ++this.id;
-    this.events.push({ kind: "rpc_request", id, method, params });
+    this.record({ kind: "rpc_request", id, method, params });
     const reply = await this.server.request(id, method, params);
-    this.events.push({ kind: "rpc_response", reply });
+    this.record({ kind: "rpc_response", reply });
     return reply;
   }
   async call(name: string, args: Record<string, unknown>) {
@@ -87,7 +95,12 @@ export class DailySession {
       !hello.error &&
         hello.result?.protocolVersion === INITIALIZE.protocolVersion,
     );
-    this.server.send({ jsonrpc: "2.0", method: "notifications/initialized" });
+    const notification = {
+      jsonrpc: "2.0",
+      method: "notifications/initialized",
+    };
+    this.record({ kind: "rpc_notification", notification });
+    this.server.send(notification);
     const listed = await this.rpc("tools/list");
     assert(!listed.error);
     const tools = listed.result?.tools as Tool[];

@@ -1,0 +1,8 @@
+{
+  "scope": "Known provider/model/legacy-variable strings in current changed/untracked nonignored candidates",
+  "scanned": 24,
+  "matches": [],
+  "configuration_read": false,
+  "limitations": "Full outgoing history/general secret audit remains final goal necessity",
+  "remote_mutated": false
+}

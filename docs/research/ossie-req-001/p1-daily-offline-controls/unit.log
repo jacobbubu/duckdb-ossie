@@ -1,0 +1,14 @@
+bun test v1.3.11 (af24e281)
+
+test/tooling/daily_agent.test.ts:
+(pass) daily audit compares full membership to independent hand oracle even when answer and tool agree [7.74ms]
+(pass) daily audit rejects matching empty answers from wrong request scope [1.22ms]
+(pass) daily audit rejects wrong rule with unchanged members/count and stale trace [0.56ms]
+(pass) compile-only cannot support even the correct oracle number or an unrelated citation [0.54ms]
+(pass) shared Agent dispatcher rejects publisher coercions and unknown outer scope before RPC
+(pass) daily rehearsal/replay expose no live mode or provider environment and use injected transport [0.94ms]
+
+ 6 pass
+ 0 fail
+ 14 expect() calls
+Ran 6 tests across 1 file. [224.00ms]

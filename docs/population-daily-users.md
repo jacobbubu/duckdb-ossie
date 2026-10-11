@@ -95,9 +95,22 @@ population-result decoder。它验证结构并比较compile/execute绑定，不�
 业务规则适当。使用普通JSON.parse，不声称检测任意外部carrier的重复对象键；native
 请求的重复键拒绝已有实测。输出1MiB限制指内部JSON，MCP外层转义可能更大。
 新工具已有12请求真实stock stdio与手列成员对照、解释/执行追溯及28拒绝/恢复，
-[证据](research/ossie-req-001/p1-daily-mcp-controls/verification.json)另记；新每日支持式
-无模型Agent演练仍待完成，未调用真实模型。CI已接每日SQL/plan与MCP命令，尚无
-远端运行证据。本入口不是一般calendar、窗口、历史规则/as-of、多事实、非递归关系
+[证据](research/ossie-req-001/p1-daily-mcp-controls/verification.json)另记；新每日支持式无模型演练已有[独立receipt](research/ossie-req-001/p1-daily-offline-controls/final-receipt.json)：
+五个新MCP进程分别检查all/X/缺日/规则变化和compile-only；每个loop独立上下文。
+scripted参数固定，答案从实际工具输出构造，完整成员另与手列oracle比较；预期答案
+不进上下文。compile-only记为not_executed，不称能力不支持；不允许据计划猜人数。
+共享Agent dispatcher比固定上游更严格，外层未知参数和非String在RPC前拒绝。
+
+模拟请求14次、实际工具调用9次、真实模型0次；原始事件/上下文/出站body留在
+ignored私有0700/0600目录，使用既有observation-archive-v1哈希容器及独立daily run
+契约，不能当原观察四场景验收。离线重放重新解析公共Responses投影、消费完整
+provider/tool/RPC顺序及引用、规则、范围、trace；不启动进程或调用模型。18种重新
+封存的伪记录仍拒绝，incomplete独立封存且不能完全重放；哈希容器不证明真实性。
+公开只给选择性receipt，不是原始transcript或wire。模拟证明接线和审计，不证明模型
+理解/自主选参或真实业务。每loop使用既有round/call/output/input-byte/时间限制，
+discovery仍有独立RPC读超时，不声称整个进程硬deadline/内存或费用上限。
+
+CI已接每日SQL/plan、MCP及五场景模拟/重放命令，尚无远端运行证据。本入口不是一般calendar、窗口、历史规则/as-of、多事实、非递归关系
 或完整P1。
 
 [已接受语义研究](research/ossie-req-001/multi-period-research/every-day/research.md)、

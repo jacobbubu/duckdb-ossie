@@ -1,0 +1,3 @@
+$ bun x --bun --no-install tsc --noEmit
+test/tooling/daily_agent.test.ts(80,12): error TS2339: Property 'members' does not exist on type '{ evidence_ids: string[]; limitations: string[]; status: string; }'.
+test/tooling/daily_agent.test.ts(108,12): error TS2339: Property 'qualification_rule' does not exist on type '{ evidence_ids: string[]; limitations: string[]; status: string; }'.
