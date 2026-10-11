@@ -25,7 +25,9 @@ New-profile MCP wiring and four isolated no-model preparations are now locally
 complete, with 43 observation checks/38 refusals, same-artifact legacy MCP
 regression and 78 Bun tests. The live entry, ordered offline replay and private archive/export are locally
 complete with simulated rehearsal; real observation Agent acceptance remains
-unrun. See [the live/replay guide](docs/agent-observation-run.md).
+unrun. [The prompt/budget/evidence review](docs/research/ossie-req-001/multi-period-research/agent-run-review.md)
+is complete; minimal prompt-contract alignment remains proposed and unimplemented.
+No real observation model run is authorized. See [the live/replay guide](docs/agent-observation-run.md).
 See [the preparation guide](docs/agent-observation-acceptance.md). This local
 package does not authorize live model requests or delivery.
 
@@ -1194,3 +1196,18 @@ remain unchanged; no new native, remote CI/tidy, push or release is claimed.
 Next: review the fixed four-scene prompts, token-only budget and evidence scope,
 then obtain explicit direction for any real model run. The current no-model
 instruction remains in force. General P1, pagination and delivery remain separate.
+
+## Observation prompt/budget/evidence review closure — 2026-10-11
+
+The authorized read-only review is complete against local 2485a7a. The four-scene
+business coverage remains useful, but concepts citations, unit/null conventions,
+precision and exact JSON requirements must be aligned with the prompt before
+live acceptance; two question-scope clarifications are proposed. No prompt or
+runtime code was changed. The current token-only budget remains a candidate,
+not proof of completion capacity or a monetary ceiling. Local private capture
+does not imply absent provider storage, and public export is a rewritten
+derivative requiring content review. Sources and simulated byte/count observations
+are linked in [the review](docs/research/ossie-req-001/multi-period-research/agent-run-review.md).
+Zero real model requests and no new MCP process/test run occurred. Next proposed
+package: minimal wording alignment and no-model regression, preserving old raw
+archives; any real four-scene run still requires explicit user direction.

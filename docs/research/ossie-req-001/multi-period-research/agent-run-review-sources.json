@@ -1,0 +1,110 @@
+{
+  "schema": "ossie-observation-agent-review-sources-v1",
+  "date": "2026-10-11",
+  "reviewed_head": "2485a7a",
+  "mode": "read-only-review",
+  "real_model_requests": 0,
+  "new_mcp_processes": 0,
+  "source_hashes": {
+    "scripts/observation_evidence.ts": "b4dd65d2b18cab259c8693c3388f6526cbbc415210ef9e4d23475261dbebf2ad",
+    "scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "scripts/observation_agent_contract.ts": "2e642fa0e8b7025fc509f6fd4ec519a916fa0589c3ed3b700064fadbb9c6eb78",
+    "scripts/observation_agent_run.ts": "2adc9e3db3c19a91eb00f12d3bafe3cd1f214f84275e93c5c615b085b5c0e9f9",
+    "scripts/observation_agent_archive.ts": "dee3890dc2351d71994b9bd17525ee327a92d143aa7f0ae36ff83ef3f0648571",
+    "scripts/observation_agent_replay.ts": "be43c6f495ccbdbb2914c820e10eab832fda23830da8daf8e8c3a0d805a9eb0d",
+    "examples/observation_server.sql": "3b2b04eb1c81d5b43ddad8cc43d858992055ba5d9b7343b66429ca4c98fdc1c4",
+    "docs/research/ossie-req-001/multi-period-research/observations.csv": "bfd38a0130028fe5829aa45e40dce8ac12e228cc2cc61e2f08f293493764f441"
+  },
+  "system": "你是有界数据助手。依据发现资源和实际执行结果回答，引用资源或执行响应ID。只回答当前已注册的指标和口径，不在客户端重新计算能力外指标替代。完整明细可用于推导已注册指标。编译不是执行。自行选择工具和参数，不擅自改变业务口径；能力不足时具体说明缺口，不给替代口径数值。最终JSON字段：status（answered或unsupported）、scope、definition、unit、observation_count、user_count、amount_value_count、amount_sum、mean_observation_amount、daily_user_counts、evidence_ids、limitations。数字为字符串，未请求或不支持的项为null；daily_user_counts为日期到人数的对象或null；evidence_ids和limitations为字符串数组。保留结果精度，展示舍入须注明。",
+  "system_sha256": "105fcc974ef66eff1ca474415e93f2840b60c42b6312abeae442ab2de1085cf1",
+  "budget": {
+    "per_scene": {
+      "rounds": 8,
+      "calls": 12,
+      "milliseconds": 120000,
+      "outputTokens": 2048,
+      "inputBytes": 131072
+    },
+    "scenes": 4,
+    "maximum_model_requests": 32,
+    "maximum_tool_calls": 48,
+    "maximum_requested_output_tokens": 65536,
+    "maximum_input_bytes_per_request": 131072,
+    "monetary_ceiling": "unknown; not enforced",
+    "input_token_ceiling": "not enforced"
+  },
+  "scenes": [
+    {
+      "id": "baseline",
+      "question": "按当前正式定义，2026年1月31日至2月1日（含首尾、所有产品）的合格观察有多少条、涉及多少不同用户？金额非空有多少条、总额和每条非空观察平均金额是多少？说明单位和分母并引用依据。",
+      "question_sha256": "cd4a74b857bc83f216e6a23a1afe0619e7c9264429580aaecca904b2b5db05dd",
+      "threshold": 10,
+      "evidence_path": "docs/research/ossie-req-001/observation-agent-entry-controls/simulated/baseline/events.jsonl",
+      "evidence_sha256": "037ea6aceae182f86e748ab4bf8d4fcde88f3422ed700fa4e77437fae7ce759b",
+      "simulated_request_bytes": [
+        28133,
+        6930
+      ],
+      "simulated_requests": 2,
+      "simulated_tool_calls": 1
+    },
+    {
+      "id": "changed-rule",
+      "question": "按当前正式定义，2026年1月31日至2月1日（含首尾、所有产品）的合格观察有多少条、涉及多少不同用户？金额非空有多少条、总额和每条非空观察平均金额是多少？说明单位和分母并引用依据。",
+      "question_sha256": "cd4a74b857bc83f216e6a23a1afe0619e7c9264429580aaecca904b2b5db05dd",
+      "threshold": 20,
+      "evidence_path": "docs/research/ossie-req-001/observation-agent-entry-controls/simulated/changed-rule/events.jsonl",
+      "evidence_sha256": "ff89b93282e105a2cbc367cca03015b2f858d33410624f2923cc95b53bae162c",
+      "simulated_request_bytes": [
+        28133,
+        6952
+      ],
+      "simulated_requests": 2,
+      "simulated_tool_calls": 1
+    },
+    {
+      "id": "interval-users",
+      "question": "按当前正式定义，分别给出2026年1月31日和2月1日每一天的不同用户数，以及整个区间（含首尾、所有产品）的不同用户数；解释每日人数相加是否代表区间人数，并引用依据。",
+      "question_sha256": "29c58df52ffc9e4858b5c4374f85f7e6b7e63c573e6b4a73fdb017a0806ff847",
+      "threshold": 10,
+      "evidence_path": "docs/research/ossie-req-001/observation-agent-entry-controls/simulated/interval-users/events.jsonl",
+      "evidence_sha256": "d38d434f473db9989cb5deed94810b1843ba0cd1c861cae5b682692df6cadf02",
+      "simulated_request_bytes": [
+        28109,
+        9008
+      ],
+      "simulated_requests": 2,
+      "simulated_tool_calls": 2
+    },
+    {
+      "id": "unsupported-every-day",
+      "question": "2026年1月31日至2月1日（含首尾、所有产品）这个区间内每天都合格的用户有多少？请按每天都合格的口径回答并给出依据。",
+      "question_sha256": "c995787266136939da6304acffb57dd0cbbd4e016d7c2083253afc1120a8cebe",
+      "threshold": 10,
+      "evidence_path": "docs/research/ossie-req-001/observation-agent-entry-controls/simulated/unsupported-every-day/events.jsonl",
+      "evidence_sha256": "0ed7c442a2c896720c4f76310be0f7e7f313e9d4a224f64e7866f689557a33a0",
+      "simulated_request_bytes": [
+        28040
+      ],
+      "simulated_requests": 1,
+      "simulated_tool_calls": 0
+    }
+  ],
+  "measurements": "sanitized simulated derivative; byte lengths are not live or exact-original measurements",
+  "official_references": [
+    "https://developers.openai.com/api/reference/python/resources/responses/methods/create",
+    "https://developers.openai.com/api/docs/guides/conversation-state"
+  ],
+  "retained_review_failures": [
+    "Initial read-only statistic used events.json; actual archive is events.jsonl. ENOENT corrected without writing source evidence.",
+    "Initial documentation patch context did not match; patch retried with actual text."
+  ],
+  "advisor": {
+    "requested": "Astra/high; reused review_agent_acceptance",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown"
+  },
+  "scope": "Review only; candidate revisions not implemented; no provider configuration read or real experiment authorization"
+}
