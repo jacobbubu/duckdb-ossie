@@ -21,8 +21,11 @@ in [the profile contract](docs/population-profile.md), and an opt-in
 [daily-observation profile](docs/population-observation.md) with typed User/date/product
 identity and distinct User counts. Opt-in [declared relations](docs/population-relations.md)
 and [independent two-fact metrics, cohorts and observation windows](docs/population-facts.md)
-have dedicated interfaces; the latter SQL, independent MCP and scripted Agent/replay
-interfaces are locally verified. Full P1 acceptance is still pending.
+have dedicated interfaces, as does the [every-day User set](docs/population-daily-users.md).
+Their bounded SQL, independent MCP and scripted Agent/replay interfaces are locally
+verified on macOS ARM64 and Ubuntu ARM64. Daily three-valued states and historical
+relationship validity still await business decisions and implementation; full P1
+acceptance is pending. These local P1 results do not imply remote CI has run.
 See the [bounded implementation record](docs/ossie-execution-research.md)
 and [current delivery status](ossie-duckdb-plan.md#current-delivery-checkpoint--2026-10-11)
 for accepted scopes, evidence and remaining verification.

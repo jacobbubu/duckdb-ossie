@@ -109,6 +109,32 @@ TS2339测试类型错误原件保留，未改oracle。CI新增五场景模拟命
 
 ## Current delivery checkpoint — 2026-10-11
 
+当前完整P1 goal的最新本地提交为805df8c，当前实现五个profile（原单表、安全
+双表、每日观察、声明关系、两事实）。每日集合、有限非递归关系/约束、两事实
+指标/人群和LAG/有界ROWS窗口的SQL/compile/发现、MCP及无模型演练均已本地
+验证。完整P1仍缺三值每日状态、历史有效期及其全接口和最后统一验收，不称完成。
+
+[macOS功能/Linux tidy](docs/research/ossie-req-001/p1-tidy-controls/review.md)
+与[精确ae0d0f4的Linux功能](docs/research/ossie-req-001/p1-linux-functional/review.md)
+分别绑定产物、源码和失败/恢复原件。macOS与Ubuntu ARM64均通过六native、
+27SQL/1026、138Bun/721、P0、11接口及四无模型；Linux15TU tidy通过。
+当前P1未推提交没有远端CI结论。远端最后已验证的观察增量与下方历史阶段分开。
+本goal只授权本地工作/提交，不授权模型、推送、main合并、部署或发布。
+
+### 剩余工作与建议顺序
+
+下一必需路径：答复[两项时间业务口径](docs/research/ossie-req-001/p1-time-carrier-research/research.md)
+后核对固定schema、实现三值每日状态/相邻日变化及有限历史有效期；再完成
+对应原生/SQL/对象/compile/发现/MCP/无模型独立对照、旧行为回归及质量检查，
+最后按原第5节全部五条审计与本地交付/待推历史检查。没有删减原范围。
+分页仍为用户要求先调研的独立未来项；一般递归推理、真实模型和远端交付
+不混入本goal。等待决策时先完成已有实现的证据/当前文档一致性审计。
+
+## Historical pre-P1 delivery checkpoint — 2026-10-11
+
+以下保留goal启动前的当时交付与建议。这里的“当前”“未来”“尚未启动”
+均属于原阶段，不覆盖上方完整P1状态；历史证据原件不改。
+
 用户授权的分支推送与新tip验证已完成：origin/codex/ossie-execution为
 收口文档及本轮剩余梳理的文档tip；最后完整核验的代码head是e3a6f5f，
 [run38122315959](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38122315959)
@@ -137,7 +163,7 @@ DuckDB1.5.6，不宣称完整Ossie、一般推理或真实业务数据正确。
 不替代本当前状态。所有问题继续沿[OSSIE-REQ-001](docs/ossie-execution-research.md)，
 这里是现计划的交付收口，不创建第二backlog。
 
-### 剩余工作与建议顺序
+### Historical remaining-work recommendations
 
 1. **已完成的交付准备**：观察MCP预检与四场景脚本模拟/实际MCP/
    重放/失败封存已接入两种产物任务。本地新增命令及98 Bun/403 expects
@@ -1715,3 +1741,25 @@ Advisor反证，实际后端/effort/usage/billing未知。已将待答两问题�
 新增研究脚本format/typecheck/architecture通过，C++/Linux产物源码未再改变。
 当前必要下一步仍为两业务决策后的schema/时间实施，未将研究完成当goal完成。
 本轮只做本地提交和尾部有界隐私预检，不推送。
+
+完整scope审计恢复checkpoint（805df8c，干净）：上一轮Linux/时间研究/本地提交
+是progress。本轮按不可变原需求第5节五条逐项核对当前声明、实际实现与最新
+mac/Linux原件绑定；不以历史阶段页或本地通过替代全P1完成。发现当前交付章节
+仍停留goal前，relation使用文档把已完成多事实/窗口写成未来项目工作，先修正
+当前入口/历史标识，保留原阶段证据。待答两项业务口径仍是同一依赖阻碍，
+其候选SQL不能当native验收；本轮不实施依赖语义，无模型或推送。
+
+完整scope当前状态审计完成：[五条逐项报告](docs/research/ossie-req-001/p1-scope-audit/report.json)
+核对20固定来源/原需求、32当前实现源hash、两实际产物和262Linux报告绑定。
+mac receipt还绑定一个当时兼容文档：其ae0d0f4历史blob校验通过，当前追加
+新证据后hash不同，原receipt不改；首轮误将历史文档要求与当前字节相同的
+审计失败保存，实施源码没有变化。原五条中跨期状态/历史缺失，函数与全接口
+也因该缺失未完成；其他有限工作包有本地证据，但不取代最终全goal审计。
+当前交付入口已重写，goal前章节明确标为历史，README/关系/P0入口范围一致。
+
+阻碍复核：每日状态与有限历史关系的关键业务口径持续多轮待答，前述原生/
+接口、质量、历史隐私、两平台回归及本轮独立证据审计已全部推进。自动goal
+续行不是人类业务答复，预选项不能采用。下一实施及最终验收都依赖该答复；
+剩余分页/一般图/发布等是独立未来或未授权项，不能用作替代进展。本轮本地
+提交并补其尾部有界隐私检查后，没有剩余必要且不依赖答复的动作；需将goal
+如实标为blocked等待决策，完整目标和所有未完成项保持，回答后继续。

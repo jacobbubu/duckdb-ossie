@@ -1,6 +1,6 @@
 # 声明关系的完整查询
 
-显式加载 `observation-relation-program-v1` 后，可以查询有限非递归关系的完整 links。根身份是 `(User,date,product)`，目标是同一映射 User。这里的关系集合由声明规则决定，不额外套用旧合格观察条件，也没有请求日期/产品筛选。多事实、任意实体图、状态、历史有效期及窗口继续在 P1 后续工作中。
+显式加载 `observation-relation-program-v1` 后，可以查询有限非递归关系的完整 links。根身份是 `(User,date,product)`，目标是同一映射 User。这里的关系集合由声明规则决定，不额外套用旧合格观察条件，也没有请求日期/产品筛选。此 profile 不提供多事实、窗口或任意实体图；项目另有已实现的[两事实与观察行窗口 profile](population-facts.md)。每日三值状态与历史有效期仍待口径确认及实现，完整 P1 未完成。
 
 ```sql
 CALL ossie_bundle_load('test/fixtures/population-relation-program/bundle.json');

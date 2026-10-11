@@ -1,0 +1,97 @@
+{
+  "schema": "ossie-p1-scope-audit-v1",
+  "baseline_commit": "805df8c0e8dd282160c06e679ba809c787859cd2",
+  "kind": "interim requirement-by-requirement audit; not final P1 acceptance",
+  "whole_goal_proven": false,
+  "fixed_spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "immutable_spec_files_verified": 20,
+  "original_requirement_sha256": "6c41eeaafba2dc8a28eb31dc99bb8e2d06e8a2b0e4826994f01c90ed82b1780b",
+  "current_implementation_source_bindings": 32,
+  "historical_document_bindings": [
+    {
+      "path": "docs/ossie-sql-compatibility.md",
+      "verified_commit": "ae0d0f4",
+      "historical_sha256": "a9eb0d541885b66c96d326e58e665a30c943766ab2398688492eb98c7c3e775c",
+      "current_sha256": "08cdc16771707092393cc27f51f5f7e44121451e326a667fcc429bea4caf0d66",
+      "change": "appended Linux and temporal research evidence; original receipt preserved"
+    }
+  ],
+  "mac_artifact_sha256": "66ec8a7ca09cc209de166026bd25efda38ca8badcb038a1e1901e5533ce67b4c",
+  "linux_artifact_sha256": "a5bef33968b18f60c89a396a8c356ce6c2c9cf25573d2e8e4efd18723e4d880e",
+  "linux_reports_hash_verified": 262,
+  "current_source_refs": {
+    "docs/population-facts.md": "43d8eb2680e270071959d36f6c544f0b00aad1d39a6e7a7e8d9c026b6820cab0",
+    "scripts/verify_fact_objects_artifact.ts": "464217addf92313fe259f5752f1992074c4d91f71f30fc62220cda761250d2c4",
+    "scripts/verify_fact_mcp.ts": "eeb1b286ac9dc3e54ea19e5e15f63be0d72ae584ada1cc8fcc9e0eb67062b55e",
+    "scripts/verify_fact_agent_offline.ts": "ee060e8ffe06bbdcb6eecd8b6e63ab474dbc0ec07e42c859ed8fb4e95e7c80cb",
+    "docs/population-daily-users.md": "b192b85f20b3089c54fd291e7c0800c39c576fbb5e75a63e17e576aca542f996",
+    "scripts/verify_daily_users_artifact.ts": "830d9ac7125395a2b2f908b76082c1e4650148a9d14f5cc3b911196b9336d80e",
+    "scripts/verify_daily_agent_offline.ts": "d764fcd2bf7e73781282a0145297f40368cfe2e6a27b80ba2039b8d6b73862af",
+    "docs/population-relations.md": "1c5916c0e9271fc924d9e5a1bd444f22a93129e4229563f41470225a05148a53",
+    "scripts/verify_relation_objects_artifact.ts": "27cb510c16679916839cfbebab20db490821adc5a4f63856b3f8db29e4897e76",
+    "scripts/verify_relation_agent_offline.ts": "7fe5e6b4ece0e9f083b57078093a8ed14444d31210e0ca3b3c75854255f1d5bf",
+    "docs/ossie-sql-compatibility.md": "08cdc16771707092393cc27f51f5f7e44121451e326a667fcc429bea4caf0d66",
+    "test/sql/ossie_sql_2026.test": "d1eb9638e8f85edec4ebfe7542c6cfdbf1a920737b5ab3ea07f3fc8bf263a10e",
+    "src/population/population.cpp": "4149084983d52fee92a16d413c54a9d6f1ec637b1063f64a3e1df93b27453866",
+    "src/population/fact_program.cpp": "8fb298370aea822ac2b0a8e757ea1bd5ba1d8f947a966735e977bc5165bdd2ea",
+    "src/population/relation_program.cpp": "901b2a36370f6ba2563622a34aea53206e77349b8b86db281af936689d680591",
+    "docs/research/ossie-req-001/p1-time-carrier-research/oracle.json": "2c8c4edea120b65487b442e613cf4e2d13571a6f5f45cdcf23f8a213724fb9aa"
+  },
+  "evidence_receipts": {
+    "docs/research/ossie-req-001/p1-tidy-controls/receipt.json": "c0b79353552329c6ca4527f88571e5980194d227f5f3f334ba88d80f97d6573d",
+    "docs/research/ossie-req-001/p1-linux-functional/receipt.json": "cfc804588f293556adeca9d55b1cbb67c37a287a451eaf467257d70ff99853d3"
+  },
+  "requirements": [
+    {
+      "id": "P1.1",
+      "original_requirement": "补齐不同粒度分别聚合后再组合的指标；验证多事实表和复杂人群筛选。",
+      "current_result": "Bounded two-fact grain-preserving aggregation, same-unit combination, explicit common User denominator and ordered TRUE set cohorts locally proven",
+      "status": "bounded local work package verified; final integrated audit remains"
+    },
+    {
+      "id": "P1.2",
+      "original_requirement": "扩展两个月及同一用户跨日期数据，验证有效性状态变化、历史关系有效期和时间窗口。",
+      "current_result": "Cross-month same User, every-natural-day TRUE witness set and observed-row windows locally proven; daily three-valued state/change and historical validity remain missing",
+      "status": "incomplete"
+    },
+    {
+      "id": "P1.3",
+      "original_requirement": "扩展声明明确、可验证的非递归派生关系和约束检查。",
+      "current_result": "Typed same User positive nonrecursive relation DAG and full-population guarded constraints locally proven within explicit profile limits",
+      "status": "bounded local work package verified; final integrated audit remains"
+    },
+    {
+      "id": "P1.4",
+      "original_requirement": "按业务需求扩大 OSSIE_SQL_2026 函数及窗口支持，持续公布兼容矩阵。",
+      "current_result": "Required implemented-use-case SUM/COUNT/arithmetic/set and LAG/bounded ROWS subset locally proven; compatibility matrix states limits; temporal use-case functions remain dependent on missing implementation",
+      "status": "incomplete"
+    },
+    {
+      "id": "P1.5",
+      "original_requirement": "完整对象查询接口、解释接口与 MCP 集成按实际调用契约补齐。",
+      "current_result": "Implemented profiles have dedicated complete objects/compile/discovery and MCP/offline evidence; missing temporal capabilities have no accepted interfaces or execution evidence",
+      "status": "incomplete"
+    }
+  ],
+  "preserved_failures": [
+    "First Linux driver omitted EXCLUDE_FROM_ALL native targets: exit127; final same-source native build/run passed",
+    "Historical tidy, macro/window binding, path/export and resealed forgery failures remain archived"
+  ],
+  "remaining_necessary": "Business decisions -> fixed-schema temporal contract -> native/SQL/interfaces/MCP/offline implementation -> old-profile and quality regressions -> complete original-five-clause audit and local delivery",
+  "next_authorized_action": "Business-independent evidence/document consistency fixes; do not implement unresolved daily/history semantics",
+  "real_model_requests_in_goal": 0,
+  "pushed_in_goal": false,
+  "remote_ci_for_outgoing_p1": "not run",
+  "bounded_history_audit": {
+    "head": "805df8c0e8dd282160c06e679ba809c787859cd2",
+    "changed_blobs": 17,
+    "findings": 0,
+    "universal_secret_certification": false
+  },
+  "limitations": [
+    "Evidence covers synthetic declared scopes and boundaries, not unrestricted OSSIE or production business truth",
+    "Hashes prove source/byte correspondence, not execution authenticity",
+    "Ordinary temporal SQL research and schema acceptance cannot prove missing native semantics",
+    "This report is manually interpreted coverage plus machine hash/outcome checks, not an automated correctness proof"
+  ]
+}

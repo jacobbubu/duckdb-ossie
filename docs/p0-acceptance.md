@@ -92,7 +92,11 @@ bun -e 'import {verifyAcceptance} from "./scripts/verify_p0_acceptance.ts"; cons
 
 三个真实最小用例的数值/规则/范围/引用核对通过，用户接受委托Lead的判断；[裁定](research/ossie-req-001/agent-live-corrected-controls/acceptance-decision.json)独立记录，不覆盖历史raw/pending字段。原始475行仅是合成演示数据，不能证明累计YTD一致性或跨日期重复实体语义。下一[研究包](research/ossie-req-001/multi-period-research/research.md)仅研究身份与观察粒度，当前P0生产支持/拒绝边界保持不变。
 
-## 后续观察增量与当前交付状态（2026-10-11）
+## P1 前的观察增量与交付状态（2026-10-11）
+
+本节保留完整P1 goal启动前的交付阶段及当时计数。当前P1进展与仍缺的状态/
+历史实现见[现计划](../ossie-duckdb-plan.md#current-delivery-checkpoint--2026-10-11)；
+旧远端CI结论不覆盖后续未推P1提交，旧限定真实Agent验收也不授权新模型请求。
 
 上述P0矩阵/报告仍属于两个旧profile及各自当时的产物，不改写历史原件。
 后续研究已实现第三个opt-in daily-observation profile，新增User/date/product
