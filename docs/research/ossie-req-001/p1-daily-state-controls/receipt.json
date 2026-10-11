@@ -1,0 +1,60 @@
+{
+  "scope": "Native daily states SQL/plan/discovery work package; full P1 incomplete",
+  "baseline_commit": "3f34f2a21048d5c30feda5f60f2bb2cfc7658bed",
+  "artifact_sha256": "352e96f2f0a3dca9704e2cbdac1d6f1f2a83276dd6991fdc5c6d50ae530032bc",
+  "source_sha256": {
+    "src/population/population.cpp": "691d732aded99532f07c6216735bd7bdd658d1e5374e4cf80fc06a275da99412",
+    "src/include/ossie/population_testing.hpp": "a8bac0da114c3637169fa2e84c41335005fb508e30af14bb44a15ad79a41a9a2",
+    "test/cpp/population_capture_test.cpp": "3801912b0481ab4ef4d8eedc29b27c42cc0454ba829369819b8c4213bbec86af",
+    "test/sql/ossie_population_daily_states.test": "11cb0e586fb4ccf0fb687d85027cfbe8982dfe239aea46402991262c062bd6f6",
+    "test/sql/ossie_function_metadata.test": "2a8257c66cbcba05dce8c2a229dc6f2f73ed86e59526940563fb32de80ef6027",
+    "scripts/verify_daily_states_artifact.ts": "86c1d3a7cbbc18b0b72d281e3680921c484fb4b325df87a05522510a3e3bcab4",
+    ".github/workflows/MainDistributionPipeline.yml": "b24a9613735d90913177b803ef57b027f38f1d0d7b2d60fdc7e41a2d8581893b"
+  },
+  "private_manifest_sha256": "19df7a14f2890e4abfc13b21845ce9631d6b9f127c78892c119aaa6a3549b413",
+  "native_checks": {
+    "state": 19,
+    "grain": 42,
+    "capture": 356,
+    "relation": 55,
+    "fact_capture": 260,
+    "fact_program": 90
+  },
+  "sql": {
+    "cases": 28,
+    "assertions": 1049
+  },
+  "bun": {
+    "tests": 138,
+    "expects": 721
+  },
+  "quality": {
+    "types": true,
+    "typescript_format": true,
+    "architecture": true,
+    "cpp_format11": true,
+    "diff_check": true
+  },
+  "legacy_same_artifact": {
+    "p0": "all scoped A1-A8 passed",
+    "artifact_stock_mcp_verifiers": 11,
+    "offline_suites": 4,
+    "real_model_requests": 0
+  },
+  "failures_retained": [
+    "SQL runner not relinked",
+    "JSON extension dependency in test removed",
+    "threshold20 FALSE+NULL expected FALSE corrected to UNKNOWN",
+    "test-edit helper quoting error; patch used",
+    "P0 driver omitted stock CLI PATH",
+    "offline driver outside required private archive rejected; retried within ignored archive"
+  ],
+  "remaining": [
+    "state MCP/decoder/offline",
+    "historical relation implementation and all interfaces",
+    "new code Linux/tidy",
+    "whole P1 same artifact acceptance and bounded outgoing history audit"
+  ],
+  "push": false,
+  "goal_complete": false
+}

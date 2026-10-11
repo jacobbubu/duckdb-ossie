@@ -282,6 +282,58 @@ void DailyCancel(Connection &connection, const string &sql, PopulationDailyCheck
 	Check(result && result->HasError() && result->GetErrorObject().Type() == ExceptionType::INTERRUPT,
 	      "daily query cancellation preserves native interrupt");
 }
+class DailyStateCounter : public PopulationDailyStateObserver {
+public:
+	void Observe(PopulationDailyStateCheckpoint) override {
+		count++;
+	}
+	idx_t count = 0;
+};
+class DailyStateObserver : public PopulationDailyStateObserver {
+public:
+	DailyStateObserver(Gate &gate, PopulationDailyStateCheckpoint checkpoint) : gate(gate), checkpoint(checkpoint) {
+	}
+	void Observe(PopulationDailyStateCheckpoint reached) override {
+		if (reached == checkpoint) {
+			gate.Block();
+		}
+	}
+	Gate &gate;
+	PopulationDailyStateCheckpoint checkpoint;
+};
+void DailyStateCancel(Connection &connection, const string &sql, PopulationDailyStateCheckpoint checkpoint) {
+	Gate gate;
+	unique_ptr<MaterializedQueryResult> result;
+	connection.context->registered_state->Insert(PopulationDailyStateObserver::KEY,
+	                                             make_shared_ptr<DailyStateObserver>(gate, checkpoint));
+	std::exception_ptr failure;
+	std::thread worker([&]() {
+		try {
+			result = connection.Query(sql);
+		} catch (...) {
+			failure = std::current_exception();
+		}
+	});
+	try {
+		gate.Wait();
+		connection.Interrupt();
+		gate.Release();
+		worker.join();
+	} catch (...) {
+		gate.Release();
+		if (worker.joinable()) {
+			worker.join();
+		}
+		connection.context->registered_state->Remove(PopulationDailyStateObserver::KEY);
+		throw;
+	}
+	connection.context->registered_state->Remove(PopulationDailyStateObserver::KEY);
+	if (failure) {
+		std::rethrow_exception(failure);
+	}
+	Check(result && result->HasError() && result->GetErrorObject().Type() == ExceptionType::INTERRUPT,
+	      "daily state cancellation preserves native interrupt");
+}
 class RelationCounter : public PopulationRelationObserver {
 public:
 	void Observe(PopulationRelationCheckpoint) override {
@@ -379,6 +431,31 @@ void ObservationControls(const string &root, int threads) {
 		DailyCancel(reader, daily, checkpoint);
 		Check(Scalar(reader, daily) == daily_before, "daily native cancellation retains complete bundle and recovers");
 	}
+	const string states = "SELECT result_json FROM ossie_daily_states_json('QualifiedObservation', "
+	                      "'{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"},"
+	                      "\"user_domain\":\"captured_users\",\"transitions\":\"within_request_days\"}')";
+	auto states_before = Scalar(reader, states);
+	Check(states_before.find("\"user_count\":\"4\"") != string::npos &&
+	          states_before.find("\"state_count\":\"8\"") != string::npos,
+	      "daily states use entire captured User domain");
+	const string states_plan_sql = StringUtil::Replace("SELECT plan_json" + states.substr(states.find(" FROM ")),
+	                                                   "ossie_daily_states_json", "ossie_daily_states_compile");
+	auto states_counter = make_shared_ptr<DailyStateCounter>();
+	reader.context->registered_state->Insert(PopulationDailyStateObserver::KEY, states_counter);
+	auto states_plan_before = Scalar(reader, states_plan_sql);
+	Check(states_counter->count == 0, "daily state compile does not enter execution checkpoints");
+	Check(Scalar(reader, states) == states_before && states_counter->count == 4,
+	      "daily state execution reaches four cancellation checkpoints");
+	reader.context->registered_state->Remove(PopulationDailyStateObserver::KEY);
+	auto states_prepared = reader.Prepare(states);
+	auto states_plan_prepared = reader.Prepare(states_plan_sql);
+	Check(!states_prepared->HasError() && !states_plan_prepared->HasError(), "prepared states and plan frozen bind");
+	for (auto checkpoint :
+	     {PopulationDailyStateCheckpoint::BEFORE_EXECUTE, PopulationDailyStateCheckpoint::AFTER_DOMAIN,
+	      PopulationDailyStateCheckpoint::BEFORE_EXPAND, PopulationDailyStateCheckpoint::BEFORE_FINISH}) {
+		DailyStateCancel(reader, states, checkpoint);
+		Check(Scalar(reader, states) == states_before, "daily state cancellation preserves snapshot and recovers");
+	}
 
 	Query(writer, "UPDATE observations SET amount_usd=11 WHERE observation_id='o4'");
 	{
@@ -401,6 +478,14 @@ void ObservationControls(const string &root, int threads) {
 	Check(!plan_old->HasError() && plan_old->Fetch()->GetValue(0, 0).ToString() == plan_before,
 	      "prepared daily plan retains old rule and all trace across reload");
 	Check(Scalar(reader, plan_sql) != plan_before, "fresh daily plan binds new rule and trace");
+	auto states_old = states_prepared->Execute();
+	Check(!states_old->HasError() && states_old->Fetch()->GetValue(0, 0).ToString() == states_before,
+	      "prepared states retain old complete rule and domain across reload");
+	auto states_plan_old = states_plan_prepared->Execute();
+	Check(!states_plan_old->HasError() && states_plan_old->Fetch()->GetValue(0, 0).ToString() == states_plan_before,
+	      "prepared state plan retains old snapshot across reload");
+	Check(Scalar(reader, states) != states_before && Scalar(reader, states_plan_sql) != states_plan_before,
+	      "fresh states and plan bind newly published rule and snapshot");
 
 	Check(Scalar(reader, snapshot) != before, "observation atomic publication changes snapshot");
 	auto original = prepared->Execute();

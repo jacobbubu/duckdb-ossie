@@ -3,7 +3,9 @@
 当前完整P1 goal状态：每日集合、非递归关系/约束、多事实/复杂人群及有限观察行
 窗口的本地实现和全接口已通过，最新[Linux功能证据](research/ossie-req-001/p1-linux-functional/review.md)
 与[macOS功能/Linux tidy证据](research/ossie-req-001/p1-tidy-controls/review.md)分别保留。
-每日三值状态与历史关系仍待[候选口径决策及实现](research/ossie-req-001/p1-time-carrier-research/research.md)，
+每日三值状态与历史关系的[业务口径已接受](research/ossie-req-001/p1-time-accepted/acceptance.json)。
+[每日状态 SQL/解释/发现](population-daily-states.md)已本地实施，新增状态 MCP/无模型
+及历史关系仍需完成；原候选研究保留历史待答记录，
 整个P1未完成。当前未推提交没有远端CI结论；以下远端结果属于此前已推阶段。
 
 当前交付更新（2026-10-11）：开发分支e3a6f5f的跨平台/观察验收/无模型
@@ -1786,3 +1788,10 @@ OSSIE-REQ-001 完整scope审计checkpoint：精确805df8c干净，沿原需求�
 历史歧义，原五条全部保留。状态与历史仍未实现，相应函数/全接口无法最终
 验收。两业务问题连续多轮未答，其他必要独立工作已收口，goal需blocked等待
 该决策；并非完成、用户暂停或授权推送。没有读取.env_test或新模型请求。
+
+### 时间业务口径获接受，开始实施（2026-10-12）
+
+用户在具体例子及Lead建议后明确“同意你的选择”，完整接受每日三值/全捕获
+User域/请求内变化与有限历史/record_id/同目标来源保留、异目标全批冲突拒绝。
+原决策阻碍解除。3f34f2a干净恢复，先记录接受与固定schema核对，再状态原生/SQL；
+旧行为保护，历史及全接口随后。沿OSSIE-REQ-001与原计划，不新增backlog或推送。

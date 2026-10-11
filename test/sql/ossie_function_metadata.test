@@ -33,7 +33,7 @@ query II
 SELECT count(*), count(DISTINCT function_name) FROM duckdb_functions()
 WHERE starts_with(function_name, 'ossie_');
 ----
-32	30
+35	33
 
 # Each ossie_query overload resolves to its own description rather than falling through to none.
 query II

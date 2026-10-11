@@ -1,0 +1,91 @@
+{
+  "passed": true,
+  "scope": "Daily states native SQL/plan/discovery; MCP/offline and history still required",
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "352e96f2f0a3dca9704e2cbdac1d6f1f2a83276dd6991fdc5c6d50ae530032bc",
+  "checks": [
+    "eight truth subsets, all nine adjacent status pairs and unchanged, leap/month boundary; complete independent rows",
+    "raw/case/NUL/UTF8 identity; outside-date/product/BC/wide-date Users retained; single-day no comparisons",
+    "compile full BOOLEAN projection without qualifying WHERE; actual shared bindings and nonexecuting discovery",
+    "old daily behavior unchanged; strict original request keys and exact16KiB boundary",
+    "new frozen threshold20 changes semantic rows; caller count macro cannot alter private domain",
+    "empty domain, complete10000 unique Users, two-day9999 and10002 combined budget including unchanged comparisons",
+    "exact1MiB complete response including scope metadata and+1 refusal; eligible object count does not guarantee encoding fits"
+  ],
+  "refusals": [
+    {
+      "label": "missing domain",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "other domain",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "label": "external predecessor",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "label": "unknown key",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "duplicate key",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "bad date",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "reverse date",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "infinity",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "empty subset",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "duplicate product",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "too many days",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "original request 16KiB+1",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "old daily interface rejects new shape",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "combined object gate before scan/allocation",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "same gate at compile",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "3334 Users two days total10002",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "complete JSON1MiB+1 including request escaping",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    }
+  ],
+  "verifier_sha256": "86c1d3a7cbbc18b0b72d281e3680921c484fb4b325df87a05522510a3e3bcab4",
+  "real_model_requests": 0
+}

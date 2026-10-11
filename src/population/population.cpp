@@ -1196,6 +1196,16 @@ void ObserveDaily(ClientContext &context, PopulationDailyCheckpoint checkpoint) 
 	}
 }
 
+void ObserveDailyState(ClientContext &context, PopulationDailyStateCheckpoint checkpoint) {
+	auto observer = context.registered_state->Get<PopulationDailyStateObserver>(PopulationDailyStateObserver::KEY);
+	if (observer) {
+		observer->Observe(checkpoint);
+	}
+	if (context.IsInterrupted()) {
+		throw InterruptException();
+	}
+}
+
 void ObserveRelation(ClientContext &context, PopulationRelationCheckpoint checkpoint) {
 	auto observer = context.registered_state->Get<PopulationRelationObserver>(PopulationRelationObserver::KEY);
 	if (observer) {
@@ -2929,7 +2939,7 @@ date_t DailyDate(const string &text, const string &name) {
 	return result;
 }
 
-DailyRequest ParseDailyRequest(const string &bytes) {
+DailyRequest ParseDailyRequest(const string &bytes, bool states = false) {
 	DailyBudget("request_json_utf8_bytes", bytes.size(), DAILY_REQUEST_BYTES);
 	auto doc = yyjson_read(bytes.data(), bytes.size(), 0);
 	if (!doc) {
@@ -2937,7 +2947,15 @@ DailyRequest ParseDailyRequest(const string &bytes) {
 	}
 	std::unique_ptr<yyjson_doc, decltype(&yyjson_doc_free)> owner(doc, yyjson_doc_free);
 	auto root = yyjson_doc_get_root(doc);
-	DailyKeys(root, {"start_date", "end_date", "products"});
+	if (states) {
+		DailyKeys(root, {"start_date", "end_date", "products", "user_domain", "transitions"});
+		if (DailyString(yyjson_obj_get(root, "user_domain"), "user_domain") != "captured_users" ||
+		    DailyString(yyjson_obj_get(root, "transitions"), "transitions") != "within_request_days") {
+			Fail("daily_states", "capability", "captured_users and within_request_days required");
+		}
+	} else {
+		DailyKeys(root, {"start_date", "end_date", "products"});
+	}
 	DailyRequest result;
 	result.start_text = DailyString(yyjson_obj_get(root, "start_date"), "start_date");
 	result.end_text = DailyString(yyjson_obj_get(root, "end_date"), "end_date");
@@ -3198,6 +3216,8 @@ struct PopulationBind : TableFunctionData {
 	bool objects = false;
 	bool daily = false;
 	bool daily_compile = false;
+	bool daily_states = false;
+	bool daily_state_discovery = false;
 	bool fact_query = false;
 	bool fact_compile = false;
 	bool fact_discovery = false;
@@ -3486,6 +3506,8 @@ unique_ptr<FunctionData> DailyBind(ClientContext &context, TableFunctionBindInpu
                                    vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
 	result->bundle = Current(context);
+	result->daily_states = input.table_function.name == "ossie_daily_states_json" ||
+	                       input.table_function.name == "ossie_daily_states_compile";
 	if (input.inputs[0].IsNull() || input.inputs[1].IsNull()) {
 		Fail("daily_user_set", "arguments", "concept and request_json required");
 	}
@@ -3494,11 +3516,15 @@ unique_ptr<FunctionData> DailyBind(ClientContext &context, TableFunctionBindInpu
 	if (bundle.profile != OBSERVATION_PROFILE || result->concept != bundle.derived) {
 		Fail("daily_user_set", "capability", "current registered qualified daily observation concept required");
 	}
-	result->daily_request = ParseDailyRequest(input.inputs[1].GetValue<string>());
+	result->daily_request = ParseDailyRequest(input.inputs[1].GetValue<string>(), result->daily_states);
 	result->daily = true;
-	result->daily_compile = input.table_function.name == "ossie_daily_users_compile";
+	result->daily_compile = input.table_function.name == "ossie_daily_users_compile" ||
+	                        input.table_function.name == "ossie_daily_states_compile";
+	if (result->daily_states && bundle.user_count > MAX_ROWS / (2 * result->daily_request.days - 1)) {
+		Fail("daily_states.combined_objects", "resource", "User*(2*days-1) exceeds 10000 before allocation");
+	}
 	lock_guard<mutex> guard(bundle.query_lock);
-	result->statement = QueryAST(bundle, result->concept, {}, {}, {}, true);
+	result->statement = QueryAST(bundle, result->daily_states ? bundle.root : result->concept, {}, {}, {}, true);
 	auto &select = result->statement->node->Cast<SelectNode>();
 	select.select_list.clear();
 	for (auto &field : bundle.observation_identity) {
@@ -3506,15 +3532,24 @@ unique_ptr<FunctionData> DailyBind(ClientContext &context, TableFunctionBindInpu
 		EngineFunctions(*expression);
 		select.select_list.push_back(std::move(expression));
 	}
-	EngineFunctions(*select.where_clause);
+	if (result->daily_states) {
+		auto rule = bundle.rule->Copy();
+		EngineFunctions(*rule);
+		select.select_list.push_back(std::move(rule));
+	} else {
+		EngineFunctions(*select.where_clause);
+	}
 	auto engine = Engine(bundle);
 	auto prepared = engine->Prepare(result->statement->Copy());
 	if (prepared->HasError()) {
 		NormalizeError(prepared->GetErrorObject(), "daily_user_set", "bind", ExceptionType::INVALID_INPUT);
 	}
 	result->daily_input_types = prepared->GetTypes();
-	if (result->daily_input_types !=
-	    vector<LogicalType> {LogicalType::VARCHAR, LogicalType::DATE, LogicalType::VARCHAR}) {
+	auto expected = vector<LogicalType> {LogicalType::VARCHAR, LogicalType::DATE, LogicalType::VARCHAR};
+	if (result->daily_states) {
+		expected.push_back(LogicalType::BOOLEAN);
+	}
+	if (result->daily_input_types != expected) {
 		Fail("daily_user_set", "bind", "qualified observation identity types changed");
 	}
 	types = {LogicalType::VARCHAR};
@@ -3995,6 +4030,218 @@ string DailyPlanJSON(ClientContext &context, const PopulationBind &data) {
 	return json.Finish();
 }
 
+void DailyStateMetadata(DailyJSONWriter &json, const Bundle &b) {
+	json.Field("state_api_version", "1.0.0");
+	json.Field("profile", b.profile);
+	json.Field("user_concept", b.user_concept);
+	json.Field("qualification_concept", b.derived);
+	json.Field("declared_rule", b.original_rule);
+	json.Field("rule_scope", "current frozen rule evaluated on captured observations; no historical rule inference");
+	json.Field("user_domain", "captured_users");
+	json.Field("transitions", "within_request_days");
+	json.Field("state_semantics", "any TRUE -> TRUE; nonempty all FALSE -> FALSE; otherwise UNKNOWN");
+	json.Append(",\"carry_forward\":false");
+	for (auto &field :
+	     {std::make_pair("snapshot_id", b.snapshot_id), std::make_pair("content_sha256", b.content_hash),
+	      std::make_pair("core_sha256", b.core_hash), std::make_pair("ontology_sha256", b.ontology_hash),
+	      std::make_pair("mapping_sha256", b.mapping_hash), std::make_pair("manifest_sha256", b.manifest_hash)}) {
+		json.Field(field.first, field.second);
+	}
+}
+
+void DailyStateScope(DailyJSONWriter &json, const PopulationBind &data) {
+	DailyStateMetadata(json, *data.bundle);
+	auto &r = data.daily_request;
+	json.Append(",\"request\":{\"start_date\":");
+	json.Quoted(r.start_text);
+	json.Field("end_date", r.end_text);
+	json.Field("user_domain", "captured_users");
+	json.Field("transitions", "within_request_days");
+	json.Append(",\"products\":{\"mode\":");
+	json.Quoted(r.all_products ? "all" : "subset");
+	if (!r.all_products) {
+		json.Append(",\"values\":[");
+		idx_t i = 0;
+		for (auto &product : r.products) {
+			if (i++) {
+				json.Append(",");
+			}
+			json.Quoted(product);
+		}
+		json.Append("]");
+	}
+	json.Append("}}");
+	json.Field("required_day_count", to_string(r.days));
+}
+
+string DailyStateProgram(ClientContext &context, const Bundle &b) {
+	DailyJSONWriter json(context, "program_json_utf8_bytes", "daily_states");
+	json.Append(
+	    "{\"schema_version\":\"ossie-daily-states-program-v1\",\"query_executed\":false,\"mcp_registered\":false");
+	DailyStateMetadata(json, b);
+	json.Field("captured_user_count", to_string(b.user_count));
+	json.Field("captured_observation_rows", to_string(b.rows));
+	json.Append(
+	    ",\"functions\":[\"ossie_daily_states_json\",\"ossie_daily_states_compile\",\"ossie_daily_states_program\"],"
+	    "\"state_identity\":[\"User\",\"DATE\"],\"comparison_identity\":[\"User\",\"from_DATE\",\"to_DATE\"],"
+	    "\"status_values\":[\"TRUE\",\"FALSE\",\"UNKNOWN\"],\"includes_unchanged_comparisons\":true,"
+	    "\"limits\":{\"days\":366,\"combined_objects\":10000,\"request_utf8_bytes\":16384,"
+	    "\"complete_json_utf8_bytes\":1048576,\"subset_products\":64,\"product_utf8_bytes\":256},"
+	    "\"cardinality_gate\":\"captured_User_count <= 10000/(2*days-1) before allocation\","
+	    "\"refused\":[\"other user domains\",\"request-external predecessor\",\"carry-forward\","
+	    "\"all-products qualification\",\"historical validity inference\",\"paging or truncation\"],"
+	    "\"registered_user_domain\":false}");
+	return json.Finish();
+}
+
+string DailyStatePlan(ClientContext &context, const PopulationBind &data) {
+	DailyJSONWriter json(context, "plan_json_utf8_bytes", "daily_states");
+	json.Append("{\"schema_version\":\"ossie-daily-states-plan-v1\",\"executed\":false,\"states_computed\":false,"
+	            "\"comparisons_computed\":false,\"physical_plan\":false,\"sql_replayable\":false,"
+	            "\"input_projection_binding\":true");
+	DailyStateScope(json, data);
+	json.Field("captured_user_count", to_string(data.bundle->user_count));
+	json.Field("projection_sql", data.statement->ToString());
+	vector<string> types;
+	for (auto &type : data.daily_input_types) {
+		types.push_back(type.ToString());
+	}
+	json.Append(
+	    ",\"input_types\":" + JSONStrings(types) +
+	    ",\"operators\":[\"frozen full-root User/date/product/rule BOOLEAN projection without qualification WHERE\","
+	    "\"collect whole-capture raw User domain before scope\",\"explicit inclusive date and product filter\","
+	    "\"preserve rule TRUE/FALSE/NULL; aggregate per User/natural day\","
+	    "\"UNKNOWN for missing days; no carry\",\"all within-request adjacent comparisons including unchanged\","
+	    "\"raw UTF-8 User and ascending natural-day order\",\"complete bounded JSON\"],"
+	    "\"limits\":{\"combined_objects\":10000,\"complete_json_utf8_bytes\":1048576},"
+	    "\"cardinality_gate\":\"captured_User_count <= 10000/(2*days-1) before allocation\","
+	    "\"limitations\":[\"Compile does not scan or compute states or comparisons\","
+	    "\"Load User count is capture metadata, not a query count\","
+	    "\"Projection SQL does not include C++ reduction and is not independently replayable\","
+	    "\"Compile does not guarantee encoded execution result size\"]}");
+	return json.Finish();
+}
+
+const char *DailyStateLabel(uint8_t mask) {
+	return mask & 1 ? "TRUE" : mask == 2 ? "FALSE" : "UNKNOWN";
+}
+
+string DailyStateResult(ClientContext &context, const PopulationBind &data, QueryResult &query) {
+	auto &b = *data.bundle;
+	auto &r = data.daily_request;
+	if (query.types != data.daily_input_types) {
+		Fail("daily_states", "execute", "full observation projection types changed");
+	}
+	if (b.user_count > MAX_ROWS / (2 * r.days - 1)) {
+		Fail("daily_states", "resource", "combined states/comparisons exceed 10000");
+	}
+	std::map<string, vector<uint8_t>, RawByteLess> users;
+	idx_t scanned = 0;
+	while (auto chunk = query.Fetch()) {
+		for (idx_t row = 0; row < chunk->size(); row++) {
+			if (context.IsInterrupted()) {
+				throw InterruptException();
+			}
+			if (++scanned > b.rows) {
+				Fail("daily_states", "execute", "projection exceeds captured observation rows");
+			}
+			auto user_value = chunk->GetValue(0, row);
+			if (user_value.IsNull()) {
+				Fail("daily_states", "execute", "NULL User identity prohibited");
+			}
+			auto user = user_value.GetValue<string>();
+			auto found = users.find(user);
+			if (found == users.end()) {
+				if (users.size() >= b.user_count) {
+					Fail("daily_states", "execute", "projection domain exceeds captured User count");
+				}
+				found = users.emplace(std::move(user), vector<uint8_t>(r.days, 0)).first;
+			}
+			auto date = chunk->GetValue(1, row).GetValue<date_t>();
+			auto product = chunk->GetValue(2, row).GetValue<string>();
+			if (date < r.start || date > r.end || (!r.all_products && r.products.find(product) == r.products.end())) {
+				continue;
+			}
+			auto value = chunk->GetValue(3, row);
+			found->second[date.days - r.start.days] |= value.IsNull() ? 4 : value.GetValue<bool>() ? 1 : 2;
+		}
+	}
+	if (query.HasError()) {
+		NormalizeError(query.GetErrorObject(), "daily_states", "execute", ExceptionType::INVALID_INPUT);
+	}
+	if (scanned != b.rows || users.size() != b.user_count) {
+		Fail("daily_states", "execute", "full frozen observation/User domain mismatch");
+	}
+	ObserveDailyState(context, PopulationDailyStateCheckpoint::AFTER_DOMAIN);
+	DailyJSONWriter json(context, "result_json_utf8_bytes", "daily_states");
+	json.Append("{\"schema_version\":\"ossie-daily-states-result-v1\",\"executed\":true,\"complete\":true,"
+	            "\"paging\":false,\"truncated\":false");
+	DailyStateScope(json, data);
+	json.Field("user_count", to_string(users.size()));
+	json.Field("state_count", to_string(users.size() * r.days));
+	json.Field("comparison_count", to_string(users.size() * (r.days - 1)));
+	json.Field("combined_object_count", to_string(users.size() * (2 * r.days - 1)));
+	json.Field("ordering", "raw UTF-8 User ascending, natural day ascending");
+	json.Append(",\"state_columns\":[\"user_id\",\"date\",\"state\"],\"states\":[");
+	ObserveDailyState(context, PopulationDailyStateCheckpoint::BEFORE_EXPAND);
+	idx_t count = 0;
+	idx_t state_totals[3] = {0, 0, 0};
+	for (auto &entry : users) {
+		for (idx_t day = 0; day < r.days; day++) {
+			if (context.IsInterrupted()) {
+				throw InterruptException();
+			}
+			if (count++) {
+				json.Append(",");
+			}
+			json.Append("[");
+			json.Quoted(entry.first);
+			json.Append(",");
+			json.Quoted(Date::ToString(date_t(r.start.days + static_cast<int32_t>(day))));
+			json.Append(",");
+			json.Quoted(DailyStateLabel(entry.second[day]));
+			state_totals[entry.second[day] & 1 ? 0 : entry.second[day] == 2 ? 1 : 2]++;
+			json.Append("]");
+		}
+	}
+	json.Append("],\"comparison_columns\":[\"user_id\",\"from_date\",\"to_date\",\"from_state\",\"to_state\","
+	            "\"changed\"],\"comparisons\":[");
+	count = 0;
+	idx_t changed_count = 0;
+	for (auto &entry : users) {
+		for (idx_t day = 1; day < r.days; day++) {
+			if (context.IsInterrupted()) {
+				throw InterruptException();
+			}
+			if (count++) {
+				json.Append(",");
+			}
+			json.Append("[");
+			json.Quoted(entry.first);
+			for (auto date : {r.start.days + static_cast<int32_t>(day - 1), r.start.days + static_cast<int32_t>(day)}) {
+				json.Append(",");
+				json.Quoted(Date::ToString(date_t(date)));
+			}
+			json.Append(",");
+			json.Quoted(DailyStateLabel(entry.second[day - 1]));
+			json.Append(",");
+			json.Quoted(DailyStateLabel(entry.second[day]));
+			bool changed = string(DailyStateLabel(entry.second[day - 1])) != DailyStateLabel(entry.second[day]);
+			changed_count += changed ? 1 : 0;
+			json.Append(changed ? ",true]" : ",false]");
+		}
+	}
+	json.Append("],\"state_totals\":{\"unit\":\"User/day\"");
+	json.Field("TRUE", to_string(state_totals[0]));
+	json.Field("FALSE", to_string(state_totals[1]));
+	json.Field("UNKNOWN", to_string(state_totals[2]));
+	json.Append("}");
+	json.Field("changed_comparison_count", to_string(changed_count));
+	json.Append("}");
+	ObserveDailyState(context, PopulationDailyStateCheckpoint::BEFORE_FINISH);
+	return json.Finish();
+}
+
 string ResultEncoding(const LogicalType &type) {
 	switch (type.id()) {
 	case LogicalTypeId::TINYINT:
@@ -4435,6 +4682,8 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 			throw InterruptException();
 		}
 		result->rows.push_back({Value(json)});
+	} else if (data.daily_state_discovery) {
+		result->rows.push_back({Value(DailyStateProgram(context, *data.bundle))});
 	} else if (!data.vocabulary.empty()) {
 		VocabularyRows(data, result->rows);
 	} else if (data.discover) {
@@ -4465,7 +4714,8 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 			                        Value(b.original_source), Value::BIGINT(static_cast<int64_t>(b.rows))});
 		}
 	} else if (data.daily_compile) {
-		result->rows.push_back({Value(DailyPlanJSON(context, data))});
+		result->rows.push_back(
+		    {Value(data.daily_states ? DailyStatePlan(context, data) : DailyPlanJSON(context, data))});
 	} else if (data.compile) {
 		auto &b = *data.bundle;
 		result->rows.push_back({Value(data.sql), Value(b.profile), Value(b.snapshot_id), Value(b.content_hash),
@@ -4475,13 +4725,16 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 	} else {
 		lock_guard<mutex> guard(data.bundle->query_lock);
 		auto engine = Engine(*data.bundle);
-		if (data.daily) {
+		if (data.daily_states) {
+			ObserveDailyState(context, PopulationDailyStateCheckpoint::BEFORE_EXECUTE);
+		} else if (data.daily) {
 			ObserveDaily(context, PopulationDailyCheckpoint::BEFORE_EXECUTE);
 		}
 		result->result = Run(context, *engine, data.statement->Copy());
 		if (data.daily || data.encoded) {
-			result->rows.push_back({Value(data.daily ? DailyResultJSON(context, data, *result->result)
-			                                         : ResultJSON(context, data, *result->result))});
+			result->rows.push_back({Value(data.daily_states ? DailyStateResult(context, data, *result->result)
+			                              : data.daily      ? DailyResultJSON(context, data, *result->result)
+			                                                : ResultJSON(context, data, *result->result))});
 			result->result.reset();
 		}
 	}
@@ -4534,7 +4787,19 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 			names = {"program_json"};
 			return unique_ptr<FunctionData>(std::move(result));
 		}
-		if (name == "ossie_daily_users_json" || name == "ossie_daily_users_compile") {
+		if (name == "ossie_daily_states_program") {
+			auto result = make_uniq<PopulationBind>();
+			result->bundle = Current(context);
+			if (result->bundle->profile != OBSERVATION_PROFILE) {
+				Fail(name, "capability", "daily-observation profile required");
+			}
+			result->daily_state_discovery = true;
+			types = {LogicalType::VARCHAR};
+			names = {"program_json"};
+			return unique_ptr<FunctionData>(std::move(result));
+		}
+		if (name == "ossie_daily_users_json" || name == "ossie_daily_users_compile" ||
+		    name == "ossie_daily_states_json" || name == "ossie_daily_states_compile") {
 			return DailyBind(context, input, types, names);
 		}
 		if (name == "ossie_bundle_load") {
@@ -4687,6 +4952,24 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	                 "or ordinary SQL replay guarantee; max1MiB complete inner plan JSON.",
 	                 "SELECT * FROM ossie_daily_users_compile('QualifiedObservation', "
 	                 "'{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}}')");
+	for (auto name : {"ossie_daily_states_json", "ossie_daily_states_compile"}) {
+		RegisterDescribe(
+		    loader,
+		    TableFunction(name, {LogicalType::VARCHAR, LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+		    "Evaluate the declared qualification rule as TRUE/FALSE/NULL over the full frozen observation "
+		    "capture. Request captured_users and within_request_days explicitly; daily any TRUE, only "
+		    "nonempty all FALSE, otherwise UNKNOWN. No carry; all adjacent comparisons including unchanged. "
+		    "Compile binds without scan. Max366 days,10000 combined objects,16KiB request,1MiB complete JSON.",
+		    "SELECT * FROM " + string(name) +
+		        "('QualifiedObservation', '{\"start_date\":\"2026-01-31\","
+		        "\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"},\"user_domain\":\"captured_users\","
+		        "\"transitions\":\"within_request_days\"}')");
+	}
+	RegisterDescribe(loader, TableFunction("ossie_daily_states_program", {}, ScanBoundary, BindBoundary, InitBoundary),
+	                 "Discover dedicated daily states and within-request comparisons: frozen rule, full captured "
+	                 "User domain, three-valued truth, explicit identities and resource/refusal boundaries. No query "
+	                 "execution, no external MCP registration inference; max1MiB complete JSON.",
+	                 "SELECT * FROM ossie_daily_states_program()");
 	auto list = LogicalType::LIST(LogicalType::ANY);
 	auto traced = [](TableFunction function) {
 		function.named_parameters["include_trace"] = LogicalType::BOOLEAN;

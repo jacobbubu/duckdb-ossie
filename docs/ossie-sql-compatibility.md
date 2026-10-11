@@ -20,7 +20,7 @@ OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckD
 | --- | --- | --- |
 | 通用 core `ossie_query` / `ossie_compile` | 字段/指标使用选中的 OSSIE_SQL_2026 或 ANSI_SQL；过滤器有独立函数开关和 lowering | 通用 core 方言转换不是各人口 profile 的白名单；普通窗口位置没有本页新增验收 |
 | `gaap-scalar-population-v1` | 已声明标量概念/指标，严格人口表达式 AST；保护除法、NULL、规则/请求范围 | 不能自由访问数据集、任意函数、窗口或子查询 |
-| `daily-observation-population-v1` | 固定五个观察聚合形状；正式资格为分类整数与整数阈值比较；专用每日集合做自然日见证归约 | 每日归约不是 SQL 窗口；不产生每日 FALSE/UNKNOWN 状态或历史有效期 |
+| `daily-observation-population-v1` | 固定五个观察聚合形状；正式资格为分类整数与整数阈值比较；每日集合做自然日见证归约；新专用状态 SQL 保留 BOOLEAN/NULL 后归约全部 User/day 与请求内相邻比较 | 每日归约不是 SQL 窗口；新状态 MCP/无模型尚未实现；没有历史有效期 |
 | `observation-relation-program-v1` | 声明的同根 User 关系调用、正向非递归 DAG、有限整数条件和显式 NULL 约束 | 关系调用是 ontology typed 语法，不能当普通 SQL UDF；没有任意聚合/窗口 |
 | `multi-fact-user-program-v1` | 两个事实分别按 User 归约后组合；另有同源 User/date 行窗口 | 不支持原始事实连接后聚合、跨来源窗口、比率或任意 SQL 请求 |
 

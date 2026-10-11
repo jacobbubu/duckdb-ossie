@@ -1,0 +1,83 @@
+# name: test/sql/ossie_population_daily_states.test
+# description: full captured User domain, three values, adjacent natural days, frozen lifecycle
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE observations(user_id VARCHAR,ds DATE,product VARCHAR,amount_usd DECIMAL(18,2),classification_value INTEGER);
+
+statement ok
+INSERT INTO observations VALUES ('A','2024-02-28','X',1,0),('A','2024-02-28','Y',1,NULL),('A','2024-02-29','X',1,10),('A','2024-02-29','Y',1,0),('A','2024-02-29','Z',1,NULL),('B','2024-02-28','X',1,0),('B','2024-02-29','X',1,0),('Outside','2023-01-01','X',1,10);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population-observation/bundle-10.json');
+
+query T
+SELECT regexp_extract(result_json,'"states":(.*),"comparison_columns"',1) FROM ossie_daily_states_json('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
+----
+[["A","2024-02-28","UNKNOWN"],["A","2024-02-29","TRUE"],["B","2024-02-28","FALSE"],["B","2024-02-29","FALSE"],["Outside","2024-02-28","UNKNOWN"],["Outside","2024-02-29","UNKNOWN"]]
+
+query T
+SELECT regexp_extract(result_json,'"comparisons":(.*),"state_totals"',1) FROM ossie_daily_states_json('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
+----
+[["A","2024-02-28","2024-02-29","UNKNOWN","TRUE",true],["B","2024-02-28","2024-02-29","FALSE","FALSE",false],["Outside","2024-02-28","2024-02-29","UNKNOWN","UNKNOWN",false]]
+
+query T
+SELECT regexp_extract(result_json,'"comparisons":(.*),"state_totals"',1) FROM ossie_daily_states_json('QualifiedObservation','{"start_date":"2024-02-29","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
+----
+[]
+
+query TTT
+SELECT regexp_extract(plan_json,'"executed":(false|true)',1),regexp_extract(plan_json,'"states_computed":(false|true)',1),regexp_extract(plan_json,'"input_types":(\[[^]]*\])',1) FROM ossie_daily_states_compile('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
+----
+false	false	["VARCHAR","DATE","VARCHAR","BOOLEAN"]
+
+query TTT
+SELECT regexp_extract(program_json,'"schema_version":"([^"]+)"',1),regexp_extract(program_json,'"captured_user_count":"([^"]+)"',1),regexp_extract(program_json,'"mcp_registered":(false|true)',1) FROM ossie_daily_states_program();
+----
+ossie-daily-states-program-v1	3	false
+
+statement error
+SELECT * FROM ossie_daily_states_json('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_daily_states_json('User','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
+----
+UNSUPPORTED_CAPABILITY
+
+statement error
+SELECT * FROM ossie_daily_states_json('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"observed_users","transitions":"within_request_days"}');
+----
+UNSUPPORTED_CAPABILITY
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
+----
+INVALID_REQUEST
+
+statement ok
+PREPARE previous_states AS SELECT regexp_extract(result_json,'"states":(.*),"comparison_columns"',1) FROM ossie_daily_states_json('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population-observation/bundle-20.json');
+
+statement ok
+DROP TABLE observations;
+
+query T
+EXECUTE previous_states;
+----
+[["A","2024-02-28","UNKNOWN"],["A","2024-02-29","TRUE"],["B","2024-02-28","FALSE"],["B","2024-02-29","FALSE"],["Outside","2024-02-28","UNKNOWN"],["Outside","2024-02-29","UNKNOWN"]]
+
+query T
+SELECT regexp_extract(result_json,'"states":(.*),"comparison_columns"',1) FROM ossie_daily_states_json('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
+----
+[["A","2024-02-28","UNKNOWN"],["A","2024-02-29","UNKNOWN"],["B","2024-02-28","FALSE"],["B","2024-02-29","FALSE"],["Outside","2024-02-28","UNKNOWN"],["Outside","2024-02-29","UNKNOWN"]]
+
+query TT
+SELECT regexp_extract(result_json,'"state_totals":(\{[^}]*\})',1),regexp_extract(result_json,'"changed_comparison_count":"([^"]+)"',1) FROM ossie_daily_states_json('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
+----
+{"unit":"User/day","TRUE":"0","FALSE":"2","UNKNOWN":"4"}	0

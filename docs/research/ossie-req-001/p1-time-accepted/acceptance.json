@@ -1,0 +1,27 @@
+{
+  "schema": "ossie-p1-time-policy-acceptance-v1",
+  "date": "2026-10-12",
+  "baseline_commit": "3f34f2a21048d5c30feda5f60f2bb2cfc7658bed",
+  "human_response": "同意你的选择",
+  "basis": "Human agreement after concrete daily/product and historical group examples and Lead recommendation",
+  "candidate_sha256": "e8de805920cc222bb83628d8f78b41cadcc95b1b61e4c3649c0521423673b5c7",
+  "daily": {
+    "true": "any scoped TRUE",
+    "false": "nonempty scoped observations all FALSE",
+    "unknown": "otherwise, including missing or FALSE+NULL",
+    "carry_forward": false,
+    "user_domain": "all distinct Users in entire frozen observation capture",
+    "scope": "inclusive requested natural dates and explicit products affect observations only",
+    "transitions": "all adjacent natural-day pairs within request, including unchanged; one day has zero pairs"
+  },
+  "history": {
+    "validity": "finite DATE [start,end), start<end",
+    "gap": "no link",
+    "conflict": "reject entire capture for same User overlapping different targets, including Users with no facts",
+    "source_identity": "explicit record_id, duplicate ID rejected",
+    "same_target_overlap": "distinct source IDs retained; complete relationship links set-deduplicated"
+  },
+  "scope": "Business policy accepted; not implementation or acceptance evidence",
+  "real_model_authorized": false,
+  "push_authorized": false
+}

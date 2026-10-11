@@ -36,6 +36,13 @@ public:
 	virtual void Observe(PopulationDailyCheckpoint checkpoint) = 0;
 };
 
+enum class PopulationDailyStateCheckpoint : uint8_t { BEFORE_EXECUTE, AFTER_DOMAIN, BEFORE_EXPAND, BEFORE_FINISH };
+class PopulationDailyStateObserver : public ClientContextState {
+public:
+	static constexpr const char *KEY = "ossie_population_daily_state_observer";
+	virtual void Observe(PopulationDailyStateCheckpoint checkpoint) = 0;
+};
+
 enum class PopulationRelationCheckpoint : uint8_t { BEFORE_EXECUTE, BEFORE_SORT, BEFORE_ENCODE };
 class PopulationRelationObserver : public ClientContextState {
 public:

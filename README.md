@@ -23,9 +23,11 @@ identity and distinct User counts. Opt-in [declared relations](docs/population-r
 and [independent two-fact metrics, cohorts and observation windows](docs/population-facts.md)
 have dedicated interfaces, as does the [every-day User set](docs/population-daily-users.md).
 Their bounded SQL, independent MCP and scripted Agent/replay interfaces are locally
-verified on macOS ARM64 and Ubuntu ARM64. Daily three-valued states and historical
-relationship validity still await business decisions and implementation; full P1
-acceptance is pending. These local P1 results do not imply remote CI has run.
+verified on macOS ARM64 and Ubuntu ARM64. The accepted daily and historical policies
+now have [daily three-valued state SQL, logical plans and discovery](docs/population-daily-states.md)
+verified locally on macOS ARM64. New state MCP/replay interfaces and historical
+relationship implementation remain required; full P1 acceptance is pending.
+These local P1 results do not imply remote CI has run.
 See the [bounded implementation record](docs/ossie-execution-research.md)
 and [current delivery status](ossie-duckdb-plan.md#current-delivery-checkpoint--2026-10-11)
 for accepted scopes, evidence and remaining verification.
