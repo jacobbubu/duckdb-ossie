@@ -1614,3 +1614,19 @@ P1函数/窗口矩阵本地工作包完成：新增[兼容矩阵](docs/ossie-sql
 矩阵见新receipt，不声称完整SQL2026/全P1或远端CI。下一授权为最终质量/
 同产物范围审计与待推历史隐私预检；两项业务决策待答，状态/历史实现及
 相应接口/回归仍必需，不能因矩阵工作包完成而收掉整个goal。无模型/推送。
+
+最终质量恢复checkpoint（70f8ae5）：矩阵工作包完成但goal active。cached diff
+收口发现public SQL log尾部空行，原件不动，派生文本修正并更新hash/receipt，
+后续diff通过。下一先本机quality-local和全部六个native runner，按当前artifact
+复核，不混用历史Ubuntu证据。Docker无运行/停止容器，仅既有Ubuntu24.04镜像；
+旧/tmp Linux checkout需重新绑定当前源码才可作为新证据。全P1状态/历史待答
+及其实现/接口仍必需；待推历史审计和跨环境质量继续保留，无模型或推送。
+
+本机质量阶段复验完成（70f8ae5后）：quality-local的固定C++/TS格式、类型、
+架构及138Bun/721通过；六native实际state19/grain42/capture308/relation55/
+fact capture260/fact program90均exit0。启动协调首次缺grain ROOT、其次fact
+ROOT未带尾斜杠的两份失败原件保留，正确参数复跑，不冒充实现回归。证据见
+[本机质量receipt](docs/research/ossie-req-001/p1-local-quality-controls/receipt.json)，
+九raw只读归档。矩阵27SQL/1026同产物证据不变；未跑当前Linux tidy/远端CI。
+下一需当前源码隔离Linux质量、待推历史私有预检；原状态/历史口径及实现/
+完整接口仍待完成，不标整个P1完成，无模型或推送。

@@ -1,0 +1,68 @@
+{
+  "base_commit": "70f8ae5",
+  "scope": "local formatter TypeScript architecture Bun and all six native runners; not whole P1 acceptance, Linux tidy or remote CI",
+  "artifact_sha256": "9ddb20dbc36bd92301b0a49178562f28a30b5e2ce774129964e7a9bd1216b5a9",
+  "quality_exit": 0,
+  "bun_tests": 138,
+  "bun_assertions": 721,
+  "native_checks": {
+    "state": 19,
+    "grain": 42,
+    "capture": 308,
+    "relations": 55,
+    "fact_capture": 260,
+    "fact_program": 90
+  },
+  "native_exit_codes": {
+    "state": 0,
+    "grain": 0,
+    "capture": 0,
+    "relations": 0,
+    "fact_capture": 0,
+    "fact_program": 0
+  },
+  "failures_preserved": "First coordinator omitted grain ROOT; second passed fact ROOT without trailing slash. Both test invocation failures corrected without source changes.",
+  "raw_manifest_sha256": "d7ce7b942cbdfba7d02e2e6bae5e9c2f42e7a03561603fc6a780236893dd48b0",
+  "logs": {
+    "quality.log": {
+      "raw_sha256": "53298c49da37466c9a78be09736bcec6afe9ae623dac5f06d370449726b71f92",
+      "public_sha256": "53298c49da37466c9a78be09736bcec6afe9ae623dac5f06d370449726b71f92"
+    },
+    "first-missing-arg.log": {
+      "raw_sha256": "261c9f038e68988d830203c88038fb25959348ffd86534f364528a41bf780bf4",
+      "public_sha256": "261c9f038e68988d830203c88038fb25959348ffd86534f364528a41bf780bf4"
+    },
+    "second-root-separator.log": {
+      "raw_sha256": "2f7aed2f4ad302eca020ea6ce21e0ced07e074f6d49123c1d71829d83592933b",
+      "public_sha256": "f68bf72182ab7b7227fc37d593157ea4b3403fce6d49f102304aea2edac0c80a"
+    },
+    "fact-capture.log": {
+      "raw_sha256": "5d111fd3180dbc2d4887f67870c9400c47949205b28fa87b7b9384790b0aafaf",
+      "public_sha256": "5d111fd3180dbc2d4887f67870c9400c47949205b28fa87b7b9384790b0aafaf"
+    },
+    "fact-program.log": {
+      "raw_sha256": "3487641fd7186cb8756dbc7559a8cbfa8bf33551dcf772034e00ae0a0ee8e8ed",
+      "public_sha256": "3487641fd7186cb8756dbc7559a8cbfa8bf33551dcf772034e00ae0a0ee8e8ed"
+    },
+    "ossie_state_test.log": {
+      "raw_sha256": "2f83c50f0001176a508c26874fed7ed54dfdcd3460611f3778478ff5cba17bfd",
+      "public_sha256": "2f83c50f0001176a508c26874fed7ed54dfdcd3460611f3778478ff5cba17bfd"
+    },
+    "ossie_metric_grain_test.log": {
+      "raw_sha256": "d52508330f4f0ef60d2837026f1ab7226700ea7a6654ce5aeb91b314c077b7bf",
+      "public_sha256": "d52508330f4f0ef60d2837026f1ab7226700ea7a6654ce5aeb91b314c077b7bf"
+    },
+    "ossie_population_capture_test.log": {
+      "raw_sha256": "6ed706ab87a4c905dec026a728376750ba2cb8996ed6d990448ac0f3a85e8f11",
+      "public_sha256": "6ed706ab87a4c905dec026a728376750ba2cb8996ed6d990448ac0f3a85e8f11"
+    },
+    "ossie_relation_program_test.log": {
+      "raw_sha256": "125db386aa44b97e49a8997bb1b1e18464ef858a71bb40650c6dc5673ad75b11",
+      "public_sha256": "125db386aa44b97e49a8997bb1b1e18464ef858a71bb40650c6dc5673ad75b11"
+    }
+  },
+  "transform": "worktree path replacement and trailing blank-line removal; private originals immutable",
+  "remote_ci_run": false,
+  "real_model_requests": 0,
+  "pushed": false
+}

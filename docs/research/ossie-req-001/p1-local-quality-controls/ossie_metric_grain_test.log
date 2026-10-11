@@ -1,0 +1,43 @@
+PASS: fact grain: amount_sum
+PASS: fact grain: amount_avg
+PASS: fact grain: value_count
+PASS: fact grain: record_count
+PASS: fact grain: eligible_amount
+PASS: fact grain: dimension_scalar
+PASS: fact grain: wrapped_fact
+PASS: fact grain: constant_field_sum
+PASS: fact grain: quoted_fact
+PASS: independent metrics all have designated fact grain
+PASS: case-insensitive declared metric and dataset
+PASS: core dimension metric independently compiles
+PASS: reject different/absent grain: dimension_count
+PASS: reject different/absent grain: dimension_distinct
+PASS: reject different/absent grain: mixed
+PASS: reject different/absent grain: wrapped_mixed
+PASS: reject different/absent grain: scalar
+PASS: reject different/absent grain: unknown_function
+PASS: reject grainless aggregate: star
+PASS: reject grainless aggregate: with_star
+PASS: reject grainless aggregate: one
+PASS: new checker does not infer standalone COUNT(*) grain from another metric
+PASS: existing core grainless inheritance retained
+PASS: existing core in-metric grainless inheritance retained
+PASS: window rejected by shared analysis
+PASS: unknown metric rejected
+PASS: unknown designated dataset rejected
+PASS: empty request rejected
+PASS: designated grain does not replace fan-out planning
+PASS: designated grain does not replace ambiguity planning
+PASS: validation leaves original model and SQL unchanged
+PASS: native binding fixture created
+PASS: nested aggregates still require physical binder refusal
+PASS: valid original query executes after grain checks
+PASS: group membership, totals and counts match independent hand-derived oracle
+PASS: all designated fact metrics execute
+PASS: exact fact metrics/CASE/constant field match hand oracle
+PASS: AVG and wrapped ratio match hand oracle
+PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: nested_star
+PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: hidden_sum_metric
+PASS: grain prerequisite passes; physical binder rejects hidden/nested expression: hidden_window_metric
+PASS: unrecognized aggregate requires separate strict expression whitelist; binder alone is insufficient
+PASS: 42 designated-grain controls
