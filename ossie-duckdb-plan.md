@@ -35,7 +35,10 @@
 回答未到之前不实施其依赖语义；其他工作继续。原所有五项必需范围不变。
 每日完整解释、MCP/decoder、无模型验收与CI命令已完成，见下方各包证据。
 当前关系profile及MCP/无模型已实施；多事实/窗口SQL和独立MCP已完成本地工作包，
-无模型演练/重放/CI本地工作包已完成；下一为函数兼容矩阵，再继续原P1其余时间/历史能力。当前Linux15TU tidy与有界历史预检通过；状态/历史新增后最终全P1验收和尾部历史预检仍必需，
+无模型演练/重放/CI本地工作包已完成；函数兼容矩阵及macOS/Linux当前实现功能复验已通过。
+当前Linux15TU tidy与有界历史预检通过；[时间候选研究](docs/research/ossie-req-001/p1-time-carrier-research/research.md)
+已明确待答业务口径与预算，下一为决策后的固定schema核对及状态/历史实现。
+新增后最终全P1验收和尾部历史预检仍必需，
 此首片不完成P1。保留测试工具失败及修复；无真实模型、推送/合并/发布。
 
 本轮恢复checkpoint（846a5cd）：前轮progress，当前干净；开始daily专用compile/plan，
@@ -1669,3 +1672,46 @@ Ubuntu24.04 ARM64 clang18对15TU全部exit0。新mac产物66ec8a7c六native
 未运行当前Linux功能构建/远端CI。下一继续两业务决策后的状态/历史设计
 实现、相应完整接口与旧行为回归，再最终全五项审计；若答案仍未到，先
 补本修复提交尾部隐私预检及必要独立研究。原scope不缩减，无模型/推送。
+
+Linux功能验收恢复checkpoint（ae0d0f4，干净）：上一goal轮progress，当前
+mac66ec全回归与Linux15TU tidy已通过，本修复提交尾部秘密审计无发现；
+远端read-only tip仍bd8c0ee。剩余独立必要工作先补当前Linux功能产物：
+复用已有Ubuntu24.04 ARM64工具链镜像，隔离checkout从7481dff+已审查修复
+更新为精确ae0d0f4，并固定三个submodule；不带主树私有材料/.env_test。
+构建、六native/27SQL、Bun及新增SQL/stock/MCP/无模型均用Linux本地产物。
+不要求跨平台二进制hash相同，不以Linux tidy代替Linux执行，也不宣称远端
+AMD64 CI。两业务问题仍未答，不实施状态/历史依赖语义，完整五类scope保持。
+
+时间承载独立研究checkpoint（等待Linux构建）：复用单一只读Advisor反证，
+确认现daily的IS TRUE投影已丢FALSE/NULL，现关系布尔Binder只绑定同一User，
+不能冒充新状态/跨源历史目标。上游set/noNULL不决定源记录重复政策。
+本轮仅设计/普通SQL与独立枚举研究，不实现候选接口或冻结未答业务口径。
+补齐User域/相邻日边界/状态与转移总量/历史记录身份/全批冲突及中间bag
+预算，明确上游要求、项目限制、待答政策。研究证据不得算插件验收。
+
+Linux验收恢复checkpoint（ae0d0f4）：完整release构建614步骤通过，但独立原生测试
+因EXCLUDE_FROM_ALL未由release默认构建，测试启动exit127；这是本地驱动遗漏，
+不是原生用例失败。保留首轮日志/容器，继续同源码同构建目录显式构建六目标，
+再运行六native、SQL、P0和接口/离线验证。Linux本地ARM64不等于远端AMD64 CI。
+
+Linux功能工作包本地完成：[复验和receipt](docs/research/ossie-req-001/p1-linux-functional/review.md)
+绑定精确ae0d0f4/Linux a5bef339产物，六native19/42/308/55/260/90、27SQL/1026、
+138Bun/721、类型/格式/架构、完整P0、11接口/stock/MCP及四无模型全通过。
+首轮遗漏EXCLUDE_FROM_ALL目标的exit127保存，恢复驱动显式构建后通过。
+2480私有文件字节清单绑定旁证和原容器副本；不声称远端AMD64 CI或复制路径重放。
+
+时间承载研究工作包：[候选契约及枚举](docs/research/ossie-req-001/p1-time-carrier-research/research.md)
+明确每日八种值集合、TRUE-witness信息丢失、bool_or(FALSE,NULL)反例、全捕获/范围内
+User域差异、请求内相邻变化及U×(2D−1)总对象预算；历史身份与link集合分开、有限
+端点、全批无事实冲突、同目标重复的中间bag预算。普通SQL与独立TS对照通过，
+没有native新时间能力声明；首轮参数辅助接口误用失败原件保存。复用单一只读
+Advisor反证，实际后端/effort/usage/billing未知。已将待答两问题补齐User域/变化
+边界/来源ID及同目标重叠选择，仍无答案。完整P1五项不缩减，下一必要行动为
+收到业务决策后固定schema承载核对/时间native实现和完整接口验收；等待时可继续
+现交付证据与未推历史尾部检查，不擅自采用预选项。无真实模型或推送。
+
+本轮收口复核：2480私有副本逐文件hash、原容器mode、262报告绑定及全部公开
+日志hash通过；时间研究重复输出字节相同、三个源hash与10新文档链接核对通过。
+新增研究脚本format/typecheck/architecture通过，C++/Linux产物源码未再改变。
+当前必要下一步仍为两业务决策后的schema/时间实施，未将研究完成当goal完成。
+本轮只做本地提交和尾部有界隐私预检，不推送。

@@ -88,3 +88,9 @@ P1 尚需每日状态与历史关系口径及实现、相应对象/解释/发现
 记录样式修复后的66ec8a7c产物：Linux15编译单元tidy、六native、27SQL、
 完整P0、四服务MCP与四组无模型控制复验。历史9ddb报告和原源码/文档
 hash仍保留为当时版本；新receipt绑定当前源码，不能覆盖旧原件。
+
+当前源码的[Ubuntu ARM64 功能复验](research/ossie-req-001/p1-linux-functional/review.md)
+补齐此前未运行的 Linux 功能项：精确 ae0d0f4、Linux a5bef339，六 native、27 SQL、
+P0/11 接口/四无模型通过。此证据不改变矩阵支持范围，也不代替远端 AMD64 CI。
+[时间承载候选研究](research/ossie-req-001/p1-time-carrier-research/research.md)
+明确剩余状态/历史的承载与预算问题，尚未实现或获得业务口径答复。

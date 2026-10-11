@@ -1,5 +1,11 @@
 # OSSIE-REQ-001 本体执行基线研究
 
+当前完整P1 goal状态：每日集合、非递归关系/约束、多事实/复杂人群及有限观察行
+窗口的本地实现和全接口已通过，最新[Linux功能证据](research/ossie-req-001/p1-linux-functional/review.md)
+与[macOS功能/Linux tidy证据](research/ossie-req-001/p1-tidy-controls/review.md)分别保留。
+每日三值状态与历史关系仍待[候选口径决策及实现](research/ossie-req-001/p1-time-carrier-research/research.md)，
+整个P1未完成。当前未推提交没有远端CI结论；以下远端结果属于此前已推阶段。
+
 当前交付更新（2026-10-11）：开发分支e3a6f5f的跨平台/观察验收/无模型
 演练/format/tidy及CI gate共17项已全部通过，见[最终证据](research/ossie-req-001/ci-e9359d2-controls/final-state.json)。
 下段及后续历史checkpoint保留各阶段状态；本更新和现计划优先于旧的
@@ -1737,3 +1743,33 @@ Ubuntu24.04 ARM64 clang18对15TU全部exit0。新mac产物66ec8a7c六native
 未运行当前Linux功能构建/远端CI。下一继续两业务决策后的状态/历史设计
 实现、相应完整接口与旧行为回归，再最终全五项审计；若答案仍未到，先
 补本修复提交尾部隐私预检及必要独立研究。原scope不缩减，无模型/推送。
+
+Linux功能验收恢复checkpoint（ae0d0f4，干净）：上一goal轮progress，当前
+mac66ec全回归与Linux15TU tidy已通过，本修复提交尾部秘密审计无发现；
+远端read-only tip仍bd8c0ee。剩余独立必要工作先补当前Linux功能产物：
+复用已有Ubuntu24.04 ARM64工具链镜像，隔离checkout从7481dff+已审查修复
+更新为精确ae0d0f4，并固定三个submodule；不带主树私有材料/.env_test。
+构建、六native/27SQL、Bun及新增SQL/stock/MCP/无模型均用Linux本地产物。
+不要求跨平台二进制hash相同，不以Linux tidy代替Linux执行，也不宣称远端
+AMD64 CI。两业务问题仍未答，不实施状态/历史依赖语义，完整五类scope保持。
+
+时间承载独立研究checkpoint（等待Linux构建）：复用单一只读Advisor反证，
+确认现daily的IS TRUE投影已丢FALSE/NULL，现关系布尔Binder只绑定同一User，
+不能冒充新状态/跨源历史目标。上游set/noNULL不决定源记录重复政策。
+本轮仅设计/普通SQL与独立枚举研究，不实现候选接口或冻结未答业务口径。
+补齐User域/相邻日边界/状态与转移总量/历史记录身份/全批冲突及中间bag
+预算，明确上游要求、项目限制、待答政策。研究证据不得算插件验收。
+
+OSSIE-REQ-001 Linux验收恢复：ae0d0f4 release完整构建成功，首轮驱动遗漏显式
+构建EXCLUDE_FROM_ALL六个原生目标，启动exit127，原始日志保留。修正外部驱动后
+继续同源码/同构建目录验收；没有将此启动失败写成插件断言失败或CI通过。
+
+### P1 当前 Linux 功能与时间承载研究收口
+
+精确ae0d0f4的[Linux功能复验](research/ossie-req-001/p1-linux-functional/review.md)
+完成，同一ARM64扩展的六native、27SQL、P0/11接口和四无模型通过；首轮驱动
+漏建目标exit127保留，不称远端CI。此更新补齐前述当时尚未运行的Linux功能项。
+[时间承载候选研究](research/ossie-req-001/p1-time-carrier-research/research.md)
+补全三值/用户域/变化边界、历史来源身份/全批冲突、中间与响应预算；普通SQL
+及独立枚举通过不能当新插件验收。两项集中业务问题已细化，仍待答；完整P1
+状态与历史实现及最后全套收口必需保留。本轮只有本地工作，无模型/推送。

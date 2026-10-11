@@ -1,0 +1,89 @@
+{
+  "kind": "conditional-time-design-research",
+  "plugin_temporal_support_proven": false,
+  "business_policy_approved": false,
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "66ec8a7ca09cc209de166026bd25efda38ca8badcb038a1e1901e5533ce67b4c",
+  "source_hashes": {
+    "scripts/research_p1_time.ts": "344ac527f482b3d7e213cbc6e769167ef0d598c25d64e5e4b4275925c6102819",
+    "docs/research/ossie-req-001/sources/apache-ossie/ontology/ontology.md": "fcd7fa3e40f419f81143b1fbe523f97fc17935bc85bd0dc88f8b8b5c4103458d",
+    "docs/research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md": "94b6a922f61afbc94576a9794e53f8dd02b3cc57bca123a6f20da5c97b9ed94f"
+  },
+  "truth_subsets": [
+    [
+      0,
+      "UNKNOWN"
+    ],
+    [
+      1,
+      "TRUE"
+    ],
+    [
+      2,
+      "FALSE"
+    ],
+    [
+      3,
+      "TRUE"
+    ],
+    [
+      4,
+      "UNKNOWN"
+    ],
+    [
+      5,
+      "TRUE"
+    ],
+    [
+      6,
+      "UNKNOWN"
+    ],
+    [
+      7,
+      "TRUE"
+    ]
+  ],
+  "false_null_bool_or_counterexample": [
+    6,
+    false
+  ],
+  "full_history_conflicts_without_fact_witness": [
+    [
+      "h3",
+      "h4"
+    ]
+  ],
+  "illustrative_links_from_nonconflicting_fact_users": [
+    [
+      "f1",
+      "X"
+    ],
+    [
+      "f2",
+      "Y"
+    ],
+    [
+      "f4",
+      "X"
+    ]
+  ],
+  "history_source_rows": 6,
+  "matched_bag_rows": 4,
+  "set_links": 3,
+  "budget_counterexample": {
+    "states": "9882",
+    "transitions": "9855",
+    "combined": "19737"
+  },
+  "limitations": [
+    "Ordinary SQL plus independent enumerations, not native loader/binder/query acceptance",
+    "Daily truth reduction and finite history conflict policy remain conditional on human decisions",
+    "History contains a full-batch conflict; candidate loader would refuse it rather than return these illustrative links",
+    "Distinct record IDs preserve identical interval records in this example; this does not approve a source identity contract",
+    "No proof of execution memory, sweep algorithm, product scope, or runtime response limits"
+  ]
+}
