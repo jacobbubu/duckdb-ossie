@@ -1,0 +1,13 @@
+bun test v1.3.11 (af24e281)
+
+test/tooling/relation_result.test.ts:
+(pass) relation complete native envelopes retain full links and binding [1.78ms]
+(pass) relation DATE supports proleptic Gregorian BC and large years without JS Date [0.66ms]
+(pass) relation decoder refuses partial, reordered, duplicate, mismatched or foreign-target links [1.94ms]
+(pass) relation compile cannot claim execution or smuggle computed links [0.90ms]
+(pass) relation carrier must be one bounded string JSON payload [0.52ms]
+
+ 5 pass
+ 0 fail
+ 43 expect() calls
+Ran 5 tests across 1 file. [403.00ms]

@@ -1,0 +1,23 @@
+108 |           | undefined;
+109 |         const text =
+110 |           content?.map((c) => c.text ?? "").join("\n") ??
+111 |           JSON.stringify(reply.error);
+112 |         if ("relationship" in args)
+113 |           assert.equal(populationError(text)?.code, "INVALID_REQUEST");
+                       ^
+AssertionError: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'INVALID_REQUEST'
+
+ generatedMessage: true,
+     actual: undefined,
+   expected: "INVALID_REQUEST",
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at /Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_relation_mcp.ts:113:18
+      at processTicksAndRejections (native:7:39)
+
+Bun v1.3.11 (macOS arm64)

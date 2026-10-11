@@ -33,7 +33,8 @@ Stages/codes: `capability` → `UNSUPPORTED_CAPABILITY`, `identity` →
 API2.2.0 additionally maps `resource` → `RESOURCE_LIMIT_EXCEEDED` for declared
 [daily User set operation](population-daily-users.md) budgets. The opt-in
 [relation profile](research/ossie-req-001/p1-relation-load-controls/contract.md)
-also uses this code for complete program discovery JSON, and adds the constraint
+also uses this code for complete program discovery, relationship result and
+logical plan JSON, and adds the constraint
 stage above. Existing stage mappings remain unchanged. Consumers must preserve unknown string codes as
 failures; the reference decoder has no closed code enum. External closed-enum
 clients need compatibility review. Result-budget failure publishes no partial

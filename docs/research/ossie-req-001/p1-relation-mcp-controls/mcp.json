@@ -1,0 +1,3421 @@
+{
+  "passed": true,
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "install_path": "/Users/rongshen/.duckdb/extensions/v1.5.6/osx_arm64/duckdb_mcp.duckdb_extension",
+    "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+    "extension_sha256": "4ba513f7eb4460e5cf5ca734525c31f82bc7e0d619cdd9de4ffa3489b2c0319a",
+    "server_sha256": "a38b1a8a2362f1b59e75ddceaba90e7f233be5a576f091b49af98a877ffef812"
+  },
+  "artifact_sha256": "4ba513f7eb4460e5cf5ca734525c31f82bc7e0d619cdd9de4ffa3489b2c0319a",
+  "server_scope": "new relation MCP only, not complete P1 or live Agent",
+  "checks": [
+    "extended/10/qualified_user: full links, plan/discovery identity and six hashes",
+    "extended/10/AUDITED_USER: full links, plan/discovery identity and six hashes",
+    "population_relation_compile: observed upstream extra arguments ignored, no hidden filter/limit",
+    "population_relation_objects: observed upstream extra arguments ignored, no hidden filter/limit",
+    "extended/20/qualified_user: full links, plan/discovery identity and six hashes",
+    "extended/20/AUDITED_USER: full links, plan/discovery identity and six hashes",
+    "empty/10/qualified_user: full links, plan/discovery identity and six hashes",
+    "empty/10/AUDITED_USER: full links, plan/discovery identity and six hashes",
+    "wide/10/qualified_user: full links, plan/discovery identity and six hashes",
+    "wide/10/AUDITED_USER: full links, plan/discovery identity and six hashes"
+  ],
+  "refusals": [
+    {
+      "tool": "population_relation_compile",
+      "args": {
+        "relationship": "missing"
+      },
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"missing\",\"stage\":\"arguments\",\"reason\":\"unknown declared derived relationship\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=missing stage=arguments reason=unknown declared derived relationship missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_relation_compile($relationship)\n                      ^"
+        },
+        "id": 10
+      }
+    },
+    {
+      "tool": "population_relation_compile",
+      "args": {},
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "Invalid input: missing required fields"
+        },
+        "id": 11
+      }
+    },
+    {
+      "tool": "population_relation_objects",
+      "args": {
+        "relationship": "missing"
+      },
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"missing\",\"stage\":\"arguments\",\"reason\":\"unknown declared derived relationship\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=missing stage=arguments reason=unknown declared derived relationship missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_relation_objects_json($relationship)\n                      ^"
+        },
+        "id": 13
+      }
+    },
+    {
+      "tool": "population_relation_objects",
+      "args": {},
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "Invalid input: missing required fields"
+        },
+        "id": 14
+      }
+    },
+    {
+      "name": "execute_query",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: execute_query"
+        },
+        "id": 16
+      }
+    },
+    {
+      "name": "query",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: query"
+        },
+        "id": 17
+      }
+    },
+    {
+      "name": "population_query",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: population_query"
+        },
+        "id": 18
+      }
+    },
+    {
+      "name": "population_daily_users",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: population_daily_users"
+        },
+        "id": 19
+      }
+    },
+    {
+      "name": "ossie_bundle_load",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: ossie_bundle_load"
+        },
+        "id": 20
+      }
+    }
+  ],
+  "sessions": [
+    {
+      "threshold": 10,
+      "setup": "extended",
+      "discovery": {
+        "tools": [
+          {
+            "name": "population_relation_compile",
+            "description": "Bind and explain the same complete relationship link projection without executing or calculating members. Parse plan_json as ossie-relation-plan-v1, executed=false and members_computed=false. Four-column projection types are bound, not arbitrary outer SQL or execution success. Logical ordering/encoding steps are descriptions, not a physical plan; private frozen AST SQL is not replayable. Entire captured scope and declared TRUE relationship predicate; max1MiB complete JSON. Execution may exceed result budget even when compile succeeds. Separate calls after operator reload can bind different snapshots; compare identity, rule and hashes. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No date/product scope, import/reload or arbitrary SQL.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "relationship": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "relationship"
+              ]
+            }
+          },
+          {
+            "name": "population_relation_objects",
+            "description": "Return complete source User/date/product plus target User links for one discovered declared relationship. Discover program rules, identity, dependencies and snapshot first. Entire captured root population, selected relationship TRUE predicate only; no extra old qualified concept or implicit date/product filter. Multi-rule union; preserve full tuple, never substitute distinct User or count-only. Parse result_json as ossie-relation-result-v1. Link count is integer text. User/product/target ordered by raw UTF-8 bytes, DATE chronologically; DATE text is DuckDB finite DATE including (BC) and years beyond9999. At most10000 links and1MiB complete internal JSON including metadata; no paging or truncation, no peak-memory/outer-message limit guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. This tool has only relationship, with no date/product scope, generic objects, metrics, states, historical validity, windows, import/reload or arbitrary SQL. Compare canonical relationship, rules, scope, identity and six snapshot hashes.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "relationship": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "relationship"
+              ]
+            }
+          }
+        ],
+        "rows": {
+          "ossie://relations/program": [
+            {
+              "program_json": "{\"schema_version\":\"ossie-relation-program-v1\",\"profile\":\"observation-relation-program-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9\",\"root\":\"DailyObservation\",\"target_concept\":\"User\",\"mapped_user_relation\":\"user\",\"root_identity_fields\":[\"user_id\",\"ds\",\"product\"],\"root_identity_bound_types\":[\"VARCHAR\",\"DATE\",\"VARCHAR\"],\"captured_rows\":\"23\",\"source_types_bound\":true,\"load_constraints_validated\":true,\"query_executed\":false,\"root_constraints\":[\"DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0\"],\"relations\":[{\"name\":\"qualified_user\",\"target_concept\":\"User\",\"dependencies\":[],\"dependency_depth\":1,\"derived_by\":[\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\"],\"bound_predicate\":\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\",\"link_constraints\":[]},{\"name\":\"audited_user\",\"target_concept\":\"User\",\"dependencies\":[\"qualified_user\"],\"dependency_depth\":2,\"derived_by\":[\"DailyObservation.qualified_user(User)\"],\"bound_predicate\":\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\",\"link_constraints\":[]}],\"objects_queryable\":true,\"mcp_registered\":false,\"constraint_scope\":\"entire root or actual complete relation links before atomic publish\",\"predicate_sql_replayable\":false,\"json_byte_limit\":1048576}"
+            }
+          ],
+          "ossie://relations/surface": [
+            {
+              "schema_version": "ossie-relation-mcp-surface-v1",
+              "tools_json": "[\"population_relation_compile\",\"population_relation_objects\"]",
+              "generic_objects_tool": false,
+              "reload_tool": false,
+              "arbitrary_sql_tool": false,
+              "argument_boundary": "Unknown outer arguments are ignored; clients must send relationship Strings"
+            }
+          ]
+        },
+        "binding": {
+          "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+          "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9"
+        },
+        "program": {
+          "schema_version": "ossie-relation-program-v1",
+          "profile": "observation-relation-program-v1",
+          "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+          "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9",
+          "root": "DailyObservation",
+          "target_concept": "User",
+          "mapped_user_relation": "user",
+          "root_identity_fields": [
+            "user_id",
+            "ds",
+            "product"
+          ],
+          "root_identity_bound_types": [
+            "VARCHAR",
+            "DATE",
+            "VARCHAR"
+          ],
+          "captured_rows": "23",
+          "source_types_bound": true,
+          "load_constraints_validated": true,
+          "query_executed": false,
+          "root_constraints": [
+            "DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0"
+          ],
+          "relations": [
+            {
+              "name": "qualified_user",
+              "target_concept": "User",
+              "dependencies": [],
+              "dependency_depth": 1,
+              "derived_by": [
+                "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+              ],
+              "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+              "link_constraints": []
+            },
+            {
+              "name": "audited_user",
+              "target_concept": "User",
+              "dependencies": [
+                "qualified_user"
+              ],
+              "dependency_depth": 2,
+              "derived_by": [
+                "DailyObservation.qualified_user(User)"
+              ],
+              "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+              "link_constraints": []
+            }
+          ],
+          "objects_queryable": true,
+          "mcp_registered": false,
+          "constraint_scope": "entire root or actual complete relation links before atomic publish",
+          "predicate_sql_replayable": false,
+          "json_byte_limit": 1048576
+        }
+      },
+      "events": [
+        {
+          "kind": "rpc_request",
+          "id": 1,
+          "method": "initialize",
+          "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {
+              "name": "ossie-observation-preflight",
+              "version": "1"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "protocolVersion": "2024-11-05",
+              "serverInfo": {
+                "name": "DuckDB MCP Server",
+                "version": "2.0.0"
+              },
+              "capabilities": {
+                "resources": {
+                  "subscribe": false,
+                  "listChanged": true
+                },
+                "tools": {
+                  "listChanged": true
+                },
+                "prompts": {
+                  "listChanged": true
+                }
+              }
+            },
+            "id": 1
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 2,
+          "method": "tools/list"
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "tools": [
+                {
+                  "name": "population_relation_compile",
+                  "description": "Bind and explain the same complete relationship link projection without executing or calculating members. Parse plan_json as ossie-relation-plan-v1, executed=false and members_computed=false. Four-column projection types are bound, not arbitrary outer SQL or execution success. Logical ordering/encoding steps are descriptions, not a physical plan; private frozen AST SQL is not replayable. Entire captured scope and declared TRUE relationship predicate; max1MiB complete JSON. Execution may exceed result budget even when compile succeeds. Separate calls after operator reload can bind different snapshots; compare identity, rule and hashes. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No date/product scope, import/reload or arbitrary SQL.",
+                  "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                      "relationship": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "relationship"
+                    ]
+                  }
+                },
+                {
+                  "name": "population_relation_objects",
+                  "description": "Return complete source User/date/product plus target User links for one discovered declared relationship. Discover program rules, identity, dependencies and snapshot first. Entire captured root population, selected relationship TRUE predicate only; no extra old qualified concept or implicit date/product filter. Multi-rule union; preserve full tuple, never substitute distinct User or count-only. Parse result_json as ossie-relation-result-v1. Link count is integer text. User/product/target ordered by raw UTF-8 bytes, DATE chronologically; DATE text is DuckDB finite DATE including (BC) and years beyond9999. At most10000 links and1MiB complete internal JSON including metadata; no paging or truncation, no peak-memory/outer-message limit guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. This tool has only relationship, with no date/product scope, generic objects, metrics, states, historical validity, windows, import/reload or arbitrary SQL. Compare canonical relationship, rules, scope, identity and six snapshot hashes.",
+                  "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                      "relationship": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "relationship"
+                    ]
+                  }
+                }
+              ]
+            },
+            "id": 2
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 3,
+          "method": "resources/list"
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "resources": [
+                {
+                  "uri": "ossie://relations/surface",
+                  "name": "ossie://relations/surface",
+                  "description": "Query result in json format (refresh: 0s)",
+                  "mimeType": "application/json"
+                },
+                {
+                  "uri": "ossie://relations/program",
+                  "name": "ossie://relations/program",
+                  "description": "Query result in json format (refresh: 0s)",
+                  "mimeType": "application/json"
+                }
+              ]
+            },
+            "id": 3
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 4,
+          "method": "resources/read",
+          "params": {
+            "uri": "ossie://relations/program"
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "contents": [
+                {
+                  "uri": "ossie://relations/program",
+                  "mimeType": "application/json",
+                  "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-program-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9\\\",\\\"root\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"mapped_user_relation\\\":\\\"user\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"captured_rows\\\":\\\"23\\\",\\\"source_types_bound\\\":true,\\\"load_constraints_validated\\\":true,\\\"query_executed\\\":false,\\\"root_constraints\\\":[\\\"DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0\\\"],\\\"relations\\\":[{\\\"name\\\":\\\"qualified_user\\\",\\\"target_concept\\\":\\\"User\\\",\\\"dependencies\\\":[],\\\"dependency_depth\\\":1,\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\\\",\\\"link_constraints\\\":[]},{\\\"name\\\":\\\"audited_user\\\",\\\"target_concept\\\":\\\"User\\\",\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"dependency_depth\\\":2,\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"link_constraints\\\":[]}],\\\"objects_queryable\\\":true,\\\"mcp_registered\\\":false,\\\"constraint_scope\\\":\\\"entire root or actual complete relation links before atomic publish\\\",\\\"predicate_sql_replayable\\\":false,\\\"json_byte_limit\\\":1048576}\"}]"
+                }
+              ]
+            },
+            "id": 4
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 5,
+          "method": "resources/read",
+          "params": {
+            "uri": "ossie://relations/surface"
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "contents": [
+                {
+                  "uri": "ossie://relations/surface",
+                  "mimeType": "application/json",
+                  "text": "[{\"schema_version\":\"ossie-relation-mcp-surface-v1\",\"tools_json\":\"[\\\"population_relation_compile\\\",\\\"population_relation_objects\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send relationship Strings\"}]"
+                }
+              ]
+            },
+            "id": 5
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 6,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {
+              "relationship": "qualified_user"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-plan-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"qualified_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[],\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"full_link_projection_types_bound\\\":true,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS observations WHERE (CAST(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) AS BOOLEAN) IS NOT DISTINCT FROM true)\\\",\\\"operators\\\":[\\\"frozen full-root projection with relationship TRUE predicate\\\",\\\"preserve complete typed root plus target User link\\\",\\\"raw identity and typed DATE ordering\\\",\\\"complete bounded JSON encoding\\\"]}\"}]"
+                }
+              ]
+            },
+            "id": 6
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 7,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {
+              "relationship": "qualified_user"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-result-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"qualified_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[],\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"links\\\":[[\\\"A\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"A\\\"],[\\\"A\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"A\\\"],[\\\"B\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"B\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"B\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"B\\\"],[\\\"C\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"C\\\"],[\\\"E\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"E\\\"],[\\\"E\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"E\\\"],[\\\"F\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"F\\\"],[\\\"F\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"F\\\"],[\\\"G\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"G\\\"],[\\\"H\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"H\\\"],[\\\"H\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"H\\\"],[\\\"J\\\",\\\"2026-02-03\\\",\\\"X\\\",\\\"J\\\"],[\\\"K\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-01-31\\\",\\\"Y\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"K\\\"]],\\\"link_count\\\":\\\"18\\\"}\"}]"
+                }
+              ]
+            },
+            "id": 7
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 8,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {
+              "relationship": "AUDITED_USER"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-plan-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"audited_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"full_link_projection_types_bound\\\":true,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS observations WHERE (CAST((((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM CAST('t' AS BOOLEAN)) AS BOOLEAN) IS NOT DISTINCT FROM true)\\\",\\\"operators\\\":[\\\"frozen full-root projection with relationship TRUE predicate\\\",\\\"preserve complete typed root plus target User link\\\",\\\"raw identity and typed DATE ordering\\\",\\\"complete bounded JSON encoding\\\"]}\"}]"
+                }
+              ]
+            },
+            "id": 8
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 9,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {
+              "relationship": "AUDITED_USER"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-result-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"audited_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"links\\\":[[\\\"A\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"A\\\"],[\\\"A\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"A\\\"],[\\\"B\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"B\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"B\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"B\\\"],[\\\"C\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"C\\\"],[\\\"E\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"E\\\"],[\\\"E\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"E\\\"],[\\\"F\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"F\\\"],[\\\"F\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"F\\\"],[\\\"G\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"G\\\"],[\\\"H\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"H\\\"],[\\\"H\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"H\\\"],[\\\"J\\\",\\\"2026-02-03\\\",\\\"X\\\",\\\"J\\\"],[\\\"K\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-01-31\\\",\\\"Y\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"K\\\"]],\\\"link_count\\\":\\\"18\\\"}\"}]"
+                }
+              ]
+            },
+            "id": 9
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 10,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {
+              "relationship": "missing"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "error": {
+              "code": -32003,
+              "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"missing\",\"stage\":\"arguments\",\"reason\":\"unknown declared derived relationship\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=missing stage=arguments reason=unknown declared derived relationship missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_relation_compile($relationship)\n                      ^"
+            },
+            "id": 10
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 11,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {}
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "error": {
+              "code": -32003,
+              "message": "Invalid input: missing required fields"
+            },
+            "id": 11
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 12,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {
+              "relationship": "audited_user",
+              "date": "1900-01-01",
+              "products": [],
+              "limit": 1
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-plan-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"audited_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"full_link_projection_types_bound\\\":true,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS observations WHERE (CAST((((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM CAST('t' AS BOOLEAN)) AS BOOLEAN) IS NOT DISTINCT FROM true)\\\",\\\"operators\\\":[\\\"frozen full-root projection with relationship TRUE predicate\\\",\\\"preserve complete typed root plus target User link\\\",\\\"raw identity and typed DATE ordering\\\",\\\"complete bounded JSON encoding\\\"]}\"}]"
+                }
+              ]
+            },
+            "id": 12
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 13,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {
+              "relationship": "missing"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "error": {
+              "code": -32003,
+              "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"missing\",\"stage\":\"arguments\",\"reason\":\"unknown declared derived relationship\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=missing stage=arguments reason=unknown declared derived relationship missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_relation_objects_json($relationship)\n                      ^"
+            },
+            "id": 13
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 14,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {}
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "error": {
+              "code": -32003,
+              "message": "Invalid input: missing required fields"
+            },
+            "id": 14
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 15,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {
+              "relationship": "audited_user",
+              "date": "1900-01-01",
+              "products": [],
+              "limit": 1
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-result-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"audited_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"links\\\":[[\\\"A\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"A\\\"],[\\\"A\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"A\\\"],[\\\"B\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"B\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"B\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"B\\\"],[\\\"C\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"C\\\"],[\\\"E\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"E\\\"],[\\\"E\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"E\\\"],[\\\"F\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"F\\\"],[\\\"F\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"F\\\"],[\\\"G\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"G\\\"],[\\\"H\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"H\\\"],[\\\"H\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"H\\\"],[\\\"J\\\",\\\"2026-02-03\\\",\\\"X\\\",\\\"J\\\"],[\\\"K\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-01-31\\\",\\\"Y\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"K\\\"]],\\\"link_count\\\":\\\"18\\\"}\"}]"
+                }
+              ]
+            },
+            "id": 15
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 16,
+          "method": "tools/call",
+          "params": {
+            "name": "execute_query",
+            "arguments": {}
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "error": {
+              "code": -32002,
+              "message": "Tool not found: execute_query"
+            },
+            "id": 16
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 17,
+          "method": "tools/call",
+          "params": {
+            "name": "query",
+            "arguments": {}
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "error": {
+              "code": -32002,
+              "message": "Tool not found: query"
+            },
+            "id": 17
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 18,
+          "method": "tools/call",
+          "params": {
+            "name": "population_query",
+            "arguments": {}
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "error": {
+              "code": -32002,
+              "message": "Tool not found: population_query"
+            },
+            "id": 18
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 19,
+          "method": "tools/call",
+          "params": {
+            "name": "population_daily_users",
+            "arguments": {}
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "error": {
+              "code": -32002,
+              "message": "Tool not found: population_daily_users"
+            },
+            "id": 19
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 20,
+          "method": "tools/call",
+          "params": {
+            "name": "ossie_bundle_load",
+            "arguments": {}
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "error": {
+              "code": -32002,
+              "message": "Tool not found: ossie_bundle_load"
+            },
+            "id": 20
+          }
+        }
+      ],
+      "cases": [
+        {
+          "name": "qualified_user",
+          "plan": {
+            "schema_version": "ossie-relation-plan-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "qualified_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+            "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [],
+            "derived_by": [
+              "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+            ],
+            "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": false,
+            "members_computed": false,
+            "full_link_projection_types_bound": true,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \"system\".main._ossie_snapshot_rows() AS observations WHERE (CAST(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) AS BOOLEAN) IS NOT DISTINCT FROM true)",
+            "operators": [
+              "frozen full-root projection with relationship TRUE predicate",
+              "preserve complete typed root plus target User link",
+              "raw identity and typed DATE ordering",
+              "complete bounded JSON encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-relation-result-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "qualified_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+            "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [],
+            "derived_by": [
+              "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+            ],
+            "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": true,
+            "members_computed": true,
+            "links": [
+              [
+                "A",
+                "2026-02-01",
+                "X",
+                "A"
+              ],
+              [
+                "A",
+                "2026-02-01",
+                "Y",
+                "A"
+              ],
+              [
+                "B",
+                "2026-01-31",
+                "X",
+                "B"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "X",
+                "B"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "Y",
+                "B"
+              ],
+              [
+                "C",
+                "2026-02-01",
+                "X",
+                "C"
+              ],
+              [
+                "E",
+                "2026-01-31",
+                "X",
+                "E"
+              ],
+              [
+                "E",
+                "2026-02-01",
+                "Y",
+                "E"
+              ],
+              [
+                "F",
+                "2026-01-31",
+                "X",
+                "F"
+              ],
+              [
+                "F",
+                "2026-02-01",
+                "X",
+                "F"
+              ],
+              [
+                "G",
+                "2026-01-31",
+                "X",
+                "G"
+              ],
+              [
+                "H",
+                "2026-01-31",
+                "X",
+                "H"
+              ],
+              [
+                "H",
+                "2026-02-01",
+                "X",
+                "H"
+              ],
+              [
+                "J",
+                "2026-02-03",
+                "X",
+                "J"
+              ],
+              [
+                "K",
+                "2026-01-31",
+                "X",
+                "K"
+              ],
+              [
+                "K",
+                "2026-01-31",
+                "Y",
+                "K"
+              ],
+              [
+                "K",
+                "2026-02-01",
+                "X",
+                "K"
+              ],
+              [
+                "K",
+                "2026-02-01",
+                "Y",
+                "K"
+              ]
+            ],
+            "link_count": "18"
+          },
+          "independent_links": [
+            [
+              "A",
+              "2026-02-01",
+              "X",
+              "A"
+            ],
+            [
+              "A",
+              "2026-02-01",
+              "Y",
+              "A"
+            ],
+            [
+              "B",
+              "2026-01-31",
+              "X",
+              "B"
+            ],
+            [
+              "B",
+              "2026-02-01",
+              "X",
+              "B"
+            ],
+            [
+              "B",
+              "2026-02-01",
+              "Y",
+              "B"
+            ],
+            [
+              "C",
+              "2026-02-01",
+              "X",
+              "C"
+            ],
+            [
+              "E",
+              "2026-01-31",
+              "X",
+              "E"
+            ],
+            [
+              "E",
+              "2026-02-01",
+              "Y",
+              "E"
+            ],
+            [
+              "F",
+              "2026-01-31",
+              "X",
+              "F"
+            ],
+            [
+              "F",
+              "2026-02-01",
+              "X",
+              "F"
+            ],
+            [
+              "G",
+              "2026-01-31",
+              "X",
+              "G"
+            ],
+            [
+              "H",
+              "2026-01-31",
+              "X",
+              "H"
+            ],
+            [
+              "H",
+              "2026-02-01",
+              "X",
+              "H"
+            ],
+            [
+              "J",
+              "2026-02-03",
+              "X",
+              "J"
+            ],
+            [
+              "K",
+              "2026-01-31",
+              "X",
+              "K"
+            ],
+            [
+              "K",
+              "2026-01-31",
+              "Y",
+              "K"
+            ],
+            [
+              "K",
+              "2026-02-01",
+              "X",
+              "K"
+            ],
+            [
+              "K",
+              "2026-02-01",
+              "Y",
+              "K"
+            ]
+          ]
+        },
+        {
+          "name": "AUDITED_USER",
+          "plan": {
+            "schema_version": "ossie-relation-plan-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "audited_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+            "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [
+              "qualified_user"
+            ],
+            "derived_by": [
+              "DailyObservation.qualified_user(User)"
+            ],
+            "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": false,
+            "members_computed": false,
+            "full_link_projection_types_bound": true,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \"system\".main._ossie_snapshot_rows() AS observations WHERE (CAST((((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM CAST('t' AS BOOLEAN)) AS BOOLEAN) IS NOT DISTINCT FROM true)",
+            "operators": [
+              "frozen full-root projection with relationship TRUE predicate",
+              "preserve complete typed root plus target User link",
+              "raw identity and typed DATE ordering",
+              "complete bounded JSON encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-relation-result-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "audited_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+            "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "85f15c9fef96da5a4118e4506935668c0cc8b2c5da2a3c74eb6dc5c5f8fe54d9",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [
+              "qualified_user"
+            ],
+            "derived_by": [
+              "DailyObservation.qualified_user(User)"
+            ],
+            "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": true,
+            "members_computed": true,
+            "links": [
+              [
+                "A",
+                "2026-02-01",
+                "X",
+                "A"
+              ],
+              [
+                "A",
+                "2026-02-01",
+                "Y",
+                "A"
+              ],
+              [
+                "B",
+                "2026-01-31",
+                "X",
+                "B"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "X",
+                "B"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "Y",
+                "B"
+              ],
+              [
+                "C",
+                "2026-02-01",
+                "X",
+                "C"
+              ],
+              [
+                "E",
+                "2026-01-31",
+                "X",
+                "E"
+              ],
+              [
+                "E",
+                "2026-02-01",
+                "Y",
+                "E"
+              ],
+              [
+                "F",
+                "2026-01-31",
+                "X",
+                "F"
+              ],
+              [
+                "F",
+                "2026-02-01",
+                "X",
+                "F"
+              ],
+              [
+                "G",
+                "2026-01-31",
+                "X",
+                "G"
+              ],
+              [
+                "H",
+                "2026-01-31",
+                "X",
+                "H"
+              ],
+              [
+                "H",
+                "2026-02-01",
+                "X",
+                "H"
+              ],
+              [
+                "J",
+                "2026-02-03",
+                "X",
+                "J"
+              ],
+              [
+                "K",
+                "2026-01-31",
+                "X",
+                "K"
+              ],
+              [
+                "K",
+                "2026-01-31",
+                "Y",
+                "K"
+              ],
+              [
+                "K",
+                "2026-02-01",
+                "X",
+                "K"
+              ],
+              [
+                "K",
+                "2026-02-01",
+                "Y",
+                "K"
+              ]
+            ],
+            "link_count": "18"
+          },
+          "independent_links": [
+            [
+              "A",
+              "2026-02-01",
+              "X",
+              "A"
+            ],
+            [
+              "A",
+              "2026-02-01",
+              "Y",
+              "A"
+            ],
+            [
+              "B",
+              "2026-01-31",
+              "X",
+              "B"
+            ],
+            [
+              "B",
+              "2026-02-01",
+              "X",
+              "B"
+            ],
+            [
+              "B",
+              "2026-02-01",
+              "Y",
+              "B"
+            ],
+            [
+              "C",
+              "2026-02-01",
+              "X",
+              "C"
+            ],
+            [
+              "E",
+              "2026-01-31",
+              "X",
+              "E"
+            ],
+            [
+              "E",
+              "2026-02-01",
+              "Y",
+              "E"
+            ],
+            [
+              "F",
+              "2026-01-31",
+              "X",
+              "F"
+            ],
+            [
+              "F",
+              "2026-02-01",
+              "X",
+              "F"
+            ],
+            [
+              "G",
+              "2026-01-31",
+              "X",
+              "G"
+            ],
+            [
+              "H",
+              "2026-01-31",
+              "X",
+              "H"
+            ],
+            [
+              "H",
+              "2026-02-01",
+              "X",
+              "H"
+            ],
+            [
+              "J",
+              "2026-02-03",
+              "X",
+              "J"
+            ],
+            [
+              "K",
+              "2026-01-31",
+              "X",
+              "K"
+            ],
+            [
+              "K",
+              "2026-01-31",
+              "Y",
+              "K"
+            ],
+            [
+              "K",
+              "2026-02-01",
+              "X",
+              "K"
+            ],
+            [
+              "K",
+              "2026-02-01",
+              "Y",
+              "K"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "threshold": 20,
+      "setup": "extended",
+      "discovery": {
+        "tools": [
+          {
+            "name": "population_relation_compile",
+            "description": "Bind and explain the same complete relationship link projection without executing or calculating members. Parse plan_json as ossie-relation-plan-v1, executed=false and members_computed=false. Four-column projection types are bound, not arbitrary outer SQL or execution success. Logical ordering/encoding steps are descriptions, not a physical plan; private frozen AST SQL is not replayable. Entire captured scope and declared TRUE relationship predicate; max1MiB complete JSON. Execution may exceed result budget even when compile succeeds. Separate calls after operator reload can bind different snapshots; compare identity, rule and hashes. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No date/product scope, import/reload or arbitrary SQL.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "relationship": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "relationship"
+              ]
+            }
+          },
+          {
+            "name": "population_relation_objects",
+            "description": "Return complete source User/date/product plus target User links for one discovered declared relationship. Discover program rules, identity, dependencies and snapshot first. Entire captured root population, selected relationship TRUE predicate only; no extra old qualified concept or implicit date/product filter. Multi-rule union; preserve full tuple, never substitute distinct User or count-only. Parse result_json as ossie-relation-result-v1. Link count is integer text. User/product/target ordered by raw UTF-8 bytes, DATE chronologically; DATE text is DuckDB finite DATE including (BC) and years beyond9999. At most10000 links and1MiB complete internal JSON including metadata; no paging or truncation, no peak-memory/outer-message limit guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. This tool has only relationship, with no date/product scope, generic objects, metrics, states, historical validity, windows, import/reload or arbitrary SQL. Compare canonical relationship, rules, scope, identity and six snapshot hashes.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "relationship": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "relationship"
+              ]
+            }
+          }
+        ],
+        "rows": {
+          "ossie://relations/program": [
+            {
+              "program_json": "{\"schema_version\":\"ossie-relation-program-v1\",\"profile\":\"observation-relation-program-v1\",\"snapshot_id\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\",\"content_sha256\":\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1\",\"root\":\"DailyObservation\",\"target_concept\":\"User\",\"mapped_user_relation\":\"user\",\"root_identity_fields\":[\"user_id\",\"ds\",\"product\"],\"root_identity_bound_types\":[\"VARCHAR\",\"DATE\",\"VARCHAR\"],\"captured_rows\":\"23\",\"source_types_bound\":true,\"load_constraints_validated\":true,\"query_executed\":false,\"root_constraints\":[\"DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0\"],\"relations\":[{\"name\":\"qualified_user\",\"target_concept\":\"User\",\"dependencies\":[],\"dependency_depth\":1,\"derived_by\":[\"DailyObservation.classification_value >= 20 AND DailyObservation.user(User)\"],\"bound_predicate\":\"((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL))\",\"link_constraints\":[]},{\"name\":\"audited_user\",\"target_concept\":\"User\",\"dependencies\":[\"qualified_user\"],\"dependency_depth\":2,\"derived_by\":[\"DailyObservation.qualified_user(User)\"],\"bound_predicate\":\"(((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\",\"link_constraints\":[]}],\"objects_queryable\":true,\"mcp_registered\":false,\"constraint_scope\":\"entire root or actual complete relation links before atomic publish\",\"predicate_sql_replayable\":false,\"json_byte_limit\":1048576}"
+            }
+          ],
+          "ossie://relations/surface": [
+            {
+              "schema_version": "ossie-relation-mcp-surface-v1",
+              "tools_json": "[\"population_relation_compile\",\"population_relation_objects\"]",
+              "generic_objects_tool": false,
+              "reload_tool": false,
+              "arbitrary_sql_tool": false,
+              "argument_boundary": "Unknown outer arguments are ignored; clients must send relationship Strings"
+            }
+          ]
+        },
+        "binding": {
+          "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+          "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1"
+        },
+        "program": {
+          "schema_version": "ossie-relation-program-v1",
+          "profile": "observation-relation-program-v1",
+          "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+          "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1",
+          "root": "DailyObservation",
+          "target_concept": "User",
+          "mapped_user_relation": "user",
+          "root_identity_fields": [
+            "user_id",
+            "ds",
+            "product"
+          ],
+          "root_identity_bound_types": [
+            "VARCHAR",
+            "DATE",
+            "VARCHAR"
+          ],
+          "captured_rows": "23",
+          "source_types_bound": true,
+          "load_constraints_validated": true,
+          "query_executed": false,
+          "root_constraints": [
+            "DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0"
+          ],
+          "relations": [
+            {
+              "name": "qualified_user",
+              "target_concept": "User",
+              "dependencies": [],
+              "dependency_depth": 1,
+              "derived_by": [
+                "DailyObservation.classification_value >= 20 AND DailyObservation.user(User)"
+              ],
+              "bound_predicate": "((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL))",
+              "link_constraints": []
+            },
+            {
+              "name": "audited_user",
+              "target_concept": "User",
+              "dependencies": [
+                "qualified_user"
+              ],
+              "dependency_depth": 2,
+              "derived_by": [
+                "DailyObservation.qualified_user(User)"
+              ],
+              "bound_predicate": "(((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+              "link_constraints": []
+            }
+          ],
+          "objects_queryable": true,
+          "mcp_registered": false,
+          "constraint_scope": "entire root or actual complete relation links before atomic publish",
+          "predicate_sql_replayable": false,
+          "json_byte_limit": 1048576
+        }
+      },
+      "events": [
+        {
+          "kind": "rpc_request",
+          "id": 1,
+          "method": "initialize",
+          "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {
+              "name": "ossie-observation-preflight",
+              "version": "1"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "protocolVersion": "2024-11-05",
+              "serverInfo": {
+                "name": "DuckDB MCP Server",
+                "version": "2.0.0"
+              },
+              "capabilities": {
+                "resources": {
+                  "subscribe": false,
+                  "listChanged": true
+                },
+                "tools": {
+                  "listChanged": true
+                },
+                "prompts": {
+                  "listChanged": true
+                }
+              }
+            },
+            "id": 1
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 2,
+          "method": "tools/list"
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "tools": [
+                {
+                  "name": "population_relation_compile",
+                  "description": "Bind and explain the same complete relationship link projection without executing or calculating members. Parse plan_json as ossie-relation-plan-v1, executed=false and members_computed=false. Four-column projection types are bound, not arbitrary outer SQL or execution success. Logical ordering/encoding steps are descriptions, not a physical plan; private frozen AST SQL is not replayable. Entire captured scope and declared TRUE relationship predicate; max1MiB complete JSON. Execution may exceed result budget even when compile succeeds. Separate calls after operator reload can bind different snapshots; compare identity, rule and hashes. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No date/product scope, import/reload or arbitrary SQL.",
+                  "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                      "relationship": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "relationship"
+                    ]
+                  }
+                },
+                {
+                  "name": "population_relation_objects",
+                  "description": "Return complete source User/date/product plus target User links for one discovered declared relationship. Discover program rules, identity, dependencies and snapshot first. Entire captured root population, selected relationship TRUE predicate only; no extra old qualified concept or implicit date/product filter. Multi-rule union; preserve full tuple, never substitute distinct User or count-only. Parse result_json as ossie-relation-result-v1. Link count is integer text. User/product/target ordered by raw UTF-8 bytes, DATE chronologically; DATE text is DuckDB finite DATE including (BC) and years beyond9999. At most10000 links and1MiB complete internal JSON including metadata; no paging or truncation, no peak-memory/outer-message limit guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. This tool has only relationship, with no date/product scope, generic objects, metrics, states, historical validity, windows, import/reload or arbitrary SQL. Compare canonical relationship, rules, scope, identity and six snapshot hashes.",
+                  "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                      "relationship": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "relationship"
+                    ]
+                  }
+                }
+              ]
+            },
+            "id": 2
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 3,
+          "method": "resources/list"
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "resources": [
+                {
+                  "uri": "ossie://relations/surface",
+                  "name": "ossie://relations/surface",
+                  "description": "Query result in json format (refresh: 0s)",
+                  "mimeType": "application/json"
+                },
+                {
+                  "uri": "ossie://relations/program",
+                  "name": "ossie://relations/program",
+                  "description": "Query result in json format (refresh: 0s)",
+                  "mimeType": "application/json"
+                }
+              ]
+            },
+            "id": 3
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 4,
+          "method": "resources/read",
+          "params": {
+            "uri": "ossie://relations/program"
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "contents": [
+                {
+                  "uri": "ossie://relations/program",
+                  "mimeType": "application/json",
+                  "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-program-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1\\\",\\\"root\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"mapped_user_relation\\\":\\\"user\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"captured_rows\\\":\\\"23\\\",\\\"source_types_bound\\\":true,\\\"load_constraints_validated\\\":true,\\\"query_executed\\\":false,\\\"root_constraints\\\":[\\\"DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0\\\"],\\\"relations\\\":[{\\\"name\\\":\\\"qualified_user\\\",\\\"target_concept\\\":\\\"User\\\",\\\"dependencies\\\":[],\\\"dependency_depth\\\":1,\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 20 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL))\\\",\\\"link_constraints\\\":[]},{\\\"name\\\":\\\"audited_user\\\",\\\"target_concept\\\":\\\"User\\\",\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"dependency_depth\\\":2,\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"link_constraints\\\":[]}],\\\"objects_queryable\\\":true,\\\"mcp_registered\\\":false,\\\"constraint_scope\\\":\\\"entire root or actual complete relation links before atomic publish\\\",\\\"predicate_sql_replayable\\\":false,\\\"json_byte_limit\\\":1048576}\"}]"
+                }
+              ]
+            },
+            "id": 4
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 5,
+          "method": "resources/read",
+          "params": {
+            "uri": "ossie://relations/surface"
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "contents": [
+                {
+                  "uri": "ossie://relations/surface",
+                  "mimeType": "application/json",
+                  "text": "[{\"schema_version\":\"ossie-relation-mcp-surface-v1\",\"tools_json\":\"[\\\"population_relation_compile\\\",\\\"population_relation_objects\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send relationship Strings\"}]"
+                }
+              ]
+            },
+            "id": 5
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 6,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {
+              "relationship": "qualified_user"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-plan-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"qualified_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[],\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 20 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL))\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"full_link_projection_types_bound\\\":true,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS observations WHERE (CAST(((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) AS BOOLEAN) IS NOT DISTINCT FROM true)\\\",\\\"operators\\\":[\\\"frozen full-root projection with relationship TRUE predicate\\\",\\\"preserve complete typed root plus target User link\\\",\\\"raw identity and typed DATE ordering\\\",\\\"complete bounded JSON encoding\\\"]}\"}]"
+                }
+              ]
+            },
+            "id": 6
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 7,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {
+              "relationship": "qualified_user"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-result-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"qualified_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[],\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 20 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL))\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"links\\\":[[\\\"B\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"B\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"B\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"B\\\"],[\\\"K\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-01-31\\\",\\\"Y\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"K\\\"]],\\\"link_count\\\":\\\"7\\\"}\"}]"
+                }
+              ]
+            },
+            "id": 7
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 8,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {
+              "relationship": "AUDITED_USER"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-plan-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"audited_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"full_link_projection_types_bound\\\":true,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS observations WHERE (CAST((((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM CAST('t' AS BOOLEAN)) AS BOOLEAN) IS NOT DISTINCT FROM true)\\\",\\\"operators\\\":[\\\"frozen full-root projection with relationship TRUE predicate\\\",\\\"preserve complete typed root plus target User link\\\",\\\"raw identity and typed DATE ordering\\\",\\\"complete bounded JSON encoding\\\"]}\"}]"
+                }
+              ]
+            },
+            "id": 8
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 9,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {
+              "relationship": "AUDITED_USER"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-result-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"audited_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1\\\",\\\"content_sha256\\\":\\\"8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"links\\\":[[\\\"B\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"B\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"B\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"B\\\"],[\\\"K\\\",\\\"2026-01-31\\\",\\\"X\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-01-31\\\",\\\"Y\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-02-01\\\",\\\"X\\\",\\\"K\\\"],[\\\"K\\\",\\\"2026-02-01\\\",\\\"Y\\\",\\\"K\\\"]],\\\"link_count\\\":\\\"7\\\"}\"}]"
+                }
+              ]
+            },
+            "id": 9
+          }
+        }
+      ],
+      "cases": [
+        {
+          "name": "qualified_user",
+          "plan": {
+            "schema_version": "ossie-relation-plan-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "qualified_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+            "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [],
+            "derived_by": [
+              "DailyObservation.classification_value >= 20 AND DailyObservation.user(User)"
+            ],
+            "bound_predicate": "((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL))",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": false,
+            "members_computed": false,
+            "full_link_projection_types_bound": true,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \"system\".main._ossie_snapshot_rows() AS observations WHERE (CAST(((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) AS BOOLEAN) IS NOT DISTINCT FROM true)",
+            "operators": [
+              "frozen full-root projection with relationship TRUE predicate",
+              "preserve complete typed root plus target User link",
+              "raw identity and typed DATE ordering",
+              "complete bounded JSON encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-relation-result-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "qualified_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+            "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [],
+            "derived_by": [
+              "DailyObservation.classification_value >= 20 AND DailyObservation.user(User)"
+            ],
+            "bound_predicate": "((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL))",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": true,
+            "members_computed": true,
+            "links": [
+              [
+                "B",
+                "2026-01-31",
+                "X",
+                "B"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "X",
+                "B"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "Y",
+                "B"
+              ],
+              [
+                "K",
+                "2026-01-31",
+                "X",
+                "K"
+              ],
+              [
+                "K",
+                "2026-01-31",
+                "Y",
+                "K"
+              ],
+              [
+                "K",
+                "2026-02-01",
+                "X",
+                "K"
+              ],
+              [
+                "K",
+                "2026-02-01",
+                "Y",
+                "K"
+              ]
+            ],
+            "link_count": "7"
+          },
+          "independent_links": [
+            [
+              "B",
+              "2026-01-31",
+              "X",
+              "B"
+            ],
+            [
+              "B",
+              "2026-02-01",
+              "X",
+              "B"
+            ],
+            [
+              "B",
+              "2026-02-01",
+              "Y",
+              "B"
+            ],
+            [
+              "K",
+              "2026-01-31",
+              "X",
+              "K"
+            ],
+            [
+              "K",
+              "2026-01-31",
+              "Y",
+              "K"
+            ],
+            [
+              "K",
+              "2026-02-01",
+              "X",
+              "K"
+            ],
+            [
+              "K",
+              "2026-02-01",
+              "Y",
+              "K"
+            ]
+          ]
+        },
+        {
+          "name": "AUDITED_USER",
+          "plan": {
+            "schema_version": "ossie-relation-plan-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "audited_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+            "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [
+              "qualified_user"
+            ],
+            "derived_by": [
+              "DailyObservation.qualified_user(User)"
+            ],
+            "bound_predicate": "(((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": false,
+            "members_computed": false,
+            "full_link_projection_types_bound": true,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \"system\".main._ossie_snapshot_rows() AS observations WHERE (CAST((((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM CAST('t' AS BOOLEAN)) AS BOOLEAN) IS NOT DISTINCT FROM true)",
+            "operators": [
+              "frozen full-root projection with relationship TRUE predicate",
+              "preserve complete typed root plus target User link",
+              "raw identity and typed DATE ordering",
+              "complete bounded JSON encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-relation-result-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "audited_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:1",
+            "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "896141bb10815dd21fa6663483cf6e5cb56ca43e7296c6ab0001ba54718d6664",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "2af60edc7c45f58c7b46bfe31a2ecdb07e0578b9281b09a76c0b69bda243dfe1",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [
+              "qualified_user"
+            ],
+            "derived_by": [
+              "DailyObservation.qualified_user(User)"
+            ],
+            "bound_predicate": "(((observations.classification_value >= 20) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": true,
+            "members_computed": true,
+            "links": [
+              [
+                "B",
+                "2026-01-31",
+                "X",
+                "B"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "X",
+                "B"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "Y",
+                "B"
+              ],
+              [
+                "K",
+                "2026-01-31",
+                "X",
+                "K"
+              ],
+              [
+                "K",
+                "2026-01-31",
+                "Y",
+                "K"
+              ],
+              [
+                "K",
+                "2026-02-01",
+                "X",
+                "K"
+              ],
+              [
+                "K",
+                "2026-02-01",
+                "Y",
+                "K"
+              ]
+            ],
+            "link_count": "7"
+          },
+          "independent_links": [
+            [
+              "B",
+              "2026-01-31",
+              "X",
+              "B"
+            ],
+            [
+              "B",
+              "2026-02-01",
+              "X",
+              "B"
+            ],
+            [
+              "B",
+              "2026-02-01",
+              "Y",
+              "B"
+            ],
+            [
+              "K",
+              "2026-01-31",
+              "X",
+              "K"
+            ],
+            [
+              "K",
+              "2026-01-31",
+              "Y",
+              "K"
+            ],
+            [
+              "K",
+              "2026-02-01",
+              "X",
+              "K"
+            ],
+            [
+              "K",
+              "2026-02-01",
+              "Y",
+              "K"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "threshold": 10,
+      "setup": "empty",
+      "discovery": {
+        "tools": [
+          {
+            "name": "population_relation_compile",
+            "description": "Bind and explain the same complete relationship link projection without executing or calculating members. Parse plan_json as ossie-relation-plan-v1, executed=false and members_computed=false. Four-column projection types are bound, not arbitrary outer SQL or execution success. Logical ordering/encoding steps are descriptions, not a physical plan; private frozen AST SQL is not replayable. Entire captured scope and declared TRUE relationship predicate; max1MiB complete JSON. Execution may exceed result budget even when compile succeeds. Separate calls after operator reload can bind different snapshots; compare identity, rule and hashes. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No date/product scope, import/reload or arbitrary SQL.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "relationship": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "relationship"
+              ]
+            }
+          },
+          {
+            "name": "population_relation_objects",
+            "description": "Return complete source User/date/product plus target User links for one discovered declared relationship. Discover program rules, identity, dependencies and snapshot first. Entire captured root population, selected relationship TRUE predicate only; no extra old qualified concept or implicit date/product filter. Multi-rule union; preserve full tuple, never substitute distinct User or count-only. Parse result_json as ossie-relation-result-v1. Link count is integer text. User/product/target ordered by raw UTF-8 bytes, DATE chronologically; DATE text is DuckDB finite DATE including (BC) and years beyond9999. At most10000 links and1MiB complete internal JSON including metadata; no paging or truncation, no peak-memory/outer-message limit guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. This tool has only relationship, with no date/product scope, generic objects, metrics, states, historical validity, windows, import/reload or arbitrary SQL. Compare canonical relationship, rules, scope, identity and six snapshot hashes.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "relationship": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "relationship"
+              ]
+            }
+          }
+        ],
+        "rows": {
+          "ossie://relations/program": [
+            {
+              "program_json": "{\"schema_version\":\"ossie-relation-program-v1\",\"profile\":\"observation-relation-program-v1\",\"snapshot_id\":\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1\",\"content_sha256\":\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57\",\"root\":\"DailyObservation\",\"target_concept\":\"User\",\"mapped_user_relation\":\"user\",\"root_identity_fields\":[\"user_id\",\"ds\",\"product\"],\"root_identity_bound_types\":[\"VARCHAR\",\"DATE\",\"VARCHAR\"],\"captured_rows\":\"0\",\"source_types_bound\":true,\"load_constraints_validated\":true,\"query_executed\":false,\"root_constraints\":[\"DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0\"],\"relations\":[{\"name\":\"qualified_user\",\"target_concept\":\"User\",\"dependencies\":[],\"dependency_depth\":1,\"derived_by\":[\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\"],\"bound_predicate\":\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\",\"link_constraints\":[]},{\"name\":\"audited_user\",\"target_concept\":\"User\",\"dependencies\":[\"qualified_user\"],\"dependency_depth\":2,\"derived_by\":[\"DailyObservation.qualified_user(User)\"],\"bound_predicate\":\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\",\"link_constraints\":[]}],\"objects_queryable\":true,\"mcp_registered\":false,\"constraint_scope\":\"entire root or actual complete relation links before atomic publish\",\"predicate_sql_replayable\":false,\"json_byte_limit\":1048576}"
+            }
+          ],
+          "ossie://relations/surface": [
+            {
+              "schema_version": "ossie-relation-mcp-surface-v1",
+              "tools_json": "[\"population_relation_compile\",\"population_relation_objects\"]",
+              "generic_objects_tool": false,
+              "reload_tool": false,
+              "arbitrary_sql_tool": false,
+              "argument_boundary": "Unknown outer arguments are ignored; clients must send relationship Strings"
+            }
+          ]
+        },
+        "binding": {
+          "snapshot_id": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1",
+          "content_sha256": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57"
+        },
+        "program": {
+          "schema_version": "ossie-relation-program-v1",
+          "profile": "observation-relation-program-v1",
+          "snapshot_id": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1",
+          "content_sha256": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57",
+          "root": "DailyObservation",
+          "target_concept": "User",
+          "mapped_user_relation": "user",
+          "root_identity_fields": [
+            "user_id",
+            "ds",
+            "product"
+          ],
+          "root_identity_bound_types": [
+            "VARCHAR",
+            "DATE",
+            "VARCHAR"
+          ],
+          "captured_rows": "0",
+          "source_types_bound": true,
+          "load_constraints_validated": true,
+          "query_executed": false,
+          "root_constraints": [
+            "DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0"
+          ],
+          "relations": [
+            {
+              "name": "qualified_user",
+              "target_concept": "User",
+              "dependencies": [],
+              "dependency_depth": 1,
+              "derived_by": [
+                "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+              ],
+              "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+              "link_constraints": []
+            },
+            {
+              "name": "audited_user",
+              "target_concept": "User",
+              "dependencies": [
+                "qualified_user"
+              ],
+              "dependency_depth": 2,
+              "derived_by": [
+                "DailyObservation.qualified_user(User)"
+              ],
+              "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+              "link_constraints": []
+            }
+          ],
+          "objects_queryable": true,
+          "mcp_registered": false,
+          "constraint_scope": "entire root or actual complete relation links before atomic publish",
+          "predicate_sql_replayable": false,
+          "json_byte_limit": 1048576
+        }
+      },
+      "events": [
+        {
+          "kind": "rpc_request",
+          "id": 1,
+          "method": "initialize",
+          "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {
+              "name": "ossie-observation-preflight",
+              "version": "1"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "protocolVersion": "2024-11-05",
+              "serverInfo": {
+                "name": "DuckDB MCP Server",
+                "version": "2.0.0"
+              },
+              "capabilities": {
+                "resources": {
+                  "subscribe": false,
+                  "listChanged": true
+                },
+                "tools": {
+                  "listChanged": true
+                },
+                "prompts": {
+                  "listChanged": true
+                }
+              }
+            },
+            "id": 1
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 2,
+          "method": "tools/list"
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "tools": [
+                {
+                  "name": "population_relation_compile",
+                  "description": "Bind and explain the same complete relationship link projection without executing or calculating members. Parse plan_json as ossie-relation-plan-v1, executed=false and members_computed=false. Four-column projection types are bound, not arbitrary outer SQL or execution success. Logical ordering/encoding steps are descriptions, not a physical plan; private frozen AST SQL is not replayable. Entire captured scope and declared TRUE relationship predicate; max1MiB complete JSON. Execution may exceed result budget even when compile succeeds. Separate calls after operator reload can bind different snapshots; compare identity, rule and hashes. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No date/product scope, import/reload or arbitrary SQL.",
+                  "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                      "relationship": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "relationship"
+                    ]
+                  }
+                },
+                {
+                  "name": "population_relation_objects",
+                  "description": "Return complete source User/date/product plus target User links for one discovered declared relationship. Discover program rules, identity, dependencies and snapshot first. Entire captured root population, selected relationship TRUE predicate only; no extra old qualified concept or implicit date/product filter. Multi-rule union; preserve full tuple, never substitute distinct User or count-only. Parse result_json as ossie-relation-result-v1. Link count is integer text. User/product/target ordered by raw UTF-8 bytes, DATE chronologically; DATE text is DuckDB finite DATE including (BC) and years beyond9999. At most10000 links and1MiB complete internal JSON including metadata; no paging or truncation, no peak-memory/outer-message limit guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. This tool has only relationship, with no date/product scope, generic objects, metrics, states, historical validity, windows, import/reload or arbitrary SQL. Compare canonical relationship, rules, scope, identity and six snapshot hashes.",
+                  "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                      "relationship": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "relationship"
+                    ]
+                  }
+                }
+              ]
+            },
+            "id": 2
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 3,
+          "method": "resources/list"
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "resources": [
+                {
+                  "uri": "ossie://relations/surface",
+                  "name": "ossie://relations/surface",
+                  "description": "Query result in json format (refresh: 0s)",
+                  "mimeType": "application/json"
+                },
+                {
+                  "uri": "ossie://relations/program",
+                  "name": "ossie://relations/program",
+                  "description": "Query result in json format (refresh: 0s)",
+                  "mimeType": "application/json"
+                }
+              ]
+            },
+            "id": 3
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 4,
+          "method": "resources/read",
+          "params": {
+            "uri": "ossie://relations/program"
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "contents": [
+                {
+                  "uri": "ossie://relations/program",
+                  "mimeType": "application/json",
+                  "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-program-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"snapshot_id\\\":\\\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1\\\",\\\"content_sha256\\\":\\\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57\\\",\\\"root\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"mapped_user_relation\\\":\\\"user\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"captured_rows\\\":\\\"0\\\",\\\"source_types_bound\\\":true,\\\"load_constraints_validated\\\":true,\\\"query_executed\\\":false,\\\"root_constraints\\\":[\\\"DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0\\\"],\\\"relations\\\":[{\\\"name\\\":\\\"qualified_user\\\",\\\"target_concept\\\":\\\"User\\\",\\\"dependencies\\\":[],\\\"dependency_depth\\\":1,\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\\\",\\\"link_constraints\\\":[]},{\\\"name\\\":\\\"audited_user\\\",\\\"target_concept\\\":\\\"User\\\",\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"dependency_depth\\\":2,\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"link_constraints\\\":[]}],\\\"objects_queryable\\\":true,\\\"mcp_registered\\\":false,\\\"constraint_scope\\\":\\\"entire root or actual complete relation links before atomic publish\\\",\\\"predicate_sql_replayable\\\":false,\\\"json_byte_limit\\\":1048576}\"}]"
+                }
+              ]
+            },
+            "id": 4
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 5,
+          "method": "resources/read",
+          "params": {
+            "uri": "ossie://relations/surface"
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "contents": [
+                {
+                  "uri": "ossie://relations/surface",
+                  "mimeType": "application/json",
+                  "text": "[{\"schema_version\":\"ossie-relation-mcp-surface-v1\",\"tools_json\":\"[\\\"population_relation_compile\\\",\\\"population_relation_objects\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send relationship Strings\"}]"
+                }
+              ]
+            },
+            "id": 5
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 6,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {
+              "relationship": "qualified_user"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-plan-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"qualified_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1\\\",\\\"content_sha256\\\":\\\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[],\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"full_link_projection_types_bound\\\":true,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS observations WHERE (CAST(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) AS BOOLEAN) IS NOT DISTINCT FROM true)\\\",\\\"operators\\\":[\\\"frozen full-root projection with relationship TRUE predicate\\\",\\\"preserve complete typed root plus target User link\\\",\\\"raw identity and typed DATE ordering\\\",\\\"complete bounded JSON encoding\\\"]}\"}]"
+                }
+              ]
+            },
+            "id": 6
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 7,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {
+              "relationship": "qualified_user"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-result-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"qualified_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1\\\",\\\"content_sha256\\\":\\\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[],\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"links\\\":[],\\\"link_count\\\":\\\"0\\\"}\"}]"
+                }
+              ]
+            },
+            "id": 7
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 8,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {
+              "relationship": "AUDITED_USER"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-plan-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"audited_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1\\\",\\\"content_sha256\\\":\\\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"full_link_projection_types_bound\\\":true,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS observations WHERE (CAST((((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM CAST('t' AS BOOLEAN)) AS BOOLEAN) IS NOT DISTINCT FROM true)\\\",\\\"operators\\\":[\\\"frozen full-root projection with relationship TRUE predicate\\\",\\\"preserve complete typed root plus target User link\\\",\\\"raw identity and typed DATE ordering\\\",\\\"complete bounded JSON encoding\\\"]}\"}]"
+                }
+              ]
+            },
+            "id": 8
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 9,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {
+              "relationship": "AUDITED_USER"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-result-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"audited_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1\\\",\\\"content_sha256\\\":\\\"91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"links\\\":[],\\\"link_count\\\":\\\"0\\\"}\"}]"
+                }
+              ]
+            },
+            "id": 9
+          }
+        }
+      ],
+      "cases": [
+        {
+          "name": "qualified_user",
+          "plan": {
+            "schema_version": "ossie-relation-plan-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "qualified_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1",
+            "content_sha256": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [],
+            "derived_by": [
+              "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+            ],
+            "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": false,
+            "members_computed": false,
+            "full_link_projection_types_bound": true,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \"system\".main._ossie_snapshot_rows() AS observations WHERE (CAST(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) AS BOOLEAN) IS NOT DISTINCT FROM true)",
+            "operators": [
+              "frozen full-root projection with relationship TRUE predicate",
+              "preserve complete typed root plus target User link",
+              "raw identity and typed DATE ordering",
+              "complete bounded JSON encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-relation-result-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "qualified_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1",
+            "content_sha256": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [],
+            "derived_by": [
+              "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+            ],
+            "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": true,
+            "members_computed": true,
+            "links": [],
+            "link_count": "0"
+          },
+          "independent_links": []
+        },
+        {
+          "name": "AUDITED_USER",
+          "plan": {
+            "schema_version": "ossie-relation-plan-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "audited_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1",
+            "content_sha256": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [
+              "qualified_user"
+            ],
+            "derived_by": [
+              "DailyObservation.qualified_user(User)"
+            ],
+            "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": false,
+            "members_computed": false,
+            "full_link_projection_types_bound": true,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \"system\".main._ossie_snapshot_rows() AS observations WHERE (CAST((((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM CAST('t' AS BOOLEAN)) AS BOOLEAN) IS NOT DISTINCT FROM true)",
+            "operators": [
+              "frozen full-root projection with relationship TRUE predicate",
+              "preserve complete typed root plus target User link",
+              "raw identity and typed DATE ordering",
+              "complete bounded JSON encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-relation-result-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "audited_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e:1",
+            "content_sha256": "91fa9d9d42edaeec905954bf95f6974c77b0baec8425b154b3dc5af52996183e",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "33a11af0833eace2c64e3e20a52f9d0844c6d76dc2eab522780c55811eafbe57",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [
+              "qualified_user"
+            ],
+            "derived_by": [
+              "DailyObservation.qualified_user(User)"
+            ],
+            "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": true,
+            "members_computed": true,
+            "links": [],
+            "link_count": "0"
+          },
+          "independent_links": []
+        }
+      ]
+    },
+    {
+      "threshold": 10,
+      "setup": "wide",
+      "discovery": {
+        "tools": [
+          {
+            "name": "population_relation_compile",
+            "description": "Bind and explain the same complete relationship link projection without executing or calculating members. Parse plan_json as ossie-relation-plan-v1, executed=false and members_computed=false. Four-column projection types are bound, not arbitrary outer SQL or execution success. Logical ordering/encoding steps are descriptions, not a physical plan; private frozen AST SQL is not replayable. Entire captured scope and declared TRUE relationship predicate; max1MiB complete JSON. Execution may exceed result budget even when compile succeeds. Separate calls after operator reload can bind different snapshots; compare identity, rule and hashes. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No date/product scope, import/reload or arbitrary SQL.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "relationship": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "relationship"
+              ]
+            }
+          },
+          {
+            "name": "population_relation_objects",
+            "description": "Return complete source User/date/product plus target User links for one discovered declared relationship. Discover program rules, identity, dependencies and snapshot first. Entire captured root population, selected relationship TRUE predicate only; no extra old qualified concept or implicit date/product filter. Multi-rule union; preserve full tuple, never substitute distinct User or count-only. Parse result_json as ossie-relation-result-v1. Link count is integer text. User/product/target ordered by raw UTF-8 bytes, DATE chronologically; DATE text is DuckDB finite DATE including (BC) and years beyond9999. At most10000 links and1MiB complete internal JSON including metadata; no paging or truncation, no peak-memory/outer-message limit guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. This tool has only relationship, with no date/product scope, generic objects, metrics, states, historical validity, windows, import/reload or arbitrary SQL. Compare canonical relationship, rules, scope, identity and six snapshot hashes.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "relationship": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "relationship"
+              ]
+            }
+          }
+        ],
+        "rows": {
+          "ossie://relations/program": [
+            {
+              "program_json": "{\"schema_version\":\"ossie-relation-program-v1\",\"profile\":\"observation-relation-program-v1\",\"snapshot_id\":\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1\",\"content_sha256\":\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c\",\"root\":\"DailyObservation\",\"target_concept\":\"User\",\"mapped_user_relation\":\"user\",\"root_identity_fields\":[\"user_id\",\"ds\",\"product\"],\"root_identity_bound_types\":[\"VARCHAR\",\"DATE\",\"VARCHAR\"],\"captured_rows\":\"3\",\"source_types_bound\":true,\"load_constraints_validated\":true,\"query_executed\":false,\"root_constraints\":[\"DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0\"],\"relations\":[{\"name\":\"qualified_user\",\"target_concept\":\"User\",\"dependencies\":[],\"dependency_depth\":1,\"derived_by\":[\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\"],\"bound_predicate\":\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\",\"link_constraints\":[]},{\"name\":\"audited_user\",\"target_concept\":\"User\",\"dependencies\":[\"qualified_user\"],\"dependency_depth\":2,\"derived_by\":[\"DailyObservation.qualified_user(User)\"],\"bound_predicate\":\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\",\"link_constraints\":[]}],\"objects_queryable\":true,\"mcp_registered\":false,\"constraint_scope\":\"entire root or actual complete relation links before atomic publish\",\"predicate_sql_replayable\":false,\"json_byte_limit\":1048576}"
+            }
+          ],
+          "ossie://relations/surface": [
+            {
+              "schema_version": "ossie-relation-mcp-surface-v1",
+              "tools_json": "[\"population_relation_compile\",\"population_relation_objects\"]",
+              "generic_objects_tool": false,
+              "reload_tool": false,
+              "arbitrary_sql_tool": false,
+              "argument_boundary": "Unknown outer arguments are ignored; clients must send relationship Strings"
+            }
+          ]
+        },
+        "binding": {
+          "snapshot_id": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1",
+          "content_sha256": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c"
+        },
+        "program": {
+          "schema_version": "ossie-relation-program-v1",
+          "profile": "observation-relation-program-v1",
+          "snapshot_id": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1",
+          "content_sha256": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660",
+          "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+          "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+          "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+          "manifest_sha256": "f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c",
+          "root": "DailyObservation",
+          "target_concept": "User",
+          "mapped_user_relation": "user",
+          "root_identity_fields": [
+            "user_id",
+            "ds",
+            "product"
+          ],
+          "root_identity_bound_types": [
+            "VARCHAR",
+            "DATE",
+            "VARCHAR"
+          ],
+          "captured_rows": "3",
+          "source_types_bound": true,
+          "load_constraints_validated": true,
+          "query_executed": false,
+          "root_constraints": [
+            "DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0"
+          ],
+          "relations": [
+            {
+              "name": "qualified_user",
+              "target_concept": "User",
+              "dependencies": [],
+              "dependency_depth": 1,
+              "derived_by": [
+                "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+              ],
+              "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+              "link_constraints": []
+            },
+            {
+              "name": "audited_user",
+              "target_concept": "User",
+              "dependencies": [
+                "qualified_user"
+              ],
+              "dependency_depth": 2,
+              "derived_by": [
+                "DailyObservation.qualified_user(User)"
+              ],
+              "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+              "link_constraints": []
+            }
+          ],
+          "objects_queryable": true,
+          "mcp_registered": false,
+          "constraint_scope": "entire root or actual complete relation links before atomic publish",
+          "predicate_sql_replayable": false,
+          "json_byte_limit": 1048576
+        }
+      },
+      "events": [
+        {
+          "kind": "rpc_request",
+          "id": 1,
+          "method": "initialize",
+          "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {
+              "name": "ossie-observation-preflight",
+              "version": "1"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "protocolVersion": "2024-11-05",
+              "serverInfo": {
+                "name": "DuckDB MCP Server",
+                "version": "2.0.0"
+              },
+              "capabilities": {
+                "resources": {
+                  "subscribe": false,
+                  "listChanged": true
+                },
+                "tools": {
+                  "listChanged": true
+                },
+                "prompts": {
+                  "listChanged": true
+                }
+              }
+            },
+            "id": 1
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 2,
+          "method": "tools/list"
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "tools": [
+                {
+                  "name": "population_relation_compile",
+                  "description": "Bind and explain the same complete relationship link projection without executing or calculating members. Parse plan_json as ossie-relation-plan-v1, executed=false and members_computed=false. Four-column projection types are bound, not arbitrary outer SQL or execution success. Logical ordering/encoding steps are descriptions, not a physical plan; private frozen AST SQL is not replayable. Entire captured scope and declared TRUE relationship predicate; max1MiB complete JSON. Execution may exceed result budget even when compile succeeds. Separate calls after operator reload can bind different snapshots; compare identity, rule and hashes. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No date/product scope, import/reload or arbitrary SQL.",
+                  "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                      "relationship": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "relationship"
+                    ]
+                  }
+                },
+                {
+                  "name": "population_relation_objects",
+                  "description": "Return complete source User/date/product plus target User links for one discovered declared relationship. Discover program rules, identity, dependencies and snapshot first. Entire captured root population, selected relationship TRUE predicate only; no extra old qualified concept or implicit date/product filter. Multi-rule union; preserve full tuple, never substitute distinct User or count-only. Parse result_json as ossie-relation-result-v1. Link count is integer text. User/product/target ordered by raw UTF-8 bytes, DATE chronologically; DATE text is DuckDB finite DATE including (BC) and years beyond9999. At most10000 links and1MiB complete internal JSON including metadata; no paging or truncation, no peak-memory/outer-message limit guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. This tool has only relationship, with no date/product scope, generic objects, metrics, states, historical validity, windows, import/reload or arbitrary SQL. Compare canonical relationship, rules, scope, identity and six snapshot hashes.",
+                  "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                      "relationship": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "relationship"
+                    ]
+                  }
+                }
+              ]
+            },
+            "id": 2
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 3,
+          "method": "resources/list"
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "resources": [
+                {
+                  "uri": "ossie://relations/surface",
+                  "name": "ossie://relations/surface",
+                  "description": "Query result in json format (refresh: 0s)",
+                  "mimeType": "application/json"
+                },
+                {
+                  "uri": "ossie://relations/program",
+                  "name": "ossie://relations/program",
+                  "description": "Query result in json format (refresh: 0s)",
+                  "mimeType": "application/json"
+                }
+              ]
+            },
+            "id": 3
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 4,
+          "method": "resources/read",
+          "params": {
+            "uri": "ossie://relations/program"
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "contents": [
+                {
+                  "uri": "ossie://relations/program",
+                  "mimeType": "application/json",
+                  "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-program-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"snapshot_id\\\":\\\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1\\\",\\\"content_sha256\\\":\\\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c\\\",\\\"root\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"mapped_user_relation\\\":\\\"user\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"captured_rows\\\":\\\"3\\\",\\\"source_types_bound\\\":true,\\\"load_constraints_validated\\\":true,\\\"query_executed\\\":false,\\\"root_constraints\\\":[\\\"DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0\\\"],\\\"relations\\\":[{\\\"name\\\":\\\"qualified_user\\\",\\\"target_concept\\\":\\\"User\\\",\\\"dependencies\\\":[],\\\"dependency_depth\\\":1,\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\\\",\\\"link_constraints\\\":[]},{\\\"name\\\":\\\"audited_user\\\",\\\"target_concept\\\":\\\"User\\\",\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"dependency_depth\\\":2,\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"link_constraints\\\":[]}],\\\"objects_queryable\\\":true,\\\"mcp_registered\\\":false,\\\"constraint_scope\\\":\\\"entire root or actual complete relation links before atomic publish\\\",\\\"predicate_sql_replayable\\\":false,\\\"json_byte_limit\\\":1048576}\"}]"
+                }
+              ]
+            },
+            "id": 4
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 5,
+          "method": "resources/read",
+          "params": {
+            "uri": "ossie://relations/surface"
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "contents": [
+                {
+                  "uri": "ossie://relations/surface",
+                  "mimeType": "application/json",
+                  "text": "[{\"schema_version\":\"ossie-relation-mcp-surface-v1\",\"tools_json\":\"[\\\"population_relation_compile\\\",\\\"population_relation_objects\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send relationship Strings\"}]"
+                }
+              ]
+            },
+            "id": 5
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 6,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {
+              "relationship": "qualified_user"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-plan-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"qualified_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1\\\",\\\"content_sha256\\\":\\\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[],\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"full_link_projection_types_bound\\\":true,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS observations WHERE (CAST(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) AS BOOLEAN) IS NOT DISTINCT FROM true)\\\",\\\"operators\\\":[\\\"frozen full-root projection with relationship TRUE predicate\\\",\\\"preserve complete typed root plus target User link\\\",\\\"raw identity and typed DATE ordering\\\",\\\"complete bounded JSON encoding\\\"]}\"}]"
+                }
+              ]
+            },
+            "id": 6
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 7,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {
+              "relationship": "qualified_user"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-result-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"qualified_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1\\\",\\\"content_sha256\\\":\\\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[],\\\"derived_by\\\":[\\\"DailyObservation.classification_value >= 10 AND DailyObservation.user(User)\\\"],\\\"bound_predicate\\\":\\\"((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"links\\\":[[\\\"D\\\",\\\"0001-01-01 (BC)\\\",\\\"X\\\",\\\"D\\\"],[\\\"D\\\",\\\"2026-01-01\\\",\\\"X\\\",\\\"D\\\"],[\\\"D\\\",\\\"10000-01-01\\\",\\\"X\\\",\\\"D\\\"]],\\\"link_count\\\":\\\"3\\\"}\"}]"
+                }
+              ]
+            },
+            "id": 7
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 8,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_compile",
+            "arguments": {
+              "relationship": "AUDITED_USER"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-plan-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"audited_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1\\\",\\\"content_sha256\\\":\\\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"full_link_projection_types_bound\\\":true,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS observations WHERE (CAST((((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM CAST('t' AS BOOLEAN)) AS BOOLEAN) IS NOT DISTINCT FROM true)\\\",\\\"operators\\\":[\\\"frozen full-root projection with relationship TRUE predicate\\\",\\\"preserve complete typed root plus target User link\\\",\\\"raw identity and typed DATE ordering\\\",\\\"complete bounded JSON encoding\\\"]}\"}]"
+                }
+              ]
+            },
+            "id": 8
+          }
+        },
+        {
+          "kind": "rpc_request",
+          "id": 9,
+          "method": "tools/call",
+          "params": {
+            "name": "population_relation_objects",
+            "arguments": {
+              "relationship": "AUDITED_USER"
+            }
+          }
+        },
+        {
+          "kind": "rpc_response",
+          "reply": {
+            "jsonrpc": "2.0",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-relation-result-v1\\\",\\\"profile\\\":\\\"observation-relation-program-v1\\\",\\\"relationship\\\":\\\"audited_user\\\",\\\"root_concept\\\":\\\"DailyObservation\\\",\\\"target_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"target_identity_field\\\":\\\"user_id\\\",\\\"target_identity_bound_type\\\":\\\"VARCHAR\\\",\\\"snapshot_id\\\":\\\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1\\\",\\\"content_sha256\\\":\\\"6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660\\\",\\\"core_sha256\\\":\\\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\\\",\\\"ontology_sha256\\\":\\\"d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588\\\",\\\"mapping_sha256\\\":\\\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\\\",\\\"manifest_sha256\\\":\\\"f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c\\\",\\\"root_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"root_identity_bound_types\\\":[\\\"VARCHAR\\\",\\\"DATE\\\",\\\"VARCHAR\\\"],\\\"scope\\\":\\\"entire captured root population; selected relationship predicate only\\\",\\\"qualification\\\":\\\"TRUE only\\\",\\\"load_constraints_validated\\\":true,\\\"dependencies\\\":[\\\"qualified_user\\\"],\\\"derived_by\\\":[\\\"DailyObservation.qualified_user(User)\\\"],\\\"bound_predicate\\\":\\\"(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)\\\",\\\"ordering\\\":\\\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes\\\",\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"links\\\":[[\\\"D\\\",\\\"0001-01-01 (BC)\\\",\\\"X\\\",\\\"D\\\"],[\\\"D\\\",\\\"2026-01-01\\\",\\\"X\\\",\\\"D\\\"],[\\\"D\\\",\\\"10000-01-01\\\",\\\"X\\\",\\\"D\\\"]],\\\"link_count\\\":\\\"3\\\"}\"}]"
+                }
+              ]
+            },
+            "id": 9
+          }
+        }
+      ],
+      "cases": [
+        {
+          "name": "qualified_user",
+          "plan": {
+            "schema_version": "ossie-relation-plan-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "qualified_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1",
+            "content_sha256": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [],
+            "derived_by": [
+              "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+            ],
+            "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": false,
+            "members_computed": false,
+            "full_link_projection_types_bound": true,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \"system\".main._ossie_snapshot_rows() AS observations WHERE (CAST(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) AS BOOLEAN) IS NOT DISTINCT FROM true)",
+            "operators": [
+              "frozen full-root projection with relationship TRUE predicate",
+              "preserve complete typed root plus target User link",
+              "raw identity and typed DATE ordering",
+              "complete bounded JSON encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-relation-result-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "qualified_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1",
+            "content_sha256": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [],
+            "derived_by": [
+              "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+            ],
+            "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": true,
+            "members_computed": true,
+            "links": [
+              [
+                "D",
+                "0001-01-01 (BC)",
+                "X",
+                "D"
+              ],
+              [
+                "D",
+                "2026-01-01",
+                "X",
+                "D"
+              ],
+              [
+                "D",
+                "10000-01-01",
+                "X",
+                "D"
+              ]
+            ],
+            "link_count": "3"
+          },
+          "independent_links": [
+            [
+              "D",
+              "0001-01-01 (BC)",
+              "X",
+              "D"
+            ],
+            [
+              "D",
+              "2026-01-01",
+              "X",
+              "D"
+            ],
+            [
+              "D",
+              "10000-01-01",
+              "X",
+              "D"
+            ]
+          ]
+        },
+        {
+          "name": "AUDITED_USER",
+          "plan": {
+            "schema_version": "ossie-relation-plan-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "audited_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1",
+            "content_sha256": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [
+              "qualified_user"
+            ],
+            "derived_by": [
+              "DailyObservation.qualified_user(User)"
+            ],
+            "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": false,
+            "members_computed": false,
+            "full_link_projection_types_bound": true,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observations.user_id, observations.ds, observations.product, observations.user_id FROM \"system\".main._ossie_snapshot_rows() AS observations WHERE (CAST((((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM CAST('t' AS BOOLEAN)) AS BOOLEAN) IS NOT DISTINCT FROM true)",
+            "operators": [
+              "frozen full-root projection with relationship TRUE predicate",
+              "preserve complete typed root plus target User link",
+              "raw identity and typed DATE ordering",
+              "complete bounded JSON encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-relation-result-v1",
+            "profile": "observation-relation-program-v1",
+            "relationship": "audited_user",
+            "root_concept": "DailyObservation",
+            "target_concept": "User",
+            "target_identity_relationship": "id",
+            "target_identity_field": "user_id",
+            "target_identity_bound_type": "VARCHAR",
+            "snapshot_id": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660:1",
+            "content_sha256": "6c634e90c7c343f089aab727ca889779d1d51671f7236fb505a19cbf26d1a660",
+            "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+            "ontology_sha256": "d46b8cb912a4108a297031eaf421da053bd6b35d7d9e57e1e3e5de2e548cc588",
+            "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+            "manifest_sha256": "f46b0f1d34579bb70f3fd7c1cc159ba64743e3bf780c19fa496920a1d462e28c",
+            "root_identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "root_identity_bound_types": [
+              "VARCHAR",
+              "DATE",
+              "VARCHAR"
+            ],
+            "scope": "entire captured root population; selected relationship predicate only",
+            "qualification": "TRUE only",
+            "load_constraints_validated": true,
+            "dependencies": [
+              "qualified_user"
+            ],
+            "derived_by": [
+              "DailyObservation.qualified_user(User)"
+            ],
+            "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+            "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "executed": true,
+            "members_computed": true,
+            "links": [
+              [
+                "D",
+                "0001-01-01 (BC)",
+                "X",
+                "D"
+              ],
+              [
+                "D",
+                "2026-01-01",
+                "X",
+                "D"
+              ],
+              [
+                "D",
+                "10000-01-01",
+                "X",
+                "D"
+              ]
+            ],
+            "link_count": "3"
+          },
+          "independent_links": [
+            [
+              "D",
+              "0001-01-01 (BC)",
+              "X",
+              "D"
+            ],
+            [
+              "D",
+              "2026-01-01",
+              "X",
+              "D"
+            ],
+            [
+              "D",
+              "10000-01-01",
+              "X",
+              "D"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "real_model_calls": 0
+}

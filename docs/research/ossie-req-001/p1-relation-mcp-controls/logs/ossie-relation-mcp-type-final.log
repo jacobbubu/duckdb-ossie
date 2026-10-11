@@ -1,0 +1,2 @@
+$ bun x --bun --no-install tsc --noEmit
+test/tooling/relation_result.test.ts(95,50): error TS2304: Cannot find name 'scene'.

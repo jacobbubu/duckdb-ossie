@@ -1521,3 +1521,19 @@ MCP/无模型/混合粒度/窗口/状态历史决策/tidy/历史审计均保留�
 排序取消和只绑定投影类型的声明已修正，原始失败保留。MCP未注册，旧回归不等于
 新MCP验收。下一行动为新profile MCP/严格输出解析和无模型演练，其他五类P1及
 待答状态/历史业务问题没有移除。无真实模型、推送/远端CI/Linux tidy/发布声明。
+
+### P1关系MCP实施 checkpoint（2026-10-11）
+
+沿OSSIE-REQ-001的新关系对象契约建立独立发现/两工具与严格decoder，保留原三个
+server；实际MCP测试比较完整links和规则/身份/六hash，而不是只测试schema成功。
+宽DATE/原始字节/全输出预算及upstream外参数忽略边界均需验证；无真实模型/推送。
+
+### P1关系MCP本地验收（2026-10-11）
+
+[审查与证据](research/ossie-req-001/p1-relation-mcp-controls/review.md)及
+[使用契约](population-relations.md)支持新独立两工具/两资源；14实际MCP检查/
+13拒绝、完整10000links/raw/宽DATE与有限端点通过。requested declaration比较
+与独立oracle分开，修复负无穷哨兵误收；六测试反证同成员错关系/共同错身份与
+结构不等于成员真值。Bun116/522、质量/旧MCP/每日离线回归通过。新关系Agent
+协议/无模型档案及重放仍是下一切片，原所有P1/业务待决事项未移除。没有模型
+调用或推送，原生证据沿未变SHA上一包，远端CI/tidy仍未验证。

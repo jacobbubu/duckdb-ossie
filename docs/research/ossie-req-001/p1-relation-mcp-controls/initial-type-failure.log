@@ -1,0 +1,4 @@
+$ bun x --bun --no-install tsc --noEmit
+scripts/relation_result.ts(167,11): error TS7022: 'link' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+scripts/verify_relation_mcp.ts(131,23): error TS2352: Conversion of type 'RelationEnvelope' to type '{ link_count: unknown; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'link_count' is missing in type 'RelationEnvelope' but required in type '{ link_count: unknown; }'.
