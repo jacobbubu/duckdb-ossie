@@ -16,7 +16,7 @@
     "sql": {
       "raw_sha256": "0f0e00aac1c6fc91365f711ca287f394319f90f6a5b19042ace3828ff1402ec6",
       "exit_code": 0,
-      "public_sha256": "0f0e00aac1c6fc91365f711ca287f394319f90f6a5b19042ace3828ff1402ec6"
+      "public_sha256": "cd166109e7d7fa993d8cd4145da676016b0d7933b687f75f0482aed6371a2c8d"
     },
     "fact": {
       "raw_sha256": "1d9df583cfa3d742de7729edc98cb2e10200aa3f05efe6b20021742630d0b4c0",
@@ -59,5 +59,7 @@
   },
   "real_model_requests": 0,
   "remote_ci_run": false,
-  "pushed": false
+  "pushed": false,
+  "public_log_transform": "replace worktree path; remove final blank SQL log line; raw files remain unchanged",
+  "delivery_check_note": "First cached diff check found a trailing empty SQL log line; public derivative corrected with updated hash."
 }

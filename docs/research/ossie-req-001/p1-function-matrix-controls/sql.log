@@ -30,4 +30,3 @@ Filters: test/sql/ossie*
 [27/27] (100%): test/sql/ossie_validate.test
 ===============================================================================
 All tests passed (1026 assertions in 27 test cases)
-
