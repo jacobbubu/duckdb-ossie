@@ -163,6 +163,8 @@ publication, concurrent readers, post-capture source mutation, cancellation and
 prepared snapshots. Existing P0 checks separately protect both legacy profiles,
 including their current MCP example. CI repeats observation artifact checks on
 its existing Linux/macOS matrix; this local run does not establish those remote
-results. New-profile MCP wiring and a real Agent trial remain later scope.
+results. New-profile MCP wiring and four isolated no-model preparations are now locally
+verified; see [the MCP/Agent preparation guide](agent-observation-acceptance.md).
+A real observation Agent trial remains unrun.
 No pagination, automatic calendar completion or arbitrary ontology execution is
 added.

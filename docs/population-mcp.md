@@ -3,7 +3,10 @@
 [population_server.sql](../examples/population_server.sql) exposes the frozen
 population APIs through three separate tools and four readable discovery resources.
 It imports the reviewed 475-row GAAP fixture and loads the threshold-10 manifest
-before starting stdio. The ordinary core-model server remains a separate example.
+before starting stdio. The ordinary core-model server remains a separate example. The new daily
+observation profile has a separate [observation server](../examples/observation_server.sql)
+and [no-model preparation guide](agent-observation-acceptance.md); its concepts
+resource uses v2. The legacy server below keeps its current v1 discovery.
 
 Run from the repository root with a stock DuckDB 1.5.6 CLI:
 

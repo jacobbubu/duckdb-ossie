@@ -1,0 +1,27 @@
+{
+  "mode": "discovery-only",
+  "model_called": false,
+  "provider_config_read": false,
+  "head": "5c7f79580786d7d0b4fd4fbd555463ee3620c09d",
+  "dirty": "M docs/ossie-execution-research.md\n M ossie-duckdb-plan.md\n?? docs/research/ossie-req-001/multi-period-research/mcp-agent-design.md\n?? docs/research/ossie-req-001/observation-mcp-controls/\n?? examples/observation_server.sql\n?? scripts/agent_observation_acceptance.ts\n?? scripts/observation_evidence.ts\n?? scripts/observation_mcp.ts\n?? scripts/verify_observation_mcp.ts\n?? test/tooling/observation_agent.test.ts",
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "install_path": "/Users/rongshen/.duckdb/extensions/v1.5.6/osx_arm64/duckdb_mcp.duckdb_extension",
+    "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+    "extension_sha256": "b012058ed30639a899ad20efdff18a5cd637077408c4b65d570b40d87dbf8db3",
+    "server_sha256": "3b2b04eb1c81d5b43ddad8cc43d858992055ba5d9b7343b66429ca4c98fdc1c4"
+  },
+  "hashes": {
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/examples/observation_server.sql": "3b2b04eb1c81d5b43ddad8cc43d858992055ba5d9b7343b66429ca4c98fdc1c4",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/docs/research/ossie-req-001/multi-period-research/observations.csv": "bfd38a0130028fe5829aa45e40dce8ac12e228cc2cc61e2f08f293493764f441",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/agent_observation_acceptance.ts": "064575d8e67a8d7adbd393ad01b82704f85d1947759f15d19fa6cb471d94c9b6",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/observation_mcp.ts": "fce410d2515b442d14ea5f8eb9e92495587ac6a1391bc44391b81639615e987d",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/observation_evidence.ts": "b4dd65d2b18cab259c8693c3388f6526cbbc415210ef9e4d23475261dbebf2ad",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/population_result.ts": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2"
+  },
+  "scope": "MCP discovery preparation, not Agent acceptance"
+}

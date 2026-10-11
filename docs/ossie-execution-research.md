@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-10。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。真实 Agent 工作已从研究推进至[最小程序实施与本地验证](agent-minimal-acceptance.md)，用户指定了网关/模型/凭据变量；三场景真实运行及委托Lead的口径/数据复核已完成，用户接受限定结论；原始失败与pending字段保持历史状态，数据真实性局限另记。P1重复实体/观察粒度研究、明确契约及最小实现设计已完成，尚未实施；分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
+日期：2026-10-11。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。真实 Agent 工作已从研究推进至[最小程序实施与本地验证](agent-minimal-acceptance.md)，用户指定了网关/模型/凭据变量；三场景真实运行及委托Lead的口径/数据复核已完成，用户接受限定结论；原始失败与pending字段保持历史状态，数据真实性局限另记。观察粒度 SQL 最小切片已在本地完成，新观察 MCP 接入/无模型 Agent 准备工作包已本地完成；真实观察 Agent 验收尚未运行。分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -982,3 +982,31 @@ SQL metadata库存测试还要求21注册/19名字；新增v2后应22/20，更�
 2026-10-11 最终收敛：[verification-final.json](research/ossie-req-001/observation-schema-controls/verification-final.json) 对最终b012058e产物记录25观察检查/48拒绝、19状态/42粒度/210捕获原生检查、24 SQL/931断言、63 Bun及格式/类型/架构通过。同SHA下旧两profile完整A1-A8、stock CLI/MCP/typed通过。新增默认nocase/noaccent负环境、真实拼接碰撞及prepared控制；Engine私有SESSION固定binary，caller/global配置不变，外层SQL仍遵循调用方。按既定设计补齐组件relationship与嵌套User.id referent，旧v2适配保留原dataset/field；计划/能力声明内部binary。中间legacy原件迁至ignored本地归档，逐文件哈希全同，公开[存档索引](research/ossie-req-001/observation-schema-controls/intermediate-evidence.json)与最终证据，未覆写任何原始记录。
 
 本地切片完成且可审阅；远端CI/tidy、新profile MCP/真实Agent仍未验收，后续需要单独授权相关工作。未推送、未增加模型请求或通用P1/分页。
+
+### 观察 profile MCP 接入与最小 Agent 用例研究 checkpoint（2026-10-11）
+
+用户授权先研究新观察 profile 的 MCP 接入和最小 Agent 验收，本轮只读代码/既有证据并形成设计，不实施生产接口、不调用真实模型、不推送。复用 OSSIE-REQ-001 的现有多期工作项；现有观察 SQL 本地验收与两个旧 profile 回归作为前置证据。核对发现旧 MCP concepts 资源仍调用单身份入口，旧 Agent 数值检查固定 GAAP 字段且仅按值寻找引用，均不能直接声明支持观察 profile。比较后续事项后先确定隔离示例、v2 发现、三工具复用及分母/引用门禁，分页与通用 P1 保持后续。因发现版本和验收边界存在架构取舍，复用既有 Advisor 一轮只读反证；Lead 核实后记录方案与实施前置条件。
+
+### 观察 MCP/Agent 最小研究方案完成（2026-10-11）
+
+完成 [接入与四场景设计](research/ossie-req-001/multi-period-research/mcp-agent-design.md)：独立观察示例固定 v2 concepts，复用三工具/四 URI/typed result-v1；独立 Agent 驱动复用 Responses 循环，保护旧两个 profile。四个场景为全范围五指标、正式规则变化、每日与区间 distinct 对比、每天合格的注册能力拒绝。先做无模型真实 MCP 预检及离线证据门禁，后续真实调用另需明确四场景授权/预算。当前未创建这些实现或调用模型。
+
+只读 Bun bigint cents/User Set 重算原八行 SHA bfd38a01，与已有 oracle 对应：threshold10=6/3/5/31/6.2，threshold20=3/1/3/17/(17/3)，每日 User1与3、区间3；这是计算研究，不是新 MCP/Agent 验收。实际源码核对旧 concepts 拒绝新 profile、capabilities 的嵌套 concept_discovery 指定 v2；通用顶层 discovery-v1 不能用于猜测概念结构。现旧 Agent checker 的按值搜索无法自动证明同一范围/行的支持，方案改为逐主张绑定实际请求/列/行/六哈希，允许同范围分次查询；无法自动证明的范围保留语义评审。
+
+复用一轮只读 Advisor（requested Astra/high；effective backend/effort/usage/billing unknown），落实缓存按服务器隔离、注册能力与数据可计算性区分、独立预检/真实进程、四场景32模型请求/48工具调用上限。Lead 选择明确“每天都合格”边界题，不混合期末/用户均值，并要求通用 system 约束不以客户端重算能力外指标替代。研究包完成，下一必要动作是授权实施独立 MCP 示例、无模型预检、观察 driver 的 prepare 与离线门禁；新观察 MCP/真实 Agent、远端 CI/tidy仍未验收，分页/通用P1保留后续，不推送。
+
+### 观察 MCP 无模型接入实施 checkpoint（2026-10-11）
+
+用户继续上一方案，授权实施独立观察 MCP 示例、stock stdio 预检、prepare-only 驱动及离线证据门禁。本轮不提供真实运行入口、不读取模型配置或私有 .env_test、不推送。先核对实际发现/计划/typed carrier，再实现逐主张绑定控制；保留两个旧 profile 的示例及验收行为，使用现有本地 b012058e 产物进行同产物回归。范围无法自动证明时明确待语义评审，不能增加不完整通用 SQL 解析器。
+
+### 观察 MCP 接入及无模型 Agent 准备本地完成（2026-10-11）
+
+新增独立 [观察 MCP 示例](../examples/observation_server.sql) 和 [准备说明](agent-observation-acceptance.md)，三个工具/四 URI 保持，concepts 使用 v2；固定每进程一个已冻结 bundle，禁用原始 SQL/导入/改规则入口。新增 Bun stock stdio 预检及 prepare-only 驱动，四场景各自新进程，model-context 仅含正式资源/工具/system/问题，不注入oracle或预检结果，不读取模型环境配置/.env_test，也没有 --run 入口。真实模型请求为0。
+
+最终 [verification.json](research/ossie-req-001/observation-mcp-controls/verification.json) 绑定实现、测试及报告。新观察真实 MCP43检查/38拒绝，包含typed对象/五指标/日期产品分组、全NULL/空集、v2结构/五字段类型、六哈希与plan-v2、fail-fast/recovery；其中16检查将真实carrier送入逐主张门禁，覆盖五指标和完整对象按日推导。四个准备场景通过。同SHA b012058e下旧两个profile的MCP330检查/106拒绝通过；旧示例/driver/decoder/C++/fixture未改。本轮无native重跑或远端CI/tidy声明。全部78 Bun/311 expects以及format/typecheck/architecture通过，新增15测试/46 expects覆盖范围/分母/引用/哈希/完整typed对象等实际失败路径。
+
+保留两次实际MCP预检失败：first.json把qualified对象列写成非qualified；second.json对未注册metric错误码预期写成UNSUPPORTED_CAPABILITY，实际为INVALID_REQUEST。按接口真实行为修正测试，未修改生产迎合测试；首份保留诊断，第二份及之后保留已完成RPC事件。其文件SHA见verification的本地归档索引。范围规范化初次TypeScript字符串边界窄化为never导致typecheck失败，显式字符串比较修正后通过。既有原始数据/实验记录未覆写。
+
+复用现有Advisor一轮只读反证（requested Astra/high；effective backend/effort/usage/billing unknown）。Lead落实：日期范围写宽但fixture成员一样只能pending；unknown filter不能掩盖错metric/group/type/value；成功RPC关联器拒绝error/isError/跨场景/重复ID；objects先校验完整实际范围后可按日推导；identity dataset及五字段类型额外核对。有限literal日期规范化允许等价上下界，其余合法表达式保持待语义审阅，不冒充通用SQL证明。机械检查即使通过仍overall pending semantic review，不冒充真实Agent或人工裁定。
+
+当前授权工作包本地完成，可审阅。下一必要工作为实现真实观察Agent运行入口/离线事件重放与私有证据归档，再明确四场景运行授权与预算；当前不调用模型、不推送/合并/发布。远端CI/tidy、通用P1/分页仍保留在原issue，不能以此工作包结束替代整体交付。

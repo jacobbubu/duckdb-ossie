@@ -1,0 +1,266 @@
+[
+  {
+    "kind": "rpc_request",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2024-11-05",
+      "capabilities": {},
+      "clientInfo": {
+        "name": "ossie-observation-preflight",
+        "version": "1"
+      }
+    }
+  },
+  {
+    "kind": "rpc_response",
+    "reply": {
+      "jsonrpc": "2.0",
+      "result": {
+        "protocolVersion": "2024-11-05",
+        "serverInfo": {
+          "name": "DuckDB MCP Server",
+          "version": "2.0.0"
+        },
+        "capabilities": {
+          "resources": {
+            "subscribe": false,
+            "listChanged": true
+          },
+          "tools": {
+            "listChanged": true
+          },
+          "prompts": {
+            "listChanged": true
+          }
+        }
+      },
+      "id": 1
+    }
+  },
+  {
+    "kind": "rpc_request",
+    "id": 2,
+    "method": "tools/list"
+  },
+  {
+    "kind": "rpc_response",
+    "reply": {
+      "jsonrpc": "2.0",
+      "result": {
+        "tools": [
+          {
+            "name": "population_compile",
+            "description": "Inspect diagnostic SQL, plan-v2 and the bound definition/snapshot hashes without executing. Observation tuple identity differs from referenced User identity. User is referent-only. Same list encoding as population_query; empty metrics selects objects and requires empty dimensions. Diagnostic SQL needs an internal AST dependency and cannot be replayed as ordinary SQL. A separate call after operator reload may bind a different snapshot; compare the execution envelope hashes, including empty results.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "metrics": {
+                  "type": "string"
+                },
+                "filters": {
+                  "type": "string"
+                },
+                "dimensions": {
+                  "type": "string"
+                },
+                "concept": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "concept",
+                "metrics",
+                "dimensions",
+                "filters"
+              ]
+            }
+          },
+          {
+            "name": "population_query",
+            "description": "Aggregate a discovered queryable observation concept. Read concepts-v2, metrics, fields and capabilities first. User is referent-only. Only discovered date/product fields may group. Distinct User count means at least one qualifying observation within the requested scope; it cannot be added across groups. Observation AVG divides by nonnull observation amounts, not Users. Only registered metric expressions are supported. Lists are JSON-encoded string arrays. Result is a single result_json carrier: parse ossie-population-result-v1 columns and row arrays. Integer/Decimal cells are exact strings, IEEE float cells are approximate strings with explicit non-finite values; NULL stays null. Check snapshot hashes even for empty results. Groups are sparse, unsorted and unpaged; combined requests bind separately.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "metrics": {
+                  "type": "string"
+                },
+                "filters": {
+                  "type": "string"
+                },
+                "dimensions": {
+                  "type": "string"
+                },
+                "concept": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "concept",
+                "metrics",
+                "dimensions",
+                "filters"
+              ]
+            }
+          },
+          {
+            "name": "population_objects",
+            "description": "List observations in an exact discovered queryable concept. Read concepts-v2: User is referent-only and cannot be queried. Identity is the ordered typed User/date/product tuple; no synthetic record id. filters is a JSON-encoded array of predicate strings; use \"[]\" for none. Filters only narrow the formal rule. Result is a single result_json carrier: parse it as ossie-population-result-v1 with bound column types and row arrays. Numeric cells are strings, NULL stays null. Results are unsorted and unpaged; even empty results carry snapshot hashes.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "filters": {
+                  "type": "string"
+                },
+                "concept": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "concept",
+                "filters"
+              ]
+            }
+          }
+        ]
+      },
+      "id": 2
+    }
+  },
+  {
+    "kind": "rpc_request",
+    "id": 3,
+    "method": "resources/list"
+  },
+  {
+    "kind": "rpc_response",
+    "reply": {
+      "jsonrpc": "2.0",
+      "result": {
+        "resources": [
+          {
+            "uri": "ossie://population/capabilities",
+            "name": "ossie://population/capabilities",
+            "description": "Query result in json format (refresh: 0s)",
+            "mimeType": "application/json"
+          },
+          {
+            "uri": "ossie://population/metrics",
+            "name": "ossie://population/metrics",
+            "description": "Query result in json format (refresh: 0s)",
+            "mimeType": "application/json"
+          },
+          {
+            "uri": "ossie://population/fields",
+            "name": "ossie://population/fields",
+            "description": "Query result in json format (refresh: 0s)",
+            "mimeType": "application/json"
+          },
+          {
+            "uri": "ossie://population/concepts",
+            "name": "ossie://population/concepts",
+            "description": "Query result in json format (refresh: 0s)",
+            "mimeType": "application/json"
+          }
+        ]
+      },
+      "id": 3
+    }
+  },
+  {
+    "kind": "rpc_request",
+    "id": 4,
+    "method": "resources/read",
+    "params": {
+      "uri": "ossie://population/capabilities"
+    }
+  },
+  {
+    "kind": "rpc_response",
+    "reply": {
+      "jsonrpc": "2.0",
+      "result": {
+        "contents": [
+          {
+            "uri": "ossie://population/capabilities",
+            "mimeType": "application/json",
+            "text": "[{\"api_version\":\"2.1.0\",\"discovery_schema\":\"ossie-population-discovery-v1\",\"plan_schema\":\"ossie-population-plan-v2\",\"ossie_spec_version\":\"0.2.0.dev0\",\"capabilities_json\":\"{\\\"scope\\\":\\\"bound frozen bundle\\\",\\\"concepts\\\":[\\\"User\\\",\\\"DailyObservation\\\",\\\"QualifiedObservation\\\"],\\\"engine\\\":{\\\"version\\\":\\\"v1.5.6\\\",\\\"source_id\\\":\\\"069cc9f9b5\\\"},\\\"supported_profiles\\\":[\\\"gaap-scalar-population-v1\\\",\\\"fact-dimension-population-v1\\\",\\\"daily-observation-population-v1\\\"],\\\"validation\\\":\\\"all declarations pass load AST/type/individual expression binding preflight; fields projected together; each metric without grouping; combined requests require separate binding\\\",\\\"input_limits\\\":{\\\"rows_per_input\\\":10000,\\\"physical_columns_per_input\\\":256,\\\"canonical_bytes_per_input_or_joined_result\\\":16777216,\\\"peak_memory_bound\\\":false},\\\"request_limits\\\":{\\\"metrics\\\":64,\\\"dimensions\\\":256,\\\"filters\\\":64},\\\"execution\\\":{\\\"source\\\":\\\"committed native DuckDB tables\\\",\\\"reload\\\":\\\"explicit operator reload\\\",\\\"identity\\\":\\\"typed User/date/product observation tuple; repeated User allowed\\\",\\\"filters\\\":\\\"strict scalar predicates narrow the concept rule\\\",\\\"time\\\":\\\"DATE; no inferred range or calendar completion\\\",\\\"live_query_join\\\":false,\\\"capture_join\\\":null},\\\"results\\\":{\\\"ordering\\\":\\\"unspecified\\\",\\\"groups\\\":\\\"sparse\\\",\\\"paging\\\":false,\\\"query_truncation\\\":false,\\\"empty_result_row_trace\\\":false},\\\"compile\\\":{\\\"executed\\\":false,\\\"physical_plan\\\":false,\\\"final_output_binding\\\":false,\\\"sql_replayable\\\":false},\\\"mcp_example\\\":{\\\"list_encoding\\\":\\\"JSON-encoded string arrays\\\",\\\"exact_numeric_transport_verified\\\":false,\\\"result_schema\\\":\\\"ossie-population-result-v1\\\",\\\"numeric_encoding\\\":\\\"typed strings\\\",\\\"transport_size_and_truncation_verified\\\":\\\"fixed fixtures only\\\"},\\\"uniform_errors\\\":true,\\\"error_contract\\\":{\\\"schema\\\":\\\"ossie-population-error-v1\\\",\\\"scope\\\":\\\"recoverable population callback errors and JSON list helper\\\",\\\"external_boundaries\\\":[\\\"SQL signature/conversion before callbacks\\\",\\\"outer table output binding\\\",\\\"MCP missing argument/unknown tool/protocol\\\",\\\"cancellation/fatal/internal/OOM/unknown native failures\\\"]},\\\"arbitrary_ontology_execution\\\":false,\\\"cross_call_reload_atomicity\\\":false,\\\"concept_discovery\\\":{\\\"function\\\":\\\"ossie_concepts_v2\\\",\\\"schema\\\":\\\"ossie-population-concepts-v2\\\"},\\\"observation_contract\\\":{\\\"groupable_fields\\\":[\\\"observations.ds\\\",\\\"observations.product\\\"],\\\"internal_string_comparison\\\":\\\"binary\\\",\\\"user_queryable\\\":false,\\\"user_count_scope\\\":\\\"existential distinct projection of qualifying observations in requested scope\\\",\\\"mean_denominator\\\":\\\"nonnull observation amounts\\\",\\\"metric_forms\\\":\\\"COUNT(user), COUNT(DISTINCT user), COUNT(amount), SUM(amount), AVG(amount)\\\"}}\",\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"}]"
+          }
+        ]
+      },
+      "id": 4
+    }
+  },
+  {
+    "kind": "rpc_request",
+    "id": 5,
+    "method": "resources/read",
+    "params": {
+      "uri": "ossie://population/concepts"
+    }
+  },
+  {
+    "kind": "rpc_response",
+    "reply": {
+      "jsonrpc": "2.0",
+      "result": {
+        "contents": [
+          {
+            "uri": "ossie://population/concepts",
+            "mimeType": "application/json",
+            "text": "[{\"concept\":\"User\",\"parent\":null,\"derived_by\":null,\"identity_components_json\":\"[{\\\"relationship\\\":\\\"id\\\",\\\"dataset\\\":\\\"observations\\\",\\\"field\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"}]\",\"referenced_entity_identity_json\":null,\"objects_queryable\":false,\"metrics_queryable\":false,\"captured_observation_rows\":8,\"captured_user_count\":4,\"profile\":\"daily-observation-population-v1\",\"source\":\"memory.main.observations\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"},{\"concept\":\"DailyObservation\",\"parent\":null,\"derived_by\":null,\"identity_components_json\":\"[{\\\"relationship\\\":\\\"user\\\",\\\"dataset\\\":\\\"observations\\\",\\\"field\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"referent\\\":{\\\"concept\\\":\\\"User\\\",\\\"relationship\\\":\\\"id\\\"}},{\\\"relationship\\\":\\\"date\\\",\\\"dataset\\\":\\\"observations\\\",\\\"field\\\":\\\"ds\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"relationship\\\":\\\"product\\\",\\\"dataset\\\":\\\"observations\\\",\\\"field\\\":\\\"product\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"}]\",\"referenced_entity_identity_json\":\"{\\\"concept\\\":\\\"User\\\",\\\"components\\\":[{\\\"relationship\\\":\\\"id\\\",\\\"dataset\\\":\\\"observations\\\",\\\"field\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"}],\\\"entity_equals_record\\\":false,\\\"projection\\\":\\\"distinct User IDs in the requested observation scope\\\",\\\"objects_queryable\\\":false,\\\"metrics_queryable\\\":false}\",\"objects_queryable\":true,\"metrics_queryable\":true,\"captured_observation_rows\":8,\"captured_user_count\":4,\"profile\":\"daily-observation-population-v1\",\"source\":\"memory.main.observations\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"},{\"concept\":\"QualifiedObservation\",\"parent\":\"DailyObservation\",\"derived_by\":\"DailyObservation.classification_value >= 10\",\"identity_components_json\":\"[{\\\"relationship\\\":\\\"user\\\",\\\"dataset\\\":\\\"observations\\\",\\\"field\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"referent\\\":{\\\"concept\\\":\\\"User\\\",\\\"relationship\\\":\\\"id\\\"}},{\\\"relationship\\\":\\\"date\\\",\\\"dataset\\\":\\\"observations\\\",\\\"field\\\":\\\"ds\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"relationship\\\":\\\"product\\\",\\\"dataset\\\":\\\"observations\\\",\\\"field\\\":\\\"product\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"}]\",\"referenced_entity_identity_json\":\"{\\\"concept\\\":\\\"User\\\",\\\"components\\\":[{\\\"relationship\\\":\\\"id\\\",\\\"dataset\\\":\\\"observations\\\",\\\"field\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"}],\\\"entity_equals_record\\\":false,\\\"projection\\\":\\\"distinct User IDs in the requested observation scope\\\",\\\"objects_queryable\\\":false,\\\"metrics_queryable\\\":false}\",\"objects_queryable\":true,\"metrics_queryable\":true,\"captured_observation_rows\":8,\"captured_user_count\":4,\"profile\":\"daily-observation-population-v1\",\"source\":\"memory.main.observations\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"}]"
+          }
+        ]
+      },
+      "id": 5
+    }
+  },
+  {
+    "kind": "rpc_request",
+    "id": 6,
+    "method": "resources/read",
+    "params": {
+      "uri": "ossie://population/fields"
+    }
+  },
+  {
+    "kind": "rpc_response",
+    "reply": {
+      "jsonrpc": "2.0",
+      "result": {
+        "contents": [
+          {
+            "uri": "ossie://population/fields",
+            "mimeType": "application/json",
+            "text": "[{\"dataset\":\"observations\",\"name\":\"user_id\",\"qualified_name\":\"observations.user_id\",\"object_column\":\"observations.user_id\",\"datatype\":\"String\",\"bound_type\":\"VARCHAR\",\"label\":\"\",\"description\":\"\",\"expression\":\"user_id\",\"selected_dialect\":\"OSSIE_SQL_2026\",\"available_dialects_json\":\"[\\\"OSSIE_SQL_2026\\\"]\",\"synonyms_json\":\"[]\",\"examples_json\":\"[]\",\"instructions\":\"\",\"ai_context_json\":\"\",\"custom_extensions_json\":\"\",\"is_time\":false,\"is_time_explicit\":false,\"is_computed\":false,\"load_preflight_validated\":true,\"execution_verified\":false,\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"},{\"dataset\":\"observations\",\"name\":\"ds\",\"qualified_name\":\"observations.ds\",\"object_column\":\"observations.ds\",\"datatype\":\"Date\",\"bound_type\":\"DATE\",\"label\":\"\",\"description\":\"\",\"expression\":\"ds\",\"selected_dialect\":\"OSSIE_SQL_2026\",\"available_dialects_json\":\"[\\\"OSSIE_SQL_2026\\\"]\",\"synonyms_json\":\"[]\",\"examples_json\":\"[]\",\"instructions\":\"\",\"ai_context_json\":\"\",\"custom_extensions_json\":\"\",\"is_time\":true,\"is_time_explicit\":false,\"is_computed\":false,\"load_preflight_validated\":true,\"execution_verified\":false,\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"},{\"dataset\":\"observations\",\"name\":\"product\",\"qualified_name\":\"observations.product\",\"object_column\":\"observations.product\",\"datatype\":\"String\",\"bound_type\":\"VARCHAR\",\"label\":\"\",\"description\":\"\",\"expression\":\"product\",\"selected_dialect\":\"OSSIE_SQL_2026\",\"available_dialects_json\":\"[\\\"OSSIE_SQL_2026\\\"]\",\"synonyms_json\":\"[]\",\"examples_json\":\"[]\",\"instructions\":\"\",\"ai_context_json\":\"\",\"custom_extensions_json\":\"\",\"is_time\":false,\"is_time_explicit\":false,\"is_computed\":false,\"load_preflight_validated\":true,\"execution_verified\":false,\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"},{\"dataset\":\"observations\",\"name\":\"amount_usd\",\"qualified_name\":\"observations.amount_usd\",\"object_column\":\"observations.amount_usd\",\"datatype\":\"Decimal\",\"bound_type\":\"DECIMAL(18,2)\",\"label\":\"\",\"description\":\"\",\"expression\":\"amount_usd\",\"selected_dialect\":\"OSSIE_SQL_2026\",\"available_dialects_json\":\"[\\\"OSSIE_SQL_2026\\\"]\",\"synonyms_json\":\"[]\",\"examples_json\":\"[]\",\"instructions\":\"\",\"ai_context_json\":\"\",\"custom_extensions_json\":\"\",\"is_time\":false,\"is_time_explicit\":false,\"is_computed\":false,\"load_preflight_validated\":true,\"execution_verified\":false,\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"},{\"dataset\":\"observations\",\"name\":\"classification_value\",\"qualified_name\":\"observations.classification_value\",\"object_column\":\"observations.classification_value\",\"datatype\":\"Integer\",\"bound_type\":\"INTEGER\",\"label\":\"\",\"description\":\"\",\"expression\":\"classification_value\",\"selected_dialect\":\"OSSIE_SQL_2026\",\"available_dialects_json\":\"[\\\"OSSIE_SQL_2026\\\"]\",\"synonyms_json\":\"[]\",\"examples_json\":\"[]\",\"instructions\":\"\",\"ai_context_json\":\"\",\"custom_extensions_json\":\"\",\"is_time\":false,\"is_time_explicit\":false,\"is_computed\":false,\"load_preflight_validated\":true,\"execution_verified\":false,\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"}]"
+          }
+        ]
+      },
+      "id": 6
+    }
+  },
+  {
+    "kind": "rpc_request",
+    "id": 7,
+    "method": "resources/read",
+    "params": {
+      "uri": "ossie://population/metrics"
+    }
+  },
+  {
+    "kind": "rpc_response",
+    "reply": {
+      "jsonrpc": "2.0",
+      "result": {
+        "contents": [
+          {
+            "uri": "ossie://population/metrics",
+            "mimeType": "application/json",
+            "text": "[{\"name\":\"observation_count\",\"datatype\":\"Integer\",\"bound_type\":\"BIGINT\",\"description\":\"Counts over the selected observation scope; see contract.\",\"expression\":\"COUNT(observations.user_id)\",\"selected_dialect\":\"OSSIE_SQL_2026\",\"available_dialects_json\":\"[\\\"OSSIE_SQL_2026\\\"]\",\"synonyms_json\":\"[]\",\"examples_json\":\"[]\",\"instructions\":\"\",\"ai_context_json\":\"\",\"custom_extensions_json\":\"\",\"load_preflight_validated\":true,\"execution_verified\":false,\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"},{\"name\":\"user_count\",\"datatype\":\"Integer\",\"bound_type\":\"BIGINT\",\"description\":\"Counts over the selected observation scope; see contract.\",\"expression\":\"COUNT(DISTINCT observations.user_id)\",\"selected_dialect\":\"OSSIE_SQL_2026\",\"available_dialects_json\":\"[\\\"OSSIE_SQL_2026\\\"]\",\"synonyms_json\":\"[]\",\"examples_json\":\"[]\",\"instructions\":\"\",\"ai_context_json\":\"\",\"custom_extensions_json\":\"\",\"load_preflight_validated\":true,\"execution_verified\":false,\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"},{\"name\":\"amount_value_count\",\"datatype\":\"Integer\",\"bound_type\":\"BIGINT\",\"description\":\"Counts over the selected observation scope; see contract.\",\"expression\":\"COUNT(observations.amount_usd)\",\"selected_dialect\":\"OSSIE_SQL_2026\",\"available_dialects_json\":\"[\\\"OSSIE_SQL_2026\\\"]\",\"synonyms_json\":\"[]\",\"examples_json\":\"[]\",\"instructions\":\"\",\"ai_context_json\":\"\",\"custom_extensions_json\":\"\",\"load_preflight_validated\":true,\"execution_verified\":false,\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"},{\"name\":\"amount_sum\",\"datatype\":\"Decimal\",\"bound_type\":\"DECIMAL(38,2)\",\"description\":\"USD; additive per-observation synthetic amount; NULL excluded from AVG.\",\"expression\":\"SUM(observations.amount_usd)\",\"selected_dialect\":\"OSSIE_SQL_2026\",\"available_dialects_json\":\"[\\\"OSSIE_SQL_2026\\\"]\",\"synonyms_json\":\"[]\",\"examples_json\":\"[]\",\"instructions\":\"\",\"ai_context_json\":\"\",\"custom_extensions_json\":\"\",\"load_preflight_validated\":true,\"execution_verified\":false,\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"},{\"name\":\"mean_observation_amount\",\"datatype\":\"Float\",\"bound_type\":\"DOUBLE\",\"description\":\"USD; additive per-observation synthetic amount; NULL excluded from AVG.\",\"expression\":\"AVG(observations.amount_usd)\",\"selected_dialect\":\"OSSIE_SQL_2026\",\"available_dialects_json\":\"[\\\"OSSIE_SQL_2026\\\"]\",\"synonyms_json\":\"[]\",\"examples_json\":\"[]\",\"instructions\":\"\",\"ai_context_json\":\"\",\"custom_extensions_json\":\"\",\"load_preflight_validated\":true,\"execution_verified\":false,\"profile\":\"daily-observation-population-v1\",\"snapshot_id\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1\",\"content_sha256\":\"71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35\",\"core_sha256\":\"5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77\",\"ontology_sha256\":\"16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e\",\"mapping_sha256\":\"b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228\",\"manifest_sha256\":\"0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a\"}]"
+          }
+        ]
+      },
+      "id": 7
+    }
+  }
+]

@@ -1,6 +1,6 @@
 # duckdb_ossie — Implementation Plan
 
-## Current delivery checkpoint — 2026-10-10
+## Current delivery checkpoint — 2026-10-11
 
 The adjusted A1–A8 acceptance for two bounded population profiles, local
 cross-environment reproduction and remote CI packages are complete. Remote
@@ -19,8 +19,13 @@ commit remains `b2d486a`. No main merge or release has occurred. This completion
 covers the adjusted bounded profiles, not full Ossie/schema/language compliance.
 The three bounded real Agent cases are accepted following the delegated Lead
 review and user acceptance, with synthetic-data limits recorded separately. P1
-production work and pagination remain later work. The daily-observation contract
-and minimal implementation design are now recorded; implementation is pending.
+production work and pagination remain later work. The daily-observation local SQL slice is complete at `5c7f795`, with fixed
+offline schema validation and final same-artifact legacy regression evidence.
+New-profile MCP wiring and four isolated no-model preparations are now locally
+complete, with 43 observation checks/38 refusals, same-artifact legacy MCP
+regression and 78 Bun tests. Real observation Agent acceptance remains unrun.
+See [the preparation guide](docs/agent-observation-acceptance.md). This local
+package does not authorize live model requests or delivery.
 
 The reviewed [minimal real Agent acceptance case](docs/agent-minimal-acceptance.md)
 has advanced to implementation after user continuation and gateway/model/key
@@ -1106,3 +1111,48 @@ Authorized local work package is complete. Remaining project needs are review,
 then separately authorized new-profile MCP/Agent integration and eventual remote
 CI/delivery; these are not required to claim this local SQL slice complete. No
 push, release, new model request, paging or broader P1 capability is included.
+
+## Observation MCP/Agent research closure — 2026-10-11
+
+The authorized research package is complete in
+[the integration and minimum acceptance design](docs/research/ossie-req-001/multi-period-research/mcp-agent-design.md).
+Use an isolated observation example with concepts-v2 and the existing three tools;
+keep the legacy example and acceptance behavior. Four isolated Agent scenes test
+registered observation/User denominators, rule changes, nonadditive daily User
+counts and the unsupported every-day User condition. Oracle values are not sent
+to the model. The stronger proposed claim gate associates actual requests, rows,
+columns and binding hashes, permits separate same-scope queries, and keeps
+semantic review explicit. A bounded Advisor review was reconciled.
+
+No new MCP/harness implementation or model request occurred in this package.
+The next proposed implementation package is the independent example, real MCP
+checks without a model, and a prepare-only observation driver with offline claim
+controls. Live acceptance needs a separately authorized four-scene budget after
+those gates pass. Remote CI/tidy, delivery, pagination and broader P1 remain
+separate; this research completion does not complete those items.
+
+## Observation MCP and no-model preparation closure — 2026-10-11
+
+The authorized local package is complete. The independent observation server
+uses concepts-v2 with the existing three tools/four resources. Stock stdio
+checks pass 43 assertions and 38 refusals, including actual typed carriers
+checked by the per-claim audit. The four prepare-only scenes have isolated
+servers and model-visible contexts containing no oracle or scripted business
+calls. The driver has no live mode and reads no provider configuration.
+[Verification](docs/research/ossie-req-001/observation-mcp-controls/verification.json)
+binds source/test/report hashes and the unchanged b012058e extension. Same-artifact
+legacy MCP passes 330 checks/106 refusals; all 78 Bun tests and quality gates pass.
+Two verification assumptions failed and were corrected without production changes;
+failures and bounded Advisor reconciliation are preserved in OSSIE-REQ-001.
+
+Literal date boundaries must match the question, not merely produce the same
+fixture members. Unknown valid forms stay pending; determined metric/type/value
+errors still fail. Complete objects may derive registered daily counts, and
+separate same-scope queries remain valid evidence. Final semantic judgement is
+explicitly pending even after mechanical gates pass.
+
+Next proposed work is a live observation driver, offline replay and private
+evidence handling. Running the four real scenes requires its own explicit
+budget/authorization after reviewable setup. No model call, push, merge, release
+or remote CI/tidy result is claimed by this package. Wider P1 and pagination
+remain separate necessities.
