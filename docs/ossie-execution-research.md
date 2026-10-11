@@ -37,6 +37,24 @@ effective backend/effort/usage/billing未知。统计误读JSON文件名和一�
 
 ## 范围与授权
 
+### 新tip推送与跨平台/tidy核对 checkpoint（2026-10-11）
+
+用户明确授权推送当前开发分支并检查新提交跨平台和tidy结果。干净工作区
+e9359d2已推到origin/codex/ossie-execution，触发[新tip CI run38122117803](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38122117803)。
+沿OSSIE-REQ-001及现计划跟踪该head对应的构建/原生测试、两平台stock
+产物/观察MCP/无模型演练、format/tidy及最终gate，保留失败与跳过边界。
+不调用模型，不合并main或发布；本地补记证据不自动推送新的文档提交。
+
+新tip首次Project quality controls失败：归档测试beforeAll创建子目录时
+未创建忽略的父目录，干净runner返回ENOENT；本地既有目录掩盖了问题。
+原日志保存私有ci-e9359d2/project-controls.log。修复只限测试初始化，使用
+现PrivateArchive.create的路径/权限检查与父目录创建；隔离干净检出重跑
+全部归档控制，再核对当前CI其余任务。
+[修复证据](research/ossie-req-001/ci-e9359d2-controls/test-setup-repair.json)：
+没有私有父目录的隔离检出16归档/80 expects通过，全量98 Bun/403 expects
+及格式/类型/架构通过。复用本轮同仓库开发分支推送授权交付该最小CI修复，
+继续核对新tip；不扩到main/发布/模型调用，首次失败保留。
+
 ### 新观察无模型CI与待推历史审查 checkpoint（2026-10-11）
 
 用户授权补新观察MCP及无模型演练CI覆盖，然后检查完整待推历史与私有

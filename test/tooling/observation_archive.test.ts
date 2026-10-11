@@ -87,7 +87,9 @@ function editEvents(path: string, fn: (events: any[]) => void) {
   );
   reseal(path);
 }
-beforeAll(() => mkdirSync(root, { mode: 0o700 }));
+beforeAll(() => {
+  PrivateArchive.create(root);
+});
 afterAll(() => rmSync(root, { recursive: true, force: true }));
 test("raw archive is private, exclusive, sealed and unchanged by exact offline replay", async () => {
   const path = clone();

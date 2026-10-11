@@ -2,6 +2,15 @@
 
 ## Current delivery checkpoint — 2026-10-11
 
+用户现已明确授权推送当前分支并检查CI：e9359d2已推送，
+[run38122117803](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38122117803)
+正在执行。Project controls发现干净检出缺少私有父目录的测试初始化问题，
+[最小修复与隔离复现](docs/research/ossie-req-001/ci-e9359d2-controls/test-setup-repair.json)
+已通过16归档/80 expects及全部98 Bun/403 expects。沿同一分支推送授权
+交付此CI修复并核对修复后tip，保留首次失败；跨平台/tidy结果仍待完成。
+本轮将按实际head核对跨平台、观察无模型验收和tidy；下表旧远端
+描述保留先前检查基线，完成后更新当前结论。无main合并/发布授权。
+
 三个有界profile的本地实现与限定验收已有证据，两个真实Agent工作包的
 结论均获用户接受。当前主要缺口是把最新观察/Agent增量完成交付验证，
 不是继续修复已经通过的固定用例。范围仍固定Ossie `0.2.0.dev0` 快照与

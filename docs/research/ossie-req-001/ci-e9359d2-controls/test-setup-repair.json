@@ -1,0 +1,30 @@
+{
+  "scope": "OSSIE-REQ-001 first new-tip CI failure and bounded test setup repair",
+  "head": "e9359d28d16dc0c7823b02c062ef183f6608209e",
+  "run_url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38122117803",
+  "failed_job": 114418826090,
+  "failure": "Archive suite beforeAll tried to create a child of absent ignored parent; fresh runner returned ENOENT. Local existing evidence directory masked the prerequisite.",
+  "repair": "Test initialization uses existing PrivateArchive.create, including parent creation and ignored/path/permission checks. Production code and semantic prompts unchanged.",
+  "verification": {
+    "clean_checkout_no_private_parent": {
+      "tests": 16,
+      "expects": 80,
+      "status": "passed"
+    },
+    "full_local_quality": {
+      "tests": 98,
+      "expects": 403,
+      "format": "passed",
+      "typecheck": "passed",
+      "architecture": "passed"
+    },
+    "real_model_requests": 0
+  },
+  "private_log_sha256": {
+    "project-controls.log": "fc173bc146f3f79c22a664d1117a292a4cf791c8f87ba8854f5c1b87d528b3fa",
+    "clean-archive-tests.log": "b71ac6a666f118753ea39592bb22d95a5cb387b13fd3bee018c8a9d20eff9e4b",
+    "fix-quality.log": "e3500aca917ff6565989d75ecd22ce1a4618369406a806dfdb2e927754e71c5f"
+  },
+  "test_source_sha256": "d2f4f01438a5ea71e2c053eaacbfe517c9c40d9b2715e516279e9a68f09cfb61",
+  "remaining": "Original cross-platform/tidy jobs still running; repaired new-tip remote result not yet available."
+}
