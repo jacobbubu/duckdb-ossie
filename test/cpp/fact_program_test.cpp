@@ -236,29 +236,56 @@ void Run() {
 	std::reverse(input.sources.begin(), input.sources.end());
 	Check(Users(engine, BindFactProgram(input), a, true) == "AN",
 	      "explicit swapped source ASTs preserve logical fact binding");
-	for (auto &sql :
-	     vector<string> {"AVG(revenue.amount)", "COUNT(*)", "SUM(revenue.amount-cost.amount)",
-	                     "SUM(SUM(revenue.amount))", "SUM(cost.user_id)", "COUNT(cost.product)", "SUM(revenue.missing)",
-	                     "SUM(amount)", "SUM(revenue.amount) FILTER(WHERE true)", "SUM(DISTINCT revenue.amount)",
-	                     "SUM(revenue.amount ORDER BY revenue.ds)", "system.main.sum(revenue.amount)", "income/expense",
-	                     "income + revenue_rows", "CAST(income AS DOUBLE)", "(SELECT 1)", "$1", "1"}) {
+	for (auto &sql : vector<string> {"AVG(revenue.amount)",
+	                                 "COUNT(*)",
+	                                 "COUNT(DISTINCT revenue.user_id)",
+	                                 "MIN(revenue.amount)",
+	                                 "MAX(revenue.amount)",
+	                                 "COALESCE(income,0)",
+	                                 "SUM(revenue.amount-cost.amount)",
+	                                 "SUM(SUM(revenue.amount))",
+	                                 "SUM(cost.user_id)",
+	                                 "COUNT(cost.product)",
+	                                 "SUM(revenue.missing)",
+	                                 "SUM(amount)",
+	                                 "SUM(revenue.amount) FILTER(WHERE true)",
+	                                 "SUM(DISTINCT revenue.amount)",
+	                                 "SUM(revenue.amount ORDER BY revenue.ds)",
+	                                 "system.main.sum(revenue.amount)",
+	                                 "income/expense",
+	                                 "income + revenue_rows",
+	                                 "CAST(income AS DOUBLE)",
+	                                 "(SELECT 1)",
+	                                 "$1",
+	                                 "1"}) {
 		auto bad = Input();
 		bad.metrics[0].sql = sql;
 		Refuse([&] { BindFactProgram(bad); }, "reject metric boundary: " + sql);
 	}
-	for (auto &sql :
-	     vector<string> {"LAG(revenue.amount,2,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
-	                     "LAG(revenue.amount,1,0) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
-	                     "LAG(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
-	                     "LEAD(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
-	                     "SUM(cost.amount) OVER(PARTITION BY cost.user_id ORDER BY cost.ds ROWS BETWEEN 1 PRECEDING "
-	                     "AND CURRENT ROW)",
-	                     "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds DESC ROWS BETWEEN "
-	                     "1 PRECEDING AND CURRENT ROW)",
-	                     "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 367 "
-	                     "PRECEDING AND CURRENT ROW)",
-	                     "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds RANGE BETWEEN 1 "
-	                     "PRECEDING AND CURRENT ROW)"}) {
+	for (auto &sql : vector<string> {
+	         "LAG(revenue.amount,2,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+	         "LAG(revenue.amount,1,0) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+	         "LAG(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+	         "LEAD(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+	         "ROW_NUMBER() OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+	         "FIRST_VALUE(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+	         "AVG(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND "
+	         "CURRENT ROW)",
+	         "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN UNBOUNDED "
+	         "PRECEDING AND CURRENT ROW)",
+	         "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND 1 "
+	         "FOLLOWING)",
+	         "LAG(revenue.amount,1,NULL IGNORE NULLS) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+	         "LAG(revenue.amount,1,NULL) OVER(ORDER BY revenue.ds)",
+	         "LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.amount)",
+	         "SUM(cost.amount) OVER(PARTITION BY cost.user_id ORDER BY cost.ds ROWS BETWEEN 1 PRECEDING "
+	         "AND CURRENT ROW)",
+	         "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds DESC ROWS BETWEEN "
+	         "1 PRECEDING AND CURRENT ROW)",
+	         "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 367 "
+	         "PRECEDING AND CURRENT ROW)",
+	         "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds RANGE BETWEEN 1 "
+	         "PRECEDING AND CURRENT ROW)"}) {
 		auto bad = Input();
 		bad.windows[0].sql = sql;
 		Refuse([&] { BindFactProgram(bad); }, "reject window boundary: " + sql);

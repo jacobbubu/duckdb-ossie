@@ -87,3 +87,5 @@ SELECT * FROM ossie_fact_windows_json(
 bun --no-env-file scripts/verify_fact_objects_artifact.ts build/release/extension/ossie/ossie.duckdb_extension /tmp/ossie-fact-new
 bun --no-env-file scripts/verify_fact_stock_cli.ts /path/to/duckdb build/release/extension/ossie/ossie.duckdb_extension /tmp/ossie-fact-cli-new
 ```
+
+各profile的函数/窗口位置与固定规范差异见[兼容矩阵](ossie-sql-compatibility.md)。

@@ -1,0 +1,63 @@
+{
+  "scope": "P1 required-use-case compatibility matrix and twelve additional fact AST refusal controls; not full P1 or whole language conformance",
+  "base_commit": "0aee104",
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "source_manifest_sha256": "9450ced5bfaec4ccc3f65ca21c4b5abc605f76572f544fb8ab8164a334bcd5ca",
+  "source_files_verified": 20,
+  "original_requirement_verified": true,
+  "artifact_sha256": "9ddb20dbc36bd92301b0a49178562f28a30b5e2ce774129964e7a9bd1216b5a9",
+  "sql_test_cases": 27,
+  "sql_assertions": 1026,
+  "fact_native_checks_before": 78,
+  "fact_native_checks_after": 90,
+  "relation_native_checks": 55,
+  "raw_manifest_sha256": "b6de78830e077420befe00eeee8b292cd842dd6f98d15c49607392e079549b71",
+  "logs": {
+    "sql": {
+      "raw_sha256": "0f0e00aac1c6fc91365f711ca287f394319f90f6a5b19042ace3828ff1402ec6",
+      "exit_code": 0,
+      "public_sha256": "0f0e00aac1c6fc91365f711ca287f394319f90f6a5b19042ace3828ff1402ec6"
+    },
+    "fact": {
+      "raw_sha256": "1d9df583cfa3d742de7729edc98cb2e10200aa3f05efe6b20021742630d0b4c0",
+      "exit_code": 0,
+      "public_sha256": "1d9df583cfa3d742de7729edc98cb2e10200aa3f05efe6b20021742630d0b4c0"
+    },
+    "relation": {
+      "raw_sha256": "125db386aa44b97e49a8997bb1b1e18464ef858a71bb40650c6dc5673ad75b11",
+      "exit_code": 0,
+      "public_sha256": "125db386aa44b97e49a8997bb1b1e18464ef858a71bb40650c6dc5673ad75b11"
+    },
+    "sources": {
+      "raw_sha256": "3a2189fdff42335c83fbbe402f14ea6d18ba0651a2d17be51645e968e4d5c130",
+      "exit_code": 0
+    },
+    "build": {
+      "raw_sha256": "4cff289de1b4482df0170805a43270de7b89d5d9341eaf4c23acdb5922f0fb80",
+      "exit_code": 0,
+      "public_sha256": "4cff289de1b4482df0170805a43270de7b89d5d9341eaf4c23acdb5922f0fb80"
+    },
+    "fact-final": {
+      "raw_sha256": "3487641fd7186cb8756dbc7559a8cbfa8bf33551dcf772034e00ae0a0ee8e8ed",
+      "exit_code": 0,
+      "public_sha256": "3487641fd7186cb8756dbc7559a8cbfa8bf33551dcf772034e00ae0a0ee8e8ed"
+    },
+    "format": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "source_hashes": {
+    "test/cpp/fact_program_test.cpp": "a3079f5543a2af8bcbd11655ae862d621c6a7ed0488e5dc5ecfa4efc94b3e0e0",
+    "src/population/fact_program.cpp": "975a2e5ea68cc3ef42e7a0b6bdb01319a33f6f0ae36389241c1cab197a360b6b",
+    "src/population/relation_program.cpp": "901b2a36370f6ba2563622a34aea53206e77349b8b86db281af936689d680591",
+    "src/population/population.cpp": "f00a0307bfceb6905633ac65af63f2b6bb1a75fe3eb8592b6c815b7b6c5aa434",
+    "src/model/dialect.cpp": "cba1454964c879092926fb8ff2920a4fcb4c46dd04f82acbbcc5e162906aaaf7",
+    "test/sql/ossie_sql_2026.test": "d1eb9638e8f85edec4ebfe7542c6cfdbf1a920737b5ab3ea07f3fc8bf263a10e",
+    "docs/ossie-sql-compatibility.md": "062883e98be346c14e23b37e890f1bc1e5904e660abee7a41dd2bf954af66d6d"
+  },
+  "real_model_requests": 0,
+  "remote_ci_run": false,
+  "pushed": false
+}
