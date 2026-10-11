@@ -1698,3 +1698,18 @@ ROOT未带尾斜杠的两份失败原件保留，正确参数复跑，不冒充�
 九raw只读归档。矩阵27SQL/1026同产物证据不变；未跑当前Linux tidy/远端CI。
 下一需当前源码隔离Linux质量、待推历史私有预检；原状态/历史口径及实现/
 完整接口仍待完成，不标整个P1完成，无模型或推送。
+
+Linux质量/历史预检恢复checkpoint（7481dff，干净）：上一goal轮progress，
+当前23个未推送提交。Docker只有既有Ubuntu24.04 ARM64镜像，无live容器；
+旧/tmp Linux源码/日志仅作历史参考，不当最新P1证明。新隔离checkout绑定
+7481dff及三个固定submodule，只挂载新checkout/证据目录、不含.env_test或
+私有原始Agent材料。先跑当前源码所有src翻译单元tidy，再按结果选择必要
+Linux功能回归；同时审计未推提交blob/消息中内部endpoint/model/凭据线索，
+不读.env_test、不打印疑似秘密值。两项业务决策待答，完整P1保持。
+
+历史预检阶段完成（范围bd8c0ee..7481dff）：远端read-only确认base一致，
+23消息/1158变化路径/672unique blob无已知内部服务/模型/凭据常量/私有路径
+发现，无merge遗漏；.env_test仍ignored且未读。实际检查36份新receipt源码
+绑定全部匹配。三私有原件只读，public选择receipt；不冒充通用秘密认证。
+当前Linux容器仍live安装依赖；两业务问题重新集中列出等待，不推进其语义。
+下一继续同容器tidy，尾部新提交另补检，完整五类P1未完成。

@@ -1,0 +1,31 @@
+{
+  "scope": "all unique introduced-or-changed blobs and commit messages in locally recorded outgoing range; bounded credential/internal patterns, not universal secret certification",
+  "base": "bd8c0eef7e3c78dfd6b3a1f6f60585355fe14ca8",
+  "head": "7481dff46f65832422a6df8ddad0ed3d8bb03d98",
+  "commits": 23,
+  "messages": 23,
+  "changed_paths": 1158,
+  "unique_blobs": 672,
+  "findings": [],
+  "env_test_read": false,
+  "remote_tip_refreshed": true,
+  "real_model_requests": 0,
+  "pushed": false,
+  "remote_tip_matches_base": true,
+  "merge_commits_in_range": 0,
+  "env_test_ignored": true,
+  "raw_report_sha256": "9b0a1be6ccab1d7f19194bebfe12f8187a7c8868f576415a516a2d233dc827d5",
+  "audit_source_sha256": "ec0980dc41c2ee0be0e6d129aa9689e4f8442bfb4e3b6063e8bbfba2fbb7c324",
+  "remote_evidence_sha256": "322870e3d2b3382c4e719b6812cc29025940c22e6a5a51383c908b79d7945731",
+  "source_binding_rechecks": {
+    "p1-fact-agent-controls": {
+      "files": 29,
+      "mismatches": []
+    },
+    "p1-function-matrix-controls": {
+      "files": 7,
+      "mismatches": []
+    }
+  },
+  "transform": "selected bounded audit facts; no secret or environment value exported"
+}
