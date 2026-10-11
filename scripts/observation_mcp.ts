@@ -63,12 +63,13 @@ export async function withObservationSession<T>(
   artifact: string,
   threshold: number,
   action: (session: ObservationSession) => Promise<T>,
+  onEvent?: (event: JsonObject) => void,
 ) {
   return temporary("ossie-observation-mcp-", async (directory) => {
     const path = join(directory, "server.sql");
     writeFileSync(path, setupText(artifact, threshold));
     const server = new RpcProcess([cli, "-unsigned", "-bail", "-init", path]);
-    const session = new ObservationSession(server, threshold);
+    const session = new ObservationSession(server, threshold, onEvent);
     try {
       return await action(session);
     } finally {
@@ -82,12 +83,17 @@ export class ObservationSession {
   constructor(
     readonly server: RpcProcess,
     readonly threshold: number,
+    readonly onEvent?: (event: JsonObject) => void,
   ) {}
+  private record(event: JsonObject) {
+    this.events.push(event);
+    this.onEvent?.(event);
+  }
   async rpc(method: string, params?: unknown) {
     const id = ++this.id;
-    this.events.push({ kind: "rpc_request", id, method, params });
+    this.record({ kind: "rpc_request", id, method, params });
     const reply = await this.server.request(id, method, params);
-    this.events.push({ kind: "rpc_response", reply });
+    this.record({ kind: "rpc_response", reply });
     return reply;
   }
   async call(name: string, args: Record<string, string>) {
@@ -99,7 +105,12 @@ export class ObservationSession {
       !hello.error &&
         hello.result?.protocolVersion === INITIALIZE.protocolVersion,
     );
-    this.server.send({ jsonrpc: "2.0", method: "notifications/initialized" });
+    const notification = {
+      jsonrpc: "2.0",
+      method: "notifications/initialized",
+    };
+    this.record({ kind: "rpc_notification", notification });
+    this.server.send(notification);
     const toolReply = await this.rpc("tools/list");
     assert(!toolReply.error);
     const tools = toolReply.result?.tools as Tool[];

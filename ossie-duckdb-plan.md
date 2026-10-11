@@ -23,7 +23,9 @@ production work and pagination remain later work. The daily-observation local SQ
 offline schema validation and final same-artifact legacy regression evidence.
 New-profile MCP wiring and four isolated no-model preparations are now locally
 complete, with 43 observation checks/38 refusals, same-artifact legacy MCP
-regression and 78 Bun tests. Real observation Agent acceptance remains unrun.
+regression and 78 Bun tests. The live entry, ordered offline replay and private archive/export are locally
+complete with simulated rehearsal; real observation Agent acceptance remains
+unrun. See [the live/replay guide](docs/agent-observation-run.md).
 See [the preparation guide](docs/agent-observation-acceptance.md). This local
 package does not authorize live model requests or delivery.
 
@@ -1156,3 +1158,39 @@ evidence handling. Running the four real scenes requires its own explicit
 budget/authorization after reviewable setup. No model call, push, merge, release
 or remote CI/tidy result is claimed by this package. Wider P1 and pagination
 remain separate necessities.
+
+## Observation live-entry/replay/archive implementation checkpoint — 2026-10-11
+
+The user authorizes implementing the live entry, offline replay and private
+evidence archival, explicitly without model calls. Reuse the existing provider
+and no-model discovery/claim gates. Implement fresh ignored private records,
+failures and integrity seals, exact request/tool/continuation replay, and
+hash-linked sanitized public derivatives. Exercise simulated completions plus
+actual MCP locally; never present them as real Agent acceptance. Existing raw
+evidence remains immutable. A bounded privacy/evidence architecture review is
+requested. Broader delivery/CI/P1 and pagination remain outside this package.
+
+## Observation entry/replay/private archival closure — 2026-10-11
+
+The authorized package is locally complete, with zero real model requests.
+The separate live entry requires explicit run/token-budget choice and uses
+standard OPENAI_* configuration. Fresh ignored private directories/files use
+0700/0600, sync projected-event records and an integrity seal, including failures.
+Ordered replay rebuilds discovery and Responses/tool/continuation correspondence
+without fetch/MCP startup, rejects source drift, and keeps semantic judgement
+pending. Public export is an explicit scanned, hash-linked derivative; neither
+hashes nor replay authenticate external execution. Raw captures omit credentials
+and private reasoning; any credential echo redaction is marked.
+
+[Final verification](docs/research/ossie-req-001/observation-agent-entry-controls/verification.json)
+binds the four simulated completions/real-MCP scenes and an incomplete-response
+refusal/control archive. There are seven scripted provider completions and four
+actual MCP tool calls in the complete rehearsal, not seven real model requests.
+All 94 Bun tests/391 expects and quality gates pass; unchanged-artifact observation
+MCP43/38 refusals and legacy MCP330/106 refusals pass. Original/intermediate
+records remain hash-indexed privately. Production C++ and legacy interfaces
+remain unchanged; no new native, remote CI/tidy, push or release is claimed.
+
+Next: review the fixed four-scene prompts, token-only budget and evidence scope,
+then obtain explicit direction for any real model run. The current no-model
+instruction remains in force. General P1, pagination and delivery remain separate.

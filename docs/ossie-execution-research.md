@@ -1,6 +1,6 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-日期：2026-10-11。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。真实 Agent 工作已从研究推进至[最小程序实施与本地验证](agent-minimal-acceptance.md)，用户指定了网关/模型/凭据变量；三场景真实运行及委托Lead的口径/数据复核已完成，用户接受限定结论；原始失败与pending字段保持历史状态，数据真实性局限另记。观察粒度 SQL 最小切片已在本地完成，新观察 MCP 接入/无模型 Agent 准备工作包已本地完成；真实观察 Agent 验收尚未运行。分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
+日期：2026-10-11。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。真实 Agent 工作已从研究推进至[最小程序实施与本地验证](agent-minimal-acceptance.md)，用户指定了网关/模型/凭据变量；三场景真实运行及委托Lead的口径/数据复核已完成，用户接受限定结论；原始失败与pending字段保持历史状态，数据真实性局限另记。观察粒度 SQL 最小切片已在本地完成，新观察 MCP 接入/无模型 Agent 准备工作包已本地完成；真实入口/离线重放/私有归档也已本地实现并模拟演练，真实观察 Agent 验收尚未运行。分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
 
@@ -1010,3 +1010,19 @@ SQL metadata库存测试还要求21注册/19名字；新增v2后应22/20，更�
 复用现有Advisor一轮只读反证（requested Astra/high；effective backend/effort/usage/billing unknown）。Lead落实：日期范围写宽但fixture成员一样只能pending；unknown filter不能掩盖错metric/group/type/value；成功RPC关联器拒绝error/isError/跨场景/重复ID；objects先校验完整实际范围后可按日推导；identity dataset及五字段类型额外核对。有限literal日期规范化允许等价上下界，其余合法表达式保持待语义审阅，不冒充通用SQL证明。机械检查即使通过仍overall pending semantic review，不冒充真实Agent或人工裁定。
 
 当前授权工作包本地完成，可审阅。下一必要工作为实现真实观察Agent运行入口/离线事件重放与私有证据归档，再明确四场景运行授权与预算；当前不调用模型、不推送/合并/发布。远端CI/tidy、通用P1/分页仍保留在原issue，不能以此工作包结束替代整体交付。
+
+### 真实观察 Agent 入口、离线重放与私有归档 checkpoint（2026-10-11）
+
+用户明确授权补真实运行入口、离线重放和私有证据归档，暂不调用模型。本轮只实施并用模拟Responses/实际MCP及离线反例验证；沿用既有标准OPENAI_*及本地ignored .env_test决定，不创建/改写凭据。现7799166的无模型MCP/prepare/逐主张门禁作为前置证据，不覆写既有原件。真实运行需显式run及预算选择，raw仅入ignored私有新目录，失败也封存；离线重放不读配置、fetch或启动MCP，公开衍生记录必须脱敏并绑定原始/衍生hash，不能冒充精确原始字节或真实模型成功。因归档/重放涉及隐私与证据边界，复用Advisor一轮只读反证。生产C++/两个旧profile保持，远端CI/tidy/分页/推送不纳入。
+
+### 真实入口、离线重放与私有证据归档本地完成（2026-10-11）
+
+完成 [运行/重放说明](agent-observation-run.md)。独立真实入口要求显式run/token-budget，仅该模式读取标准OPENAI_*；沿用已确定的本地配置，无新key/配置写入。本轮只以scripted Responses和实际stock MCP验证：四场景7次模拟完成/4次真实MCP工具调用，额外incomplete控制1次模拟完成后停止，真实模型请求均0；未运行live或扩大预算。所有语义结论pending，脚本oracle答案不代表模型自主选择。
+
+新增私有归档0700目录/0600文件、排他创建/父与悬空symlink拒绝、同步事件、完成/失败seal及known-credential回显脱敏标记；raw是出站JSON及公开入站投影，不是完整HTTP/headers/reasoning。离线游标严格消费全部事件，校验body/serialized_body/RPC ID/call_id/续接、从公开投影重新解析整理结果、重核固定问题和source/fixture/discovery/六哈希以及原时间预算；不fetch/启动MCP，也不执行归档代码。失配/失败/partial停止，不以快速重放证明原耗时。公开export先内存递归解嵌套JSON脱敏和扫描，再写新目录，绑定raw/derived及seal SHA且标明非原字节；重放输出禁止写入原封存目录。哈希只完整性，不认证真实外部执行。
+
+首次演练运行四场景成功但重放失败：JSON省略undefined的rpc.params与内存对象直接比较产生误拒绝；原first归档与first-report保留，按JSON实际表示规范化比较后新目录通过。首次archive模块string迭代因unknown窄化类型失败，改局部string变量后通过；新增fetch启动桩首次typecheck缺Bun preconnect，补足类型后通过。后续加强凭据嵌套编码/捕获redaction标记、报告外置及悬空链接，先前成功raw和公开衍生迁入ignored中间存档，所有原字节保留，未把中间报告改成最终源码验收。
+
+有界Advisor一轮只读反证（requested Astra/high；effective backend/effort/usage/billing unknown），Lead落实单一事件游标、投影/整理双表示核对、发现/模型/工具整体deadline及退出后封存、失败终态和mode贯穿、内存预扫描导出。新增16项反例/正例覆盖重算seal后的参数/续接/语义篡改、乱序/多余事件、错RPC、source/context/时间、失败缺文件、路径权限/credential/nested转义、原始目录保护与replay无fetch/进程启动。回归fixture明确synthetic重绑定当前源码，不冒充原raw。
+
+[verification.json](research/ossie-req-001/observation-agent-entry-controls/verification.json) 绑定最终源码/test/log/原seal及raw-derived SHA。全部94 Bun/391 expects、新观察MCP43检查/38拒绝、同b012058e下旧两profile330检查/106拒绝及format/typecheck/architecture通过；C++/fixture/旧例/旧driver未改，无新native或远端CI/tidy声明。当前授权工作包本地完成，下一必要事项为审阅四场景/预算/公开范围并由用户单独指示真实运行；当前暂不调用模型继续生效。不推送、合并或发布，通用P1/分页仍在原issue。

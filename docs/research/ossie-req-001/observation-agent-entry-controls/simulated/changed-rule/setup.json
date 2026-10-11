@@ -1,0 +1,31 @@
+{
+  "scene": "changed-rule",
+  "threshold": 20,
+  "manifest": {
+    "profile": "daily-observation-population-v1",
+    "core": {
+      "path": "core.json",
+      "name": "daily_observation_demo",
+      "sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77"
+    },
+    "ontology": {
+      "path": "ontology-20.json",
+      "name": "daily_observation_ontology",
+      "sha256": "b6aca7da28e4f0d3a2e00c2dc238f2b620964492d30b26f1f12c807f789d76ec"
+    },
+    "mapping": {
+      "path": "mapping.json",
+      "name": "daily_observation_mapping",
+      "sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228"
+    }
+  },
+  "manifest_sha256": "b1c61aed4539201e40a3778f2f125fbb8372c562d6d419a4eb5b6d526aa8420b",
+  "binding": {
+    "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+    "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+    "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+    "ontology_sha256": "b6aca7da28e4f0d3a2e00c2dc238f2b620964492d30b26f1f12c807f789d76ec",
+    "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+    "manifest_sha256": "b1c61aed4539201e40a3778f2f125fbb8372c562d6d419a4eb5b6d526aa8420b"
+  }
+}

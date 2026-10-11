@@ -3,7 +3,8 @@
 独立的 [observation_server.sql](../examples/observation_server.sql) 已接入
 `daily-observation-population-v1`：concepts 资源使用 v2，其余三工具/四资源
 名称及 typed result-v1 保持。旧 GAAP 示例和旧 Agent 验收行为保持。
-本工作包只验证新 MCP 接入和无模型准备，尚未运行真实观察 Agent。
+新 MCP 接入和无模型准备已验证；后续 [真实入口/重放/私有归档](agent-observation-run.md)
+也已实现并以模拟响应演练，尚未运行真实观察 Agent。
 
 ## 本地使用
 
@@ -81,8 +82,8 @@ review`；它不会冒充模型推理质量或人工裁定。每天合格场景�
 格式/类型/架构检查通过；同一扩展产物的旧两个 profile MCP 回归通过。
 生产 C++/fixture 未改，不重建或冒称本轮新增原生/远端 CI/tidy 结果。
 
-下一步先准备真实观察 Agent 的运行入口与证据归档，再明确四场景调用
-授权和预算。研究上限为每场景8模型请求/12工具调用/120秒/每请求2048
+独立真实运行入口、离线重放与私有证据归档已完成；下一步审阅四场景
+调用授权和预算。研究上限为每场景8模型请求/12工具调用/120秒/每请求2048
 输出 tokens，总计最多32模型请求、48工具调用、65536请求输出 tokens；
 不是输入 token 或金额上限。服务配置仍使用标准 `OPENAI_*`，内部值只
 留本地 ignored `.env_test`，不进入提交或公开证据。分页/跨日实体指标/
