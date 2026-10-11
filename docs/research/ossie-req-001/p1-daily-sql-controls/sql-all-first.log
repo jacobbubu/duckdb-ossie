@@ -1,0 +1,67 @@
+Filters: test/sql/*
+
+[0/25] (0%): test/sql/ossie_join_research.test
+[1/25] (4%): test/sql/ossie_field_expansion.test
+[2/25] (8%): test/sql/ossie_describe.test
+[3/25] (12%): test/sql/ossie_loader_contract.test
+[4/25] (16%): test/sql/ossie_relationships.test
+[5/25] (20%): test/sql/ossie_population_observation.test
+[6/25] (24%): test/sql/ossie_population_expressions.test
+[7/25] (28%): test/sql/ossie_population.test
+[8/25] (32%): test/sql/ossie_population_daily_users.test
+[9/25] (36%): test/sql/ossie_population_result.test
+[10/25] (40%): test/sql/ossie_population_discovery.test
+[11/25] (44%): test/sql/ossie_population_errors.test
+[12/25] (48%): test/sql/ossie_sql_2026.test
+[13/25] (52%): test/sql/ossie_yaml.test
+[14/25] (56%): test/sql/ossie_population_plan.test
+[15/25] (60%): test/sql/ossie_differential.test
+[16/25] (64%): test/sql/ossie_function_metadata.test
+1. test/sql/ossie_function_metadata.test:32
+================================================================================
+Wrong result in query! (test/sql/ossie_function_metadata.test:32)!
+================================================================================
+SELECT count(*), count(DISTINCT function_name) FROM duckdb_functions()
+WHERE starts_with(function_name, 'ossie_');
+================================================================================
+Mismatch on row 1, column count_star()(index 1)
+23 <> 22
+================================================================================
+Expected result:
+================================================================================
+22	20
+
+================================================================================
+Actual result:
+================================================================================
+23	21
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+unittest is a Catch v2.13.7 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+test/sql/ossie_function_metadata.test
+-------------------------------------------------------------------------------
+/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release/test/sqlite/../../../../duckdb/test/sqlite/test_sqllogictest.cpp:212
+...............................................................................
+
+test/sql/ossie_function_metadata.test:32: FAILED:
+explicitly with message:
+  0
+
+
+[17/25] (68%): test/sql/ossie_conformance.test
+[18/25] (72%): test/sql/ossie_population_dates.test
+[19/25] (76%): test/sql/ossie_compile.test
+[20/25] (80%): test/sql/ossie_joined_population.test
+[21/25] (84%): test/sql/ossie_grain.test
+[22/25] (88%): test/sql/ossie_load.test
+[23/25] (92%): test/sql/ossie.test
+[24/25] (96%): test/sql/ossie_validate.test
+[25/25] (100%): test/sql/ossie_validate.test
+===============================================================================
+test cases:  25 |  24 passed | 1 failed
+assertions: 951 | 950 passed | 1 failed
+

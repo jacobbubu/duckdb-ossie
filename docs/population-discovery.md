@@ -51,7 +51,7 @@ output names and other request combinations still require request binding.
 Unsupported declarations reject the whole load; no unavailable-definition list
 is synthesized. Time flags describe declared/defaulted roles, not calendar support.
 
-Capabilities return one row with `api_version=2.1.0`,
+Capabilities return one row with `api_version=2.2.0`,
 `discovery_schema=ossie-population-discovery-v1`,
 `plan_schema=ossie-population-plan-v1` for scalar/join profiles (`plan-v2` for
 the observation profile), `ossie_spec_version=0.2.0.dev0`,
@@ -95,3 +95,10 @@ GAAP vocabulary. Stock artifact controls are in `verify_discovery_artifact.ts`;
 actual MCP resource contents and resource-driven requests are checked by
 `verify_population_mcp.ts`. Separate resource calls can observe different bundles
 across operator reload; consumers must compare hashes. The example exposes no reload.
+
+API2.2.0 adds the separate `daily_user_set` operation declaration. See
+[the daily User set contract](population-daily-users.md) for its independent result
+schema, exact UTF-8 budgets and singleton qualified concept. The generic
+results/compile metadata above continues to describe existing objects/metrics;
+daily SQL ordering differs and its dedicated compile/plan and MCP integration
+are not implemented yet. `mcp_example_registered=false` is distinct from SQL enabled.

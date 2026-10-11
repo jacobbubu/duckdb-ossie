@@ -34,7 +34,7 @@ dws_gaap_di.ds	dws_gaap_di.ds	DATE	1	0
 query TTTT
 SELECT api_version,discovery_schema,plan_schema,ossie_spec_version FROM ossie_population_capabilities();
 ----
-2.1.0	ossie-population-discovery-v1	ossie-population-plan-v1	0.2.0.dev0
+2.2.0	ossie-population-discovery-v1	ossie-population-plan-v1	0.2.0.dev0
 
 query I
 SELECT count(DISTINCT snapshot_id) FROM (SELECT snapshot_id FROM ossie_population_metrics() UNION ALL SELECT snapshot_id FROM ossie_population_fields() UNION ALL SELECT snapshot_id FROM ossie_population_capabilities());

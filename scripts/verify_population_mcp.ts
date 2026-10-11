@@ -229,7 +229,7 @@ export async function verify(artifact: string) {
         }
         check(label + ": actual versioned vocabulary content", () => {
           const capability = vocabulary.capabilities![0]!;
-          assert.equal(capability.api_version, "2.1.0");
+          assert.equal(capability.api_version, "2.2.0");
           assert.equal(
             capability.discovery_schema,
             "ossie-population-discovery-v1",

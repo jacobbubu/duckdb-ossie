@@ -1,0 +1,59 @@
+{
+  "schema": "ossie-observation-agent-run-v1",
+  "mode": "simulated",
+  "provider_config_read": false,
+  "head": "baeb86625943649843d6534cca76073b0133cb0b",
+  "dirty": "M docs/ossie-execution-research.md\n M docs/population-discovery.md\n M docs/population-errors.md\n M docs/population-observation.md\n M ossie-duckdb-plan.md\n M scripts/full_functionality_check.sh\n M scripts/observation_mcp.ts\n M scripts/verify_discovery_artifact.ts\n M scripts/verify_observation_artifact.ts\n M scripts/verify_p0_acceptance.ts\n M scripts/verify_population_mcp.ts\n M src/include/ossie/population_testing.hpp\n M src/population/population.cpp\n M test/cpp/population_capture_test.cpp\n M test/sql/ossie_function_metadata.test\n M test/sql/ossie_population_discovery.test\n?? docs/population-daily-users.md\n?? docs/research/ossie-req-001/p1-daily-sql-controls/\n?? scripts/verify_daily_users_artifact.ts\n?? test/sql/ossie_population_daily_users.test",
+  "provider": {
+    "baseURL": "https://provider.invalid/v1/",
+    "model": "[MODEL_REDACTED]",
+    "api": "responses",
+    "endpoint": "https://provider.invalid/v1/responses",
+    "sampling": "provider default; effective unknown",
+    "backend_revision": "unknown",
+    "billing": "not applicable: simulated"
+  },
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "install_path": "/Users/rongshen/.duckdb/extensions/v1.5.6/osx_arm64/duckdb_mcp.duckdb_extension",
+    "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+    "extension_sha256": "57c5c4c409955b929b758388565e8b873ac00b06ae5b8933f79bfbaf2c355c60",
+    "server_sha256": "3b2b04eb1c81d5b43ddad8cc43d858992055ba5d9b7343b66429ca4c98fdc1c4"
+  },
+  "budget": {
+    "per_scene": {
+      "rounds": 8,
+      "calls": 12,
+      "milliseconds": 120000,
+      "outputTokens": 2048,
+      "inputBytes": 131072
+    },
+    "scenes": 4,
+    "maximum_model_requests": 32,
+    "maximum_tool_calls": 48,
+    "maximum_requested_output_tokens": 65536,
+    "maximum_input_bytes_per_request": 131072,
+    "monetary_ceiling": "unknown; not enforced",
+    "input_token_ceiling": "not enforced"
+  },
+  "source_hashes": {
+    "examples/observation_server.sql": "3b2b04eb1c81d5b43ddad8cc43d858992055ba5d9b7343b66429ca4c98fdc1c4",
+    "docs/research/ossie-req-001/multi-period-research/observations.csv": "bfd38a0130028fe5829aa45e40dce8ac12e228cc2cc61e2f08f293493764f441",
+    "scripts/observation_agent_contract.ts": "2e642fa0e8b7025fc509f6fd4ec519a916fa0589c3ed3b700064fadbb9c6eb78",
+    "scripts/observation_agent_run.ts": "2adc9e3db3c19a91eb00f12d3bafe3cd1f214f84275e93c5c615b085b5c0e9f9",
+    "scripts/observation_agent_replay.ts": "be43c6f495ccbdbb2914c820e10eab832fda23830da8daf8e8c3a0d805a9eb0d",
+    "scripts/observation_agent_archive.ts": "dee3890dc2351d71994b9bd17525ee327a92d143aa7f0ae36ff83ef3f0648571",
+    "scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "scripts/observation_mcp.ts": "91c9f6c7d3e900a65a6b596fb0100a4d28f9fa94d852fb7a8054fbb26775e8eb",
+    "scripts/observation_evidence.ts": "4a58242be77cbad354bd597cdff530b5ffa5f1c95edab378b92800e89862d3a5",
+    "scripts/population_result.ts": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+    "scripts/population_error.ts": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff",
+    "scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b"
+  },
+  "source_integrity": "hashes are local observations, not signatures",
+  "capture_policy": "outbound JSON bodies and inbound public Responses projections; no headers/credentials/private reasoning; credential echoes are redacted if present",
+  "live_acceptance": "not applicable: simulated"
+}

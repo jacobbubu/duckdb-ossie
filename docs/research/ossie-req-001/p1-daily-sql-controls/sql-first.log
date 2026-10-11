@@ -1,0 +1,42 @@
+Filters: test/sql/ossie_population_daily_users.test
+
+[0/1] (0%): test/sql/ossie_population_daily_users.test
+1. test/sql/ossie_population_daily_users.test:16
+================================================================================
+Query unexpectedly failed (test/sql/ossie_population_daily_users.test:16)
+ (test/sql/ossie_population_daily_users.test:16)!
+================================================================================
+SELECT json_extract_string(result_json,'schema_version'),json_extract_string(result_json,'member_count'),json_extract_string(result_json,'members') FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}');
+================================================================================
+Actual result:
+================================================================================
+Catalog Error: Scalar Function with name "json_extract_string" is not in the catalog, but it exists in the json extension.
+
+Please try installing and loading the json extension by running:
+INSTALL json;
+LOAD json;
+
+Alternatively, consider enabling auto-install and auto-load by running:
+SET autoinstall_known_extensions=1;
+SET autoload_known_extensions=1;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+unittest is a Catch v2.13.7 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+test/sql/ossie_population_daily_users.test
+-------------------------------------------------------------------------------
+/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release/test/sqlite/../../../../duckdb/test/sqlite/test_sqllogictest.cpp:212
+...............................................................................
+
+test/sql/ossie_population_daily_users.test:16: FAILED:
+explicitly with message:
+  0
+
+
+[1/1] (100%): test/sql/ossie_population_daily_users.test
+===============================================================================
+test cases: 1 | 1 failed
+assertions: 4 | 3 passed | 1 failed
+

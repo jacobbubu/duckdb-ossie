@@ -1,0 +1,24 @@
+Filters: test/sql/ossie_population_daily_users.test
+
+[0/1] (0%): test/sql/ossie_population_daily_users.test
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+unittest is a Catch v2.13.7 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+test/sql/ossie_population_daily_users.test
+-------------------------------------------------------------------------------
+/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release/test/sqlite/../../../../duckdb/test/sqlite/test_sqllogictest.cpp:212
+...............................................................................
+
+/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/build/release/test/sqlite/../../../../duckdb/test/sqlite/sqllogic_parser.cpp:119: FAILED:
+explicitly with message:
+  test/sql/ossie_population_daily_users.test:48: Failed to parse statement:
+  statement error and maybe needs to have an expected error message
+
+
+[1/1] (100%): test/sql/ossie_population_daily_users.test
+===============================================================================
+test cases:  1 |  0 passed | 1 failed
+assertions: 12 | 11 passed | 1 failed
+

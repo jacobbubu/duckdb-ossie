@@ -30,6 +30,13 @@ Stages/codes: `capability` → `UNSUPPORTED_CAPABILITY`, `identity` →
 `snapshot` → `SNAPSHOT_REJECTED`, `mapping` → `MAPPING_INVALID`, `rule` →
 `RULE_REJECTED`, `parse` → `DEFINITION_INVALID`, `hash` →
 `DEFINITION_HASH_MISMATCH`; remaining request/binding stages → `INVALID_REQUEST`.
+API2.2.0 additionally maps `resource` → `RESOURCE_LIMIT_EXCEEDED` for declared
+[daily User set operation](population-daily-users.md) budgets only. Existing stages
+and mappings remain unchanged. Consumers must preserve unknown string codes as
+failures; the reference decoder has no closed code enum. External closed-enum
+clients need compatibility review. Result-budget failure publishes no partial
+success, and cancellation/OOM remains native rather than this new category.
+
 Codes do not infer root cause by searching text. Reasons and legacy messages are
 not stable machine enums. The old `missing_capability=bounded population profile`
 text is only a legacy placeholder; consumers use the nullable JSON field.

@@ -230,6 +230,51 @@ void Controls(const string &root, int threads) {
 	      "observer removed; reload succeeds");
 	Check(Scalar(reader, TOTAL) == "154.01", "final valid snapshot query");
 }
+class DailyObserver : public PopulationDailyObserver {
+public:
+	DailyObserver(Gate &gate, PopulationDailyCheckpoint checkpoint) : gate(gate), checkpoint(checkpoint) {
+	}
+	void Observe(PopulationDailyCheckpoint reached) override {
+		if (reached == checkpoint) {
+			gate.Block();
+		}
+	}
+	Gate &gate;
+	PopulationDailyCheckpoint checkpoint;
+};
+void DailyCancel(Connection &connection, const string &sql, PopulationDailyCheckpoint checkpoint) {
+	Gate gate;
+	unique_ptr<MaterializedQueryResult> result;
+	connection.context->registered_state->Insert(PopulationDailyObserver::KEY,
+	                                             make_shared_ptr<DailyObserver>(gate, checkpoint));
+	std::exception_ptr failure;
+	std::thread worker([&]() {
+		try {
+			result = connection.Query(sql);
+		} catch (...) {
+			failure = std::current_exception();
+		}
+	});
+	try {
+		gate.Wait();
+		connection.Interrupt();
+		gate.Release();
+		worker.join();
+	} catch (...) {
+		gate.Release();
+		if (worker.joinable()) {
+			worker.join();
+		}
+		connection.context->registered_state->Remove(PopulationDailyObserver::KEY);
+		throw;
+	}
+	connection.context->registered_state->Remove(PopulationDailyObserver::KEY);
+	if (failure) {
+		std::rethrow_exception(failure);
+	}
+	Check(result && result->HasError() && result->GetErrorObject().Type() == ExceptionType::INTERRUPT,
+	      "daily query cancellation preserves native interrupt");
+}
 void ObservationControls(const string &root, int threads) {
 	DuckDB database(nullptr);
 	Connection loader(database), writer(database), reader(database);
@@ -253,6 +298,18 @@ void ObservationControls(const string &root, int threads) {
 	auto prepared = reader.Prepare(total);
 	Check(!prepared->HasError(), "observation prepared bind");
 	Check(Scalar(reader, total) == "31.00", "observation initial sum");
+	const string daily =
+	    "SELECT result_json FROM ossie_daily_users_json('QualifiedObservation', "
+	    "'{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}}')";
+	auto daily_before = Scalar(reader, daily);
+	Check(daily_before.find("\"members\":[\"B\"]") != string::npos, "native daily membership");
+	auto daily_prepared = reader.Prepare(daily);
+	Check(!daily_prepared->HasError(), "daily prepared binds frozen bundle");
+	for (auto checkpoint : {PopulationDailyCheckpoint::BEFORE_EXECUTE, PopulationDailyCheckpoint::BEFORE_ENCODE}) {
+		DailyCancel(reader, daily, checkpoint);
+		Check(Scalar(reader, daily) == daily_before, "daily native cancellation retains complete bundle and recovers");
+	}
+
 	Query(writer, "UPDATE observations SET amount_usd=11 WHERE observation_id='o4'");
 	{
 		Attempt attempt(loader, load20, PopulationLoadCheckpoint::BEFORE_PUBLISH);
@@ -266,6 +323,11 @@ void ObservationControls(const string &root, int threads) {
 		Check(attempt.result && !attempt.result->HasError(), "observation valid candidate publishes");
 	}
 	Check(Scalar(reader, total) == "18.00", "observation source mutation after freeze is excluded");
+	auto daily_old = daily_prepared->Execute();
+	Check(!daily_old->HasError() && daily_old->Fetch()->GetValue(0, 0).ToString() == daily_before,
+	      "daily prepared retains old rule and all trace across reload");
+	Check(Scalar(reader, daily) != daily_before, "fresh daily binds new complete rule and trace");
+
 	Check(Scalar(reader, snapshot) != before, "observation atomic publication changes snapshot");
 	auto original = prepared->Execute();
 	Check(!original->HasError() && original->Fetch()->GetValue(0, 0).ToString() == "31.00",
@@ -288,6 +350,8 @@ void ObservationControls(const string &root, int threads) {
 	      "native observation duplicate preflight refuses");
 	Check(Scalar(reader, snapshot) == before && Scalar(reader, total) == "18.00",
 	      "native failed tuple preflight retains old bundle");
+	Check(Scalar(reader, daily).find("\"members\":[\"B\"]") != string::npos,
+	      "daily failed whole-batch tuple reload retains usable prior batch");
 }
 
 } // namespace

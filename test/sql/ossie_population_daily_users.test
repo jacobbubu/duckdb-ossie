@@ -1,0 +1,123 @@
+# name: test/sql/ossie_population_daily_users.test
+# description: complete every-calendar-day User set, strict request and resource refusal
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE observations(observation_id VARCHAR,user_id VARCHAR,ds DATE,product VARCHAR,amount_usd DECIMAL(18,2),classification_value INTEGER);
+
+statement ok
+INSERT INTO observations SELECT * FROM read_csv('docs/research/ossie-req-001/multi-period-research/every-day/observations.csv',header=true);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population-observation/bundle-10.json');
+
+query TTT
+SELECT regexp_extract(result_json,'"schema_version":"([^"]+)"',1),regexp_extract(result_json,'"member_count":"([^"]+)"',1),regexp_extract(result_json,'"members":(\[[^]]*\])',1) FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}');
+----
+ossie-daily-user-set-result-v1	5	["B","E","F","H","K"]
+
+query T
+SELECT regexp_extract(result_json,'"members":(\[[^]]*\])',1) FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"subset","values":["X"]}}');
+----
+["B","F","H","K"]
+
+query T
+SELECT regexp_extract(result_json,'"members":(\[[^]]*\])',1) FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"subset","values":["Y"]}}');
+----
+["K"]
+
+query T
+SELECT regexp_extract(result_json,'"members":(\[[^]]*\])',1) FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-02","products":{"mode":"all"}}');
+----
+[]
+
+query T
+SELECT regexp_extract(result_json,'"members":(\[[^]]*\])',1) FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"subset","values":["Z"]}}');
+----
+[]
+
+query I
+SELECT * FROM ossie_concept_query('QualifiedObservation',['user_count'],[],['observations.ds >= DATE ''2026-01-31'' AND observations.ds <= DATE ''2026-02-01''']);
+----
+8
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-02-30","end_date":"2026-03-01","products":{"mode":"all"}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-02-01","end_date":"2026-01-31","products":{"mode":"all"}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"0000-01-01","end_date":"0000-01-01","products":{"mode":"all"}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-01","end_date":"2027-01-02","products":{"mode":"all"}}');
+----
+RESOURCE_LIMIT_EXCEEDED
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"subset","values":[]}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"subset","values":["X","X"]}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"},"limit":1}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","\u0073tart_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all","mode":"all"}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}} null');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_daily_users_json('DailyObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}');
+----
+UNSUPPORTED_CAPABILITY
+
+statement error
+SELECT * FROM ossie_daily_users_json('User','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}');
+----
+UNSUPPORTED_CAPABILITY
+
+statement ok
+PREPARE previous_daily AS SELECT regexp_extract(result_json,'"members":(\[[^]]*\])',1) FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}');
+
+statement ok
+DELETE FROM observations;
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population-observation/bundle-20.json');
+
+query T
+EXECUTE previous_daily;
+----
+["B","E","F","H","K"]
+
+query T
+SELECT regexp_extract(result_json,'"members":(\[[^]]*\])',1) FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}');
+----
+[]

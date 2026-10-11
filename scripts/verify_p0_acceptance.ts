@@ -135,7 +135,7 @@ export function verifyAcceptance(
       "adjusted A1-A8 local rule-driven acceptance for the two reviewed bounded profiles",
     conclusion: "PASS within declared scope and deviations",
     artifact_sha256: digest(artifact),
-    project_api_version: "2.1.0",
+    project_api_version: "2.2.0",
     spec_commit: audit.spec_commit,
     spec_version: "0.2.0.dev0",
     engine_version: "1.5.6",

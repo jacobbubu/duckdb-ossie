@@ -275,7 +275,7 @@ export async function verifyObservation(artifact: string) {
     );
     const capability = JSON.parse(String(caps.capabilities_json));
     check("active capabilities declare restrictions", () => {
-      assert.equal(caps.api_version, "2.1.0");
+      assert.equal(caps.api_version, "2.2.0");
       assert.equal(caps.plan_schema, "ossie-population-plan-v2");
       assert.equal(capability.concept_discovery.function, "ossie_concepts_v2");
       assert.equal(capability.observation_contract.user_queryable, false);

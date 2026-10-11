@@ -1,0 +1,34 @@
+{
+  "failures_retained": [
+    {
+      "kind": "TS typecheck",
+      "observed": "toSorted is not in project ES2022 types; implicit callback types failed",
+      "resolution": "Copied array and used sort, preserving project target; final typecheck passes"
+    },
+    {
+      "kind": "SQL harness first",
+      "record": "sql-first.log",
+      "observed": "json_extract_string unavailable in test runner JSON extension",
+      "resolution": "Fixture-specific regexp text extraction in SQL controls; full JSON decode remains in independent stock verifier; no production dependency added"
+    },
+    {
+      "kind": "SQL harness second",
+      "record": "sql-second.log",
+      "observed": "statement error expected syntax incorrect",
+      "resolution": "Used existing repository expected error block syntax; final suite passes"
+    },
+    {
+      "kind": "SQL all first",
+      "record": "sql-all-first.log",
+      "observed": "old registration total22/20, actual additive function23/21",
+      "resolution": "Updated expected actual registrations without dropping metadata checks"
+    },
+    {
+      "kind": "Bun old replay discovery",
+      "observed": "4 replay tests expected2.1 artifact simulation; exact2.2 client assertion rejected it",
+      "resolution": "Existing observation operations accept additive2.1/2.2 patch versions; raw/mock historical evidence unmodified; all98 tests pass"
+    }
+  ],
+  "production_assertion_failures_observed": 0,
+  "design_and_resource_limit_failures": "Expected refusals, not unexpected test failures"
+}

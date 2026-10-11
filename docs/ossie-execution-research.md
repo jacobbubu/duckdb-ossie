@@ -42,6 +42,42 @@ effective backend/effort/usage/billing未知。统计误读JSON文件名和一�
 
 ## 范围与授权
 
+### 完整P1 goal与每日SQL实施 checkpoint（2026-10-11）
+
+用户启动完整P1本地goal，明确授权研究/实现/验证/本地提交，取代之前暂不实现；
+原需求第5节五项全部进入现计划必需矩阵，没有将每日集合当全部P1。当前基线baeb866。
+先实施已设计的每日SQL、严格请求/完整结果及预算拒绝，后续MCP/无模型演练；
+其余时间/历史关系/非递归关系/约束/多事实/窗口继续研究并落实，不默默缩小范围。
+代码改动所有权由Lead负责，读规范/实际源码/旧报告后推进；复用Advisor只读反证
+五类承载与语义，不委派实施。本轮验证要求边界字节/日期/身份、同批规则/trace、
+prepared/reload/取消恢复以及旧行为，同产物完整验收之前不声明能力已交付。
+真实模型/推送/main合并/发布/部署均未授权，凭据与既有raw不修改。
+
+### P1每日集合SQL首片本地完成（2026-10-11）
+
+[使用契约](population-daily-users.md)及[证据](research/ossie-req-001/p1-daily-sql-controls/verification.json)
+绑定API2.2.0实际SQL入口、严格日期/产品JSON及resource错误码、原始UTF-8身份/
+完整有界编码。12研究请求逐成员与独立普通SQL一致；24检查/28拒绝含精确1MiB/+1
+完整结果、16KiB/+1请求、256/257字节、64/65产品、366/367日/闰年及年端点。
+规范化请求、User、正式规则10/20与六项追溯逐例核对；unknown Z/空批/跨产品/缺日
+符合接受口径。10个原研究源/输出哈希不改。合法长ID可整体资源拒绝，无截断成功。
+
+native238项包含threads4/1、prepared旧规则/trace、失败tuple重载保持，以及daily
+执行前/编码前确定性取消与恢复；不声明daily正在执行/正在编码的阶段确定性证据。
+25SQL/959断言、98Bun/403expects与C++/TS格式、类型、架构通过；同SHA旧A1–A8/
+11verifiers/独立replay/stockCLI、旧MCP330/106和观察MCP43/38通过，四场景scripted/
+实际MCP/离线重放与incomplete拒绝通过，真实模型0。reference observation客户端
+接受现兼容2.1/2.2 patch版，历史mock/raw未改；新增注册元数据23/21保持全部检查。
+保留JSON扩展缺失/expectederror语法、ES2022 toSorted、旧元数据计数和严格版本
+引起4个replay失败；修复测试/兼容判断，不改业务oracle迎合实现。
+
+Advisor审阅源码未见阻断每日语义/预算缺陷；Lead补scope/rule/schema回显与年端点，
+能力明确compile_supported=false/plan_schema=null/MCP未注册。旧User查询与区间
+user_count不改。requested Astra/high，有效identity/effort/usage/billing未知。此SQL
+首片本地提交，不代表完整P1；daily解释/MCP/无模型支持验收、CI、时间状态/历史关系/
+不同粒度多事实/派生关系/约束/窗口及最终tidy/待推审计仍必需，沿现计划自动推进。
+集中业务问题等待答复，其依赖不默认通过；没有真实模型或推送/main合并/发布。
+
 ### 每天合格集合最小接口/能力设计 checkpoint（2026-10-11）
 
 用户接受55531fe的日期/缺失/产品候选口径，授权继续设计最小接口、能力

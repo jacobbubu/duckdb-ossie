@@ -15,5 +15,12 @@ public:
 	virtual void Observe(PopulationLoadCheckpoint checkpoint) = 0;
 };
 
+enum class PopulationDailyCheckpoint : uint8_t { BEFORE_EXECUTE, BEFORE_ENCODE };
+class PopulationDailyObserver : public ClientContextState {
+public:
+	static constexpr const char *KEY = "ossie_population_daily_observer";
+	virtual void Observe(PopulationDailyCheckpoint checkpoint) = 0;
+};
+
 } // namespace ossie
 } // namespace duckdb

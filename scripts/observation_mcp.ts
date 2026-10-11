@@ -176,7 +176,8 @@ export class ObservationSession {
       resources.push({ evidence_id: uri, response: reply.result });
     }
     const [cap] = rowsByKind.capabilities;
-    assert.equal(cap.api_version, "2.1.0");
+    // Existing observation operations are compatible across the additive 2.1/2.2 APIs.
+    assert.match(String(cap.api_version), /^2\.(1|2)\.\d+$/);
     const capabilities = JSON.parse(String(cap.capabilities_json));
     assert.deepEqual(capabilities.concept_discovery, {
       function: "ossie_concepts_v2",

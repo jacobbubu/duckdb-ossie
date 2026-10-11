@@ -1,0 +1,7 @@
+Filters: test/sql/ossie_population_daily_users.test
+
+[0/1] (0%): test/sql/ossie_population_daily_users.test
+[1/1] (100%): test/sql/ossie_population_daily_users.test
+===============================================================================
+All tests passed (28 assertions in 1 test case)
+

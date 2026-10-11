@@ -123,7 +123,7 @@ The same function adapts old profiles to a single identity component. Legacy
 compound profile with guidance to use v2. Metrics/fields discovery retain their
 v1 shapes; field presence alone does not authorize a grouping request.
 
-The additive project API is `2.1.0`. Capabilities identify the active concept
+The current project API is `2.2.0` (observation support was added in `2.1.0`). Capabilities identify the active concept
 function/schema, permitted group fields and User/mean scope. The new profile's
 `ossie-population-plan-v2` explains the observation tuple (`entity_equals_record`
 true) separately from the referenced User (false), and states the internal binary
@@ -168,3 +168,9 @@ verified; see [the MCP/Agent preparation guide](agent-observation-acceptance.md)
 A real observation Agent trial remains unrun.
 No pagination, automatic calendar completion or arbitrary ontology execution is
 added.
+
+The dedicated [daily User set SQL operation](population-daily-users.md) computes
+intersection over explicitly requested consecutive calendar dates. Existing
+interval `user_count` remains existential; generic User queries remain unavailable.
+This additive SQL operation has a separate result schema and budget; current
+MCP tools and Agent's every-day refusal remain unchanged until later integration.
