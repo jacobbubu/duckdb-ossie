@@ -1,5 +1,11 @@
 /** Actual frozen relation-profile load/constraints; no object-interface claim. */
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import {
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  realpathSync,
+} from "node:fs";
 import { resolve, join, relative } from "node:path";
 import { Database, ROOT, assert, digest } from "./artifact_helpers.ts";
 import { populationError } from "./population_error.ts";
@@ -10,9 +16,10 @@ assert(
   "ARTIFACT NEW_DIR required",
 );
 const artifact = resolve(artifactArg),
-  directory = resolve(directoryArg);
-assert(!existsSync(directory), "new output directory required");
-mkdirSync(directory, { recursive: true });
+  requestedDirectory = resolve(directoryArg);
+assert(!existsSync(requestedDirectory), "new output directory required");
+mkdirSync(requestedDirectory, { recursive: true });
+const directory = realpathSync(requestedDirectory);
 const fixture = join(ROOT, "test/fixtures/population-observation");
 const csv = join(
   ROOT,

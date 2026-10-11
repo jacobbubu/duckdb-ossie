@@ -1,5 +1,11 @@
 /** Independent full-link oracle for the actual frozen relation API. */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  realpathSync,
+} from "node:fs";
 import { join, relative, resolve } from "node:path";
 import {
   Database,
@@ -15,9 +21,10 @@ assert(
   "ARTIFACT NEW_DIRECTORY",
 );
 const artifact = resolve(artifactArg),
-  directory = resolve(outputArg);
-assert(!existsSync(directory), "fresh evidence directory required");
-mkdirSync(directory, { recursive: true });
+  requestedDirectory = resolve(outputArg);
+assert(!existsSync(requestedDirectory), "fresh evidence directory required");
+mkdirSync(requestedDirectory, { recursive: true });
+const directory = realpathSync(requestedDirectory);
 const fixture = join(ROOT, "test/fixtures/population-observation");
 const ontology = JSON.parse(
   readFileSync(

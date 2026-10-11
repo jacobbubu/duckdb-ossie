@@ -1,0 +1,16 @@
+{
+  "scope": "all unique introduced-or-changed blobs and commit messages in locally recorded outgoing range; bounded credential/internal patterns, not universal secret certification",
+  "base": "7481dff46f65832422a6df8ddad0ed3d8bb03d98",
+  "head": "1545f65a9e16d1414af8ac40f515a2a8b38c2c0d",
+  "commits": 1,
+  "messages": 1,
+  "changed_paths": 4,
+  "unique_blobs": 4,
+  "findings": [],
+  "env_test_read": false,
+  "remote_tip_refreshed": false,
+  "real_model_requests": 0,
+  "pushed": false,
+  "raw_report_sha256": "92c3aaaa53f51479e9695668f442e93f358b37409bff4ad6439828548f246a8d",
+  "audit_source_sha256": "018209d2f81cb4697445285ada6a519c5c3af3b50e6ba5e6acd5b4d8c79e7a46"
+}

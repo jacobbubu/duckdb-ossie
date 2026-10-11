@@ -1,0 +1,26 @@
+Makefile:33: warning: overriding recipe for target 'tidy-check'
+extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old recipe for target 'tidy-check'
+mkdir -p ./build/tidy
+cmake -G "Ninja" -DFORCE_COLORED_OUTPUT=1 -DEXTENSION_STATIC_BUILD=1  -DDUCKDB_EXTENSION_CONFIGS='/workspace/extension_config.cmake' -DGIT_COMMIT_HASH=069cc9f9b5be802405797faecc284961b07c70ef  -DOSX_BUILD_ARCH=   -DDUCKDB_EXPLICIT_PLATFORM='' -DCUSTOM_LINKER= -DOVERRIDE_GIT_DESCRIBE="" -DUNITTEST_ROOT_DIRECTORY="/workspace/" -DBENCHMARK_ROOT_DIRECTORY="/workspace/" -DENABLE_UNITTEST_CPP_TESTS=FALSE -DENABLE_EXTENSION_AUTOLOADING=0 -DENABLE_EXTENSION_AUTOINSTALL=0 -DBUILD_EXTENSION_TEST_DEPS=default  -DDISABLE_UNITY=1 -DCLANG_TIDY=1 -S "./duckdb/" -B build/tidy
+-- GIT_COMMIT_HASH has length 40 different than the expected 10
+-- git hash 069cc9f9b5, version v1.5.6, extension folder v1.5.6
+-- Build workers: compile= link_release=4 link_non_release=2
+-- Load extension 'ossie' from '/workspace' @ 7481dff
+-- Load extension 'tpcds' from '/workspace/duckdb/extensions' @ v1.5.6
+-- Load extension 'core_functions' from '/workspace/duckdb/extensions' @ v1.5.6
+-- Load extension 'parquet' from '/workspace/duckdb/extensions' @ v1.5.6
+CMake Warning at extension/extension_build_tools.cmake:597 (message):
+  Extension 'ossie' has a vcpkg.json, but build was not run with VCPKG.  If
+  build fails, check out VCPKG build instructions in
+  'duckdb/extension/README.md' or try manually installing the dependencies in
+  /workspace/vcpkg.json
+Call Stack (most recent call first):
+  CMakeLists.txt:855 (include)
+
+
+-- Extensions linked into DuckDB: [ossie, tpcds, core_functions, parquet]
+-- Configuring done (0.1s)
+-- Generating done (0.2s)
+-- Build files have been written to: /workspace/build/tidy
+cp duckdb/.clang-tidy build/tidy/.clang-tidy
+cd build/tidy && python3 ../../duckdb/scripts/run-clang-tidy.py '/workspace/src/' -header-filter '/workspace/src/' -quiet -j 2

@@ -1713,3 +1713,27 @@ Linux功能回归；同时审计未推提交blob/消息中内部endpoint/model/�
 绑定全部匹配。三私有原件只读，public选择receipt；不冒充通用秘密认证。
 当前Linux容器仍live安装依赖；两业务问题重新集中列出等待，不推进其语义。
 下一继续同容器tidy，尾部新提交另补检，完整五类P1未完成。
+
+Linux tidy中间发现：当前15TU检查已报告population/fact新代码的控制语句
+缺花括号，以及一处weak回调按值复制、一处单参构造缺explicit。检查仍live，
+未将历史tidy当通过。先保留完整首轮raw/候选源码与固定编译命令，再在隔离
+副本使用限定clang-tidy修复，Lead审查diff并移回主工作树。预期机械修复仍
+需实际重建/六native/SQL/接口回归及二轮tidy；不修改业务口径或放宽配置。
+
+修复后回归中间发现：新产物66ec8a7c的六native/27SQL/完整P0及quality通过。
+独立回归driver的观察/每日通过，关系loader因/tmp在macOS指向/private/tmp而
+生成错误相对fixture路径，首轮失败保存。此为验收器输出目录canonical问题，
+非模型loader放宽；两个关系artifact verifier统一在mkdir后realpath目录，再
+于新目录复测全部语义/拒绝。不改固定fixture或已封存证据，Linux tidy二轮live。
+
+当前P1 tidy/回归本地工作包完成：首轮248unique诊断原件保留，246花括号/
+Binder explicit/weak const引用修复经token对应审查，无关源码不动；二轮
+Ubuntu24.04 ARM64 clang18对15TU全部exit0。新mac产物66ec8a7c六native
+19/42/308/55/260/90、27SQL/1026、完整P0、11profile/stock/MCP和四无模型
+全exit0；138Bun/721及type/format/architecture通过。关系验收器/tmp真实
+目录修复与观察public导出symlink拒绝的失败保留，未放宽原件保护。
+[证据包](research/ossie-req-001/p1-tidy-controls/review.md)绑定315旁证及
+77原私有容器，首轮/伪造不当成功执行。Linux只静态检查，mac功能证据；
+未运行当前Linux功能构建/远端CI。下一继续两业务决策后的状态/历史设计
+实现、相应完整接口与旧行为回归，再最终全五项审计；若答案仍未到，先
+补本修复提交尾部隐私预检及必要独立研究。原scope不缩减，无模型/推送。

@@ -1100,10 +1100,11 @@ CapturedTable CaptureTable(ClientContext &context, Connection &source, const Dat
 	auto capture_frame = [&](const string &value) {
 		auto prefix = to_string(value.size()) + ":";
 		if (capture.canonical.size() > byte_budget || prefix.size() > byte_budget - capture.canonical.size() ||
-		    value.size() > byte_budget - capture.canonical.size() - prefix.size())
+		    value.size() > byte_budget - capture.canonical.size() - prefix.size()) {
 			Fail(dataset.name, "snapshot",
 			     byte_budget == MAX_BYTES ? "batch exceeds 16 MiB canonical value limit including metadata"
 			                              : "combined captures exceed16MiB canonical limit including metadata");
+		}
 		capture.canonical += prefix;
 		capture.canonical += value;
 	};
@@ -1825,70 +1826,84 @@ void ObservationIdentityPreflight(ClientContext &context, Bundle &b, Connection 
 
 // The new profile has an independent loader path; it never relaxes the legacy compiler.
 void FactExpressionBudget(const ParsedExpression &expression, idx_t depth, idx_t &nodes) {
-	if (depth > 32 || ++nodes > 1024)
+	if (depth > 32 || ++nodes > 1024) {
 		Fail("fact program", "capability", "expression depth32/node1024 before model lowering/copy");
+	}
 	ParsedExpressionIterator::EnumerateChildren(
 	    expression, [&](const ParsedExpression &child) { FactExpressionBudget(child, depth + 1, nodes); });
 }
 void FactCoreBudget(yyjson_val *core) {
 	auto datasets = Array(core, "datasets", true), metrics = Array(core, "metrics", true);
-	if (datasets.size() != 2 || metrics.empty() || metrics.size() > 48)
+	if (datasets.size() != 2 || metrics.empty() || metrics.size() > 48) {
 		Fail("fact program", "capability", "two datasets and1..48 total declarations required");
+	}
 	idx_t bytes = 0;
 	auto declarations = [&](yyjson_val *declaration, bool field) {
 		for (auto dialect : Array(Member(declaration, "expression"), "dialects", true)) {
 			auto sql = Text(dialect, "expression");
-			if (sql.size() > 16384 || sql.size() > 131072 - bytes)
+			if (sql.size() > 16384 || sql.size() > 131072 - bytes) {
 				Fail("fact program", "capability", "bounded rule bytes required before core parsing");
+			}
 			bytes += sql.size();
 			auto language = Text(dialect, "dialect");
 			if (language == OSSIE_SQL_2026 || language == ANSI_SQL) {
 				auto parsed = Parser::ParseExpressionList(sql);
-				if (parsed.size() != 1 || !parsed[0]->GetAlias().empty())
+				if (parsed.size() != 1 || !parsed[0]->GetAlias().empty()) {
 					Fail("fact program", "capability", "one unaliased expression required");
+				}
 				idx_t nodes = 0;
 				FactExpressionBudget(*parsed[0], 1, nodes);
-				if (field && parsed[0]->GetExpressionClass() != ExpressionClass::COLUMN_REF)
+				if (field && parsed[0]->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 					Fail(Text(declaration, "name"), "capability",
 					     "direct physical field required before model lowering");
+				}
 			}
 		}
 	};
 	for (auto dataset : datasets) {
 		auto fields = Array(dataset, "fields", true);
-		if (fields.empty() || fields.size() > 256)
+		if (fields.empty() || fields.size() > 256) {
 			Fail("fact program", "capability", "1..256 fields per fact required");
-		for (auto field : fields)
+		}
+		for (auto field : fields) {
 			declarations(field, true);
+		}
 	}
-	for (auto metric : metrics)
+	for (auto metric : metrics) {
 		declarations(metric, false);
+	}
 }
 
 string FactLogicalField(const Dataset &dataset, const string &sql) {
-	if (sql.find('"') != string::npos)
+	if (sql.find('"') != string::npos) {
 		Fail(sql, "mapping", "unquoted dataset.field required");
+	}
 	auto expr = Parse(sql);
-	if (expr->GetExpressionClass() != ExpressionClass::COLUMN_REF)
+	if (expr->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 		Fail(sql, "mapping", "direct declared field required");
+	}
 	auto &names = expr->Cast<ColumnRefExpression>().column_names;
-	if (names.size() != 2 || !StringUtil::CIEquals(names[0], dataset.name) || !dataset.FindField(names[1]))
+	if (names.size() != 2 || !StringUtil::CIEquals(names[0], dataset.name) || !dataset.FindField(names[1])) {
 		Fail(sql, "mapping", "declared field in this fact required");
+	}
 	return dataset.FindField(names[1])->name;
 }
 string FactPhysicalField(const Dataset &dataset, const Field &field) {
-	if (field.expression.tree->GetExpressionClass() != ExpressionClass::COLUMN_REF)
+	if (field.expression.tree->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 		Fail(field.name, "capability", "fact field must directly map a physical column");
+	}
 	auto &names = field.expression.tree->Cast<ColumnRefExpression>().column_names;
-	if (names.empty() || names.size() > 2 || (names.size() == 2 && !StringUtil::CIEquals(names[0], dataset.name)))
+	if (names.empty() || names.size() > 2 || (names.size() == 2 && !StringUtil::CIEquals(names[0], dataset.name))) {
 		Fail(field.name, "bind", "own physical column required");
+	}
 	return names.back();
 }
 void FactDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yyjson_val *config) {
 	Keys(config, {"facts", "windows"}, "fact program config");
 	auto configs = Array(config, "facts", true);
-	if (configs.size() != 2 || b.model.datasets.size() != 2 || !b.model.relationships.empty())
+	if (configs.size() != 2 || b.model.datasets.size() != 2 || !b.model.relationships.empty()) {
 		Fail("fact program", "capability", "two independent facts and no core join required");
+	}
 	case_insensitive_set_t datasets, roots;
 	for (auto config : configs) {
 		Keys(config, {"dataset", "concept", "currency"}, "fact config");
@@ -1897,21 +1912,25 @@ void FactDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yyjso
 		source.concept = Text(config, "concept");
 		source.currency = Text(config, "currency");
 		if (source.currency.size() != 3 ||
-		    source.currency.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ") != string::npos)
+		    source.currency.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ") != string::npos) {
 			Fail(source.concept, "capability", "explicit uppercase three-letter currency required");
+		}
 		if (!b.model.FindDataset(source.dataset) || !datasets.insert(source.dataset).second ||
-		    !roots.insert(source.concept).second)
+		    !roots.insert(source.concept).second) {
 			Fail("facts", "bind", "distinct declared datasets and root concepts required");
+		}
 		b.fact_input.sources.push_back(std::move(source));
 	}
-	if (b.fact_input.sources[0].currency != b.fact_input.sources[1].currency)
+	if (b.fact_input.sources[0].currency != b.fact_input.sources[1].currency) {
 		Fail("fact program", "capability", "same explicit currency required");
+	}
 	Keys(ontology, {"version", "name", "description", "ai_context", "ontology", "requires"}, "fact ontology");
 	Version(ontology);
 	Empty(ontology, "requires", "ontology");
 	auto concepts = Array(ontology, "ontology", true);
-	if (concepts.size() != 3)
+	if (concepts.size() != 3) {
 		Fail("ontology", "capability", "referent User and two root entities required");
+	}
 	yyjson_val *user = nullptr;
 	case_insensitive_map_t<yyjson_val *> root_objects;
 	case_insensitive_set_t allconcepts;
@@ -1921,25 +1940,29 @@ void FactDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yyjso
 		      "relationships"},
 		     "fact concept");
 		auto name = Text(concept, "concept");
-		if (!allconcepts.insert(name).second || Text(concept, "type") != "EntityType")
+		if (!allconcepts.insert(name).second || Text(concept, "type") != "EntityType") {
 			Fail(name, "capability", "distinct EntityType concepts required");
+		}
 		Empty(concept, "extends", name);
 		Empty(concept, "derived_by", name);
 		Empty(concept, "requires", name);
-		if (roots.count(name))
+		if (roots.count(name)) {
 			root_objects[name] = concept;
-		else {
-			if (user)
+		} else {
+			if (user) {
 				Fail(name, "capability", "one User referent required");
+			}
 			user = concept;
 			b.user_concept = name;
 		}
 	}
-	if (!user || root_objects.size() != 2)
+	if (!user || root_objects.size() != 2) {
 		Fail("ontology", "bind", "configured fact roots and one User referent required");
+	}
 	auto user_ids = Array(user, "identify_by", true), user_relations = Array(user, "relationships", true);
-	if (user_ids.size() != 1 || user_relations.size() != 1)
+	if (user_ids.size() != 1 || user_relations.size() != 1) {
 		Fail(b.user_concept, "identity", "single User identity required");
+	}
 	b.user_id_relation = ArrayText(user_ids[0]);
 	auto target = [&](yyjson_val *relation, const string &multiplicity) {
 		Keys(relation,
@@ -1948,13 +1971,15 @@ void FactDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yyjso
 		Empty(relation, "requires", "relationship");
 		Empty(relation, "derived_by", "relationship");
 		auto roles = Array(relation, "roles", true);
-		if (roles.size() != 1 || Text(relation, "multiplicity") != multiplicity)
+		if (roles.size() != 1 || Text(relation, "multiplicity") != multiplicity) {
 			Fail(Text(relation, "name"), "capability", "single role and declared multiplicity required");
+		}
 		Keys(roles[0], {"concept"}, "fact role");
 		return Text(roles[0], "concept");
 	};
-	if (Text(user_relations[0], "name") != b.user_id_relation || target(user_relations[0], "OneToOne") != "String")
+	if (Text(user_relations[0], "name") != b.user_id_relation || target(user_relations[0], "OneToOne") != "String") {
 		Fail(b.user_concept, "identity", "User identity must be OneToOne String");
+	}
 	b.fact_input.user_concept = b.user_concept;
 	b.fact_input.user_identity_relationship = b.user_id_relation;
 	Keys(mapping,
@@ -1965,17 +1990,20 @@ void FactDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yyjso
 	Keys(Member(mapping, "ontology_ref"), {"name", "iri"}, "ontology reference");
 	Keys(Member(mapping, "semantic_model_ref"), {"name", "iri"}, "core reference");
 	if (Text(Member(mapping, "ontology_ref"), "name") != Text(ontology, "name") ||
-	    Text(Member(mapping, "semantic_model_ref"), "name") != b.model.name)
+	    Text(Member(mapping, "semantic_model_ref"), "name") != b.model.name) {
 		Fail("mapping", "bind", "definition references must agree");
+	}
 	auto mappings = Array(mapping, "concept_mappings", true);
-	if (mappings.size() != 2)
+	if (mappings.size() != 2) {
 		Fail("mapping", "capability", "only two fact root mappings; User is a nested referent");
+	}
 	case_insensitive_map_t<yyjson_val *> mapped;
 	for (auto cm : mappings) {
 		Keys(cm, {"concept", "object_mappings", "link_mappings"}, "fact concept mapping");
 		auto name = Text(cm, "concept");
-		if (!roots.count(name) || !mapped.emplace(name, cm).second)
+		if (!roots.count(name) || !mapped.emplace(name, cm).second) {
 			Fail(name, "mapping", "distinct configured root mappings required");
+		}
 	}
 	for (auto &source : b.fact_input.sources) {
 		auto &dataset = *b.model.FindDataset(source.dataset);
@@ -1984,51 +2012,64 @@ void FactDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yyjso
 		source.concept = Text(concept, "concept");
 		source.user_concept = b.user_concept;
 		source.target_identity_relationship = b.user_id_relation;
-		for (auto &other : b.fact_input.sources)
-			if (StringUtil::CIEquals(dataset.name, other.concept) || StringUtil::CIEquals(dataset.name, b.user_concept))
+		for (auto &other : b.fact_input.sources) {
+			if (StringUtil::CIEquals(dataset.name, other.concept) ||
+			    StringUtil::CIEquals(dataset.name, b.user_concept)) {
 				Fail(dataset.name, "bind", "dataset and concept namespaces must be distinct");
-		if (!dataset.unique_keys.empty())
+			}
+		}
+		if (!dataset.unique_keys.empty()) {
 			Fail(dataset.name, "capability", "only full primary key supported for fact profile");
+		}
 		case_insensitive_map_t<string> relations;
 		case_insensitive_set_t targets;
 		for (auto relation : Array(concept, "relationships", true)) {
 			auto name = Text(relation, "name"), t = target(relation, "ManyToOne");
 			if (!relations.emplace(name, t).second || !targets.insert(t).second ||
-			    (t != b.user_concept && t != "Date" && t != "String" && t != "Decimal"))
+			    (t != b.user_concept && t != "Date" && t != "String" && t != "Decimal")) {
 				Fail(name, "capability", "one User/Date[/product String]/Decimal role required");
+			}
 		}
 		vector<string> identity_relations;
-		for (auto id : Array(concept, "identify_by", true))
+		for (auto id : Array(concept, "identify_by", true)) {
 			identity_relations.push_back(ArrayText(id));
+		}
 		if (identity_relations.size() < 2 || identity_relations.size() > 3 ||
-		    relations.size() != identity_relations.size() + 1)
+		    relations.size() != identity_relations.size() + 1) {
 			Fail(source.concept, "identity", "ordered User/date[/product] identity and amount required");
+		}
 		for (idx_t i = 0; i < identity_relations.size(); i++) {
 			auto it = relations.find(identity_relations[i]);
 			auto expected = i == 0 ? b.user_concept : i == 1 ? "Date" : "String";
-			if (it == relations.end() || it->second != expected)
+			if (it == relations.end() || it->second != expected) {
 				Fail(source.concept, "identity", "ordered User/date[/product String] identity required");
+			}
 		}
 		auto user_ref = [&](yyjson_val *object) {
 			auto refs = Array(object, "referent_mappings", true);
-			if (refs.size() != 1)
+			if (refs.size() != 1) {
 				Fail(source.concept, "mapping", "single nested User id required");
+			}
 			Keys(refs[0], {"relationship", "expression"}, "fact User id");
-			if (Text(refs[0], "relationship") != b.user_id_relation)
+			if (Text(refs[0], "relationship") != b.user_id_relation) {
 				Fail(source.concept, "mapping", "same declared User id required");
+			}
 			return FactLogicalField(dataset, Text(refs[0], "expression"));
 		};
 		auto identity = [&](yyjson_val *object) {
 			Keys(object, {"concept", "referent_mappings"}, "fact root object");
-			if (Member(object, "concept") && !StringUtil::CIEquals(Text(object, "concept"), source.concept))
+			if (Member(object, "concept") && !StringUtil::CIEquals(Text(object, "concept"), source.concept)) {
 				Fail(source.concept, "mapping", "root concept override refused");
+			}
 			auto refs = Array(object, "referent_mappings", true);
-			if (refs.size() != identity_relations.size())
+			if (refs.size() != identity_relations.size()) {
 				Fail(source.concept, "identity", "full root tuple required");
+			}
 			vector<string> fields;
 			for (idx_t i = 0; i < refs.size(); i++) {
-				if (!StringUtil::CIEquals(Text(refs[i], "relationship"), identity_relations[i]))
+				if (!StringUtil::CIEquals(Text(refs[i], "relationship"), identity_relations[i])) {
 					Fail(source.concept, "identity", "referent order must agree with root identity");
+				}
 				Keys(refs[i],
 				     i == 0 ? std::initializer_list<const char *> {"relationship", "referent_mappings"}
 				            : std::initializer_list<const char *> {"relationship", "expression"},
@@ -2039,70 +2080,86 @@ void FactDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yyjso
 		};
 		auto cm = mapped.at(source.concept);
 		auto objects = Array(cm, "object_mappings", true), links = Array(cm, "link_mappings", true);
-		if (objects.size() != 1 || links.size() != 1)
+		if (objects.size() != 1 || links.size() != 1) {
 			Fail(source.concept, "mapping", "one root object and full link tree required");
+		}
 		Keys(links[0], {"object_mapping", "children"}, "fact link tree");
 		source.identity_fields = identity(objects[0]);
-		if (identity(Member(links[0], "object_mapping")) != source.identity_fields)
+		if (identity(Member(links[0], "object_mapping")) != source.identity_fields) {
 			Fail(source.concept, "identity", "object and link identity differ");
+		}
 		case_insensitive_set_t bound;
 		for (auto link : Array(links[0], "children", true)) {
 			Keys(link, {"relationship", "object_mapping"}, "fact scalar/User link");
 			auto name = Text(link, "relationship");
 			auto it = relations.find(name);
-			if (it == relations.end() || !bound.insert(name).second)
+			if (it == relations.end() || !bound.insert(name).second) {
 				Fail(name, "mapping", "unknown or duplicate mapped relationship");
+			}
 			auto object = Member(link, "object_mapping");
 			auto t = it->second;
 			Keys(object,
 			     t == b.user_concept ? std::initializer_list<const char *> {"concept", "referent_mappings"}
 			                         : std::initializer_list<const char *> {"concept", "expression"},
 			     "fact value object");
-			if (Text(object, "concept") != t)
+			if (Text(object, "concept") != t) {
 				Fail(name, "mapping", "mapped role target differs");
+			}
 			auto field = t == b.user_concept ? user_ref(object) : FactLogicalField(dataset, Text(object, "expression"));
-			if (dataset.FindField(field)->datatype != (t == b.user_concept ? "String" : t))
+			if (dataset.FindField(field)->datatype != (t == b.user_concept ? "String" : t)) {
 				Fail(field, "bind", "declared logical datatype differs from role");
-			if (t == b.user_concept)
+			}
+			if (t == b.user_concept) {
 				source.user_field = field;
-			else if (t == "Date")
+			} else if (t == "Date") {
 				source.date_field = field;
-			else if (t == "String")
+			} else if (t == "String") {
 				source.product_field = field;
-			else
+			} else {
 				source.amount_field = field;
+			}
 		}
 		if (bound.size() != relations.size() ||
 		    (source.identity_fields != vector<string>({source.user_field, source.date_field}) &&
-		     source.identity_fields != vector<string>({source.user_field, source.date_field, source.product_field})))
+		     source.identity_fields != vector<string>({source.user_field, source.date_field, source.product_field}))) {
 			Fail(source.concept, "mapping", "all links and full mapped identity must agree");
+		}
 		vector<string> physical_identity;
-		for (auto &name : source.identity_fields)
+		for (auto &name : source.identity_fields) {
 			physical_identity.push_back(FactPhysicalField(dataset, *dataset.FindField(name)));
-		if (dataset.primary_key.size() != physical_identity.size())
+		}
+		if (dataset.primary_key.size() != physical_identity.size()) {
 			Fail(dataset.name, "identity", "full physical primary key required");
-		for (idx_t i = 0; i < physical_identity.size(); i++)
-			if (!StringUtil::CIEquals(dataset.primary_key[i], physical_identity[i]))
+		}
+		for (idx_t i = 0; i < physical_identity.size(); i++) {
+			if (!StringUtil::CIEquals(dataset.primary_key[i], physical_identity[i])) {
 				Fail(dataset.name, "identity", "physical key order must agree with mapped identity");
-		if (dataset.fields.size() != relations.size())
+			}
+		}
+		if (dataset.fields.size() != relations.size()) {
 			Fail(dataset.name, "capability", "only complete mapped role fields supported");
-		for (auto &field : dataset.fields)
+		}
+		for (auto &field : dataset.fields) {
 			source.fields.push_back({field.name, FactPhysicalField(dataset, field), LogicalType::INVALID});
+		}
 	}
 	case_insensitive_set_t windows;
 	for (auto name : Array(config, "windows", true)) {
 		auto text = ArrayText(name);
 		auto metric = b.model.FindMetric(text);
-		if (!metric || !windows.insert(metric->name).second)
+		if (!metric || !windows.insert(metric->name).second) {
 			Fail(text, "capability", "distinct declared window names required");
+		}
 	}
 	for (auto &metric : b.model.metrics) {
-		if (metric.expression.dialect != OSSIE_SQL_2026)
+		if (metric.expression.dialect != OSSIE_SQL_2026) {
 			Fail(metric.name, "capability", "fact program declarations require OSSIE_SQL_2026");
-		if (windows.count(metric.name))
+		}
+		if (windows.count(metric.name)) {
 			b.fact_input.windows.push_back({metric.name, metric.expression.sql});
-		else
+		} else {
 			b.fact_input.metrics.push_back({metric.name, metric.expression.sql});
+		}
 	}
 }
 vector<unique_ptr<TableRef>> FactSnapshotSources(Bundle &b) {
@@ -2127,47 +2184,55 @@ void FreezeFacts(ClientContext &context, Bundle &b, Connection &engine) {
 		auto capture = CaptureTable(context, source, dataset, catalog, previous, MAX_BYTES - bytes);
 		bytes += capture.canonical.size();
 		captures.push_back(std::move(capture));
-		if (captures.size() == 1)
+		if (captures.size() == 1) {
 			ObserveLoad(context, PopulationLoadCheckpoint::AFTER_FACT_CAPTURE);
+		}
 	}
 	Run(context, source, "COMMIT");
 	string evidence = "ossie-frozen-fact-program-v1:";
-	for (auto &hash : {b.profile, b.manifest_hash, b.core_hash, b.ontology_hash, b.mapping_hash})
+	for (auto &hash : {b.profile, b.manifest_hash, b.core_hash, b.ontology_hash, b.mapping_hash}) {
 		Frame(evidence, hash);
+	}
 	for (idx_t i = 0; i < captures.size(); i++) {
 		auto &capture = captures[i];
 		auto &fact = b.fact_input.sources[i];
 		auto &dataset = *b.model.FindDataset(fact.dataset);
-		for (auto &field : fact.fields)
+		for (auto &field : fact.fields) {
 			field.type = capture.types[PhysicalColumn(capture, field.physical_column)];
+		}
 		// Validate actual roles before GetValue or tuple hashing; a string label is not an actual type.
 		auto actual = [&](const string &name) {
 			return capture.types[PhysicalColumn(capture, FactPhysicalField(dataset, *dataset.FindField(name)))];
 		};
 		if (actual(fact.user_field) != LogicalType::VARCHAR || actual(fact.date_field) != LogicalType::DATE ||
 		    actual(fact.amount_field) != LogicalType::DECIMAL(18, 2) ||
-		    (!fact.product_field.empty() && actual(fact.product_field) != LogicalType::VARCHAR))
+		    (!fact.product_field.empty() && actual(fact.product_field) != LogicalType::VARCHAR)) {
 			Fail(fact.concept, "bind",
 			     "actual User/DATE[/product]/money types must be VARCHAR/DATE[/VARCHAR]/DECIMAL18,2");
+		}
 		vector<idx_t> ids;
-		for (auto &name : fact.identity_fields)
+		for (auto &name : fact.identity_fields) {
 			ids.push_back(PhysicalColumn(capture, FactPhysicalField(dataset, *dataset.FindField(name))));
+		}
 		unordered_set<string> keys;
 		for (auto &row : capture.rows) {
-			if (context.IsInterrupted())
+			if (context.IsInterrupted()) {
 				throw InterruptException();
+			}
 			string key;
 			for (idx_t j = 0; j < ids.size(); j++) {
 				auto &value = row[ids[j]];
 				if (value.IsNull() ||
-				    (j == 1 ? !Date::IsFinite(value.GetValue<date_t>()) : value.GetValue<string>().empty()))
+				    (j == 1 ? !Date::IsFinite(value.GetValue<date_t>()) : value.GetValue<string>().empty())) {
 					Fail(fact.concept, "identity",
 					     "full capture requires nonempty raw User/product and finite nonnull DATE");
+				}
 				Frame(key, j == 1 ? to_string(value.GetValue<date_t>().days) : value.GetValue<string>());
 			}
-			if (!keys.insert(key).second)
+			if (!keys.insert(key).second) {
 				Fail(fact.concept, "identity",
 				     "duplicate full source identity; identical and conflicting rows both refused");
+			}
 		}
 		auto child = make_shared_ptr<Bundle>();
 		child->owner = child;
@@ -2181,11 +2246,13 @@ void FreezeFacts(ClientContext &context, Bundle &b, Connection &engine) {
 		DataChunk chunk;
 		chunk.Initialize(Allocator::Get(context), capture.types);
 		for (idx_t r = 0; r < capture.rows.size(); r++) {
-			if (context.IsInterrupted())
+			if (context.IsInterrupted()) {
 				throw InterruptException();
+			}
 			idx_t slot = r % STANDARD_VECTOR_SIZE;
-			for (idx_t c = 0; c < capture.types.size(); c++)
+			for (idx_t c = 0; c < capture.types.size(); c++) {
 				chunk.SetValue(c, slot, capture.rows[r][c]);
+			}
 			chunk.SetCardinality(slot + 1);
 			if (slot + 1 == STANDARD_VECTOR_SIZE || r + 1 == capture.rows.size()) {
 				child->collection->Append(chunk);
@@ -2196,37 +2263,45 @@ void FreezeFacts(ClientContext &context, Bundle &b, Connection &engine) {
 		b.rows += child->rows;
 		b.inputs.push_back({fact.dataset, dataset.source_bound, child->content_hash, child->rows});
 		for (auto &value : {fact.dataset, fact.concept, fact.user_concept, fact.target_identity_relationship,
-		                    fact.currency, child->content_hash})
+		                    fact.currency, child->content_hash}) {
 			Frame(evidence, value);
-		for (auto &field : fact.identity_fields)
+		}
+		for (auto &field : fact.identity_fields) {
 			Frame(evidence, field);
+		}
 		b.fact_children.push_back(std::move(child));
 	}
 	b.fact_program =
 	    ErrorBoundary("fact program", "rule", [&] { return make_uniq<FactProgram>(BindFactProgram(b.fact_input)); });
 	vector<string> metrics;
-	for (auto &metric : b.fact_program->metrics)
+	for (auto &metric : b.fact_program->metrics) {
 		metrics.push_back(metric.name);
+	}
 	auto prepared =
 	    engine.Prepare(CompileFactUsers(*b.fact_program, metrics, "common", {"all", "", {}}, FactSnapshotSources(b)));
-	if (prepared->HasError())
+	if (prepared->HasError()) {
 		NormalizeError(prepared->GetErrorObject(), "fact program", "bind", ExceptionType::INVALID_INPUT);
+	}
 	for (idx_t i = 0; i < metrics.size(); i++) {
-		if (!Matches(b.model.FindMetric(metrics[i])->datatype, prepared->GetTypes()[i + 1]))
+		if (!Matches(b.model.FindMetric(metrics[i])->datatype, prepared->GetTypes()[i + 1])) {
 			Fail(metrics[i], "bind", "declared metric datatype differs from reduced/combined output");
+		}
 		b.metric_types[metrics[i]] = prepared->GetTypes()[i + 1].ToString();
 	}
 	if (!b.fact_program->windows.empty()) {
 		vector<string> windows;
-		for (auto &window : b.fact_program->windows)
+		for (auto &window : b.fact_program->windows) {
 			windows.push_back(window.name);
+		}
 		auto window = engine.Prepare(
 		    CompileFactWindows(*b.fact_program, windows, "entire_capture", Value(), Value(), FactSnapshotSources(b)));
-		if (window->HasError())
+		if (window->HasError()) {
 			NormalizeError(window->GetErrorObject(), "fact windows", "bind", ExceptionType::INVALID_INPUT);
+		}
 		for (idx_t i = 0; i < windows.size(); i++) {
-			if (!Matches(b.model.FindMetric(windows[i])->datatype, window->GetTypes()[i + 2]))
+			if (!Matches(b.model.FindMetric(windows[i])->datatype, window->GetTypes()[i + 2])) {
 				Fail(windows[i], "bind", "declared window datatype differs from actual output");
+			}
 			b.metric_types[windows[i]] = window->GetTypes()[i + 2].ToString();
 		}
 	}
@@ -2964,8 +3039,9 @@ private:
 
 string FactString(yyjson_val *value, const string &name) {
 	auto text = DailyString(value, name);
-	if (text.find('\0') != string::npos)
+	if (text.find('\0') != string::npos) {
 		Fail(name, "arguments", "NUL-containing request string prohibited");
+	}
 	return text;
 }
 struct FactRequest {
@@ -2977,8 +3053,9 @@ struct FactRequest {
 	idx_t window_source = 0;
 };
 void FactBudget(const string &name, idx_t actual, idx_t limit) {
-	if (actual > limit)
+	if (actual > limit) {
 		Fail("fact_program." + name, "resource", "request exceeds declared resource limit");
+	}
 }
 FactCohort ParseFactCohort(yyjson_val *value, idx_t depth, idx_t &nodes) {
 	FactBudget("cohort_depth", depth, 16);
@@ -2993,16 +3070,19 @@ FactCohort ParseFactCohort(yyjson_val *value, idx_t depth, idx_t &nodes) {
 	if (result.operation == "predicate") {
 		DailyKeys(value, {"operation", "predicate"});
 		result.predicate = FactString(yyjson_obj_get(value, "predicate"), "cohort.predicate");
-		if (result.predicate.empty())
+		if (result.predicate.empty()) {
 			Fail("cohort.predicate", "arguments", "nonempty comparison required");
+		}
 		return result;
 	}
-	if (result.operation != "intersection" && result.operation != "union" && result.operation != "difference")
+	if (result.operation != "intersection" && result.operation != "union" && result.operation != "difference") {
 		Fail("cohort.operation", "arguments", "all, predicate or binary set operation required");
+	}
 	DailyKeys(value, {"operation", "children"});
 	auto children = yyjson_obj_get(value, "children");
-	if (!yyjson_is_arr(children) || yyjson_get_len(children) != 2)
+	if (!yyjson_is_arr(children) || yyjson_get_len(children) != 2) {
 		Fail("cohort.children", "arguments", "exactly two ordered children required");
+	}
 	size_t i, n;
 	yyjson_val *child;
 	yyjson_arr_foreach(children, i, n, child) result.children.push_back(ParseFactCohort(child, depth + 1, nodes));
@@ -3015,75 +3095,89 @@ Value FactDisplayDate(yyjson_val *value, const string &name) {
 	bool special = false;
 	if (text.empty() || text.size() > 32 ||
 	    Date::TryConvertDate(text.data(), text.size(), pos, date, special, true) != DateCastResult::SUCCESS ||
-	    pos != text.size() || special || !Date::IsFinite(date) || Date::ToString(date) != text)
+	    pos != text.size() || special || !Date::IsFinite(date) || Date::ToString(date) != text) {
 		Fail(name, "arguments", "canonical finite DuckDB DATE text required, including BC and wide years");
+	}
 	return Value::DATE(date);
 }
 FactRequest ParseFactRequest(const string &bytes, const FactProgram &program, bool window) {
 	FactBudget("request_json_utf8_bytes", bytes.size(), DAILY_REQUEST_BYTES);
 	auto doc = yyjson_read(bytes.data(), bytes.size(), 0);
-	if (!doc)
+	if (!doc) {
 		Fail("fact_request", "arguments", "strict JSON object required");
+	}
 	std::unique_ptr<yyjson_doc, decltype(&yyjson_doc_free)> owner(doc, yyjson_doc_free);
 	auto root = yyjson_doc_get_root(doc);
 	DailyKeys(root, window ? vector<string> {"input_scope", "windows", "display"}
 	                       : vector<string> {"input_scope", "domain", "metrics", "cohort"});
-	if (FactString(yyjson_obj_get(root, "input_scope"), "input_scope") != "entire_capture")
+	if (FactString(yyjson_obj_get(root, "input_scope"), "input_scope") != "entire_capture") {
 		Fail("input_scope", "capability", "explicit entire_capture required");
+	}
 	FactRequest request;
 	request.window = window;
 	request.bytes = bytes;
 	auto selection = yyjson_obj_get(root, window ? "windows" : "metrics");
-	if (!yyjson_is_arr(selection) || yyjson_get_len(selection) == 0)
+	if (!yyjson_is_arr(selection) || yyjson_get_len(selection) == 0) {
 		Fail("selection", "arguments", "nonempty declared name array required");
+	}
 	FactBudget("selected_names", yyjson_get_len(selection), window ? 16 : 32);
 	case_insensitive_set_t seen;
 	size_t i, n;
 	yyjson_val *item;
 	yyjson_arr_foreach(selection, i, n, item) {
 		auto name = FactString(item, "selection");
-		if (name.empty())
+		if (name.empty()) {
 			Fail("selection", "arguments", "nonempty name required");
+		}
 		FactBudget("name_utf8_bytes", name.size(), 128);
-		if (!seen.insert(name).second)
+		if (!seen.insert(name).second) {
 			Fail(name, "arguments", "case duplicate selected name");
+		}
 		bool found = false;
 		if (window) {
-			for (auto &w : program.windows)
+			for (auto &w : program.windows) {
 				if (StringUtil::CIEquals(w.name, name)) {
-					if (!request.selected.empty() && request.window_source != w.source)
+					if (!request.selected.empty() && request.window_source != w.source) {
 						Fail(name, "capability", "cannot mix source window grains");
+					}
 					request.window_source = w.source;
 					request.selected.push_back(w.name);
 					found = true;
 					break;
 				}
-		} else
-			for (auto &m : program.metrics)
+			}
+		} else {
+			for (auto &m : program.metrics) {
 				if (StringUtil::CIEquals(m.name, name)) {
 					request.selected.push_back(m.name);
 					found = true;
 					break;
 				}
-		if (!found)
+			}
+		}
+		if (!found) {
 			Fail(name, "arguments", "unknown declared selection or wrong metric/window kind");
+		}
 	}
 	if (window) {
 		auto display = yyjson_obj_get(root, "display");
 		DailyKeys(display, {"mode", "start_date", "end_date"});
 		auto mode = FactString(yyjson_obj_get(display, "mode"), "display.mode");
-		if (mode == "all")
+		if (mode == "all") {
 			DailyKeys(display, {"mode"});
-		else if (mode == "date_range") {
+		} else if (mode == "date_range") {
 			request.start = FactDisplayDate(yyjson_obj_get(display, "start_date"), "display.start_date");
 			request.end = FactDisplayDate(yyjson_obj_get(display, "end_date"), "display.end_date");
-			if (request.start.GetValue<date_t>().days > request.end.GetValue<date_t>().days)
+			if (request.start.GetValue<date_t>().days > request.end.GetValue<date_t>().days) {
 				Fail("display", "arguments", "ordered display dates required");
-		} else
+			}
+		} else {
 			Fail("display.mode", "arguments", "explicit all or date_range required");
+		}
 	} else {
-		if (FactString(yyjson_obj_get(root, "domain"), "domain") != "common")
+		if (FactString(yyjson_obj_get(root, "domain"), "domain") != "common") {
 			Fail("domain", "capability", "explicit common row-presence User domain required");
+		}
 		idx_t nodes = 0;
 		request.cohort = ParseFactCohort(yyjson_obj_get(root, "cohort"), 1, nodes);
 	}
@@ -3158,16 +3252,18 @@ unique_ptr<FunctionData> FactBind(ClientContext &context, TableFunctionBindInput
 	auto result = make_uniq<PopulationBind>();
 	result->bundle = Current(context);
 	auto &b = *result->bundle;
-	if (!b.fact_program)
+	if (!b.fact_program) {
 		Fail("fact_program", "capability", "multi-fact-user-program-v1 required");
+	}
 	result->fact_discovery = input.table_function.name == "ossie_fact_program";
 	if (result->fact_discovery) {
 		types = {LogicalType::VARCHAR};
 		names = {"program_json"};
 		return std::move(result);
 	}
-	if (input.inputs[0].IsNull())
+	if (input.inputs[0].IsNull()) {
 		Fail("fact_request", "arguments", "request JSON required");
+	}
 	bool window = input.table_function.name == "ossie_fact_windows_json" ||
 	              input.table_function.name == "ossie_fact_windows_compile";
 	result->fact_compile = input.table_function.name == "ossie_fact_users_compile" ||
@@ -3180,31 +3276,40 @@ unique_ptr<FunctionData> FactBind(ClientContext &context, TableFunctionBindInput
 	    window
 	        ? CompileFactWindows(*b.fact_program, r.selected, "entire_capture", r.start, r.end, FactSnapshotSources(b))
 	        : CompileFactUsers(*b.fact_program, r.selected, "common", r.cohort, FactSnapshotSources(b));
-	if (!window)
+	if (!window) {
 		result->fact_domain_statement = CompileFactCommonCount(*b.fact_program, FactSnapshotSources(b));
+	}
 	auto engine = Engine(b);
 	auto prepared = engine->Prepare(result->statement->Copy());
-	if (prepared->HasError())
+	if (prepared->HasError()) {
 		NormalizeError(prepared->GetErrorObject(), "fact_request", "bind", ExceptionType::INVALID_INPUT);
+	}
 	result->result_types = prepared->GetTypes();
 	result->result_names = prepared->GetNames();
 	vector<string> expected = {"user_id"};
-	if (window)
+	if (window) {
 		expected.push_back("ds");
-	for (auto &name : r.selected)
+	}
+	for (auto &name : r.selected) {
 		expected.push_back(name);
+	}
 	if (result->result_names != expected || result->result_types.size() != expected.size() ||
-	    result->result_types[0] != LogicalType::VARCHAR || (window && result->result_types[1] != LogicalType::DATE))
+	    result->result_types[0] != LogicalType::VARCHAR || (window && result->result_types[1] != LogicalType::DATE)) {
 		Fail("fact_request", "bind", "canonical typed output schema required");
-	for (idx_t i = 0; i < r.selected.size(); i++)
-		if (result->result_types[i + (window ? 2 : 1)].ToString() != b.metric_types.at(r.selected[i]))
+	}
+	for (idx_t i = 0; i < r.selected.size(); i++) {
+		if (result->result_types[i + (window ? 2 : 1)].ToString() != b.metric_types.at(r.selected[i])) {
 			Fail(r.selected[i], "bind", "output metric type changed from load binding");
+		}
+	}
 	if (!window) {
 		auto count = engine->Prepare(result->fact_domain_statement->Copy());
-		if (count->HasError())
+		if (count->HasError()) {
 			NormalizeError(count->GetErrorObject(), "common_user_count", "bind", ExceptionType::INVALID_INPUT);
-		if (count->GetTypes() != vector<LogicalType> {LogicalType::BIGINT})
+		}
+		if (count->GetTypes() != vector<LogicalType> {LogicalType::BIGINT}) {
 			Fail("common_user_count", "bind", "BIGINT scalar required");
+		}
 	}
 	types = {LogicalType::VARCHAR};
 	names = {result->fact_compile ? "plan_json" : "result_json"};
@@ -3984,10 +4089,12 @@ string ResultJSON(ClientContext &context, const PopulationBind &data, QueryResul
 
 void ObserveFact(ClientContext &context, PopulationFactCheckpoint checkpoint) {
 	auto observer = context.registered_state->Get<PopulationFactObserver>(PopulationFactObserver::KEY);
-	if (observer)
+	if (observer) {
 		observer->Observe(checkpoint);
-	if (context.IsInterrupted())
+	}
+	if (context.IsInterrupted()) {
 		throw InterruptException();
+	}
 }
 void FactIdentityJSON(DailyJSONWriter &writer, const Bundle &b) {
 	writer.Field("profile", b.profile);
@@ -4013,8 +4120,9 @@ string FactProgramJSON(ClientContext &context, const PopulationBind &data) {
 	for (idx_t i = 0; i < p.sources.size(); i++) {
 		auto &s = p.sources[i];
 		auto &child = *b.fact_children[i];
-		if (i)
+		if (i) {
 			w.Append(",");
+		}
 		w.Append("{\"dataset\":");
 		w.Quoted(s.dataset);
 		w.Field("concept", s.concept);
@@ -4032,8 +4140,9 @@ string FactProgramJSON(ClientContext &context, const PopulationBind &data) {
 		w.Append(",\"fields\":[");
 		for (idx_t f = 0; f < s.fields.size(); f++) {
 			auto &field = s.fields[f];
-			if (f)
+			if (f) {
 				w.Append(",");
+			}
 			w.Append("{\"name\":");
 			w.Quoted(field.name);
 			w.Field("physical_column", field.physical_column);
@@ -4045,8 +4154,9 @@ string FactProgramJSON(ClientContext &context, const PopulationBind &data) {
 	w.Append("],\"metrics\":[");
 	for (idx_t i = 0; i < p.metrics.size(); i++) {
 		auto &m = p.metrics[i];
-		if (i)
+		if (i) {
 			w.Append(",");
+		}
 		w.Append("{\"name\":");
 		w.Quoted(m.name);
 		w.Field("original_definition", b.fact_input.metrics[i].sql);
@@ -4057,8 +4167,9 @@ string FactProgramJSON(ClientContext &context, const PopulationBind &data) {
 	w.Append("],\"windows\":[");
 	for (idx_t i = 0; i < p.windows.size(); i++) {
 		auto &window = p.windows[i];
-		if (i)
+		if (i) {
 			w.Append(",");
+		}
 		w.Append("{\"name\":");
 		w.Quoted(window.name);
 		w.Field("original_definition", b.fact_input.windows[i].sql);
@@ -4101,8 +4212,9 @@ string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
 	w.Append(",\"request\":" + r.bytes + ",\"selected\":" + JSONStrings(r.selected) +
 	         ",\"input_scope\":\"entire_capture\",\"columns\":[");
 	for (idx_t c = 0; c < data.result_types.size(); c++) {
-		if (c)
+		if (c) {
 			w.Append(",");
+		}
 		w.Append("{\"ordinal\":" + to_string(c + 1) + ",\"name\":");
 		w.Quoted(data.result_names[c]);
 		w.Field("bound_type", data.result_types[c].ToString());
@@ -4110,16 +4222,19 @@ string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
 		if (c >= (r.window ? 2 : 1)) {
 			auto &name = r.selected[c - (r.window ? 2 : 1)];
 			string unit;
-			if (r.window)
+			if (r.window) {
 				for (auto &m : p.windows) {
-					if (m.name == name)
+					if (m.name == name) {
 						unit = m.unit;
+					}
 				}
-			else
+			} else {
 				for (auto &m : p.metrics) {
-					if (m.name == name)
+					if (m.name == name) {
 						unit = m.unit;
+					}
 				}
+			}
 			w.Field("unit", unit);
 		}
 		w.Append("}");
@@ -4142,8 +4257,9 @@ string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
 		w.Append(",\"executed\":false,\"members_computed\":false,\"counts_computed\":false,\"physical_plan\":false,"
 		         "\"sql_replayable\":false");
 		w.Field("projection_sql", data.statement->ToString());
-		if (!r.window)
+		if (!r.window) {
 			w.Field("common_count_sql", data.fact_domain_statement->ToString());
+		}
 		w.Append(",\"operators\":");
 		w.Append(r.window
 		             ? "[\"frozen single-source User/date projection\",\"whole capture window computation\",\"display "
@@ -4163,51 +4279,65 @@ string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
 			auto count = Run(context, *engine, data.fact_domain_statement->Copy());
 			auto &material = count->Cast<MaterializedQueryResult>();
 			if (count->types != vector<LogicalType> {LogicalType::BIGINT} || material.RowCount() != 1 ||
-			    material.GetValue(0, 0).IsNull())
+			    material.GetValue(0, 0).IsNull()) {
 				Fail("common_user_count", "execute", "one nonNULL BIGINT count required");
+			}
 			auto value = material.GetValue(0, 0).GetValue<int64_t>();
-			if (value < 0 || value > int64_t(MAX_ROWS))
+			if (value < 0 || value > int64_t(MAX_ROWS)) {
 				Fail("common_user_count", "execute", "common domain count outside bounded source");
+			}
 			common = idx_t(value);
 			ObserveFact(context, PopulationFactCheckpoint::AFTER_DOMAIN);
 		}
 		auto query = Run(context, *engine, data.statement->Copy());
-		if (query->types != data.result_types || query->names != data.result_names)
+		if (query->types != data.result_types || query->names != data.result_names) {
 			Fail("fact_query", "execute", "actual typed schema changed");
-		while (auto chunk = query->Fetch())
+		}
+		while (auto chunk = query->Fetch()) {
 			for (idx_t row = 0; row < chunk->size(); row++) {
-				if (context.IsInterrupted())
+				if (context.IsInterrupted()) {
 					throw InterruptException();
-				if (rows.size() >= MAX_ROWS)
+				}
+				if (rows.size() >= MAX_ROWS) {
 					Fail("fact_query", "resource", "complete rows exceed10000; no truncation");
+				}
 				vector<Value> values;
-				for (idx_t c = 0; c < data.result_types.size(); c++)
+				for (idx_t c = 0; c < data.result_types.size(); c++) {
 					values.push_back(chunk->GetValue(c, row));
+				}
 				if (values[0].IsNull() || StringValue::Get(values[0]).empty() ||
-				    (r.window && (values[1].IsNull() || !Date::IsFinite(values[1].GetValue<date_t>()))))
+				    (r.window && (values[1].IsNull() || !Date::IsFinite(values[1].GetValue<date_t>())))) {
 					Fail("fact_query", "execute", "nonempty User and finite DATE identities required");
+				}
 				rows.push_back(std::move(values));
 			}
-		if (query->HasError())
+		}
+		if (query->HasError()) {
 			NormalizeError(query->GetErrorObject(), "fact_query", "execute", ExceptionType::INVALID_INPUT);
+		}
 	}
 	ObserveFact(context, PopulationFactCheckpoint::BEFORE_SORT);
 	RawByteLess less;
 	std::sort(rows.begin(), rows.end(), [&](const vector<Value> &a, const vector<Value> &z) {
-		if (context.IsInterrupted())
+		if (context.IsInterrupted()) {
 			throw InterruptException();
+		}
 		auto &left = StringValue::Get(a[0]);
 		auto &right = StringValue::Get(z[0]);
-		if (left != right)
+		if (left != right) {
 			return less(left, right);
+		}
 		return r.window && a[1].GetValue<date_t>().days < z[1].GetValue<date_t>().days;
 	});
-	for (idx_t i = 1; i < rows.size(); i++)
+	for (idx_t i = 1; i < rows.size(); i++) {
 		if (StringValue::Get(rows[i - 1][0]) == StringValue::Get(rows[i][0]) &&
-		    (!r.window || rows[i - 1][1].GetValue<date_t>() == rows[i][1].GetValue<date_t>()))
+		    (!r.window || rows[i - 1][1].GetValue<date_t>() == rows[i][1].GetValue<date_t>())) {
 			Fail("fact_query", "execute", "duplicate output identity");
-	if (!r.window && rows.size() > common)
+		}
+	}
+	if (!r.window && rows.size() > common) {
 		Fail("fact_query", "execute", "selected Users exceed common domain");
+	}
 	ObserveFact(context, PopulationFactCheckpoint::BEFORE_ENCODE);
 	w.Append(",\"executed\":true,\"members_computed\":true,\"counts_computed\":true");
 	w.Field("row_count", to_string(rows.size()));
@@ -4217,17 +4347,20 @@ string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
 	}
 	w.Append(",\"rows\":[");
 	for (idx_t i = 0; i < rows.size(); i++) {
-		if (i)
+		if (i) {
 			w.Append(",");
+		}
 		w.Append("[");
 		for (idx_t c = 0; c < rows[i].size(); c++) {
-			if (c)
+			if (c) {
 				w.Append(",");
+			}
 			auto &value = rows[i][c];
-			if (value.IsNull())
+			if (value.IsNull()) {
 				w.Append("null");
-			else
+			} else {
 				w.Quoted(value.type() == LogicalType::VARCHAR ? StringValue::Get(value) : value.ToString());
+			}
 		}
 		w.Append("]");
 	}
@@ -4384,8 +4517,9 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 	}
 	return ErrorBoundary(object, "bind", [&]() {
 		if (name == "ossie_fact_program" || name == "ossie_fact_users_json" || name == "ossie_fact_users_compile" ||
-		    name == "ossie_fact_windows_json" || name == "ossie_fact_windows_compile")
+		    name == "ossie_fact_windows_json" || name == "ossie_fact_windows_compile") {
 			return FactBind(context, input, types, names);
+		}
 		if (name == "ossie_relation_objects_json" || name == "ossie_relation_compile") {
 			return RelationBind(context, input, types, names);
 		}
@@ -4460,28 +4594,32 @@ void JSONListFunction(DataChunk &args, ExpressionState &, Vector &result) {
 
 unique_ptr<SQLStatement> PopulationFactStatementForTesting(ClientContext &context, bool window) {
 	auto bundle = Current(context);
-	if (!bundle->fact_program)
+	if (!bundle->fact_program) {
 		Fail("native fact test", "capability", "fact program required");
+	}
 	vector<string> names;
 	if (window) {
-		for (auto &value : bundle->fact_program->windows)
+		for (auto &value : bundle->fact_program->windows) {
 			names.push_back(value.name);
+		}
 		return CompileFactWindows(*bundle->fact_program, names, "entire_capture", Value(), Value(),
 		                          FactSnapshotSources(*bundle));
 	}
-	for (auto &value : bundle->fact_program->metrics)
+	for (auto &value : bundle->fact_program->metrics) {
 		names.push_back(value.name);
+	}
 	return CompileFactUsers(*bundle->fact_program, names, "common", {"all", "", {}}, FactSnapshotSources(*bundle));
 }
 vector<std::function<bool()>> PopulationFactLifetimeForTesting(ClientContext &context) {
 	auto bundle = Current(context);
 	vector<std::function<bool()>> alive;
-	auto append = [&](weak_ptr<Bundle> weak) {
+	auto append = [&](const weak_ptr<Bundle> &weak) {
 		alive.push_back([weak] { return !weak.expired(); });
 	};
 	append(bundle->owner);
-	for (auto &child : bundle->fact_children)
+	for (auto &child : bundle->fact_children) {
 		append(child->owner);
+	}
 	return alive;
 }
 

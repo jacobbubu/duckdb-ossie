@@ -239,3 +239,13 @@ missing-argument/unknown-tool errors. Quote-aware framing has dedicated Bun
 controls. See [the error contract](population-errors.md). This is local evidence;
 remote CI and wider product acceptance remain unverified. Local Ubuntu ARM64
 quality is documented separately in the [cross-environment package](linux-reproduction.md).
+
+## Current P1 local quality checkpoint
+
+The [P1 tidy and regression package](research/ossie-req-001/p1-tidy-controls/review.md)
+records Ubuntu 24.04 ARM64 checking all 15 project source translation units with
+the pinned DuckDB tidy configuration. The first run failed; brace, explicit
+constructor and unnecessary parameter-copy fixes passed a complete second run.
+The rebuilt macOS artifact also passed native, SQL, P0, MCP and no-model controls.
+This is local evidence; the current remote AMD64/macOS workflow has not run, and
+daily state/history capabilities and full P1 acceptance remain incomplete.
