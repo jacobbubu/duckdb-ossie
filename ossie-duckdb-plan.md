@@ -1467,3 +1467,17 @@ native/SQL/A1–A8证据。源码变化前首版原件保留，最终receipt单�
 只读反证后采纳逐叶grain/AVG拒绝/child依赖/合计预算/同事务要求。还没有实现新
 profile，下一已授权动作是native typed binder/阶段AST再实际捕获加载/查询；所有
 原P1、日历/状态/历史待决与最终质量/接口验收保持，不把观察行窗口代替整体时间能力。
+
+多事实native实施checkpoint（4742e96，干净）：按已冻结实施契约建立独立typed
+FactProgram，先证明逐叶SUM/COUNT来源、金额单位组合、common行存在性、TRUE
+集合差与窗口分区/排序/帧/筛选阶段。native生成AST接收两个明确source AST，
+后续替换为两不可变捕获依赖；本轮binder执行对照不是已加载新profile。旧Compile
+与既有profile不改，Lead实现/验证，原P1剩余能力继续，禁止模型/推送。
+
+多事实native绑定工作包完成：[审查及receipt](docs/research/ossie-req-001/p1-fact-program-controls/review.md)
+记录78实际DuckDB检查，375对525、NULL共同域/TRUE差集、窗口先算后筛选、0/366
+帧、默认降序及复制前预算/缓存深度反例。新产物全部旧native/SQL/A1–A8/观察每日
+及关系接口/无模型回归、121Bun/544及质量通过。失败原件与hash派生件保留。
+这只是内部typed binder/阶段AST，尚无新profile；下一已授权动作是同事务双冻结
+事实加载、完整键/类型/角色及合计预算、原子发布/旧prepared依赖，再完整API/MCP/
+无模型。所有原P1/状态历史待答/最终跨平台tidy和历史审计继续，未推送或调用模型。

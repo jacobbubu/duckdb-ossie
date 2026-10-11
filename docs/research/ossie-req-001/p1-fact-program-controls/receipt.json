@@ -1,0 +1,182 @@
+{
+  "scope": "internal typed native binder and actual DuckDB staged AST execution; no new loadable profile or public API",
+  "base_commit": "4742e96",
+  "artifact_sha256": "81447d040e0a9b9acb38c145ce8c10f6b26fee30f8d1f44bb35187d501a921b4",
+  "sources": {
+    "src/include/ossie/fact_program.hpp": "5df1056bfb893f930e21fec5c541e26ad11f44b03b58257601da602b44602078",
+    "src/population/fact_program.cpp": "0b582c88ad1165b1784af6b7d0c9e0d84ac4cc47665f493c037a633258cca9d6",
+    "test/cpp/fact_program_test.cpp": "ca7c1b0252419989131e62cc6a8257bdeccd77f005a48fb74e31479ea4eff3b3",
+    "CMakeLists.txt": "3afbcffc13ab4f8070c12c228e6e69a03deb067e98af0ef88e881a96f69f652c",
+    "Makefile": "11fb1764cf064d5116a3e6ee1c379129e29a0364b779af9a8131d0dc392d7374"
+  },
+  "public_derivatives": {
+    "build-1.log": "05ad21590e6f88d880621339a0acb38a48775081fbac27014dfe7726da3cbcea",
+    "build-2.log": "cfc15a0f3b906b78570dfc341abeb49f77d6fa18f13ea77077aaa82ac2ce5c72",
+    "native-1.log": "ff19636323ad454141623fe70f041286a32be86995bc812df9f6111ec9bd2ee8",
+    "native-2.log": "a0e893b6f9b5a4ac6074ffd8d448e73f5ded70540213b7df7f8b01efbd6c6812",
+    "native-3.log": "102bd1374e83a65e3a38a77309961884b41a0825a2cf1e608dcbb65abd2c5a44",
+    "native-final.log": "1d9df583cfa3d742de7729edc98cb2e10200aa3f05efe6b20021742630d0b4c0",
+    "relation-load.log": "ef1a5fb438a9df9ed2977c8fb2af567f92995bc1611a586d69a8ab1e5c2a4e35",
+    "relation-objects.log": "52acee5f02655fdd961c5fbc61d15729b2840ea014c4a573f0f17f3c0269d80c"
+  },
+  "private_raw_manifest_sha256": "848924894923fcdcbb74e40e660809c8d13013ba9290c5b4f67db28e28d9addd",
+  "private_raw_files": {
+    "daily-agent.json": "a24f02d953fbe08ca617ff0901841f71611f97845dbe94b10f4065642904931d",
+    "daily-mcp.json": "d5774a1a9c2b533e42b6c251c56b33ca0075dff25a48e6127359f0e960a10fe4",
+    "observation-mcp.json": "d230ce527583de86d88ed450b3f9df1c8c1997d6d148ea5f587745a200a46fce",
+    "ossie-fact-program-build-1.log": "05ad21590e6f88d880621339a0acb38a48775081fbac27014dfe7726da3cbcea",
+    "ossie-fact-program-build-2.log": "150050727dff47f0d7ae064d351ca114395893d20db336535037749de35b3ff3",
+    "ossie-fact-program-build-3.log": "7ff433431b1a41169772a1f9207bd1d167e82f4afefa8a52d745349d75548680",
+    "ossie-fact-program-build-4.log": "18cb60a6058a3266a74b00083c2cd6879a77a57b6e2e5c61c7ab087f72dec740",
+    "ossie-fact-program-build-5.log": "7a835d44c23fa3f6b062fdc3e75ee4941e158098892c87cab4cca34d71b8d7fc",
+    "ossie-fact-program-build-6.log": "82b7e0255d62000c98a6f81780c51b75df48e2f6a573b093a831e631e756984d",
+    "ossie-fact-program-bun.log": "d469cef280050c2b0a6eb7fc235ce9df960e33070483fb79f275f59396d15d83",
+    "ossie-fact-program-capture.log": "6ed706ab87a4c905dec026a728376750ba2cb8996ed6d990448ac0f3a85e8f11",
+    "ossie-fact-program-configure.log": "9b3c2a86c8db28f33d27a654e7adbd20b05ce40b35ae8fcaf5e85a5a413422e9",
+    "ossie-fact-program-daily-agent.log": "b8d644a1df6e7c94a81ad54e67ce81208304ec3769637c565025cef683b123fb",
+    "ossie-fact-program-daily-mcp.log": "5e77a90b630e6a058eb2c22a0217f8f956e3634f6b4603bade4cdfbe2d2c9a7e",
+    "ossie-fact-program-daily.log": "6fb936e01f98cef231688814dfa9ee98c2672cc3060d30b72e6a2ebd8058b3f1",
+    "ossie-fact-program-format-final.log": "22d370ca68665638fa075b6c2bfc8c5867d41d8a924631eecc5bd3d43fe98837",
+    "ossie-fact-program-format.log": "22d370ca68665638fa075b6c2bfc8c5867d41d8a924631eecc5bd3d43fe98837",
+    "ossie-fact-program-grain.log": "d52508330f4f0ef60d2837026f1ab7226700ea7a6654ce5aeb91b314c077b7bf",
+    "ossie-fact-program-native-1.log": "ff19636323ad454141623fe70f041286a32be86995bc812df9f6111ec9bd2ee8",
+    "ossie-fact-program-native-2.log": "a0e893b6f9b5a4ac6074ffd8d448e73f5ded70540213b7df7f8b01efbd6c6812",
+    "ossie-fact-program-native-3.log": "102bd1374e83a65e3a38a77309961884b41a0825a2cf1e608dcbb65abd2c5a44",
+    "ossie-fact-program-native-final.log": "1d9df583cfa3d742de7729edc98cb2e10200aa3f05efe6b20021742630d0b4c0",
+    "ossie-fact-program-observation-mcp.log": "e5cacc743332e5cf36e9fdb4114a7b6de2e9627fc6c7bd7d5ddb2a3334630955",
+    "ossie-fact-program-observation.log": "1090c5acd3c61e42741c73f43d3af10e2ff4915a245248100cd49870afa656df",
+    "ossie-fact-program-p0.log": "cdeee9b2850c85d619ce3f52ffeb93ba9cf35261d0cbf32c79ce81580c0734bb",
+    "ossie-fact-program-relation-agent.log": "4d84f01a2c9bf3ba85c977fd36244b999bcedae643eb9964ac2993ab300932ac",
+    "ossie-fact-program-relation-load-final.log": "a3490cec196c0afdaff04fe67c160ebc2ec693e3fc9fc3ed260aaa89d34ebe34",
+    "ossie-fact-program-relation-load.log": "a437c9d0eb3307bb5dc6d1459e984407ef79f788a84805b1741566756385963b",
+    "ossie-fact-program-relation-mcp.log": "d8b77293693c06fd9c9f17a1686061e3cfcdb8970a61bd1b7fafa987c8f4696f",
+    "ossie-fact-program-relation-objects-final.log": "fae456f2642e665ac1a81c42047fe7fb6505880350cef1f8e4dc07afeea92af0",
+    "ossie-fact-program-relation-objects.log": "a69534113137c1ea1e3beceeb8b8deb774a1f6860efa731ea4041ce34e427374",
+    "ossie-fact-program-relations.log": "125db386aa44b97e49a8997bb1b1e18464ef858a71bb40650c6dc5673ad75b11",
+    "ossie-fact-program-sql.log": "fb798774deeb61940d7960c991dce1177fa831b5d401c41e836b1bf0c5a385b7",
+    "ossie-fact-program-state.log": "2f83c50f0001176a508c26874fed7ed54dfdcd3460611f3778478ff5cba17bfd",
+    "p0.json": "3e81ccd541616c13a83081a14d1473dbd2b4c556b299f74359bfe4d0e332b8b3",
+    "relation-agent.json": "299f717a6da549460c1586c867dd83cd1c9cec1bcbead5f200ff8ba64edf6765",
+    "relation-load.json": "a26ff9bf44a4b51556ecd3ee411318348833716fc5c5f111384c0b75b9403e70",
+    "relation-mcp.json": "d068630f1c65508c89b77c6c7c8ec77315c52bb8cb3b3d3e4456c84f3263fc3b",
+    "relation-objects.json": "50f7de083e4e75e40e4e8a3117b5f92289539a301d251fb35a21abd337398da4"
+  },
+  "native": {
+    "fact_program_checks": 78,
+    "state_checks": 19,
+    "metric_grain_checks": 42,
+    "capture_checks": 308,
+    "relation_program_checks": 55,
+    "sql_cases": 26,
+    "sql_assertions": 982
+  },
+  "quality": {
+    "bun_tests": 121,
+    "bun_expect_calls": 544,
+    "typecheck": "passed",
+    "typescript_format": "passed",
+    "native_format": "passed",
+    "architecture": "passed",
+    "diff_check": "passed"
+  },
+  "regressions": {
+    "p0": {
+      "report_sha256": "3e81ccd541616c13a83081a14d1473dbd2b4c556b299f74359bfe4d0e332b8b3",
+      "passed": null,
+      "checks": 0,
+      "refusals": 0,
+      "forgery_refusals": 0,
+      "real_model_requests": null,
+      "artifact_sha256": "81447d040e0a9b9acb38c145ce8c10f6b26fee30f8d1f44bb35187d501a921b4",
+      "verifier_exit_code": 0,
+      "conclusion": "PASS within declared scope and deviations"
+    },
+    "relation-load": {
+      "report_sha256": "a26ff9bf44a4b51556ecd3ee411318348833716fc5c5f111384c0b75b9403e70",
+      "passed": true,
+      "checks": 7,
+      "refusals": 14,
+      "forgery_refusals": 0,
+      "real_model_requests": null,
+      "artifact_sha256": "81447d040e0a9b9acb38c145ce8c10f6b26fee30f8d1f44bb35187d501a921b4",
+      "verifier_exit_code": 0
+    },
+    "relation-objects": {
+      "report_sha256": "50f7de083e4e75e40e4e8a3117b5f92289539a301d251fb35a21abd337398da4",
+      "passed": true,
+      "checks": 12,
+      "refusals": 5,
+      "forgery_refusals": 0,
+      "real_model_requests": null,
+      "artifact_sha256": "81447d040e0a9b9acb38c145ce8c10f6b26fee30f8d1f44bb35187d501a921b4",
+      "verifier_exit_code": 0
+    },
+    "relation-mcp": {
+      "report_sha256": "d068630f1c65508c89b77c6c7c8ec77315c52bb8cb3b3d3e4456c84f3263fc3b",
+      "passed": true,
+      "checks": 14,
+      "refusals": 13,
+      "forgery_refusals": 0,
+      "real_model_requests": null,
+      "artifact_sha256": "81447d040e0a9b9acb38c145ce8c10f6b26fee30f8d1f44bb35187d501a921b4",
+      "verifier_exit_code": 0
+    },
+    "daily-mcp": {
+      "report_sha256": "d5774a1a9c2b533e42b6c251c56b33ca0075dff25a48e6127359f0e960a10fe4",
+      "passed": true,
+      "checks": 16,
+      "refusals": 28,
+      "forgery_refusals": 0,
+      "real_model_requests": 0,
+      "artifact_sha256": "81447d040e0a9b9acb38c145ce8c10f6b26fee30f8d1f44bb35187d501a921b4",
+      "verifier_exit_code": 0
+    },
+    "observation-mcp": {
+      "report_sha256": "d230ce527583de86d88ed450b3f9df1c8c1997d6d148ea5f587745a200a46fce",
+      "passed": null,
+      "checks": 43,
+      "refusals": 38,
+      "forgery_refusals": 0,
+      "real_model_requests": null,
+      "artifact_sha256": "81447d040e0a9b9acb38c145ce8c10f6b26fee30f8d1f44bb35187d501a921b4",
+      "verifier_exit_code": 0,
+      "status": "pass"
+    },
+    "daily-agent": {
+      "report_sha256": "a24f02d953fbe08ca617ff0901841f71611f97845dbe94b10f4065642904931d",
+      "passed": true,
+      "checks": 0,
+      "refusals": 0,
+      "forgery_refusals": 18,
+      "real_model_requests": 0,
+      "artifact_sha256": "81447d040e0a9b9acb38c145ce8c10f6b26fee30f8d1f44bb35187d501a921b4",
+      "verifier_exit_code": 0
+    },
+    "relation-agent": {
+      "report_sha256": "299f717a6da549460c1586c867dd83cd1c9cec1bcbead5f200ff8ba64edf6765",
+      "passed": true,
+      "checks": 0,
+      "refusals": 0,
+      "forgery_refusals": 20,
+      "real_model_requests": 0,
+      "artifact_sha256": "81447d040e0a9b9acb38c145ce8c10f6b26fee30f8d1f44bb35187d501a921b4",
+      "verifier_exit_code": 0
+    }
+  },
+  "unverified": [
+    "new profile actual source type/key/identity validation and same-transaction dual capture",
+    "atomic parent publication and both frozen collections lifetime",
+    "multi-fact objects/explain/discovery/MCP/offline Agent",
+    "new module Linux/Windows and clang-tidy; no push or remote CI",
+    "remaining complete P1 including pending state/history business semantics"
+  ],
+  "advisor": {
+    "requested": "Astra/high, bounded read-only",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown"
+  },
+  "real_model_requests": 0,
+  "push": false
+}

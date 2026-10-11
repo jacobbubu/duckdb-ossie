@@ -1559,3 +1559,17 @@ OSSIE-REQ-001下一切片为新关系独立六场景模拟、私有不可覆盖�
 在原research旁记录common域/NULL、逐叶grain、单位/类型、窗口阶段和双冻结集合
 生命周期/源事务/总预算。先typed FactProgram，再实际加载与查询；本契约本身不
 证明能力。原全部P1/状态历史待决继续，下一重点已经转向尚未实现的多事实和窗口。
+
+### P1多事实native绑定实施checkpoint（2026-10-11）
+
+沿OSSIE-REQ-001与已冻结FactProgram契约，实现独立C++ binder/阶段AST及实际
+DuckDB执行反例，接收来源TableRef而非明细joinSQL；绑定测试不能冒充新profile
+源类型/完整身份预检、同事务捕获或原子发布，之后必须接入加载与完整接口。
+
+### P1多事实native阶段AST本地验收（2026-10-11）
+
+[证据与局限](research/ossie-req-001/p1-fact-program-controls/review.md)绑定78 native
+执行检查及新产物下旧回归：分别归约金额、common行存在、总TRUE集合差、稀疏
+观察行窗口及输出筛选阶段、实际精度/单位和有界拒绝。顾问排序/名称/元数据复制
+预算意见已修正；121Bun/544及质量通过。新profile未实现，下一为实际双事实冻结
+加载/完整预检/同事务/原子发布与prepared双依赖，再公开接口，整个P1仍未完成。

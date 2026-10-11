@@ -1,0 +1,21 @@
+PASS: typed source components, forward metric dependencies and bounded windows bound
+PASS: common domain uses row presence, retaining all-NULL C and excluding one-sided D/E
+PASS: separately reduced amounts match independent cents totals 37500/8500/29000
+PASS: second member independently totals 8000/3000/5000 cents
+PASS: SUM all-NULL stays NULL; COUNT(User) counts row, COUNT(amount) excludes NULL
+PASS: actual DuckDB reduction and arithmetic bind money/scale and count types
+PASS: raw fact join negative control inflates the same revenue to 525
+PASS: atomic TRUE cohorts retain exact identities, not only counts
+PASS: intersection/union/difference operate on explicit TRUE sets
+PASS: A minus B retains TRUE A when B predicate is UNKNOWN
+PASS: plain nullable NOT negative control incorrectly drops N
+PASS: display filter runs after sparse LAG and two-row SUM, preserving January input
+PASS: zero is observed money; all-NULL row window is NULL
+PASS: filter-before-window negative control loses January predecessor
+PASS: window direction and output order independent of descending session default
+PASS: zero preceding frame includes current row only and preserves all-NULL SUM
+Parser Error: syntax error at or near "value"
+
+LINE 1: ... 'L'::VARCHAR, DATE '2020-01-01'+i::INTEGER, 1::DECIMAL(18,2) value FROM range(400) t(i)
+                                                                         ^
+CREATE TABLE long_r(who,day,value) AS SELECT 'L'::VARCHAR, DATE '2020-01-01'+i::INTEGER, 1::DECIMAL(18,2) value FROM range(400) t(i)

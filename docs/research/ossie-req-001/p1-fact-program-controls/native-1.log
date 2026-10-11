@@ -1,0 +1,64 @@
+PASS: typed source components, forward metric dependencies and bounded windows bound
+PASS: common domain uses row presence, retaining all-NULL C and excluding one-sided D/E
+PASS: separately reduced amounts match independent cents totals 37500/8500/29000
+PASS: second member independently totals 8000/3000/5000 cents
+PASS: SUM all-NULL stays NULL; COUNT(User) counts row, COUNT(amount) excludes NULL
+PASS: actual DuckDB reduction and arithmetic bind money/scale and count types
+PASS: raw fact join negative control inflates the same revenue to 525
+PASS: atomic TRUE cohorts retain exact identities, not only counts
+PASS: intersection/union/difference operate on explicit TRUE sets
+PASS: A minus B retains TRUE A when B predicate is UNKNOWN
+PASS: plain nullable NOT negative control incorrectly drops N
+PASS: display filter runs after sparse LAG and two-row SUM, preserving January input
+PASS: zero is observed money; all-NULL row window is NULL
+PASS: filter-before-window negative control loses January predecessor
+PASS: declaration reorder preserves exact memberships
+PASS: explicit swapped source ASTs preserve logical fact binding
+PASS: reject metric boundary: AVG(revenue.amount)
+PASS: reject metric boundary: COUNT(*)
+PASS: reject metric boundary: SUM(revenue.amount-cost.amount)
+PASS: reject metric boundary: SUM(SUM(revenue.amount))
+PASS: reject metric boundary: SUM(cost.user_id)
+PASS: reject metric boundary: COUNT(cost.product)
+PASS: reject metric boundary: SUM(revenue.missing)
+PASS: reject metric boundary: SUM(amount)
+PASS: reject metric boundary: SUM(revenue.amount) FILTER(WHERE true)
+PASS: reject metric boundary: SUM(DISTINCT revenue.amount)
+PASS: reject metric boundary: SUM(revenue.amount ORDER BY revenue.ds)
+PASS: reject metric boundary: system.main.sum(revenue.amount)
+PASS: reject metric boundary: income/expense
+PASS: reject metric boundary: income + revenue_rows
+PASS: reject metric boundary: CAST(income AS DOUBLE)
+PASS: reject metric boundary: (SELECT 1)
+PASS: reject metric boundary: $1
+PASS: reject metric boundary: 1
+PASS: reject window boundary: LAG(revenue.amount,2,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)
+PASS: reject window boundary: LAG(revenue.amount,1,0) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)
+PASS: reject window boundary: LAG(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)
+PASS: reject window boundary: LEAD(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)
+PASS: reject window boundary: SUM(cost.amount) OVER(PARTITION BY cost.user_id ORDER BY cost.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)
+PASS: reject window boundary: SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds DESC ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)
+PASS: reject window boundary: SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 367 PRECEDING AND CURRENT ROW)
+PASS: reject window boundary: SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds RANGE BETWEEN 1 PRECEDING AND CURRENT ROW)
+PASS: different currencies cannot be subtracted
+PASS: actual amount type must be exact DECIMAL18,2
+PASS: same field spelling cannot substitute for common declared User identity
+PASS: full product-grain identity required
+PASS: indirect cycle refused
+PASS: case insensitive duplicate declarations refused
+PASS: seventeen-level dependency refused with cached upstream
+PASS: sixteen-level dependency boundary accepted
+PASS: exponential expansion rejected before oversized reference copy
+PASS: byte budget before parsing
+PASS: reject cohort boundary: income>=1.001
+PASS: reject cohort boundary: revenue_rows>=1.5
+PASS: reject cohort boundary: income>=NULL
+PASS: reject cohort boundary: income>=1e100
+PASS: reject cohort boundary: unknown>=1
+PASS: reject cohort boundary: income>=expense
+PASS: unsupported fact domain refused
+PASS: duplicate selected metric refused
+PASS: pre-window input filtering refused
+PASS: reversed display dates refused
+PASS: missing explicit source AST refused
+PASS fact program 63 checks
