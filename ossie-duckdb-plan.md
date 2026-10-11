@@ -1445,3 +1445,25 @@ program发现明确未查询对象；旧接口对新profile拒绝。修复门禁
 未变，沿上一包native/SQL/A1–A8证据，无本轮重跑声明。下一必要行动为新关系
 Agent无模型协议/私有证据/重放，再继续多事实/粒度/人群/窗口及全部原P1；状态/
 历史业务待答。新增CI未推送/远端验证，不包含模型/合并/发布。
+
+关系Agent无模型恢复checkpoint（1995c5d，干净）：沿既有agentLoop/私有hash容器，
+建立独立六场景关系协议、提示词/预算、完整link独立oracle、逐事件重放与重封伪造
+拒绝；复用Responses字段解析但始终注入simulation，不读本地配置/不调用真实模型。
+compile-only不算成员且不能称不支持，不能把links条数改成distinct User人数。然后
+转向原多事实/不同粒度/窗口，实现缺口保留，所有原P1和业务待决事项不缩减。
+
+关系Agent无模型工作包完成：[六场景receipt/证据界限](docs/research/ossie-req-001/p1-relation-agent-controls/review.md)
+绑定17模拟completion/11实际MCP工具、完整link oracle、逐事件重放/20重封伪造及
+incomplete拒绝。两个协调反例分别到达成员oracle/执行引用门禁，不把其他对应失败
+称作语义证明。121Bun/544、质量/当前关系MCP/旧每日离线通过，扩展SHA未变沿旧
+native/SQL/A1–A8证据。源码变化前首版原件保留，最终receipt单独绑定新私有档案。
+下一原授权行动为多事实/不同粒度独立聚合、复杂人群与观察行窗口的typed程序/
+捕获/实际查询，不以研究SQL替代；状态/历史待决及全P1/final tidy/历史审计继续。
+没有模型请求、推送或远端CI。
+
+多事实/窗口下一实施决策：[原研究的实施契约](docs/research/ossie-req-001/p1-program-research/implementation-contract.md)
+冻结独立FactProgram/新profile路线，明确common按事实行存在性、先单事实归约、
+金额同单位才组合、集合差TRUE成员语义、窗口先全捕获计算后输出日期筛选。Advisor
+只读反证后采纳逐叶grain/AVG拒绝/child依赖/合计预算/同事务要求。还没有实现新
+profile，下一已授权动作是native typed binder/阶段AST再实际捕获加载/查询；所有
+原P1、日历/状态/历史待决与最终质量/接口验收保持，不把观察行窗口代替整体时间能力。

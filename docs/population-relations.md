@@ -28,4 +28,4 @@ SQL 返回一列完整 JSON 文本。link 为 `[sourceUser,date,product,targetUs
 
 辅助客户端 [relation_result.ts](../scripts/relation_result.ts) 校验唯一完整 carrier、字段、实际日期范围/顺序、同映射目标、完整link/count、预算及绑定；`relationDiscovery` 再校验请求的规范关系和发现中的身份/规则/哈希。它使用 JSON.parse，不能宣称重复 JSON key 检出；结构合法不能证明成员真值，仍需独立业务 oracle。operator 文本只验证四条非空逻辑描述，不能据此证明优化器或执行计划。
 
-兼容边界保持明确：旧 gaap、join、observation profile 的接口行为保留；旧三个 server 不注册新工具。新 relation profile 使用专用 program/compile/objects 接口，旧通用对象/指标入口拒绝。新独立 MCP 已验收；新关系 Agent 提示词、预算、私有档案、离线重放尚待后续实现。没有真实模型调用或发布。
+兼容边界保持明确：旧 gaap、join、observation profile 的接口行为保留；旧三个 server 不注册新工具。新 relation profile 使用专用 program/compile/objects 接口，旧通用对象/指标入口拒绝。新独立 MCP 已验收；[六场景无模型演练与重放](research/ossie-req-001/p1-relation-agent-controls/review.md)验证集成及证据链，不证明模型自主选择。原件保持私有，公开仅选择性receipt。没有真实模型调用或发布。

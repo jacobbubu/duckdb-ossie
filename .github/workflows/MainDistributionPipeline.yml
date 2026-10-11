@@ -138,6 +138,10 @@ jobs:
         run: |
           env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL bun --no-env-file scripts/verify_relation_mcp.ts "$(command -v duckdb)" downloaded/ossie.duckdb_extension quality-reports/relation-mcp.json
 
+      - name: Rehearse and replay six relation scenes without a model
+        run: |
+          env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL bun --no-env-file scripts/verify_relation_agent_offline.ts "$(command -v duckdb)" downloaded/ossie.duckdb_extension .local-agent-evidence/relation-ci/run quality-reports/relation-offline.json
+
       - name: Verify separate daily User MCP surface without a model
         run: |
           env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL bun --no-env-file scripts/verify_daily_mcp.ts "$(command -v duckdb)" downloaded/ossie.duckdb_extension quality-reports/daily-mcp.json

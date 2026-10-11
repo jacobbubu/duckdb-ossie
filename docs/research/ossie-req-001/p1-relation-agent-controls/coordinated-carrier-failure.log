@@ -1,0 +1,24 @@
+250 |     } catch (e) {
+251 |       error = e;
+252 |     }
+253 |     assert(error, label + ": incorrectly replayed");
+254 |     if (label === "coordinated semantic link replacement")
+255 |       assert.match(String(error), /independent complete link oracle/);
+                   ^
+AssertionError: The input did not match the regular expression /independent complete link oracle/. Input:
+
+'AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n' +
+  '\n' +
+  "'2' !== '2.0'\n" +
+  ''
+
+ generatedMessage: true,
+     actual: "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'2' !== '2.0'\n",
+   expected: /independent complete link oracle/,
+   operator: "match",
+       code: "ERR_ASSERTION"
+
+      at verifyRelationOffline (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_relation_agent_offline.ts:255:14)
+      at processTicksAndRejections (native:7:39)
+
+Bun v1.3.11 (macOS arm64)

@@ -94,6 +94,7 @@ export async function withRelationSession<T>(
   threshold: 10 | 20,
   setup: "extended" | "empty" | "wide" | "raw" | "full",
   action: (s: RelationSession) => Promise<T>,
+  onEvent?: (event: JsonObject) => void,
 ) {
   return temporary("ossie-relation-mcp-", async (directory) => {
     const fixture = join(ROOT, "test/fixtures/population-relation-program");
@@ -151,7 +152,7 @@ export async function withRelationSession<T>(
     writeFileSync(path, sql);
     const server = new RpcProcess([cli, "-unsigned", "-bail", "-init", path]);
     try {
-      return await action(new RelationSession(server));
+      return await action(new RelationSession(server, onEvent));
     } finally {
       await server.close();
     }

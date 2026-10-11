@@ -1,0 +1,247 @@
+{
+  "schema": "ossie-daily-agent-public-receipt-v1",
+  "mode": "simulated",
+  "passed": true,
+  "real_model_requests": 0,
+  "provider_config_read": false,
+  "source_seal_sha256": "6b2d137b554be5f6af26315745a14042e8bef48f53cb28b4c03c27bc842c52e3",
+  "runtime_artifact_sha256": "4ba513f7eb4460e5cf5ca734525c31f82bc7e0d619cdd9de4ffa3489b2c0319a",
+  "source_hashes": {
+    "examples/daily_user_server.sql": "0b209639cf7627bbb170228f3ca61a3546f6d0a298b58b2117920dffddb4a34c",
+    "docs/research/ossie-req-001/multi-period-research/every-day/observations.csv": "3c0c4cc77140a84e01ec45d90e4386ffe01ac2a302ba5d79cb3ebc1152a2166f",
+    "test/fixtures/population-observation/core.json": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+    "test/fixtures/population-observation/ontology.json": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+    "test/fixtures/population-observation/ontology-20.json": "b6aca7da28e4f0d3a2e00c2dc238f2b620964492d30b26f1f12c807f789d76ec",
+    "test/fixtures/population-observation/mapping.json": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+    "test/fixtures/population-observation/bundle-10.json": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a",
+    "test/fixtures/population-observation/bundle-20.json": "b1c61aed4539201e40a3778f2f125fbb8372c562d6d419a4eb5b6d526aa8420b",
+    "scripts/daily_agent_contract.ts": "a20a0ce15776ee1e77a74e934f7b1dfeea6349eac2a12d77dd119f1d7a2f446d",
+    "scripts/daily_agent_rehearsal.ts": "8cff60983aff996b5a16eee6742b8c17593be081041763d5d32e978a00a2c371",
+    "scripts/daily_agent_replay.ts": "0d156ac95c00d4f565a4e23bf51da744e7dc9c32b8f24e0e3e14286e0a257a54",
+    "scripts/daily_mcp.ts": "9e84c7c2166046ad7d44f1fdfd35475ac17bb8445d866db0f14bb029807d2821",
+    "scripts/daily_result.ts": "5eed49fe521bd5f2347c2b27d4fe2a505975b214f38889672800155cdf68b163",
+    "scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "scripts/observation_mcp.ts": "91c9f6c7d3e900a65a6b596fb0100a4d28f9fa94d852fb7a8054fbb26775e8eb",
+    "scripts/observation_evidence.ts": "4a58242be77cbad354bd597cdff530b5ffa5f1c95edab378b92800e89862d3a5",
+    "scripts/observation_agent_archive.ts": "dee3890dc2351d71994b9bd17525ee327a92d143aa7f0ae36ff83ef3f0648571",
+    "scripts/observation_agent_replay.ts": "be43c6f495ccbdbb2914c820e10eab832fda23830da8daf8e8c3a0d805a9eb0d",
+    "scripts/observation_agent_contract.ts": "2e642fa0e8b7025fc509f6fd4ec519a916fa0589c3ed3b700064fadbb9c6eb78",
+    "scripts/population_result.ts": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+    "scripts/population_error.ts": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff"
+  },
+  "replay": {
+    "schema": "ossie-daily-agent-replay-v1",
+    "mode": "simulated",
+    "passed": true,
+    "real_model_requests": 0,
+    "source_seal_sha256": "6b2d137b554be5f6af26315745a14042e8bef48f53cb28b4c03c27bc842c52e3",
+    "simulated_completion_requests": 14,
+    "scenes": [
+      {
+        "scene": "all",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "passed": true,
+          "executed_evidence_ids": [
+            "tool-2"
+          ],
+          "members": [
+            "B",
+            "E",
+            "F",
+            "H",
+            "K"
+          ],
+          "member_count": "5",
+          "scope": "synthetic scripted integration; not model autonomy or business acceptance"
+        }
+      },
+      {
+        "scene": "product-X",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "passed": true,
+          "executed_evidence_ids": [
+            "tool-2"
+          ],
+          "members": [
+            "B",
+            "F",
+            "H",
+            "K"
+          ],
+          "member_count": "4",
+          "scope": "synthetic scripted integration; not model autonomy or business acceptance"
+        }
+      },
+      {
+        "scene": "missing-day",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "passed": true,
+          "executed_evidence_ids": [
+            "tool-2"
+          ],
+          "members": [],
+          "member_count": "0",
+          "scope": "synthetic scripted integration; not model autonomy or business acceptance"
+        }
+      },
+      {
+        "scene": "changed-rule",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "passed": true,
+          "executed_evidence_ids": [
+            "tool-2"
+          ],
+          "members": [
+            "B",
+            "K"
+          ],
+          "member_count": "2",
+          "scope": "synthetic scripted integration; not model autonomy or business acceptance"
+        }
+      },
+      {
+        "scene": "compile-only",
+        "calls": 1,
+        "rounds": 2,
+        "evaluation": {
+          "passed": true,
+          "status": "not_executed",
+          "scope": "supported query deliberately not calculated; no membership claim"
+        }
+      }
+    ],
+    "limitations": "Exact local ordered correspondence and hand-oracle audit; no provider authenticity, real-model autonomy or business-data acceptance"
+  },
+  "forgery_refusals": [
+    {
+      "label": "wrong run schema",
+      "source_seal_sha256": "84a02b054f7c1a51e07fc7ef1b9f8f06a8b600838ac0f6945558d222044209f3",
+      "result": "refused re-sealed synthetic record",
+      "reason": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'ossie-observation-agent-run-v1'\n- 'ossie-daily-agent-rehearsal-v1'\n         ^\n"
+    },
+    {
+      "label": "wrong run mode",
+      "source_seal_sha256": "6ef2c2e0ceb83b495c5a14997f9d7154b00dbb4b135dc9aad081ca3818763118",
+      "result": "refused re-sealed synthetic record",
+      "reason": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'live'\n- 'simulated'\n"
+    },
+    {
+      "label": "wrong source hash",
+      "source_seal_sha256": "e3c78d99a0e32855cbcfc11e8229c95af0718ccb72873b64fe99099717ab0240",
+      "result": "refused re-sealed synthetic record",
+      "reason": "current source/fixture differs: examples/daily_user_server.sql\n+ actual - expected\n\n+ '0000000000000000000000000000000000000000000000000000000000000000'\n- '0b209639cf7627bbb170228f3ca61a3546f6d0a298b58b2117920dffddb4a34c'\n"
+    },
+    {
+      "label": "failed terminal",
+      "source_seal_sha256": "a0d6238302b87d23078d6f1829da25bfdd4e7c8254ab660b6d777bc894f5ae56",
+      "result": "refused re-sealed synthetic record",
+      "reason": "failed/incomplete daily archives cannot completely replay\n+ actual - expected\n\n+ 'failed'\n- 'complete'\n"
+    },
+    {
+      "label": "wrong scene inventory",
+      "source_seal_sha256": "dd0c5c0142f7154414cdd235bc70c56865720a6c6dae7c1046deac8a4e5a26f3",
+      "result": "refused re-sealed synthetic record",
+      "reason": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    'all',\n    'product-X',\n    'missing-day',\n    'changed-rule',\n-   'compile-only'\n  ]\n"
+    },
+    {
+      "label": "missing RPC response",
+      "source_seal_sha256": "1cedc4feb1a4e8f94b13f360ca9a4062954dba8d8b6007faefc84be70e4ac160",
+      "result": "refused re-sealed synthetic record",
+      "reason": "expected rpc_response at2"
+    },
+    {
+      "label": "duplicate RPC response",
+      "source_seal_sha256": "d65f73d8bb8e7421779cd833da02be4617f90231bc979633d770dcde267d723c",
+      "result": "refused re-sealed synthetic record",
+      "reason": "expected rpc_notification at3"
+    },
+    {
+      "label": "wrong RPC id",
+      "source_seal_sha256": "ae0fe8b41b1a3329e6baafd0c42515f6c26058aac8765e29e03ae52c0a0981ad",
+      "result": "refused re-sealed synthetic record",
+      "reason": "Expected values to be strictly equal:\n\n999 !== 1\n"
+    },
+    {
+      "label": "RPC order mismatch",
+      "source_seal_sha256": "d2ad6b6bcc0a6e30e778c8b4b1927da1efe25ce05115f5ebe0d79153347512f2",
+      "result": "refused re-sealed synthetic record",
+      "reason": "expected rpc_request at1"
+    },
+    {
+      "label": "tool call id mismatch",
+      "source_seal_sha256": "6cc9c9fafe01c24177334236e18324b1e5d2251e08d71a08dde724de9ed4de32",
+      "result": "refused re-sealed synthetic record",
+      "reason": "ordered daily event mismatch\n+ actual - expected\n... Skipped lines\n\n  {\n    arguments: {\n      concept: 'QualifiedObservation',\n      request_json: '{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}}'\n    },\n...\n    name: '"
+    },
+    {
+      "label": "tool arguments mismatch",
+      "source_seal_sha256": "7c052bc480d007403f7f64179f4783f0079b279dca5d792aa22a1aeb80680fa2",
+      "result": "refused re-sealed synthetic record",
+      "reason": "ordered daily event mismatch\n+ actual - expected\n\n  {\n    arguments: {\n+     concept: 'User',\n-     concept: 'QualifiedObservation',\n      request_json: '{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}}'\n    },\n    argume"
+    },
+    {
+      "label": "wrong function_call_output",
+      "source_seal_sha256": "9ace5de5b404a8fa664713c7f56c44c745707906495f50fc62da0d408e7cc2c9",
+      "result": "refused re-sealed synthetic record",
+      "reason": "ordered daily event mismatch\n+ actual - expected\n\n  {\n    body: {\n      input: [\n        {\n+         call_id: 'alien',\n-         call_id: 'call-all-1',\n          output: '{\"evidence_id\":\"tool-1\",\"mcp_response\":{\"jsonrpc\":\"2.0\",\"result\":{\"content\":[{\""
+    },
+    {
+      "label": "public projection differs from normalized completion",
+      "source_seal_sha256": "90dd8044f4c0b49e8bc2a4e1a351bf49eaab39db366d9cd5f539eb0086e35968",
+      "result": "refused re-sealed synthetic record",
+      "reason": "public projection disagrees with normalized message\n+ actual - expected\n\n  {\n    content: null,\n    role: 'assistant',\n    tool_calls: [\n      {\n        function: {\n+         arguments: '{}',\n-         arguments: '{\"concept\":\"QualifiedObservation\",\"r"
+    },
+    {
+      "label": "member replacement preserves count",
+      "source_seal_sha256": "9df023e45f3c6c59a9c30b46857d8268b39071a6d5adf9f552f6365b614db88f",
+      "result": "refused re-sealed synthetic record",
+      "reason": "ordered daily event mismatch\n+ actual - expected\n... Skipped lines\n\n  {\n    evidence_id: 'tool-2',\n    kind: 'tool_response',\n    result: {\n      id: 10,\n...\n          {\n+           text: '[{\"result_json\":\"{\\\\\"schema_version\\\\\":\\\\\"ossie-daily-user-se"
+    },
+    {
+      "label": "old snapshot trace",
+      "source_seal_sha256": "f5f9873605d205a99e91fdf9a0988b4b4a5019ebce8f42d75ee8f8c4e0dcd5da",
+      "result": "refused re-sealed synthetic record",
+      "reason": "ordered daily event mismatch\n+ actual - expected\n... Skipped lines\n\n  {\n    evidence_id: 'tool-2',\n    kind: 'tool_response',\n    result: {\n      id: 10,\n...\n          {\n+           text: '[{\"result_json\":\"{\\\\\"schema_version\\\\\":\\\\\"ossie-daily-user-se"
+    },
+    {
+      "label": "cross-scene final citation",
+      "source_seal_sha256": "0272ac9ece998491e544c1d05437e2b8b0c681de2a46ae5fc5ec1e4d5c2e6bd1",
+      "result": "refused re-sealed synthetic record",
+      "reason": "ordered daily event mismatch\n+ actual - expected\n\n  {\n    calls: 2,\n+   content: '{\"status\":\"answered\",\"request\":{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}},\"members\":[\"B\",\"E\",\"F\",\"H\",\"K\"],\"member_count\":\"5\",\"require"
+    },
+    {
+      "label": "missing scene terminal",
+      "source_seal_sha256": "1ab96d1add9abd5e24ef0438e429c649828c5fa35a59025945e70cfe43fbce02",
+      "result": "refused re-sealed synthetic record",
+      "reason": "expected scene_end at34"
+    },
+    {
+      "label": "extra event after terminal",
+      "source_seal_sha256": "af1c8afac9e292143ff8b9d111e1432d1a2c74f11b212204bc168f700af9b575",
+      "result": "refused re-sealed synthetic record",
+      "reason": "extra/unpaired trailing events\n\n35 !== 36\n"
+    }
+  ],
+  "failed_control": {
+    "status": "failed",
+    "source_seal_sha256": "3bae0209d40d7105f62862d88eb58d9b68200ab6b36539020dc19bc52fdbef77",
+    "replay": "refused complete replay"
+  },
+  "publication_scope": "selected receipt only; raw events/context/review remain in ignored private archives; not an exact raw transcript export",
+  "limitations": [
+    "Scripted parameters and answers exercise integration, not model tool selection or real Agent acceptance",
+    "Independent hand oracle gates members; source hashes/seals do not prove provider authenticity",
+    "Compile-only deliberately not executed, not unsupported capability",
+    "No new real model calls, push or remote CI"
+  ]
+}

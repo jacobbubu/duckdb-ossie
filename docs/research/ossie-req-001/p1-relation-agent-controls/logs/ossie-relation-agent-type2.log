@@ -1,0 +1,1 @@
+$ bun x --bun --no-install tsc --noEmit

@@ -1537,3 +1537,25 @@ server；实际MCP测试比较完整links和规则/身份/六hash，而不是只
 结构不等于成员真值。Bun116/522、质量/旧MCP/每日离线回归通过。新关系Agent
 协议/无模型档案及重放仍是下一切片，原所有P1/业务待决事项未移除。没有模型
 调用或推送，原生证据沿未变SHA上一包，远端CI/tidy仍未验证。
+
+### P1关系Agent无模型实施 checkpoint（2026-10-11）
+
+OSSIE-REQ-001下一切片为新关系独立六场景模拟、私有不可覆盖原件与逐事件重放；
+完整link/同请求声明/发现/执行引用/独立oracle审计，刻意保留结构与成员真值区别。
+新的协议不借旧daily场景语义通过，未授权模型/推送。后续多事实/窗口仍需实现。
+
+### P1关系Agent无模型本地验收（2026-10-11）
+
+[审查及最终receipt](research/ossie-req-001/p1-relation-agent-controls/review.md)为六个
+独立实际MCP上下文、17模拟completion/11tools、完整links/独立oracle/执行引用/
+逐事件重放。20重封伪造含两个协调语义反例，incomplete原件保留并拒绝complete。
+模型usage0为脚本占位，重放无原耗时证明；不声称自主工具选择或provider真实性。
+121Bun/544和质量/关系MCP/旧每日无模型回归通过；无原生产物变更/重跑、推送或
+模型调用。下一原授权阶段为多事实/混合粒度/复杂人群及窗口，原全部P1仍未完成。
+
+### P1多事实与窗口实施选择（2026-10-11）
+
+[下一阶段契约](research/ossie-req-001/p1-program-research/implementation-contract.md)
+在原research旁记录common域/NULL、逐叶grain、单位/类型、窗口阶段和双冻结集合
+生命周期/源事务/总预算。先typed FactProgram，再实际加载与查询；本契约本身不
+证明能力。原全部P1/状态历史待决继续，下一重点已经转向尚未实现的多事实和窗口。

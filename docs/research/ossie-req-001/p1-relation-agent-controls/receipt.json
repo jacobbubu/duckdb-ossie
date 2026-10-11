@@ -1,0 +1,45 @@
+{
+  "scope": "six actual-MCP scripted scenes, ordered replay and local adversarial controls; not live Agent or entire P1",
+  "artifact_sha256": "4ba513f7eb4460e5cf5ca734525c31f82bc7e0d619cdd9de4ffa3489b2c0319a",
+  "sources": {
+    "scripts/relation_agent_contract.ts": "550b9a251469661d62d64155efa62c2522cf35d25e123047989b39c367e6373b",
+    "scripts/relation_agent_rehearsal.ts": "e84e153026077452ca62c756766a3add4cfba7b92319ef4061a6f1cc8316b470",
+    "scripts/relation_agent_replay.ts": "a5d8dcef3ebff354fd5e635de1d54f1d8cf3dc292667f3fc3862cdb670f08454",
+    "scripts/verify_relation_agent_offline.ts": "7fe5e6b4ece0e9f083b57078093a8ed14444d31210e0ca3b3c75854255f1d5bf",
+    "scripts/relation_mcp.ts": "cd7e6cf20957c4ebed72bad23937b11f40cb68069b8ca116af028aa44c599e0a",
+    "test/tooling/relation_agent_contract.test.ts": "cb368d5c9a18d5c62fd0815fc3602c869f1c51589b47c106aa7fe5ebc600f49c",
+    ".github/workflows/MainDistributionPipeline.yml": "82b44f4ecd38b0a862379c5b67dbbc18007e12bc546932a3e4e9b0059756d26a"
+  },
+  "evidence": {
+    "coordinated-carrier-failure.log": "b3e6d774ebebe4418d31bacf7376355dda5ec9701d47c8f59fce68bd4b4b402c",
+    "daily-regression.json": "4fd002a7c9bc273e44011d35a3abdd93ae7232f02b9aa44f54040717970e134b",
+    "final-offline.json": "7063d07aaf60b66c0a79604c4ad8860a840073d83f1b4d4ee93ff22b0ad6dbc3",
+    "logs/ossie-relation-agent-architecture-final.log": "af89fa92092c74567a0925b9cd5b3f2dd7f46c7e2b52d92e1637d5b6bd0d163e",
+    "logs/ossie-relation-agent-architecture.log": "af89fa92092c74567a0925b9cd5b3f2dd7f46c7e2b52d92e1637d5b6bd0d163e",
+    "logs/ossie-relation-agent-bun-final.log": "27b55e82bea0ec1d9cca29017f36de2fbf8effe7c8dd28cbb5cb738eb2bf2fc5",
+    "logs/ossie-relation-agent-bun.log": "6c69ef4902778860263a0c1ba51d13e586b6805d8789fcc325b6661dbc155833",
+    "logs/ossie-relation-agent-coordinated.log": "b3e6d774ebebe4418d31bacf7376355dda5ec9701d47c8f59fce68bd4b4b402c",
+    "logs/ossie-relation-agent-daily.log": "b8d644a1df6e7c94a81ad54e67ce81208304ec3769637c565025cef683b123fb",
+    "logs/ossie-relation-agent-final.log": "4d84f01a2c9bf3ba85c977fd36244b999bcedae643eb9964ac2993ab300932ac",
+    "logs/ossie-relation-agent-first.log": "685416520d29a48c19de0c349d4aa4a88a381057653d71f2045755b3df796959",
+    "logs/ossie-relation-agent-format-final.log": "89b1264c8c3a787cd3a2b4de12aef0c722fff2f133072cc3b44269c35cd0c21c",
+    "logs/ossie-relation-agent-format.log": "89b1264c8c3a787cd3a2b4de12aef0c722fff2f133072cc3b44269c35cd0c21c",
+    "logs/ossie-relation-agent-mcp-regression.log": "d8b77293693c06fd9c9f17a1686061e3cfcdb8970a61bd1b7fafa987c8f4696f",
+    "logs/ossie-relation-agent-type-final.log": "4e8da542ccbffd70e1bacfda01f640a7a15c66d87fc2b7d4f58af694e973c17c",
+    "logs/ossie-relation-agent-type.log": "4e8da542ccbffd70e1bacfda01f640a7a15c66d87fc2b7d4f58af694e973c17c",
+    "logs/ossie-relation-agent-type2.log": "4e8da542ccbffd70e1bacfda01f640a7a15c66d87fc2b7d4f58af694e973c17c",
+    "mcp-regression.json": "4f57e29399dc828114c3b727b645dce84b983a3048a12ae0fa180c2d00a782a0",
+    "offline.json": "3e6495a748f90d04e74f82a2773e1c7578b62bad1feb41c56f6c3fa1af06a890",
+    "review.md": "5131f23b7845f7ba4543698145323f93c1a45436d3a07266ad5eeb87fcf4378d"
+  },
+  "real_model_requests": 0,
+  "provider_config_read": false,
+  "push": false,
+  "remote_ci_verified": false,
+  "limitations": [
+    "Simulated usage zero placeholders, not token measurements",
+    "No original elapsed-time proof from replay",
+    "Seal is byte correspondence, not external authenticity"
+  ],
+  "next_authorized_action": "typed FactProgram for separate-grain multi-fact reduction and observed-row windows; integrate load/execution then interfaces and all P1 gates"
+}
