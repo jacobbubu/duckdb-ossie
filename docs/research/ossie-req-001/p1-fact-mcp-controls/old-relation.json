@@ -1,0 +1,202 @@
+{
+  "passed": true,
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "install_path": "<home>/.duckdb/extensions/v1.5.6/osx_arm64/duckdb_mcp.duckdb_extension",
+    "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+    "extension_sha256": "9ddb20dbc36bd92301b0a49178562f28a30b5e2ce774129964e7a9bd1216b5a9",
+    "server_sha256": "a38b1a8a2362f1b59e75ddceaba90e7f233be5a576f091b49af98a877ffef812"
+  },
+  "artifact_sha256": "9ddb20dbc36bd92301b0a49178562f28a30b5e2ce774129964e7a9bd1216b5a9",
+  "server_scope": "new relation MCP only, not complete P1 or live Agent",
+  "input_sha256": "3c0c4cc77140a84e01ec45d90e4386ffe01ac2a302ba5d79cb3ebc1152a2166f",
+  "checks": [
+    "extended/10/qualified_user: full links, plan/discovery identity and six hashes",
+    "extended/10/AUDITED_USER: full links, plan/discovery identity and six hashes",
+    "population_relation_compile: observed upstream extra arguments ignored, no hidden filter/limit",
+    "population_relation_objects: observed upstream extra arguments ignored, no hidden filter/limit",
+    "extended/20/qualified_user: full links, plan/discovery identity and six hashes",
+    "extended/20/AUDITED_USER: full links, plan/discovery identity and six hashes",
+    "empty/10/qualified_user: full links, plan/discovery identity and six hashes",
+    "empty/10/AUDITED_USER: full links, plan/discovery identity and six hashes",
+    "wide/10/qualified_user: full links, plan/discovery identity and six hashes",
+    "wide/10/AUDITED_USER: full links, plan/discovery identity and six hashes",
+    "raw/10/qualified_user: full links, plan/discovery identity and six hashes",
+    "raw/10/AUDITED_USER: full links, plan/discovery identity and six hashes",
+    "full/10/qualified_user: full links, plan/discovery identity and six hashes",
+    "full/10/AUDITED_USER: full links, plan/discovery identity and six hashes"
+  ],
+  "refusals": [
+    {
+      "tool": "population_relation_compile",
+      "args": {
+        "relationship": "missing"
+      },
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"missing\",\"stage\":\"arguments\",\"reason\":\"unknown declared derived relationship\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=missing stage=arguments reason=unknown declared derived relationship missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_relation_compile($relationship)\n                      ^"
+        },
+        "id": 10
+      }
+    },
+    {
+      "tool": "population_relation_compile",
+      "args": {},
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "Invalid input: missing required fields"
+        },
+        "id": 11
+      }
+    },
+    {
+      "tool": "population_relation_compile",
+      "args": {
+        "relationship": 42
+      },
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"42\",\"stage\":\"arguments\",\"reason\":\"unknown declared derived relationship\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=42 stage=arguments reason=unknown declared derived relationship missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_relation_compile($relationship)\n                      ^"
+        },
+        "id": 12
+      }
+    },
+    {
+      "tool": "population_relation_compile",
+      "args": {
+        "relationship": {
+          "name": "audited_user"
+        }
+      },
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"{\\\"name\\\":\\\"audited_user\\\"}\",\"stage\":\"arguments\",\"reason\":\"unknown declared derived relationship\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object={\\\"name\\\":\\\"audited_user\\\"} stage=arguments reason=unknown declared derived relationship missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_relation_compile($relationship)\n                      ^"
+        },
+        "id": 13
+      }
+    },
+    {
+      "tool": "population_relation_objects",
+      "args": {
+        "relationship": "missing"
+      },
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"missing\",\"stage\":\"arguments\",\"reason\":\"unknown declared derived relationship\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=missing stage=arguments reason=unknown declared derived relationship missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_relation_objects_json($relationship)\n                      ^"
+        },
+        "id": 15
+      }
+    },
+    {
+      "tool": "population_relation_objects",
+      "args": {},
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "Invalid input: missing required fields"
+        },
+        "id": 16
+      }
+    },
+    {
+      "tool": "population_relation_objects",
+      "args": {
+        "relationship": 42
+      },
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"42\",\"stage\":\"arguments\",\"reason\":\"unknown declared derived relationship\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=42 stage=arguments reason=unknown declared derived relationship missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_relation_objects_json($relationship)\n                      ^"
+        },
+        "id": 17
+      }
+    },
+    {
+      "tool": "population_relation_objects",
+      "args": {
+        "relationship": {
+          "name": "audited_user"
+        }
+      },
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"{\\\"name\\\":\\\"audited_user\\\"}\",\"stage\":\"arguments\",\"reason\":\"unknown declared derived relationship\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object={\\\"name\\\":\\\"audited_user\\\"} stage=arguments reason=unknown declared derived relationship missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_relation_objects_json($relationship)\n                      ^"
+        },
+        "id": 18
+      }
+    },
+    {
+      "name": "execute_query",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: execute_query"
+        },
+        "id": 20
+      }
+    },
+    {
+      "name": "query",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: query"
+        },
+        "id": 21
+      }
+    },
+    {
+      "name": "population_query",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: population_query"
+        },
+        "id": 22
+      }
+    },
+    {
+      "name": "population_daily_users",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: population_daily_users"
+        },
+        "id": 23
+      }
+    },
+    {
+      "name": "ossie_bundle_load",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: ossie_bundle_load"
+        },
+        "id": 24
+      }
+    }
+  ],
+  "real_model_calls": 0
+}

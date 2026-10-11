@@ -1,0 +1,764 @@
+{
+  "status": "pass",
+  "scope": "observation MCP transport; not Agent acceptance",
+  "model_requests": 0,
+  "source_hashes": {
+    "<worktree>/scripts/observation_mcp.ts": "91c9f6c7d3e900a65a6b596fb0100a4d28f9fa94d852fb7a8054fbb26775e8eb",
+    "<worktree>/scripts/observation_evidence.ts": "4a58242be77cbad354bd597cdff530b5ffa5f1c95edab378b92800e89862d3a5",
+    "<worktree>/scripts/verify_observation_mcp.ts": "5f6fd1e28218627b28c54c5a8257cf30ead2ee789f38e6cae94771d4f260395a",
+    "<worktree>/scripts/population_result.ts": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+    "<worktree>/scripts/population_error.ts": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff",
+    "<worktree>/scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b"
+  },
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "install_path": "<home>/.duckdb/extensions/v1.5.6/osx_arm64/duckdb_mcp.duckdb_extension",
+    "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+    "extension_sha256": "9ddb20dbc36bd92301b0a49178562f28a30b5e2ce774129964e7a9bd1216b5a9",
+    "server_sha256": "3b2b04eb1c81d5b43ddad8cc43d858992055ba5d9b7343b66429ca4c98fdc1c4"
+  },
+  "checks": [
+    "10: exclusive tools/resources; v2 identity, rules, metric roles, capabilities and hashes",
+    "10: five scalar metrics",
+    "10: explicit interval",
+    "10: actual carrier supports observation_count with exact scope",
+    "10: actual carrier supports user_count with exact scope",
+    "10: actual carrier supports amount_value_count with exact scope",
+    "10: actual carrier supports amount_sum with exact scope",
+    "10: actual carrier supports mean_observation_amount with exact scope",
+    "10: actual complete objects derive User count for 2026-01-31",
+    "10: actual complete objects derive User count for 2026-02-01",
+    "10: date groups",
+    "10: date/product groups",
+    "10: X scope",
+    "10: NULL-only scope",
+    "10: empty scalar",
+    "10: empty groups",
+    "10: complete ordered typed tuple objects",
+    "10: empty objects retain provenance",
+    "10: compile objects plan-v2 is diagnostic",
+    "10: compile metrics plan-v2 is diagnostic",
+    "10: recovery after refusals",
+    "20: exclusive tools/resources; v2 identity, rules, metric roles, capabilities and hashes",
+    "20: five scalar metrics",
+    "20: explicit interval",
+    "20: actual carrier supports observation_count with exact scope",
+    "20: actual carrier supports user_count with exact scope",
+    "20: actual carrier supports amount_value_count with exact scope",
+    "20: actual carrier supports amount_sum with exact scope",
+    "20: actual carrier supports mean_observation_amount with exact scope",
+    "20: actual complete objects derive User count for 2026-01-31",
+    "20: actual complete objects derive User count for 2026-02-01",
+    "20: date groups",
+    "20: date/product groups",
+    "20: X scope",
+    "20: NULL-only scope",
+    "20: empty scalar",
+    "20: empty groups",
+    "20: complete ordered typed tuple objects",
+    "20: empty objects retain provenance",
+    "20: compile objects plan-v2 is diagnostic",
+    "20: compile metrics plan-v2 is diagnostic",
+    "20: recovery after refusals",
+    "failed operator startup exposes no server"
+  ],
+  "refusals": [
+    {
+      "threshold": 10,
+      "label": "User referent-only",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"User\",\"stage\":\"capability\",\"reason\":\"User is referent-only; direct objects and metrics queries unsupported\",\"missing_capability\":\"User is referent-only; direct objects and metrics queries unsupported\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query_json($concept, ossie_population_strings...\n                      ^"
+        },
+        "id": 21
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 10,
+      "label": "User referent-only",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"User\",\"stage\":\"capability\",\"reason\":\"User is referent-only; direct objects and metrics queries unsupported\",\"missing_capability\":\"User is referent-only; direct objects and metrics queries unsupported\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_compile($concept, ossie_population_strings...\n                      ^"
+        },
+        "id": 22
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 10,
+      "label": "User referent-only",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"User\",\"stage\":\"capability\",\"reason\":\"User is referent-only; direct objects and metrics queries unsupported\",\"missing_capability\":\"User is referent-only; direct objects and metrics queries unsupported\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_objects_json($concept, ossie_population_strings($filters...\n                      ^"
+        },
+        "id": 23
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 10,
+      "label": "illegal User grouping",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"observations.user_id\",\"stage\":\"capability\",\"reason\":\"observation grouping supports only date and product fields\",\"missing_capability\":\"observation grouping supports only date and product fields\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=observations.user_id stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query_json($concept, ossie_population_strings...\n                      ^"
+        },
+        "id": 24
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.user_id",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.user_id stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 10,
+      "label": "unregistered metric",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"QualifiedObservation\",\"stage\":\"bind\",\"reason\":\"Invalid Input Error: ossie: model \\\"daily_observation_demo\\\" has no metric named \\\"mean_user_total\\\".\\u000aDid you mean: \\\"mean_observation_amount\\\"\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Invalid Input\",\"legacy_message\":\"ossie_population: object=QualifiedObservation stage=bind reason=Invalid Input Error: ossie: model \\\"daily_observation_demo\\\" has no metric named \\\"mean_user_total\\\".\\u000aDid you mean: \\\"mean_observation_amount\\\" missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query_json($concept, ossie_population_strings...\n                      ^"
+        },
+        "id": 25
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "QualifiedObservation",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie: model \"daily_observation_demo\" has no metric named \"mean_user_total\".\nDid you mean: \"mean_observation_amount\"",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=QualifiedObservation stage=bind reason=Invalid Input Error: ossie: model \"daily_observation_demo\" has no metric named \"mean_user_total\".\nDid you mean: \"mean_observation_amount\" missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 10,
+      "label": "invalid filter list not-json",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: malformed JSON; JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: malformed JSON; JSON array of strings required missing_capability=bounded population profile\"}"
+        },
+        "id": 26
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: malformed JSON; JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: malformed JSON; JSON array of strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 10,
+      "label": "invalid filter list [1]",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+        },
+        "id": 27
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 10,
+      "label": "invalid filter list [true]",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+        },
+        "id": 28
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 10,
+      "label": "invalid filter list [null]",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+        },
+        "id": 29
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 10,
+      "label": "invalid filter list null",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+        },
+        "id": 30
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 10,
+      "label": "unpublished tool query",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: query"
+        },
+        "id": 31
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 10,
+      "label": "unpublished tool execute",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: execute"
+        },
+        "id": 32
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 10,
+      "label": "unpublished tool export",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: export"
+        },
+        "id": 33
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 10,
+      "label": "unpublished tool describe",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: describe"
+        },
+        "id": 34
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 10,
+      "label": "unpublished tool list_tables",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: list_tables"
+        },
+        "id": 35
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 10,
+      "label": "unpublished tool database_info",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: database_info"
+        },
+        "id": 36
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 10,
+      "label": "unpublished tool ossie_bundle_load",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: ossie_bundle_load"
+        },
+        "id": 37
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 10,
+      "label": "unpublished tool population_reload",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: population_reload"
+        },
+        "id": 38
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 10,
+      "label": "unpublished tool unknown",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: unknown"
+        },
+        "id": 39
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 20,
+      "label": "User referent-only",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"User\",\"stage\":\"capability\",\"reason\":\"User is referent-only; direct objects and metrics queries unsupported\",\"missing_capability\":\"User is referent-only; direct objects and metrics queries unsupported\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query_json($concept, ossie_population_strings...\n                      ^"
+        },
+        "id": 21
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 20,
+      "label": "User referent-only",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"User\",\"stage\":\"capability\",\"reason\":\"User is referent-only; direct objects and metrics queries unsupported\",\"missing_capability\":\"User is referent-only; direct objects and metrics queries unsupported\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_compile($concept, ossie_population_strings...\n                      ^"
+        },
+        "id": 22
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 20,
+      "label": "User referent-only",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"User\",\"stage\":\"capability\",\"reason\":\"User is referent-only; direct objects and metrics queries unsupported\",\"missing_capability\":\"User is referent-only; direct objects and metrics queries unsupported\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_objects_json($concept, ossie_population_strings($filters...\n                      ^"
+        },
+        "id": 23
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "User",
+        "stage": "capability",
+        "reason": "User is referent-only; direct objects and metrics queries unsupported",
+        "missing_capability": "User is referent-only; direct objects and metrics queries unsupported",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=User stage=capability reason=User is referent-only; direct objects and metrics queries unsupported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 20,
+      "label": "illegal User grouping",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"observations.user_id\",\"stage\":\"capability\",\"reason\":\"observation grouping supports only date and product fields\",\"missing_capability\":\"observation grouping supports only date and product fields\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=observations.user_id stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query_json($concept, ossie_population_strings...\n                      ^"
+        },
+        "id": 24
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "observations.user_id",
+        "stage": "capability",
+        "reason": "observation grouping supports only date and product fields",
+        "missing_capability": "observation grouping supports only date and product fields",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=observations.user_id stage=capability reason=observation grouping supports only date and product fields missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 20,
+      "label": "unregistered metric",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"QualifiedObservation\",\"stage\":\"bind\",\"reason\":\"Invalid Input Error: ossie: model \\\"daily_observation_demo\\\" has no metric named \\\"mean_user_total\\\".\\u000aDid you mean: \\\"mean_observation_amount\\\"\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":\"Invalid Input\",\"legacy_message\":\"ossie_population: object=QualifiedObservation stage=bind reason=Invalid Input Error: ossie: model \\\"daily_observation_demo\\\" has no metric named \\\"mean_user_total\\\".\\u000aDid you mean: \\\"mean_observation_amount\\\" missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_concept_query_json($concept, ossie_population_strings...\n                      ^"
+        },
+        "id": 25
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "QualifiedObservation",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie: model \"daily_observation_demo\" has no metric named \"mean_user_total\".\nDid you mean: \"mean_observation_amount\"",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=QualifiedObservation stage=bind reason=Invalid Input Error: ossie: model \"daily_observation_demo\" has no metric named \"mean_user_total\".\nDid you mean: \"mean_observation_amount\" missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 20,
+      "label": "invalid filter list not-json",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: malformed JSON; JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: malformed JSON; JSON array of strings required missing_capability=bounded population profile\"}"
+        },
+        "id": 26
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: malformed JSON; JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: malformed JSON; JSON array of strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 20,
+      "label": "invalid filter list [1]",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+        },
+        "id": 27
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 20,
+      "label": "invalid filter list [true]",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+        },
+        "id": 28
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 20,
+      "label": "invalid filter list [null]",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list[0]\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+        },
+        "id": 29
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list[0]",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list[0] stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 20,
+      "label": "invalid filter list null",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"list\",\"stage\":\"arguments\",\"reason\":\"population MCP: JSON array of strings required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile\"}"
+        },
+        "id": 30
+      },
+      "normalized": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "list",
+        "stage": "arguments",
+        "reason": "population MCP: JSON array of strings required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=list stage=arguments reason=population MCP: JSON array of strings required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "threshold": 20,
+      "label": "unpublished tool query",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: query"
+        },
+        "id": 31
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 20,
+      "label": "unpublished tool execute",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: execute"
+        },
+        "id": 32
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 20,
+      "label": "unpublished tool export",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: export"
+        },
+        "id": 33
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 20,
+      "label": "unpublished tool describe",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: describe"
+        },
+        "id": 34
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 20,
+      "label": "unpublished tool list_tables",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: list_tables"
+        },
+        "id": 35
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 20,
+      "label": "unpublished tool database_info",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: database_info"
+        },
+        "id": 36
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 20,
+      "label": "unpublished tool ossie_bundle_load",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: ossie_bundle_load"
+        },
+        "id": 37
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 20,
+      "label": "unpublished tool population_reload",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: population_reload"
+        },
+        "id": 38
+      },
+      "normalized": null
+    },
+    {
+      "threshold": 20,
+      "label": "unpublished tool unknown",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: unknown"
+        },
+        "id": 39
+      },
+      "normalized": null
+    }
+  ]
+}

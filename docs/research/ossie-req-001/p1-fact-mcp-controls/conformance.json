@@ -1,0 +1,4845 @@
+{
+  "scope": "Actual native MCP decoded cases; structural acceptance is not oracle truth",
+  "sessions": [
+    {
+      "setup": "original",
+      "program": {
+        "schema_version": "ossie-fact-program-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+        "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "project_api_version": "2.2.0",
+        "query_executed": false,
+        "counts_computed": false,
+        "mcp_registered": false,
+        "functions": [
+          "ossie_fact_users_json",
+          "ossie_fact_users_compile",
+          "ossie_fact_windows_json",
+          "ossie_fact_windows_compile",
+          "ossie_fact_program"
+        ],
+        "sources": [
+          {
+            "dataset": "revenue",
+            "concept": "RevenueObservation",
+            "user_concept": "User",
+            "target_identity_relationship": "id",
+            "source": "memory.main.revenue",
+            "currency": "USD",
+            "content_sha256": "7cada9bc880c3d5b119ce371f67ff1d3bc9055874488ca949c05336860ac8bd3",
+            "captured_rows": "8",
+            "identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "user_field": "user_id",
+            "date_field": "ds",
+            "product_field": "",
+            "amount_field": "amount",
+            "fields": [
+              {
+                "name": "user_id",
+                "physical_column": "who",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "ds",
+                "physical_column": "day",
+                "bound_type": "DATE"
+              },
+              {
+                "name": "amount",
+                "physical_column": "value",
+                "bound_type": "DECIMAL(18,2)"
+              }
+            ]
+          },
+          {
+            "dataset": "cost",
+            "concept": "CostObservation",
+            "user_concept": "User",
+            "target_identity_relationship": "id",
+            "source": "memory.main.cost",
+            "currency": "USD",
+            "content_sha256": "bd058f6bb1fea56521599f956d037bac77b854e06d46a359e7fc2458b19a8ef5",
+            "captured_rows": "10",
+            "identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "user_field": "user_id",
+            "date_field": "ds",
+            "product_field": "product",
+            "amount_field": "amount",
+            "fields": [
+              {
+                "name": "user_id",
+                "physical_column": "who",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "ds",
+                "physical_column": "day",
+                "bound_type": "DATE"
+              },
+              {
+                "name": "product",
+                "physical_column": "item",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "amount",
+                "physical_column": "value",
+                "bound_type": "DECIMAL(18,2)"
+              }
+            ]
+          }
+        ],
+        "metrics": [
+          {
+            "name": "balance",
+            "original_definition": "income-expense",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "income",
+            "original_definition": "SUM(revenue.amount)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "expense",
+            "original_definition": "SUM(cost.amount)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "revenue_rows",
+            "original_definition": "COUNT(revenue.user_id)",
+            "unit": "count:RevenueObservation:user_id",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "revenue_values",
+            "original_definition": "COUNT(revenue.amount)",
+            "unit": "count:RevenueObservation:amount",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "cost_rows",
+            "original_definition": "COUNT(cost.user_id)",
+            "unit": "count:CostObservation:user_id",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "cost_values",
+            "original_definition": "COUNT(cost.amount)",
+            "unit": "count:CostObservation:amount",
+            "bound_type": "BIGINT"
+          }
+        ],
+        "windows": [
+          {
+            "name": "previous",
+            "original_definition": "LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(18,2)",
+            "dataset": "revenue",
+            "bound_expression": "main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST)",
+            "bound_catalog": "system",
+            "bound_schema": "main"
+          },
+          {
+            "name": "rolling",
+            "original_definition": "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)",
+            "dataset": "revenue",
+            "bound_expression": "main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)",
+            "bound_catalog": "system",
+            "bound_schema": "main"
+          }
+        ],
+        "domain": "common User by row presence in both separately reduced sources",
+        "cohort_semantics": "TRUE atomic member sets; binary intersection, union and ordered difference within common",
+        "count_semantics": "COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort",
+        "input_scope": "entire_capture",
+        "window_semantics": "single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days",
+        "supported_aggregates": [
+          "SUM(mapped amount)",
+          "COUNT(mapped User or amount)",
+          "same-currency SUM components +/-"
+        ],
+        "refused": [
+          "raw fact-to-fact fan-out",
+          "AVG/COUNT(*) in declarations",
+          "cross-fact aggregate leaves",
+          "ratios or mixed measure units",
+          "input/date/product filtering",
+          "recursive cohorts or dependencies",
+          "mixed window fact grains",
+          "calendar filling or history/state inference",
+          "ordinary rendered SQL replay"
+        ],
+        "limits": {
+          "sources": 2,
+          "rows_per_source": 10000,
+          "physical_columns_per_source": 256,
+          "combined_canonical_bytes": 16777216,
+          "regular_metrics": 32,
+          "window_metrics": 16,
+          "name_ascii_bytes": 128,
+          "rule_bytes": 16384,
+          "total_rule_bytes": 131072,
+          "expression_depth": 32,
+          "expression_nodes": 1024,
+          "expanded_program_nodes": 32768,
+          "metric_dependency_depth": 16,
+          "cohort_nodes": 64,
+          "cohort_depth": 16,
+          "request_json_bytes": 16384,
+          "complete_json_bytes": 1048576,
+          "result_rows": 10000
+        },
+        "paging": false,
+        "truncated": false,
+        "peak_memory_bound": false,
+        "hash_set_normalized": false
+      },
+      "cases": [
+        {
+          "name": "all",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "BALANCE",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "cohort": {
+              "operation": "all"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "BALANCE",
+                "income",
+                "expense",
+                "revenue_rows",
+                "revenue_values",
+                "cost_rows",
+                "cost_values"
+              ],
+              "cohort": {
+                "operation": "all"
+              }
+            },
+            "selected": [
+              "balance",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 3,
+                "name": "income",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "expense",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 5,
+                "name": "revenue_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:user_id"
+              },
+              {
+                "ordinal": 6,
+                "name": "revenue_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:amount"
+              },
+              {
+                "ordinal": 7,
+                "name": "cost_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:user_id"
+              },
+              {
+                "ordinal": 8,
+                "name": "cost_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:amount"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance, combined.income, combined.expense, combined.revenue_rows, combined.revenue_values, combined.cost_rows, combined.cost_values FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE CAST('t' AS BOOLEAN) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "BALANCE",
+                "income",
+                "expense",
+                "revenue_rows",
+                "revenue_values",
+                "cost_rows",
+                "cost_values"
+              ],
+              "cohort": {
+                "operation": "all"
+              }
+            },
+            "selected": [
+              "balance",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 3,
+                "name": "income",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "expense",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 5,
+                "name": "revenue_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:user_id"
+              },
+              {
+                "ordinal": 6,
+                "name": "revenue_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:amount"
+              },
+              {
+                "ordinal": 7,
+                "name": "cost_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:user_id"
+              },
+              {
+                "ordinal": 8,
+                "name": "cost_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:amount"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "3",
+            "common_user_count": "3",
+            "selected_user_count": "3",
+            "rows": [
+              [
+                "A",
+                "290.00",
+                "375.00",
+                "85.00",
+                "4",
+                "4",
+                "6",
+                "6"
+              ],
+              [
+                "B",
+                "50.00",
+                "80.00",
+                "30.00",
+                "2",
+                "2",
+                "2",
+                "2"
+              ],
+              [
+                "C",
+                null,
+                null,
+                null,
+                "1",
+                "0",
+                "1",
+                "0"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "A",
+                "290.00",
+                "375.00",
+                "85.00",
+                "4",
+                "4",
+                "6",
+                "6"
+              ],
+              [
+                "B",
+                "50.00",
+                "80.00",
+                "30.00",
+                "2",
+                "2",
+                "2",
+                "2"
+              ],
+              [
+                "C",
+                null,
+                null,
+                null,
+                "1",
+                "0",
+                "1",
+                "0"
+              ]
+            ],
+            "common_user_count": "3",
+            "selected_user_count": "3"
+          }
+        },
+        {
+          "name": "empty-cohort",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "balance"
+            ],
+            "cohort": {
+              "operation": "predicate",
+              "predicate": "balance>999999"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "predicate",
+                "predicate": "balance>999999"
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE (CAST((combined.balance > 999999.00) AS BOOLEAN) IS NOT DISTINCT FROM true) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "predicate",
+                "predicate": "balance>999999"
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "0",
+            "common_user_count": "3",
+            "selected_user_count": "0",
+            "rows": []
+          },
+          "independent": {
+            "rows": [],
+            "common_user_count": "3",
+            "selected_user_count": "0"
+          }
+        },
+        {
+          "name": "predicate-unprojected",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "balance"
+            ],
+            "cohort": {
+              "operation": "predicate",
+              "predicate": "expense>50"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "predicate",
+                "predicate": "expense>50"
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE (CAST((combined.expense > 50.00) AS BOOLEAN) IS NOT DISTINCT FROM true) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "predicate",
+                "predicate": "expense>50"
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "1",
+            "common_user_count": "3",
+            "selected_user_count": "1",
+            "rows": [
+              [
+                "A",
+                "290.00"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "A",
+                "290.00"
+              ]
+            ],
+            "common_user_count": "3",
+            "selected_user_count": "1"
+          }
+        },
+        {
+          "name": "intersection",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "balance"
+            ],
+            "cohort": {
+              "operation": "intersection",
+              "children": [
+                {
+                  "operation": "predicate",
+                  "predicate": "income>100"
+                },
+                {
+                  "operation": "predicate",
+                  "predicate": "expense>50"
+                }
+              ]
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "intersection",
+                "children": [
+                  {
+                    "operation": "predicate",
+                    "predicate": "income>100"
+                  },
+                  {
+                    "operation": "predicate",
+                    "predicate": "expense>50"
+                  }
+                ]
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE ((CAST((combined.income > 100.00) AS BOOLEAN) IS NOT DISTINCT FROM true) AND (CAST((combined.expense > 50.00) AS BOOLEAN) IS NOT DISTINCT FROM true)) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "intersection",
+                "children": [
+                  {
+                    "operation": "predicate",
+                    "predicate": "income>100"
+                  },
+                  {
+                    "operation": "predicate",
+                    "predicate": "expense>50"
+                  }
+                ]
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "1",
+            "common_user_count": "3",
+            "selected_user_count": "1",
+            "rows": [
+              [
+                "A",
+                "290.00"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "A",
+                "290.00"
+              ]
+            ],
+            "common_user_count": "3",
+            "selected_user_count": "1"
+          }
+        },
+        {
+          "name": "union",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "balance"
+            ],
+            "cohort": {
+              "operation": "union",
+              "children": [
+                {
+                  "operation": "predicate",
+                  "predicate": "income>100"
+                },
+                {
+                  "operation": "predicate",
+                  "predicate": "expense<50"
+                }
+              ]
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "union",
+                "children": [
+                  {
+                    "operation": "predicate",
+                    "predicate": "income>100"
+                  },
+                  {
+                    "operation": "predicate",
+                    "predicate": "expense<50"
+                  }
+                ]
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE ((CAST((combined.income > 100.00) AS BOOLEAN) IS NOT DISTINCT FROM true) OR (CAST((combined.expense < 50.00) AS BOOLEAN) IS NOT DISTINCT FROM true)) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "union",
+                "children": [
+                  {
+                    "operation": "predicate",
+                    "predicate": "income>100"
+                  },
+                  {
+                    "operation": "predicate",
+                    "predicate": "expense<50"
+                  }
+                ]
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "2",
+            "common_user_count": "3",
+            "selected_user_count": "2",
+            "rows": [
+              [
+                "A",
+                "290.00"
+              ],
+              [
+                "B",
+                "50.00"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "A",
+                "290.00"
+              ],
+              [
+                "B",
+                "50.00"
+              ]
+            ],
+            "common_user_count": "3",
+            "selected_user_count": "2"
+          }
+        },
+        {
+          "name": "difference-RHS-UNKNOWN",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "balance"
+            ],
+            "cohort": {
+              "operation": "difference",
+              "children": [
+                {
+                  "operation": "all"
+                },
+                {
+                  "operation": "predicate",
+                  "predicate": "expense>50"
+                }
+              ]
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "difference",
+                "children": [
+                  {
+                    "operation": "all"
+                  },
+                  {
+                    "operation": "predicate",
+                    "predicate": "expense>50"
+                  }
+                ]
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE (CAST('t' AS BOOLEAN) AND (CAST((combined.expense > 50.00) AS BOOLEAN) IS DISTINCT FROM true)) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "difference",
+                "children": [
+                  {
+                    "operation": "all"
+                  },
+                  {
+                    "operation": "predicate",
+                    "predicate": "expense>50"
+                  }
+                ]
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "2",
+            "common_user_count": "3",
+            "selected_user_count": "2",
+            "rows": [
+              [
+                "B",
+                "50.00"
+              ],
+              [
+                "C",
+                null
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "B",
+                "50.00"
+              ],
+              [
+                "C",
+                null
+              ]
+            ],
+            "common_user_count": "3",
+            "selected_user_count": "2"
+          }
+        },
+        {
+          "name": "windows/{\"mode\":\"all\"}",
+          "request": {
+            "input_scope": "entire_capture",
+            "windows": [
+              "PREVIOUS",
+              "rolling"
+            ],
+            "display": {
+              "mode": "all"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-windows-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "all"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "8",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+            "operators": [
+              "frozen single-source User/date projection",
+              "whole capture window computation",
+              "display DATE filtering",
+              "raw identity sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-windows-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "all"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "8",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "8",
+            "rows": [
+              [
+                "A",
+                "2026-01-01",
+                null,
+                "100.00"
+              ],
+              [
+                "A",
+                "2026-01-31",
+                "100.00",
+                "300.00"
+              ],
+              [
+                "A",
+                "2026-02-01",
+                "200.00",
+                "250.00"
+              ],
+              [
+                "A",
+                "2026-02-28",
+                "50.00",
+                "75.00"
+              ],
+              [
+                "B",
+                "2026-01-01",
+                null,
+                "80.00"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "80.00",
+                "80.00"
+              ],
+              [
+                "C",
+                "2026-02-01",
+                null,
+                null
+              ],
+              [
+                "D",
+                "2026-02-01",
+                null,
+                "40.00"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "A",
+                "2026-01-01",
+                null,
+                "100.00"
+              ],
+              [
+                "A",
+                "2026-01-31",
+                "100.00",
+                "300.00"
+              ],
+              [
+                "A",
+                "2026-02-01",
+                "200.00",
+                "250.00"
+              ],
+              [
+                "A",
+                "2026-02-28",
+                "50.00",
+                "75.00"
+              ],
+              [
+                "B",
+                "2026-01-01",
+                null,
+                "80.00"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "80.00",
+                "80.00"
+              ],
+              [
+                "C",
+                "2026-02-01",
+                null,
+                null
+              ],
+              [
+                "D",
+                "2026-02-01",
+                null,
+                "40.00"
+              ]
+            ]
+          }
+        },
+        {
+          "name": "windows/{\"mode\":\"date_range\",\"start_date\":\"2026-02-01\",\"end_date\":\"2026-02-01\"}",
+          "request": {
+            "input_scope": "entire_capture",
+            "windows": [
+              "PREVIOUS",
+              "rolling"
+            ],
+            "display": {
+              "mode": "date_range",
+              "start_date": "2026-02-01",
+              "end_date": "2026-02-01"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-windows-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "date_range",
+                "start_date": "2026-02-01",
+                "end_date": "2026-02-01"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "8",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed WHERE (observed.ds BETWEEN CAST('2026-02-01' AS \"DATE\") AND CAST('2026-02-01' AS \"DATE\")) ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+            "operators": [
+              "frozen single-source User/date projection",
+              "whole capture window computation",
+              "display DATE filtering",
+              "raw identity sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-windows-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "date_range",
+                "start_date": "2026-02-01",
+                "end_date": "2026-02-01"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "8",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "4",
+            "rows": [
+              [
+                "A",
+                "2026-02-01",
+                "200.00",
+                "250.00"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "80.00",
+                "80.00"
+              ],
+              [
+                "C",
+                "2026-02-01",
+                null,
+                null
+              ],
+              [
+                "D",
+                "2026-02-01",
+                null,
+                "40.00"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "A",
+                "2026-02-01",
+                "200.00",
+                "250.00"
+              ],
+              [
+                "B",
+                "2026-02-01",
+                "80.00",
+                "80.00"
+              ],
+              [
+                "C",
+                "2026-02-01",
+                null,
+                null
+              ],
+              [
+                "D",
+                "2026-02-01",
+                null,
+                "40.00"
+              ]
+            ]
+          }
+        },
+        {
+          "name": "windows/{\"mode\":\"date_range\",\"start_date\":\"1900-01-01\",\"end_date\":\"1900-01-01\"}",
+          "request": {
+            "input_scope": "entire_capture",
+            "windows": [
+              "PREVIOUS",
+              "rolling"
+            ],
+            "display": {
+              "mode": "date_range",
+              "start_date": "1900-01-01",
+              "end_date": "1900-01-01"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-windows-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "date_range",
+                "start_date": "1900-01-01",
+                "end_date": "1900-01-01"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "8",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed WHERE (observed.ds BETWEEN CAST('1900-01-01' AS \"DATE\") AND CAST('1900-01-01' AS \"DATE\")) ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+            "operators": [
+              "frozen single-source User/date projection",
+              "whole capture window computation",
+              "display DATE filtering",
+              "raw identity sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-windows-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1",
+            "content_sha256": "74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "date_range",
+                "start_date": "1900-01-01",
+                "end_date": "1900-01-01"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "8",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "0",
+            "rows": []
+          },
+          "independent": {
+            "rows": []
+          }
+        }
+      ]
+    },
+    {
+      "setup": "empty",
+      "program": {
+        "schema_version": "ossie-fact-program-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148:1",
+        "content_sha256": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "project_api_version": "2.2.0",
+        "query_executed": false,
+        "counts_computed": false,
+        "mcp_registered": false,
+        "functions": [
+          "ossie_fact_users_json",
+          "ossie_fact_users_compile",
+          "ossie_fact_windows_json",
+          "ossie_fact_windows_compile",
+          "ossie_fact_program"
+        ],
+        "sources": [
+          {
+            "dataset": "revenue",
+            "concept": "RevenueObservation",
+            "user_concept": "User",
+            "target_identity_relationship": "id",
+            "source": "memory.main.revenue",
+            "currency": "USD",
+            "content_sha256": "04d8e684154f0d8f1e65d3392651e353d6f0bfa78187221737b9eed1e4a88ab8",
+            "captured_rows": "0",
+            "identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "user_field": "user_id",
+            "date_field": "ds",
+            "product_field": "",
+            "amount_field": "amount",
+            "fields": [
+              {
+                "name": "user_id",
+                "physical_column": "who",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "ds",
+                "physical_column": "day",
+                "bound_type": "DATE"
+              },
+              {
+                "name": "amount",
+                "physical_column": "value",
+                "bound_type": "DECIMAL(18,2)"
+              }
+            ]
+          },
+          {
+            "dataset": "cost",
+            "concept": "CostObservation",
+            "user_concept": "User",
+            "target_identity_relationship": "id",
+            "source": "memory.main.cost",
+            "currency": "USD",
+            "content_sha256": "7f233e677870bae6e8a00af78be44ab39dc64b4616c8a4701fea318cdd336eed",
+            "captured_rows": "0",
+            "identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "user_field": "user_id",
+            "date_field": "ds",
+            "product_field": "product",
+            "amount_field": "amount",
+            "fields": [
+              {
+                "name": "user_id",
+                "physical_column": "who",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "ds",
+                "physical_column": "day",
+                "bound_type": "DATE"
+              },
+              {
+                "name": "product",
+                "physical_column": "item",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "amount",
+                "physical_column": "value",
+                "bound_type": "DECIMAL(18,2)"
+              }
+            ]
+          }
+        ],
+        "metrics": [
+          {
+            "name": "balance",
+            "original_definition": "income-expense",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "income",
+            "original_definition": "SUM(revenue.amount)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "expense",
+            "original_definition": "SUM(cost.amount)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "revenue_rows",
+            "original_definition": "COUNT(revenue.user_id)",
+            "unit": "count:RevenueObservation:user_id",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "revenue_values",
+            "original_definition": "COUNT(revenue.amount)",
+            "unit": "count:RevenueObservation:amount",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "cost_rows",
+            "original_definition": "COUNT(cost.user_id)",
+            "unit": "count:CostObservation:user_id",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "cost_values",
+            "original_definition": "COUNT(cost.amount)",
+            "unit": "count:CostObservation:amount",
+            "bound_type": "BIGINT"
+          }
+        ],
+        "windows": [
+          {
+            "name": "previous",
+            "original_definition": "LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(18,2)",
+            "dataset": "revenue",
+            "bound_expression": "main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST)",
+            "bound_catalog": "system",
+            "bound_schema": "main"
+          },
+          {
+            "name": "rolling",
+            "original_definition": "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)",
+            "dataset": "revenue",
+            "bound_expression": "main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)",
+            "bound_catalog": "system",
+            "bound_schema": "main"
+          }
+        ],
+        "domain": "common User by row presence in both separately reduced sources",
+        "cohort_semantics": "TRUE atomic member sets; binary intersection, union and ordered difference within common",
+        "count_semantics": "COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort",
+        "input_scope": "entire_capture",
+        "window_semantics": "single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days",
+        "supported_aggregates": [
+          "SUM(mapped amount)",
+          "COUNT(mapped User or amount)",
+          "same-currency SUM components +/-"
+        ],
+        "refused": [
+          "raw fact-to-fact fan-out",
+          "AVG/COUNT(*) in declarations",
+          "cross-fact aggregate leaves",
+          "ratios or mixed measure units",
+          "input/date/product filtering",
+          "recursive cohorts or dependencies",
+          "mixed window fact grains",
+          "calendar filling or history/state inference",
+          "ordinary rendered SQL replay"
+        ],
+        "limits": {
+          "sources": 2,
+          "rows_per_source": 10000,
+          "physical_columns_per_source": 256,
+          "combined_canonical_bytes": 16777216,
+          "regular_metrics": 32,
+          "window_metrics": 16,
+          "name_ascii_bytes": 128,
+          "rule_bytes": 16384,
+          "total_rule_bytes": 131072,
+          "expression_depth": 32,
+          "expression_nodes": 1024,
+          "expanded_program_nodes": 32768,
+          "metric_dependency_depth": 16,
+          "cohort_nodes": 64,
+          "cohort_depth": 16,
+          "request_json_bytes": 16384,
+          "complete_json_bytes": 1048576,
+          "result_rows": 10000
+        },
+        "paging": false,
+        "truncated": false,
+        "peak_memory_bound": false,
+        "hash_set_normalized": false
+      },
+      "cases": [
+        {
+          "name": "all",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "BALANCE",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "cohort": {
+              "operation": "all"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148:1",
+            "content_sha256": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "BALANCE",
+                "income",
+                "expense",
+                "revenue_rows",
+                "revenue_values",
+                "cost_rows",
+                "cost_values"
+              ],
+              "cohort": {
+                "operation": "all"
+              }
+            },
+            "selected": [
+              "balance",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 3,
+                "name": "income",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "expense",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 5,
+                "name": "revenue_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:user_id"
+              },
+              {
+                "ordinal": 6,
+                "name": "revenue_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:amount"
+              },
+              {
+                "ordinal": 7,
+                "name": "cost_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:user_id"
+              },
+              {
+                "ordinal": 8,
+                "name": "cost_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:amount"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance, combined.income, combined.expense, combined.revenue_rows, combined.revenue_values, combined.cost_rows, combined.cost_values FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE CAST('t' AS BOOLEAN) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148:1",
+            "content_sha256": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "BALANCE",
+                "income",
+                "expense",
+                "revenue_rows",
+                "revenue_values",
+                "cost_rows",
+                "cost_values"
+              ],
+              "cohort": {
+                "operation": "all"
+              }
+            },
+            "selected": [
+              "balance",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 3,
+                "name": "income",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "expense",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 5,
+                "name": "revenue_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:user_id"
+              },
+              {
+                "ordinal": 6,
+                "name": "revenue_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:amount"
+              },
+              {
+                "ordinal": 7,
+                "name": "cost_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:user_id"
+              },
+              {
+                "ordinal": 8,
+                "name": "cost_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:amount"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "0",
+            "common_user_count": "0",
+            "selected_user_count": "0",
+            "rows": []
+          },
+          "independent": {
+            "rows": [],
+            "common_user_count": "0",
+            "selected_user_count": "0"
+          }
+        },
+        {
+          "name": "empty-cohort",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "balance"
+            ],
+            "cohort": {
+              "operation": "predicate",
+              "predicate": "balance>999999"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148:1",
+            "content_sha256": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "predicate",
+                "predicate": "balance>999999"
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE (CAST((combined.balance > 999999.00) AS BOOLEAN) IS NOT DISTINCT FROM true) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148:1",
+            "content_sha256": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "predicate",
+                "predicate": "balance>999999"
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "0",
+            "common_user_count": "0",
+            "selected_user_count": "0",
+            "rows": []
+          },
+          "independent": {
+            "rows": [],
+            "common_user_count": "0",
+            "selected_user_count": "0"
+          }
+        },
+        {
+          "name": "windows/{\"mode\":\"all\"}",
+          "request": {
+            "input_scope": "entire_capture",
+            "windows": [
+              "PREVIOUS",
+              "rolling"
+            ],
+            "display": {
+              "mode": "all"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-windows-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148:1",
+            "content_sha256": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "all"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "0",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+            "operators": [
+              "frozen single-source User/date projection",
+              "whole capture window computation",
+              "display DATE filtering",
+              "raw identity sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-windows-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148:1",
+            "content_sha256": "4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "all"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "0",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "0",
+            "rows": []
+          },
+          "independent": {
+            "rows": []
+          }
+        }
+      ]
+    },
+    {
+      "setup": "raw",
+      "program": {
+        "schema_version": "ossie-fact-program-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd:1",
+        "content_sha256": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "project_api_version": "2.2.0",
+        "query_executed": false,
+        "counts_computed": false,
+        "mcp_registered": false,
+        "functions": [
+          "ossie_fact_users_json",
+          "ossie_fact_users_compile",
+          "ossie_fact_windows_json",
+          "ossie_fact_windows_compile",
+          "ossie_fact_program"
+        ],
+        "sources": [
+          {
+            "dataset": "revenue",
+            "concept": "RevenueObservation",
+            "user_concept": "User",
+            "target_identity_relationship": "id",
+            "source": "memory.main.revenue",
+            "currency": "USD",
+            "content_sha256": "cb800bf35b79ab2dcad530a2af26e8a89c9ffad0a547894e75056fa4b0300ead",
+            "captured_rows": "4",
+            "identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "user_field": "user_id",
+            "date_field": "ds",
+            "product_field": "",
+            "amount_field": "amount",
+            "fields": [
+              {
+                "name": "user_id",
+                "physical_column": "who",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "ds",
+                "physical_column": "day",
+                "bound_type": "DATE"
+              },
+              {
+                "name": "amount",
+                "physical_column": "value",
+                "bound_type": "DECIMAL(18,2)"
+              }
+            ]
+          },
+          {
+            "dataset": "cost",
+            "concept": "CostObservation",
+            "user_concept": "User",
+            "target_identity_relationship": "id",
+            "source": "memory.main.cost",
+            "currency": "USD",
+            "content_sha256": "77e8a6bf2b74cea89b1407c7fffce8345d215a85c14ec0e7231cb527b25c5233",
+            "captured_rows": "4",
+            "identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "user_field": "user_id",
+            "date_field": "ds",
+            "product_field": "product",
+            "amount_field": "amount",
+            "fields": [
+              {
+                "name": "user_id",
+                "physical_column": "who",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "ds",
+                "physical_column": "day",
+                "bound_type": "DATE"
+              },
+              {
+                "name": "product",
+                "physical_column": "item",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "amount",
+                "physical_column": "value",
+                "bound_type": "DECIMAL(18,2)"
+              }
+            ]
+          }
+        ],
+        "metrics": [
+          {
+            "name": "balance",
+            "original_definition": "income-expense",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "income",
+            "original_definition": "SUM(revenue.amount)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "expense",
+            "original_definition": "SUM(cost.amount)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "revenue_rows",
+            "original_definition": "COUNT(revenue.user_id)",
+            "unit": "count:RevenueObservation:user_id",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "revenue_values",
+            "original_definition": "COUNT(revenue.amount)",
+            "unit": "count:RevenueObservation:amount",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "cost_rows",
+            "original_definition": "COUNT(cost.user_id)",
+            "unit": "count:CostObservation:user_id",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "cost_values",
+            "original_definition": "COUNT(cost.amount)",
+            "unit": "count:CostObservation:amount",
+            "bound_type": "BIGINT"
+          }
+        ],
+        "windows": [
+          {
+            "name": "previous",
+            "original_definition": "LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(18,2)",
+            "dataset": "revenue",
+            "bound_expression": "main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST)",
+            "bound_catalog": "system",
+            "bound_schema": "main"
+          },
+          {
+            "name": "rolling",
+            "original_definition": "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)",
+            "dataset": "revenue",
+            "bound_expression": "main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)",
+            "bound_catalog": "system",
+            "bound_schema": "main"
+          }
+        ],
+        "domain": "common User by row presence in both separately reduced sources",
+        "cohort_semantics": "TRUE atomic member sets; binary intersection, union and ordered difference within common",
+        "count_semantics": "COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort",
+        "input_scope": "entire_capture",
+        "window_semantics": "single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days",
+        "supported_aggregates": [
+          "SUM(mapped amount)",
+          "COUNT(mapped User or amount)",
+          "same-currency SUM components +/-"
+        ],
+        "refused": [
+          "raw fact-to-fact fan-out",
+          "AVG/COUNT(*) in declarations",
+          "cross-fact aggregate leaves",
+          "ratios or mixed measure units",
+          "input/date/product filtering",
+          "recursive cohorts or dependencies",
+          "mixed window fact grains",
+          "calendar filling or history/state inference",
+          "ordinary rendered SQL replay"
+        ],
+        "limits": {
+          "sources": 2,
+          "rows_per_source": 10000,
+          "physical_columns_per_source": 256,
+          "combined_canonical_bytes": 16777216,
+          "regular_metrics": 32,
+          "window_metrics": 16,
+          "name_ascii_bytes": 128,
+          "rule_bytes": 16384,
+          "total_rule_bytes": 131072,
+          "expression_depth": 32,
+          "expression_nodes": 1024,
+          "expanded_program_nodes": 32768,
+          "metric_dependency_depth": 16,
+          "cohort_nodes": 64,
+          "cohort_depth": 16,
+          "request_json_bytes": 16384,
+          "complete_json_bytes": 1048576,
+          "result_rows": 10000
+        },
+        "paging": false,
+        "truncated": false,
+        "peak_memory_bound": false,
+        "hash_set_normalized": false
+      },
+      "cases": [
+        {
+          "name": "all",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "BALANCE",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "cohort": {
+              "operation": "all"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd:1",
+            "content_sha256": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "BALANCE",
+                "income",
+                "expense",
+                "revenue_rows",
+                "revenue_values",
+                "cost_rows",
+                "cost_values"
+              ],
+              "cohort": {
+                "operation": "all"
+              }
+            },
+            "selected": [
+              "balance",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 3,
+                "name": "income",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "expense",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 5,
+                "name": "revenue_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:user_id"
+              },
+              {
+                "ordinal": 6,
+                "name": "revenue_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:amount"
+              },
+              {
+                "ordinal": 7,
+                "name": "cost_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:user_id"
+              },
+              {
+                "ordinal": 8,
+                "name": "cost_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:amount"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance, combined.income, combined.expense, combined.revenue_rows, combined.revenue_values, combined.cost_rows, combined.cost_values FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE CAST('t' AS BOOLEAN) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd:1",
+            "content_sha256": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "BALANCE",
+                "income",
+                "expense",
+                "revenue_rows",
+                "revenue_values",
+                "cost_rows",
+                "cost_values"
+              ],
+              "cohort": {
+                "operation": "all"
+              }
+            },
+            "selected": [
+              "balance",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 3,
+                "name": "income",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "expense",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 5,
+                "name": "revenue_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:user_id"
+              },
+              {
+                "ordinal": 6,
+                "name": "revenue_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:amount"
+              },
+              {
+                "ordinal": 7,
+                "name": "cost_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:user_id"
+              },
+              {
+                "ordinal": 8,
+                "name": "cost_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:amount"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "4",
+            "common_user_count": "4",
+            "selected_user_count": "4",
+            "rows": [
+              [
+                "A",
+                "0.99",
+                "1.01",
+                "0.02",
+                "1",
+                "1",
+                "1",
+                "1"
+              ],
+              [
+                "a",
+                "0.99",
+                "1.01",
+                "0.02",
+                "1",
+                "1",
+                "1",
+                "1"
+              ],
+              [
+                "a\u0000",
+                "0.99",
+                "1.01",
+                "0.02",
+                "1",
+                "1",
+                "1",
+                "1"
+              ],
+              [
+                "é",
+                "0.99",
+                "1.01",
+                "0.02",
+                "1",
+                "1",
+                "1",
+                "1"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "A",
+                "0.99",
+                "1.01",
+                "0.02",
+                "1",
+                "1",
+                "1",
+                "1"
+              ],
+              [
+                "a",
+                "0.99",
+                "1.01",
+                "0.02",
+                "1",
+                "1",
+                "1",
+                "1"
+              ],
+              [
+                "a\u0000",
+                "0.99",
+                "1.01",
+                "0.02",
+                "1",
+                "1",
+                "1",
+                "1"
+              ],
+              [
+                "é",
+                "0.99",
+                "1.01",
+                "0.02",
+                "1",
+                "1",
+                "1",
+                "1"
+              ]
+            ],
+            "common_user_count": "4",
+            "selected_user_count": "4"
+          }
+        },
+        {
+          "name": "empty-cohort",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "balance"
+            ],
+            "cohort": {
+              "operation": "predicate",
+              "predicate": "balance>999999"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd:1",
+            "content_sha256": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "predicate",
+                "predicate": "balance>999999"
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE (CAST((combined.balance > 999999.00) AS BOOLEAN) IS NOT DISTINCT FROM true) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd:1",
+            "content_sha256": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "predicate",
+                "predicate": "balance>999999"
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "0",
+            "common_user_count": "4",
+            "selected_user_count": "0",
+            "rows": []
+          },
+          "independent": {
+            "rows": [],
+            "common_user_count": "4",
+            "selected_user_count": "0"
+          }
+        },
+        {
+          "name": "windows/{\"mode\":\"all\"}",
+          "request": {
+            "input_scope": "entire_capture",
+            "windows": [
+              "PREVIOUS",
+              "rolling"
+            ],
+            "display": {
+              "mode": "all"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-windows-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd:1",
+            "content_sha256": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "all"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "4",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+            "operators": [
+              "frozen single-source User/date projection",
+              "whole capture window computation",
+              "display DATE filtering",
+              "raw identity sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-windows-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd:1",
+            "content_sha256": "9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "all"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "4",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "4",
+            "rows": [
+              [
+                "A",
+                "2026-01-01",
+                null,
+                "1.01"
+              ],
+              [
+                "a",
+                "2026-01-01",
+                null,
+                "1.01"
+              ],
+              [
+                "a\u0000",
+                "2026-01-01",
+                null,
+                "1.01"
+              ],
+              [
+                "é",
+                "2026-01-01",
+                null,
+                "1.01"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "A",
+                "2026-01-01",
+                null,
+                "1.01"
+              ],
+              [
+                "a",
+                "2026-01-01",
+                null,
+                "1.01"
+              ],
+              [
+                "a\u0000",
+                "2026-01-01",
+                null,
+                "1.01"
+              ],
+              [
+                "é",
+                "2026-01-01",
+                null,
+                "1.01"
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "setup": "wide",
+      "program": {
+        "schema_version": "ossie-fact-program-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1",
+        "content_sha256": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "project_api_version": "2.2.0",
+        "query_executed": false,
+        "counts_computed": false,
+        "mcp_registered": false,
+        "functions": [
+          "ossie_fact_users_json",
+          "ossie_fact_users_compile",
+          "ossie_fact_windows_json",
+          "ossie_fact_windows_compile",
+          "ossie_fact_program"
+        ],
+        "sources": [
+          {
+            "dataset": "revenue",
+            "concept": "RevenueObservation",
+            "user_concept": "User",
+            "target_identity_relationship": "id",
+            "source": "memory.main.revenue",
+            "currency": "USD",
+            "content_sha256": "ec91096742b5d354bb1396ace6b1d864ae1a0919aa10201f6b017373bf220add",
+            "captured_rows": "5",
+            "identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "user_field": "user_id",
+            "date_field": "ds",
+            "product_field": "",
+            "amount_field": "amount",
+            "fields": [
+              {
+                "name": "user_id",
+                "physical_column": "who",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "ds",
+                "physical_column": "day",
+                "bound_type": "DATE"
+              },
+              {
+                "name": "amount",
+                "physical_column": "value",
+                "bound_type": "DECIMAL(18,2)"
+              }
+            ]
+          },
+          {
+            "dataset": "cost",
+            "concept": "CostObservation",
+            "user_concept": "User",
+            "target_identity_relationship": "id",
+            "source": "memory.main.cost",
+            "currency": "USD",
+            "content_sha256": "a2903e3ce0d0bd2d19576e576725c04caf79c6228ee76baec9e09a484d839a1d",
+            "captured_rows": "5",
+            "identity_fields": [
+              "user_id",
+              "ds",
+              "product"
+            ],
+            "user_field": "user_id",
+            "date_field": "ds",
+            "product_field": "product",
+            "amount_field": "amount",
+            "fields": [
+              {
+                "name": "user_id",
+                "physical_column": "who",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "ds",
+                "physical_column": "day",
+                "bound_type": "DATE"
+              },
+              {
+                "name": "product",
+                "physical_column": "item",
+                "bound_type": "VARCHAR"
+              },
+              {
+                "name": "amount",
+                "physical_column": "value",
+                "bound_type": "DECIMAL(18,2)"
+              }
+            ]
+          }
+        ],
+        "metrics": [
+          {
+            "name": "balance",
+            "original_definition": "income-expense",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "income",
+            "original_definition": "SUM(revenue.amount)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "expense",
+            "original_definition": "SUM(cost.amount)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)"
+          },
+          {
+            "name": "revenue_rows",
+            "original_definition": "COUNT(revenue.user_id)",
+            "unit": "count:RevenueObservation:user_id",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "revenue_values",
+            "original_definition": "COUNT(revenue.amount)",
+            "unit": "count:RevenueObservation:amount",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "cost_rows",
+            "original_definition": "COUNT(cost.user_id)",
+            "unit": "count:CostObservation:user_id",
+            "bound_type": "BIGINT"
+          },
+          {
+            "name": "cost_values",
+            "original_definition": "COUNT(cost.amount)",
+            "unit": "count:CostObservation:amount",
+            "bound_type": "BIGINT"
+          }
+        ],
+        "windows": [
+          {
+            "name": "previous",
+            "original_definition": "LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(18,2)",
+            "dataset": "revenue",
+            "bound_expression": "main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST)",
+            "bound_catalog": "system",
+            "bound_schema": "main"
+          },
+          {
+            "name": "rolling",
+            "original_definition": "SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)",
+            "unit": "currency:USD:scale2",
+            "bound_type": "DECIMAL(38,2)",
+            "dataset": "revenue",
+            "bound_expression": "main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)",
+            "bound_catalog": "system",
+            "bound_schema": "main"
+          }
+        ],
+        "domain": "common User by row presence in both separately reduced sources",
+        "cohort_semantics": "TRUE atomic member sets; binary intersection, union and ordered difference within common",
+        "count_semantics": "COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort",
+        "input_scope": "entire_capture",
+        "window_semantics": "single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days",
+        "supported_aggregates": [
+          "SUM(mapped amount)",
+          "COUNT(mapped User or amount)",
+          "same-currency SUM components +/-"
+        ],
+        "refused": [
+          "raw fact-to-fact fan-out",
+          "AVG/COUNT(*) in declarations",
+          "cross-fact aggregate leaves",
+          "ratios or mixed measure units",
+          "input/date/product filtering",
+          "recursive cohorts or dependencies",
+          "mixed window fact grains",
+          "calendar filling or history/state inference",
+          "ordinary rendered SQL replay"
+        ],
+        "limits": {
+          "sources": 2,
+          "rows_per_source": 10000,
+          "physical_columns_per_source": 256,
+          "combined_canonical_bytes": 16777216,
+          "regular_metrics": 32,
+          "window_metrics": 16,
+          "name_ascii_bytes": 128,
+          "rule_bytes": 16384,
+          "total_rule_bytes": 131072,
+          "expression_depth": 32,
+          "expression_nodes": 1024,
+          "expanded_program_nodes": 32768,
+          "metric_dependency_depth": 16,
+          "cohort_nodes": 64,
+          "cohort_depth": 16,
+          "request_json_bytes": 16384,
+          "complete_json_bytes": 1048576,
+          "result_rows": 10000
+        },
+        "paging": false,
+        "truncated": false,
+        "peak_memory_bound": false,
+        "hash_set_normalized": false
+      },
+      "cases": [
+        {
+          "name": "all",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "BALANCE",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "cohort": {
+              "operation": "all"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1",
+            "content_sha256": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "BALANCE",
+                "income",
+                "expense",
+                "revenue_rows",
+                "revenue_values",
+                "cost_rows",
+                "cost_values"
+              ],
+              "cohort": {
+                "operation": "all"
+              }
+            },
+            "selected": [
+              "balance",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 3,
+                "name": "income",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "expense",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 5,
+                "name": "revenue_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:user_id"
+              },
+              {
+                "ordinal": 6,
+                "name": "revenue_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:amount"
+              },
+              {
+                "ordinal": 7,
+                "name": "cost_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:user_id"
+              },
+              {
+                "ordinal": 8,
+                "name": "cost_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:amount"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance, combined.income, combined.expense, combined.revenue_rows, combined.revenue_values, combined.cost_rows, combined.cost_values FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE CAST('t' AS BOOLEAN) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1",
+            "content_sha256": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "BALANCE",
+                "income",
+                "expense",
+                "revenue_rows",
+                "revenue_values",
+                "cost_rows",
+                "cost_values"
+              ],
+              "cohort": {
+                "operation": "all"
+              }
+            },
+            "selected": [
+              "balance",
+              "income",
+              "expense",
+              "revenue_rows",
+              "revenue_values",
+              "cost_rows",
+              "cost_values"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 3,
+                "name": "income",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "expense",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 5,
+                "name": "revenue_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:user_id"
+              },
+              {
+                "ordinal": 6,
+                "name": "revenue_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:RevenueObservation:amount"
+              },
+              {
+                "ordinal": 7,
+                "name": "cost_rows",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:user_id"
+              },
+              {
+                "ordinal": 8,
+                "name": "cost_values",
+                "bound_type": "BIGINT",
+                "encoding": "integer-text",
+                "unit": "count:CostObservation:amount"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "1",
+            "common_user_count": "1",
+            "selected_user_count": "1",
+            "rows": [
+              [
+                "D",
+                "4.95",
+                "5.05",
+                "0.10",
+                "5",
+                "5",
+                "5",
+                "5"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "D",
+                "4.95",
+                "5.05",
+                "0.10",
+                "5",
+                "5",
+                "5",
+                "5"
+              ]
+            ],
+            "common_user_count": "1",
+            "selected_user_count": "1"
+          }
+        },
+        {
+          "name": "empty-cohort",
+          "request": {
+            "domain": "common",
+            "input_scope": "entire_capture",
+            "metrics": [
+              "balance"
+            ],
+            "cohort": {
+              "operation": "predicate",
+              "predicate": "balance>999999"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-users-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1",
+            "content_sha256": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "predicate",
+                "predicate": "balance>999999"
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT combined.user_id, combined.balance FROM (SELECT \"system\".main.\"-\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \"system\".main.sum(revenue.\"value\") AS c0, \"system\".main.count(revenue.who) AS c2, \"system\".main.count(revenue.\"value\") AS c3 FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id, \"system\".main.sum(\"cost\".\"value\") AS c1, \"system\".main.count(\"cost\".who) AS c4, \"system\".main.count(\"cost\".\"value\") AS c5 FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE (CAST((combined.balance > 999999.00) AS BOOLEAN) IS NOT DISTINCT FROM true) ORDER BY combined.user_id ASC NULLS LAST",
+            "common_count_sql": "SELECT \"system\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \"cost\".who AS user_id FROM \"system\".main._ossie_snapshot_rows() AS \"cost\" GROUP BY \"cost\".who) AS f1 ON ((f0.user_id = f1.user_id))",
+            "operators": [
+              "separate source User aggregation",
+              "row-presence common domain",
+              "same-unit metric combination",
+              "TRUE cohort set filtering",
+              "independent common domain count",
+              "raw User sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-users-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1",
+            "content_sha256": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "domain": "common",
+              "input_scope": "entire_capture",
+              "metrics": [
+                "balance"
+              ],
+              "cohort": {
+                "operation": "predicate",
+                "predicate": "balance>999999"
+              }
+            },
+            "selected": [
+              "balance"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "balance",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC",
+            "domain": "common",
+            "domain_semantics": "row presence in both facts before cohort",
+            "cohort_semantics": "TRUE member sets; difference excludes RHS TRUE only",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "0",
+            "common_user_count": "1",
+            "selected_user_count": "0",
+            "rows": []
+          },
+          "independent": {
+            "rows": [],
+            "common_user_count": "1",
+            "selected_user_count": "0"
+          }
+        },
+        {
+          "name": "windows/{\"mode\":\"all\"}",
+          "request": {
+            "input_scope": "entire_capture",
+            "windows": [
+              "PREVIOUS",
+              "rolling"
+            ],
+            "display": {
+              "mode": "all"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-windows-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1",
+            "content_sha256": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "all"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "5",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+            "operators": [
+              "frozen single-source User/date projection",
+              "whole capture window computation",
+              "display DATE filtering",
+              "raw identity sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-windows-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1",
+            "content_sha256": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "all"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "5",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "5",
+            "rows": [
+              [
+                "D",
+                "5877642-06-25 (BC)",
+                null,
+                "1.01"
+              ],
+              [
+                "D",
+                "0001-01-01 (BC)",
+                "1.01",
+                "2.02"
+              ],
+              [
+                "D",
+                "2026-01-01",
+                "1.01",
+                "2.02"
+              ],
+              [
+                "D",
+                "10000-01-01",
+                "1.01",
+                "2.02"
+              ],
+              [
+                "D",
+                "5881580-07-10",
+                "1.01",
+                "2.02"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "D",
+                "5877642-06-25 (BC)",
+                null,
+                "1.01"
+              ],
+              [
+                "D",
+                "0001-01-01 (BC)",
+                "1.01",
+                "2.02"
+              ],
+              [
+                "D",
+                "2026-01-01",
+                "1.01",
+                "2.02"
+              ],
+              [
+                "D",
+                "10000-01-01",
+                "1.01",
+                "2.02"
+              ],
+              [
+                "D",
+                "5881580-07-10",
+                "1.01",
+                "2.02"
+              ]
+            ]
+          }
+        },
+        {
+          "name": "windows/{\"mode\":\"date_range\",\"start_date\":\"0001-01-01 (BC)\",\"end_date\":\"10000-01-01\"}",
+          "request": {
+            "input_scope": "entire_capture",
+            "windows": [
+              "PREVIOUS",
+              "rolling"
+            ],
+            "display": {
+              "mode": "date_range",
+              "start_date": "0001-01-01 (BC)",
+              "end_date": "10000-01-01"
+            }
+          },
+          "plan": {
+            "schema_version": "ossie-fact-windows-plan-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1",
+            "content_sha256": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "date_range",
+                "start_date": "0001-01-01 (BC)",
+                "end_date": "10000-01-01"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "5",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": false,
+            "members_computed": false,
+            "counts_computed": false,
+            "physical_plan": false,
+            "sql_replayable": false,
+            "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed WHERE (observed.ds BETWEEN CAST('0001-01-01 (BC)' AS \"DATE\") AND CAST('10000-01-01' AS \"DATE\")) ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+            "operators": [
+              "frozen single-source User/date projection",
+              "whole capture window computation",
+              "display DATE filtering",
+              "raw identity sorting",
+              "complete bounded encoding"
+            ]
+          },
+          "result": {
+            "schema_version": "ossie-fact-windows-result-v1",
+            "profile": "multi-fact-user-program-v1",
+            "snapshot_id": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1",
+            "content_sha256": "2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0",
+            "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+            "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+            "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+            "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+            "user_concept": "User",
+            "user_identity_relationship": "id",
+            "request": {
+              "input_scope": "entire_capture",
+              "windows": [
+                "PREVIOUS",
+                "rolling"
+              ],
+              "display": {
+                "mode": "date_range",
+                "start_date": "0001-01-01 (BC)",
+                "end_date": "10000-01-01"
+              }
+            },
+            "selected": [
+              "previous",
+              "rolling"
+            ],
+            "input_scope": "entire_capture",
+            "columns": [
+              {
+                "ordinal": 1,
+                "name": "user_id",
+                "bound_type": "VARCHAR",
+                "encoding": "string"
+              },
+              {
+                "ordinal": 2,
+                "name": "ds",
+                "bound_type": "DATE",
+                "encoding": "date-text"
+              },
+              {
+                "ordinal": 3,
+                "name": "previous",
+                "bound_type": "DECIMAL(18,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              },
+              {
+                "ordinal": 4,
+                "name": "rolling",
+                "bound_type": "DECIMAL(38,2)",
+                "encoding": "decimal-text",
+                "unit": "currency:USD:scale2"
+              }
+            ],
+            "paging": false,
+            "truncated": false,
+            "json_byte_limit": 1048576,
+            "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+            "dataset": "revenue",
+            "source_concept": "RevenueObservation",
+            "source_captured_rows": "5",
+            "source_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "output_identity_fields": [
+              "user_id",
+              "ds"
+            ],
+            "display_stage": "after whole capture window computation",
+            "executed": true,
+            "members_computed": true,
+            "counts_computed": true,
+            "row_count": "3",
+            "rows": [
+              [
+                "D",
+                "0001-01-01 (BC)",
+                "1.01",
+                "2.02"
+              ],
+              [
+                "D",
+                "2026-01-01",
+                "1.01",
+                "2.02"
+              ],
+              [
+                "D",
+                "10000-01-01",
+                "1.01",
+                "2.02"
+              ]
+            ]
+          },
+          "independent": {
+            "rows": [
+              [
+                "D",
+                "0001-01-01 (BC)",
+                "1.01",
+                "2.02"
+              ],
+              [
+                "D",
+                "2026-01-01",
+                "1.01",
+                "2.02"
+              ],
+              [
+                "D",
+                "10000-01-01",
+                "1.01",
+                "2.02"
+              ]
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

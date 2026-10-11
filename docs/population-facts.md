@@ -1,6 +1,6 @@
 # 两事实指标、人群集合与观察行窗口
 
-`multi-fact-user-program-v1` 面向同一User的两种独立事实粒度：User/date与User/date/product。先各自聚合到User，再组合金额和筛选人群，避免原始明细相连造成重复累计。原生加载与专用SQL接口已本地验收，MCP接入及无模型Agent验收仍待完成。示例采用合成的加性USD观察值，不代表GAAP或累计年内数值。
+`multi-fact-user-program-v1` 面向同一User的两种独立事实粒度：User/date与User/date/product。先各自聚合到User，再组合金额和筛选人群，避免原始明细相连造成重复累计。原生加载、专用SQL接口及独立MCP服务已本地验收，无模型Agent验收仍待完成。示例采用合成的加性USD观察值，不代表GAAP或累计年内数值。
 
 加载[完整示例](../test/fixtures/population-fact-program/bundle.json)前，先执行[来源表脚本](../test/fixtures/population-fact-program/rows.sql)。manifest引用固定core/ontology/mapping，program只指定两个dataset/concept/显式currency，以及core中的窗口指标名。User身份关系必须相同且映射对象/完整关联树一致；金额实际类型DECIMAL(18,2)，User和product非空原始VARCHAR，DATE非NULL且有限，完整源身份唯一。错误、重复、取消或任一来源捕获失败都不替换当前有效快照；源改变需显式重新加载。
 
@@ -43,6 +43,26 @@ SELECT * FROM ossie_fact_windows_json(
 每次bind捕获同一个不可变父，计算分母与成员使用该父的两个child。预编译查询跨重新加载和来源表删除继续使用旧快照；执行始终经过私有binary Engine，不受调用者nocase或默认降序影响。同名数据库宏不能替换内部系统聚合、计数、金额加减或窗口函数。每个独立RPC会重新绑定：发现、编译与执行跨调用不保证相同快照，应比较返回的snapshot/content/core/ontology/mapping/manifest六项身份。
 
 资源范围是两事实；每来源10000行/256物理列，完整身份预检和捕获包括未使用列；两份canonical合计16MiB，包含空表元数据。最多32个regular、16个窗口，声明名至多128字节ASCII；单规则16KiB、总规则128KiB、表达式32深度/1024节点、展开程序32768节点、指标依赖16层；人群64节点/16深度，完整UTF8请求16KiB。每响应最多10000行、完整内层JSON1MiB，发现与计划同样受1MiB限制，元数据/请求/转义内容均计入。无分页、无截断；超限以统一population错误契约拒绝，不返回部分JSON。canonical/JSON上限不是峰值内存或MCP外层wire字节保证。
+
+独立[MCP示例](../examples/fact_server.sql)只公开`population_fact_users`、
+`population_fact_users_compile`、`population_fact_windows`、
+`population_fact_windows_compile`四工具和`ossie://facts/program`、
+`ossie://facts/surface`两资源。运营者先创建来源并加载bundle；使用包含新函数的
+本地产物时，将示例的community安装/LOAD改为该产物的LOAD，再在项目根目录
+启动标准DuckDB1.5.6客户端。此本地验收不代表community已发布该能力。
+
+客户端先读取program和实际surface，再调用工具。四工具唯一必填参数都是
+`request_json`字符串，内容与上文SQL请求相同。固定duckdb_mcp上游实际忽略
+外层未知参数且可能转换非字符串；`limit`或外层日期不会限制结果，客户端必须
+把范围放在受native严格校验的内层请求中。通用查询、导入/reload和其他profile
+工具未在此服务注册。program的`mcp_registered=false`描述native发现的边界；
+实际tools/list和surface才证明该服务的暴露。
+
+[结果校验器](../scripts/fact_result.ts)保留精确文本数值与全有限DATE，核对请求、
+规范选择、单位、来源粒度、六项快照绑定及完整键集合；计划不接受计算标记或
+伪造成员。外层8MiB是本地decoder保护，不是服务器wire保证。schema或hash
+一致仍不能证明金额/成员真值，实际[MCP验收](research/ossie-req-001/p1-fact-mcp-controls/review.md)
+另以独立BigInt及完整身份oracle核对，包括10000行与先窗口后展示。
 
 金额同币种/scale才可组合；只支持SUM(mapped amount)、COUNT(mapped User或amount)、同单位SUM组件加减。AVG、声明COUNT(*)、嵌套/跨事实聚合、聚合修饰、比率、混合单位、原始明细fan-out、递归程序、跨来源窗口、未声明SQL、日历补齐/状态/历史推断均拒绝。受限输入与表达式预算内，Prepare证明类型，实际精度仍应对照执行证据；超范围金额必须在加载实际类型/数据转换阶段拒绝，不把未构造的溢出场景称已验收。
 

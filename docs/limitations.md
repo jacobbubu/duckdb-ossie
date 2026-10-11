@@ -21,7 +21,8 @@ The opt-in [two-fact profile](population-facts.md) has a separate contract: inde
 reduce User/date and User/date/product facts before combining same-unit SUM measures,
 apply bounded TRUE cohorts, or compute explicit User/date observation windows before
 display filtering. Its dedicated SQL query/compile/discovery functions do not relax the
-generic core refusals below. MCP/Agent integration for this profile is still pending.
+generic core refusals below. Its independent four-tool MCP surface is locally verified;
+Agent integration and final P1 acceptance are still pending.
 
 ## Loader string arrays
 
