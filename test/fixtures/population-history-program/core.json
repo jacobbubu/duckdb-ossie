@@ -1,0 +1,123 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "history_observation_demo",
+  "description": "Synthetic finite-date temporal membership; independent captured observations and history records.",
+  "datasets": [
+    {
+      "name": "observations",
+      "source": "memory.main.observations",
+      "primary_key": [
+        "user_id",
+        "ds",
+        "product"
+      ],
+      "fields": [
+        {
+          "name": "user_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "user_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ds",
+          "datatype": "Date",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "ds"
+              }
+            ]
+          }
+        },
+        {
+          "name": "product",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "product"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "history",
+      "source": "memory.main.history",
+      "primary_key": [
+        "record_id"
+      ],
+      "fields": [
+        {
+          "name": "record_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "record_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "user_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "team_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "team_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "starts",
+          "datatype": "Date",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "starts"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ends",
+          "datatype": "Date",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "ends"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

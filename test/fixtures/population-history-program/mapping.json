@@ -1,0 +1,167 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "history_observation_mapping",
+  "ontology_ref": {
+    "name": "history_observation_ontology"
+  },
+  "semantic_model_ref": {
+    "name": "history_observation_demo"
+  },
+  "concept_mappings": [
+    {
+      "concept": "DailyObservation",
+      "object_mappings": [
+        {
+          "concept": "DailyObservation",
+          "referent_mappings": [
+            {
+              "relationship": "user",
+              "referent_mappings": [
+                {
+                  "relationship": "id",
+                  "expression": "observations.user_id"
+                }
+              ]
+            },
+            {
+              "relationship": "date",
+              "expression": "observations.ds"
+            },
+            {
+              "relationship": "product",
+              "expression": "observations.product"
+            }
+          ]
+        }
+      ],
+      "link_mappings": [
+        {
+          "object_mapping": {
+            "concept": "DailyObservation",
+            "referent_mappings": [
+              {
+                "relationship": "user",
+                "referent_mappings": [
+                  {
+                    "relationship": "id",
+                    "expression": "observations.user_id"
+                  }
+                ]
+              },
+              {
+                "relationship": "date",
+                "expression": "observations.ds"
+              },
+              {
+                "relationship": "product",
+                "expression": "observations.product"
+              }
+            ]
+          },
+          "children": [
+            {
+              "relationship": "user",
+              "object_mapping": {
+                "concept": "User",
+                "referent_mappings": [
+                  {
+                    "relationship": "id",
+                    "expression": "observations.user_id"
+                  }
+                ]
+              }
+            },
+            {
+              "relationship": "date",
+              "object_mapping": {
+                "concept": "Date",
+                "expression": "observations.ds"
+              }
+            },
+            {
+              "relationship": "product",
+              "object_mapping": {
+                "concept": "String",
+                "expression": "observations.product"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "MembershipRecord",
+      "object_mappings": [
+        {
+          "concept": "MembershipRecord",
+          "referent_mappings": [
+            {
+              "relationship": "record_id",
+              "expression": "history.record_id"
+            }
+          ]
+        }
+      ],
+      "link_mappings": [
+        {
+          "object_mapping": {
+            "concept": "MembershipRecord",
+            "referent_mappings": [
+              {
+                "relationship": "record_id",
+                "expression": "history.record_id"
+              }
+            ]
+          },
+          "children": [
+            {
+              "relationship": "record_id",
+              "object_mapping": {
+                "concept": "String",
+                "expression": "history.record_id"
+              }
+            },
+            {
+              "relationship": "user",
+              "object_mapping": {
+                "concept": "User",
+                "referent_mappings": [
+                  {
+                    "relationship": "id",
+                    "expression": "history.user_id"
+                  }
+                ]
+              }
+            },
+            {
+              "relationship": "team",
+              "object_mapping": {
+                "concept": "Team",
+                "referent_mappings": [
+                  {
+                    "relationship": "id",
+                    "expression": "history.team_id"
+                  }
+                ]
+              }
+            },
+            {
+              "relationship": "starts",
+              "object_mapping": {
+                "concept": "Date",
+                "expression": "history.starts"
+              }
+            },
+            {
+              "relationship": "ends",
+              "object_mapping": {
+                "concept": "Date",
+                "expression": "history.ends"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

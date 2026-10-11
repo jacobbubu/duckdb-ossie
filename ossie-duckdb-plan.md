@@ -1800,3 +1800,13 @@ native/SQL/旧接口回归。新CLI验证命令加入CI但未远端执行。错�
 类型辅助错误的首轮日志/原件保留；原业务政策和预算不变。goal已active，原blocked
 控件问题解除。下一必需为历史typed双源/全批冲突/有限有效期及所有接口，新增代码
 Linux/tidy、统一五项P1验收与本地提交隐私检查仍必需，无模型/推送/合并/发布。
+
+历史承载恢复checkpoint（2026-10-12，a684900干净）：状态全接口工作包属progress。
+复用单一只读Advisor核对历史 typed 双源/profile/索引，选择独立
+historical-observation-relation-v1；观察身份保留(User,date,product)，历史record_id
+只是来源见证，不进入最终Observation→Team完整link键。project program明确有限
+history_at_observation算子，不冒充上游derived_by表达式；拒绝未执行规则/约束与
+同关系另一个直接link映射。历史全有限DATE域，不套0001..9999/366日状态限制。
+两源各≤10000行/256列，共同≤16MiB，源行数与index段数/输出link数分开。先固定
+schema与映射承载再native，原件/索引分离、全历史冲突先检查、无无限中间bag。
+下一为固定schema核对/明确角色name映射后native/完整接口；无模型/推送。

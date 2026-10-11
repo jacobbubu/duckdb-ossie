@@ -1,0 +1,177 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "history_observation_ontology",
+  "description": "Temporal operator is declared in project manifest program; no ontology derivation expression is claimed executed.",
+  "ontology": [
+    {
+      "concept": "User",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne",
+          "verbalizes": [
+            "{id} relates to {String}"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "Team",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne",
+          "verbalizes": [
+            "{id} relates to {String}"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "DailyObservation",
+      "type": "EntityType",
+      "identify_by": [
+        "user",
+        "date",
+        "product"
+      ],
+      "relationships": [
+        {
+          "name": "user",
+          "roles": [
+            {
+              "concept": "User"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{user} relates to {User}"
+          ]
+        },
+        {
+          "name": "date",
+          "roles": [
+            {
+              "concept": "Date"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{date} relates to {Date}"
+          ]
+        },
+        {
+          "name": "product",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{product} relates to {String}"
+          ]
+        },
+        {
+          "name": "team_at_observation",
+          "roles": [
+            {
+              "concept": "Team"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{team_at_observation} relates to {Team}"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "MembershipRecord",
+      "type": "EntityType",
+      "identify_by": [
+        "record_id"
+      ],
+      "relationships": [
+        {
+          "name": "record_id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne",
+          "verbalizes": [
+            "{record_id} relates to {String}"
+          ]
+        },
+        {
+          "name": "user",
+          "roles": [
+            {
+              "concept": "User"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{user} relates to {User}"
+          ]
+        },
+        {
+          "name": "team",
+          "roles": [
+            {
+              "concept": "Team"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{team} relates to {Team}"
+          ]
+        },
+        {
+          "name": "starts",
+          "roles": [
+            {
+              "concept": "Date"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{starts} relates to {Date}"
+          ]
+        },
+        {
+          "name": "ends",
+          "roles": [
+            {
+              "concept": "Date"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{ends} relates to {Date}"
+          ]
+        }
+      ]
+    }
+  ]
+}

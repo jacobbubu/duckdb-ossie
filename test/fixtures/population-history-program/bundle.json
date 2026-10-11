@@ -1,0 +1,30 @@
+{
+  "profile": "historical-observation-relation-v1",
+  "core": {
+    "path": "core.json",
+    "name": "history_observation_demo",
+    "sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4"
+  },
+  "ontology": {
+    "path": "ontology.json",
+    "name": "history_observation_ontology",
+    "sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa"
+  },
+  "mapping": {
+    "path": "mapping.json",
+    "name": "history_observation_mapping",
+    "sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36"
+  },
+  "program": {
+    "operator": "history_at_observation",
+    "observation": {
+      "dataset": "observations",
+      "concept": "DailyObservation"
+    },
+    "history": {
+      "dataset": "history",
+      "concept": "MembershipRecord"
+    },
+    "relationship": "team_at_observation"
+  }
+}
