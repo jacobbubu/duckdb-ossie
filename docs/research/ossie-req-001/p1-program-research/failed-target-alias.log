@@ -1,0 +1,36 @@
+90 |           Array.isArray(value) ? LIST(VARCHAR) : VARCHAR,
+91 |         ),
+92 |       );
+93 |       return result.getRows().map((row) => row.map(cell));
+94 |     } catch (error) {
+95 |       throw new Error(
+                     ^
+error: artifact query failed (SELECT count(*) FROM (SELECT user_id,ds,product,user_id target FROM observations WHERE classification_value>=10 UNION SELECT user_id,ds,product,user_id FROM observations WHERE clas): Error: Failed to extract statements: Parser Error: syntax error at or near "target"
+
+LINE 1: SELECT count(*) FROM (SELECT user_id,ds,product,user_id target FROM observations WHERE classification_value>=10...
+                                                                ^
+      at rows (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/artifact_helpers.ts:95:17)
+      at async one (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/artifact_helpers.ts:102:31)
+      at async researchP1 (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/research_p1_program.ts:83:32)
+
+164 |         return new DuckDBPreparedStatement_1.DuckDBPreparedStatement(await node_bindings_1.default.prepare(this.connection, sql));
+165 |     }
+166 |     async extractStatements(sql) {
+167 |         const { extracted_statements, statement_count } = await node_bindings_1.default.extract_statements(this.connection, sql);
+168 |         if (statement_count === 0) {
+169 |             throw new Error(`Failed to extract statements: ${node_bindings_1.default.extract_statements_error(extracted_statements)}`);
+                            ^
+error: Failed to extract statements: Parser Error: syntax error at or near "target"
+
+LINE 1: SELECT count(*) FROM (SELECT user_id,ds,product,user_id target FROM observations WHERE classification_value>=10...
+                                                                ^
+      at extractStatements (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/node_modules/@duckdb/node-api/lib/DuckDBConnection.js:169:23)
+      at async runUntilLast (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/node_modules/@duckdb/node-api/lib/DuckDBConnection.js:174:48)
+      at async run (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/node_modules/@duckdb/node-api/lib/DuckDBConnection.js:51:41)
+      at async runAndRead (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/node_modules/@duckdb/node-api/lib/DuckDBConnection.js:66:71)
+      at async runAndReadAll (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/node_modules/@duckdb/node-api/lib/DuckDBConnection.js:69:35)
+      at async rows (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/artifact_helpers.ts:84:44)
+      at async one (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/artifact_helpers.ts:102:31)
+      at async researchP1 (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/research_p1_program.ts:83:32)
+
+Bun v1.3.11 (macOS arm64)

@@ -42,6 +42,13 @@ effective backend/effort/usage/billing未知。统计误读JSON文件名和一�
 
 ## 范围与授权
 
+当前P1研究更新：[剩余能力候选契约](research/ossie-req-001/p1-program-research/research.md)
+及[实际八检查报告](research/ossie-req-001/p1-program-research/oracle.json)完成固定规范、
+typed角色关系、总NULL约束、不同粒度fan-out和观察行窗口对照。当前profile三次
+隔离拒绝且保留snapshot，schema/AST/普通SQL不冒充插件支持。选择独立有限
+RelationProgram作为下一实施切片，保留旧三个profile；混合粒度/窗口及全接口仍需
+实现。原始失败和首版报告保留，完整P1仍active，业务状态/历史口径待答，无模型/推送。
+
 ### 完整P1 goal与每日SQL实施 checkpoint（2026-10-11）
 
 用户启动完整P1本地goal，明确授权研究/实现/验证/本地提交，取代之前暂不实现；
@@ -86,6 +93,17 @@ Advisor只读反证，Lead负责实施与独立控制。验证来源表删除/�
 不算成员，拒绝引用plan充当答案。原始事件/出站body/实际RPC顺序完整封存，重放
 逐事件重新运行shared loop/解码/引用/范围追溯并拒绝失败或篡改，不启动MCP或模型。
 复用Advisor只读反证，Lead实施。真实模型/配置读取/推送不授权，其他P1矩阵不缩减。
+
+### P1剩余能力承载研究 checkpoint（2026-10-11）
+
+恢复bc330d5，干净worktree；上一轮actual模拟/重放/提交为progress。重新核对原
+需求第5节、固定ontology/表达式规范及当前Strict/单Bundle结构：derived_by角色
+绑定不能因DuckDB parser接受便推断本体语义，requires不能改为过滤隐藏违规，
+窗口存在规范入口但当前population明确拒绝。比较直接放宽旧profile、新RelationProgram
+与通用graph引擎；复用只读Advisor，Lead实施研究。先以固定规范最近的关系调用
+语法、显式NULL处理约束、非递归DAG及双事实各自聚合/observed-row窗口建立独立
+小数据计算和现插件拒绝基线，形成有限新profile方案，不宣称schema/parser/普通SQL
+等于插件支持。状态/半开历史关系业务决策仍待答；其他P1范围不减少，无模型/推送。
 
 ### P1每日支持式无模型演练完成（2026-10-11）
 

@@ -1,0 +1,18 @@
+{
+  "profile": "daily-observation-population-v1",
+  "core": {
+    "path": "window-only-core.json",
+    "name": "daily_observation_demo",
+    "sha256": "519e7f0846c9eb24b0a568f92b394f4fda57143a30afa1d50ecded5c4344223a"
+  },
+  "ontology": {
+    "path": "../../../../test/fixtures/population-observation/ontology.json",
+    "name": "daily_observation_ontology",
+    "sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e"
+  },
+  "mapping": {
+    "path": "../../../../test/fixtures/population-observation/mapping.json",
+    "name": "daily_observation_mapping",
+    "sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228"
+  }
+}

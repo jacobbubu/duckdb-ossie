@@ -1,0 +1,39 @@
+{
+  "scope": "research only; no new plugin support",
+  "passed": true,
+  "checks": 8,
+  "existing_profile_refusals": 3,
+  "artifact_sha256": "86fb826ba49ae9ec4318231ce9ac9c0c614066712d3d43d63a26c64784335b4b",
+  "quality": {
+    "typecheck": "passed",
+    "format": "passed",
+    "architecture": "passed",
+    "tracked_diff_check": "passed"
+  },
+  "evidence_sha256": {
+    "docs/research/ossie-req-001/p1-program-research/architecture.log": "2156cc40e9017725962fdb6a1a8fc1c560086aeabe7dffd152cc61e0787396d2",
+    "docs/research/ossie-req-001/p1-program-research/candidate-current-profile-bundle.json": "b5ad50678bd64ca3c18d46864c9c7243c7540819446f55f6cf6e7ac6c64c6d8a",
+    "docs/research/ossie-req-001/p1-program-research/candidate-ontology.json": "978f5fdc70c370fa04a10d0e61fdee53113559f6121c0243cc1fb3ff81f490ab",
+    "docs/research/ossie-req-001/p1-program-research/cost.csv": "2550ef2ab915276eb64673fe8d86a57e34983c56a4186c2b00b9fff384b33f08",
+    "docs/research/ossie-req-001/p1-program-research/failed-binary-collation.log": "a58b4a9b36669cc40e6cda4104471d66efa4f0d5d6dbe8a2500427dc00de330f",
+    "docs/research/ossie-req-001/p1-program-research/failed-cost-alias.log": "edc2fd4a238434036480835e4753ab59cfaf4ce254e28cb45721f0c1b0f48b1c",
+    "docs/research/ossie-req-001/p1-program-research/failed-target-alias.log": "203550b5d287d1b8fc45c011f665754d64be78ae440d95d98482d49ff6580fd2",
+    "docs/research/ossie-req-001/p1-program-research/failed-window-error-expectation.log": "e9308508aabe8aade32fb2de56b98d8fd72cf058fbf523f65c8323f81684ec17",
+    "docs/research/ossie-req-001/p1-program-research/first-seven-check-oracle.json": "f4ace6979acdf270023d28f9964a9e07c9d202875fb1e46eeecf87eb62d889a5",
+    "docs/research/ossie-req-001/p1-program-research/first-seven-check-run.log": "c487cbdca537f252eab8c81ea5c3e7a63e63478c6bad33af9c8e7cbfa48a66b7",
+    "docs/research/ossie-req-001/p1-program-research/format.log": "89b1264c8c3a787cd3a2b4de12aef0c722fff2f133072cc3b44269c35cd0c21c",
+    "docs/research/ossie-req-001/p1-program-research/oracle.json": "1450061b7aeb189483c51aad86674c8e83f47568b1fe907500986c4aeb82ca0a",
+    "docs/research/ossie-req-001/p1-program-research/relationship-only-bundle.json": "88fb0fe6300bf879c3c8c0ef1fe67478b3da1b6f1a0c78fa35cf3b3b7062569e",
+    "docs/research/ossie-req-001/p1-program-research/relationship-only-ontology.json": "8da6a5ff4f912bc99f99b79e7590d1f6137848e48f00f68aa415fd9365096179",
+    "docs/research/ossie-req-001/p1-program-research/research.md": "f00572d8d362111d23207500624b1cca65add827b2c98fc4c85ac709c331772c",
+    "docs/research/ossie-req-001/p1-program-research/revenue.csv": "1bf036eb1c4975ed01225576541adab539159b2cf0096a9e48aefee678a9ccee",
+    "docs/research/ossie-req-001/p1-program-research/run.log": "bf07de0468215097bfea6c8e3dc60fa94fcb16881c97c9020b4f71a432a3de40",
+    "docs/research/ossie-req-001/p1-program-research/typecheck.log": "4e8da542ccbffd70e1bacfda01f640a7a15c66d87fc2b7d4f58af694e973c17c",
+    "docs/research/ossie-req-001/p1-program-research/window-only-bundle.json": "01a24a96d11f98b956a9c9fe4e1860385f49872366e21caa8824d53ecd2006c7",
+    "docs/research/ossie-req-001/p1-program-research/window-only-core.json": "519e7f0846c9eb24b0a568f92b394f4fda57143a30afa1d50ecded5c4344223a",
+    "scripts/research_p1_program.ts": "a112fe8305715268f3b0dccd209beae110e446f9c3d789f6acef997d1a73b409"
+  },
+  "real_model_calls": 0,
+  "pushed": false,
+  "remaining": "All five original P1 categories remain required; daily slice completed separately; relation/multifact/window plugin implementation and state/history business decisions remain"
+}

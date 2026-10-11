@@ -1,0 +1,718 @@
+{
+  "passed": true,
+  "scope": "finite P1 design research only, no new plugin support",
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "86fb826ba49ae9ec4318231ce9ac9c0c614066712d3d43d63a26c64784335b4b",
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "checks": [
+    "typed observation-to-User full links, two-level dependency and set duplicate derivation oracle",
+    "same User across date/product preserves root identities; FALSE/NULL missing links do not become null targets",
+    "requires full root population violation is hidden by qualification WHERE; explicit NULL guard is total, unguarded comparison has UNKNOWN",
+    "fixed schema accepts declared relationships/requires; current plugin rejects; parser acceptance separately recorded",
+    "separate User/date revenue and User/date/product cost aggregate to common User before combine; raw join inflates375 to525, common-domain D/E absence and NULL retained",
+    "cohort intersection/union/exclusion independent full User IDs plus SQL counts",
+    "same raw User across January/February: LAG and two observed-row SUM independent cents/ordering/NULL oracle; rows are not calendar days"
+  ],
+  "refusals": [
+    {
+      "label": "schema-accepted ontology candidate rejected by existing profile; old snapshot retained",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "concept",
+        "stage": "capability",
+        "reason": "unsupported nonempty requires",
+        "missing_capability": "unsupported nonempty requires",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=concept stage=capability reason=unsupported nonempty requires missing_capability=bounded population profile"
+      }
+    }
+  ],
+  "candidate_schema": {
+    "accepted": true,
+    "errors": []
+  },
+  "relationshipResults": [
+    {
+      "threshold": 10,
+      "links": [
+        [
+          "A",
+          "2026-02-01",
+          "X",
+          "A"
+        ],
+        [
+          "A",
+          "2026-02-01",
+          "Y",
+          "A"
+        ],
+        [
+          "B",
+          "2026-01-31",
+          "X",
+          "B"
+        ],
+        [
+          "B",
+          "2026-02-01",
+          "X",
+          "B"
+        ],
+        [
+          "B",
+          "2026-02-01",
+          "Y",
+          "B"
+        ],
+        [
+          "C",
+          "2026-02-01",
+          "X",
+          "C"
+        ],
+        [
+          "E",
+          "2026-01-31",
+          "X",
+          "E"
+        ],
+        [
+          "E",
+          "2026-02-01",
+          "Y",
+          "E"
+        ],
+        [
+          "F",
+          "2026-01-31",
+          "X",
+          "F"
+        ],
+        [
+          "F",
+          "2026-02-01",
+          "X",
+          "F"
+        ],
+        [
+          "G",
+          "2026-01-31",
+          "X",
+          "G"
+        ],
+        [
+          "H",
+          "2026-01-31",
+          "X",
+          "H"
+        ],
+        [
+          "H",
+          "2026-02-01",
+          "X",
+          "H"
+        ],
+        [
+          "J",
+          "2026-02-03",
+          "X",
+          "J"
+        ],
+        [
+          "K",
+          "2026-01-31",
+          "X",
+          "K"
+        ],
+        [
+          "K",
+          "2026-01-31",
+          "Y",
+          "K"
+        ],
+        [
+          "K",
+          "2026-02-01",
+          "X",
+          "K"
+        ],
+        [
+          "K",
+          "2026-02-01",
+          "Y",
+          "K"
+        ]
+      ]
+    },
+    {
+      "threshold": 20,
+      "links": [
+        [
+          "B",
+          "2026-01-31",
+          "X",
+          "B"
+        ],
+        [
+          "B",
+          "2026-02-01",
+          "X",
+          "B"
+        ],
+        [
+          "B",
+          "2026-02-01",
+          "Y",
+          "B"
+        ],
+        [
+          "K",
+          "2026-01-31",
+          "X",
+          "K"
+        ],
+        [
+          "K",
+          "2026-01-31",
+          "Y",
+          "K"
+        ],
+        [
+          "K",
+          "2026-02-01",
+          "X",
+          "K"
+        ],
+        [
+          "K",
+          "2026-02-01",
+          "Y",
+          "K"
+        ]
+      ]
+    }
+  ],
+  "parser_only": [
+    {
+      "expression": "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)",
+      "tree": {
+        "error": false,
+        "statements": [
+          {
+            "node": {
+              "type": "SELECT_NODE",
+              "modifiers": [],
+              "cte_map": {
+                "map": []
+              },
+              "select_list": [
+                {
+                  "class": "CONJUNCTION",
+                  "type": "CONJUNCTION_AND",
+                  "alias": "",
+                  "query_location": 51,
+                  "children": [
+                    {
+                      "class": "COMPARISON",
+                      "type": "COMPARE_GREATERTHANOREQUALTO",
+                      "alias": "",
+                      "query_location": 45,
+                      "left": {
+                        "class": "COLUMN_REF",
+                        "type": "COLUMN_REF",
+                        "alias": "",
+                        "query_location": 7,
+                        "column_names": [
+                          "DailyObservation",
+                          "classification_value"
+                        ]
+                      },
+                      "right": {
+                        "class": "CONSTANT",
+                        "type": "VALUE_CONSTANT",
+                        "alias": "",
+                        "query_location": 48,
+                        "value": {
+                          "type": {
+                            "id": "INTEGER",
+                            "type_info": null
+                          },
+                          "is_null": false,
+                          "value": 10
+                        }
+                      }
+                    },
+                    {
+                      "class": "FUNCTION",
+                      "type": "FUNCTION",
+                      "alias": "",
+                      "query_location": 55,
+                      "function_name": "user",
+                      "schema": "DailyObservation",
+                      "children": [
+                        {
+                          "class": "COLUMN_REF",
+                          "type": "COLUMN_REF",
+                          "alias": "",
+                          "query_location": 77,
+                          "column_names": [
+                            "User"
+                          ]
+                        }
+                      ],
+                      "filter": null,
+                      "order_bys": {
+                        "type": "ORDER_MODIFIER",
+                        "orders": []
+                      },
+                      "distinct": false,
+                      "is_operator": false,
+                      "export_state": false,
+                      "catalog": ""
+                    }
+                  ]
+                }
+              ],
+              "from_table": {
+                "type": "EMPTY",
+                "alias": "",
+                "sample": null,
+                "query_location": 18446744073709552000
+              },
+              "where_clause": null,
+              "group_expressions": [],
+              "group_sets": [],
+              "aggregate_handling": "STANDARD_HANDLING",
+              "having": null,
+              "sample": null,
+              "qualify": null
+            },
+            "named_param_map": []
+          }
+        ]
+      }
+    },
+    {
+      "expression": "DailyObservation.qualified_user(User)",
+      "tree": {
+        "error": false,
+        "statements": [
+          {
+            "node": {
+              "type": "SELECT_NODE",
+              "modifiers": [],
+              "cte_map": {
+                "map": []
+              },
+              "select_list": [
+                {
+                  "class": "FUNCTION",
+                  "type": "FUNCTION",
+                  "alias": "",
+                  "query_location": 7,
+                  "function_name": "qualified_user",
+                  "schema": "DailyObservation",
+                  "children": [
+                    {
+                      "class": "COLUMN_REF",
+                      "type": "COLUMN_REF",
+                      "alias": "",
+                      "query_location": 39,
+                      "column_names": [
+                        "User"
+                      ]
+                    }
+                  ],
+                  "filter": null,
+                  "order_bys": {
+                    "type": "ORDER_MODIFIER",
+                    "orders": []
+                  },
+                  "distinct": false,
+                  "is_operator": false,
+                  "export_state": false,
+                  "catalog": ""
+                }
+              ],
+              "from_table": {
+                "type": "EMPTY",
+                "alias": "",
+                "sample": null,
+                "query_location": 18446744073709552000
+              },
+              "where_clause": null,
+              "group_expressions": [],
+              "group_sets": [],
+              "aggregate_handling": "STANDARD_HANDLING",
+              "having": null,
+              "sample": null,
+              "qualify": null
+            },
+            "named_param_map": []
+          }
+        ]
+      }
+    },
+    {
+      "expression": "LAG(revenue_usd,1,NULL) OVER (PARTITION BY user_id ORDER BY ds)",
+      "tree": {
+        "error": false,
+        "statements": [
+          {
+            "node": {
+              "type": "SELECT_NODE",
+              "modifiers": [],
+              "cte_map": {
+                "map": []
+              },
+              "select_list": [
+                {
+                  "class": "WINDOW",
+                  "type": "WINDOW_LAG",
+                  "alias": "",
+                  "query_location": 7,
+                  "function_name": "lag",
+                  "schema": "",
+                  "catalog": "",
+                  "children": [
+                    {
+                      "class": "COLUMN_REF",
+                      "type": "COLUMN_REF",
+                      "alias": "",
+                      "query_location": 11,
+                      "column_names": [
+                        "revenue_usd"
+                      ]
+                    }
+                  ],
+                  "partitions": [
+                    {
+                      "class": "COLUMN_REF",
+                      "type": "COLUMN_REF",
+                      "alias": "",
+                      "query_location": 50,
+                      "column_names": [
+                        "user_id"
+                      ]
+                    }
+                  ],
+                  "orders": [
+                    {
+                      "type": "ORDER_DEFAULT",
+                      "null_order": "ORDER_DEFAULT",
+                      "expression": {
+                        "class": "COLUMN_REF",
+                        "type": "COLUMN_REF",
+                        "alias": "",
+                        "query_location": 67,
+                        "column_names": [
+                          "ds"
+                        ]
+                      }
+                    }
+                  ],
+                  "start": "UNBOUNDED_PRECEDING",
+                  "end": "CURRENT_ROW_RANGE",
+                  "start_expr": null,
+                  "end_expr": null,
+                  "offset_expr": {
+                    "class": "CONSTANT",
+                    "type": "VALUE_CONSTANT",
+                    "alias": "",
+                    "query_location": 23,
+                    "value": {
+                      "type": {
+                        "id": "INTEGER",
+                        "type_info": null
+                      },
+                      "is_null": false,
+                      "value": 1
+                    }
+                  },
+                  "default_expr": {
+                    "class": "CONSTANT",
+                    "type": "VALUE_CONSTANT",
+                    "alias": "",
+                    "query_location": 25,
+                    "value": {
+                      "type": {
+                        "id": "NULL",
+                        "type_info": null
+                      },
+                      "is_null": true
+                    }
+                  },
+                  "ignore_nulls": false,
+                  "filter_expr": null,
+                  "exclude_clause": "NO_OTHER",
+                  "distinct": false,
+                  "arg_orders": []
+                }
+              ],
+              "from_table": {
+                "type": "EMPTY",
+                "alias": "",
+                "sample": null,
+                "query_location": 18446744073709552000
+              },
+              "where_clause": null,
+              "group_expressions": [],
+              "group_sets": [],
+              "aggregate_handling": "STANDARD_HANDLING",
+              "having": null,
+              "sample": null,
+              "qualify": null
+            },
+            "named_param_map": []
+          }
+        ]
+      }
+    },
+    {
+      "expression": "SUM(revenue_usd) OVER (PARTITION BY user_id ORDER BY ds ROWS BETWEEN 1 PRECEDING AND 0 FOLLOWING)",
+      "tree": {
+        "error": false,
+        "statements": [
+          {
+            "node": {
+              "type": "SELECT_NODE",
+              "modifiers": [],
+              "cte_map": {
+                "map": []
+              },
+              "select_list": [
+                {
+                  "class": "WINDOW",
+                  "type": "WINDOW_AGGREGATE",
+                  "alias": "",
+                  "query_location": 7,
+                  "function_name": "sum",
+                  "schema": "",
+                  "catalog": "",
+                  "children": [
+                    {
+                      "class": "COLUMN_REF",
+                      "type": "COLUMN_REF",
+                      "alias": "",
+                      "query_location": 11,
+                      "column_names": [
+                        "revenue_usd"
+                      ]
+                    }
+                  ],
+                  "partitions": [
+                    {
+                      "class": "COLUMN_REF",
+                      "type": "COLUMN_REF",
+                      "alias": "",
+                      "query_location": 43,
+                      "column_names": [
+                        "user_id"
+                      ]
+                    }
+                  ],
+                  "orders": [
+                    {
+                      "type": "ORDER_DEFAULT",
+                      "null_order": "ORDER_DEFAULT",
+                      "expression": {
+                        "class": "COLUMN_REF",
+                        "type": "COLUMN_REF",
+                        "alias": "",
+                        "query_location": 60,
+                        "column_names": [
+                          "ds"
+                        ]
+                      }
+                    }
+                  ],
+                  "start": "EXPR_PRECEDING_ROWS",
+                  "end": "EXPR_FOLLOWING_ROWS",
+                  "start_expr": {
+                    "class": "CONSTANT",
+                    "type": "VALUE_CONSTANT",
+                    "alias": "",
+                    "query_location": 76,
+                    "value": {
+                      "type": {
+                        "id": "INTEGER",
+                        "type_info": null
+                      },
+                      "is_null": false,
+                      "value": 1
+                    }
+                  },
+                  "end_expr": {
+                    "class": "CONSTANT",
+                    "type": "VALUE_CONSTANT",
+                    "alias": "",
+                    "query_location": 92,
+                    "value": {
+                      "type": {
+                        "id": "INTEGER",
+                        "type_info": null
+                      },
+                      "is_null": false,
+                      "value": 0
+                    }
+                  },
+                  "offset_expr": null,
+                  "default_expr": null,
+                  "ignore_nulls": false,
+                  "filter_expr": null,
+                  "exclude_clause": "NO_OTHER",
+                  "distinct": false,
+                  "arg_orders": []
+                }
+              ],
+              "from_table": {
+                "type": "EMPTY",
+                "alias": "",
+                "sample": null,
+                "query_location": 18446744073709552000
+              },
+              "where_clause": null,
+              "group_expressions": [],
+              "group_sets": [],
+              "aggregate_handling": "STANDARD_HANDLING",
+              "having": null,
+              "sample": null,
+              "qualify": null
+            },
+            "named_param_map": []
+          }
+        ]
+      }
+    }
+  ],
+  "mixed_grain": {
+    "expected": [
+      [
+        "A",
+        "375.00",
+        "85.00",
+        "290.00"
+      ],
+      [
+        "B",
+        "80.00",
+        "30.00",
+        "50.00"
+      ],
+      [
+        "C",
+        null,
+        null,
+        null
+      ]
+    ],
+    "fanout": [
+      [
+        "A",
+        "525.00",
+        "85.00"
+      ],
+      [
+        "B",
+        "80.00",
+        "30.00"
+      ],
+      [
+        "C",
+        null,
+        null
+      ]
+    ],
+    "cohorts": {
+      "intersection": [],
+      "union": [
+        "A",
+        "B"
+      ],
+      "exclude": [
+        "A"
+      ]
+    },
+    "domain": "intersection of separately aggregated User populations, all products/no allocation; candidate synthetic measure"
+  },
+  "window_observed_rows": [
+    [
+      "A",
+      "2026-01-01",
+      "100.00",
+      null,
+      "100.00"
+    ],
+    [
+      "A",
+      "2026-01-31",
+      "200.00",
+      "100.00",
+      "300.00"
+    ],
+    [
+      "A",
+      "2026-02-01",
+      "50.00",
+      "200.00",
+      "250.00"
+    ],
+    [
+      "A",
+      "2026-02-28",
+      "25.00",
+      "50.00",
+      "75.00"
+    ],
+    [
+      "B",
+      "2026-01-01",
+      "80.00",
+      null,
+      "80.00"
+    ],
+    [
+      "B",
+      "2026-02-01",
+      "0.00",
+      "80.00",
+      "80.00"
+    ],
+    [
+      "C",
+      "2026-02-01",
+      null,
+      null,
+      null
+    ],
+    [
+      "D",
+      "2026-02-01",
+      "40.00",
+      null,
+      "40.00"
+    ]
+  ],
+  "source_hashes": {
+    "docs/research/ossie-req-001/multi-period-research/every-day/observations.csv": "3c0c4cc77140a84e01ec45d90e4386ffe01ac2a302ba5d79cb3ebc1152a2166f",
+    "docs/research/ossie-req-001/p1-program-research/revenue.csv": "1bf036eb1c4975ed01225576541adab539159b2cf0096a9e48aefee678a9ccee",
+    "docs/research/ossie-req-001/p1-program-research/cost.csv": "2550ef2ab915276eb64673fe8d86a57e34983c56a4186c2b00b9fff384b33f08",
+    "docs/research/ossie-req-001/p1-program-research/candidate-ontology.json": "978f5fdc70c370fa04a10d0e61fdee53113559f6121c0243cc1fb3ff81f490ab",
+    "docs/research/ossie-req-001/sources/apache-ossie/ontology/ontology.md": "fcd7fa3e40f419f81143b1fbe523f97fc17935bc85bd0dc88f8b8b5c4103458d",
+    "docs/research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md": "94b6a922f61afbc94576a9794e53f8dd02b3cc57bca123a6f20da5c97b9ed94f"
+  },
+  "limitations": [
+    "Schema/parser/ordinary SQL proofs separate from plugin binding/execution",
+    "Relationship SQL manually lowers candidate; candidate ontology rules were not executed by plugin",
+    "Cohort domain is common observed User population; NULL is not coalesced to zero or absent fact",
+    "No product allocation/filter on unmapped revenue dimension; no observed status/history semantics assumed",
+    "Window ROWS counts observed rows, not natural days or state changes"
+  ]
+}

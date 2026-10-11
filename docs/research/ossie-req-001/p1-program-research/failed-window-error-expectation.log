@@ -1,0 +1,23 @@
+233 |       } catch (e) {
+234 |         rejected = e;
+235 |       }
+236 |       assert(rejected, `${label} must reject in existing profile`);
+237 |       const refusal = populationError(String(rejected));
+238 |       assert.equal(refusal?.code, "UNSUPPORTED_CAPABILITY");
+                   ^
+AssertionError: Expected values to be strictly equal:
++ actual - expected
+
++ 'RULE_REJECTED'
+- 'UNSUPPORTED_CAPABILITY'
+
+ generatedMessage: true,
+     actual: "RULE_REJECTED",
+   expected: "UNSUPPORTED_CAPABILITY",
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at researchP1 (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/research_p1_program.ts:238:14)
+      at processTicksAndRejections (native:7:39)
+
+Bun v1.3.11 (macOS arm64)
