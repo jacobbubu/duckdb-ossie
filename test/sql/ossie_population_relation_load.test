@@ -51,3 +51,18 @@ query I
 SELECT contains(program_json,'"captured_rows":"3"')::INTEGER FROM ossie_relation_program();
 ----
 1
+
+query III
+SELECT contains(result_json,'"links":[["A","2026-01-01","X","A"]]')::INTEGER, contains(result_json,'"link_count":"1"')::INTEGER, contains(result_json,'"target_identity_relationship":"id"')::INTEGER FROM ossie_relation_objects_json('AUDITED_USER');
+----
+1	1	1
+
+query III
+SELECT contains(plan_json,'"executed":false')::INTEGER, contains(plan_json,'"full_link_projection_types_bound":true')::INTEGER, contains(plan_json,'"members_computed":false')::INTEGER FROM ossie_relation_compile('audited_user');
+----
+1	1	1
+
+statement error
+SELECT * FROM ossie_relation_compile('unknown');
+----
+INVALID_REQUEST

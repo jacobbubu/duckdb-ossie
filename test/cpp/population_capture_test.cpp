@@ -282,6 +282,58 @@ void DailyCancel(Connection &connection, const string &sql, PopulationDailyCheck
 	Check(result && result->HasError() && result->GetErrorObject().Type() == ExceptionType::INTERRUPT,
 	      "daily query cancellation preserves native interrupt");
 }
+class RelationCounter : public PopulationRelationObserver {
+public:
+	void Observe(PopulationRelationCheckpoint) override {
+		count++;
+	}
+	idx_t count = 0;
+};
+class RelationObserver : public PopulationRelationObserver {
+public:
+	RelationObserver(Gate &gate, PopulationRelationCheckpoint checkpoint) : gate(gate), checkpoint(checkpoint) {
+	}
+	void Observe(PopulationRelationCheckpoint reached) override {
+		if (reached == checkpoint) {
+			gate.Block();
+		}
+	}
+	Gate &gate;
+	PopulationRelationCheckpoint checkpoint;
+};
+void RelationCancel(Connection &connection, const string &sql, PopulationRelationCheckpoint checkpoint) {
+	Gate gate;
+	unique_ptr<MaterializedQueryResult> result;
+	connection.context->registered_state->Insert(PopulationRelationObserver::KEY,
+	                                             make_shared_ptr<RelationObserver>(gate, checkpoint));
+	std::exception_ptr failure;
+	std::thread worker([&]() {
+		try {
+			result = connection.Query(sql);
+		} catch (...) {
+			failure = std::current_exception();
+		}
+	});
+	try {
+		gate.Wait();
+		connection.Interrupt();
+		gate.Release();
+		worker.join();
+	} catch (...) {
+		gate.Release();
+		if (worker.joinable()) {
+			worker.join();
+		}
+		connection.context->registered_state->Remove(PopulationRelationObserver::KEY);
+		throw;
+	}
+	connection.context->registered_state->Remove(PopulationRelationObserver::KEY);
+	if (failure) {
+		std::rethrow_exception(failure);
+	}
+	Check(result && result->HasError() && result->GetErrorObject().Type() == ExceptionType::INTERRUPT,
+	      "relation query cancellation preserves native interrupt");
+}
 void ObservationControls(const string &root, int threads) {
 	DuckDB database(nullptr);
 	Connection loader(database), writer(database), reader(database);
@@ -464,6 +516,20 @@ void RelationBindControls(const string &root, int threads) {
 	             "SELECT contains(program_json,'\"load_constraints_validated\":true') FROM ossie_relation_program()") ==
 	          "true",
 	      "relation load recovers after cancellation");
+	const string objects = "SELECT result_json FROM ossie_relation_objects_json('audited_user')";
+	const string plan = "SELECT plan_json FROM ossie_relation_compile('audited_user')";
+	auto before = Scalar(reader, objects);
+	auto counter = make_shared_ptr<RelationCounter>();
+	reader.context->registered_state->Insert(PopulationRelationObserver::KEY, counter);
+	Check(Scalar(reader, plan).find("\"members_computed\":false") != string::npos && counter->count == 0,
+	      "relation compile enters no execution/sort/encoding checkpoints");
+	Check(Scalar(reader, objects) == before && counter->count == 3, "relation execution reaches all three checkpoints");
+	reader.context->registered_state->Remove(PopulationRelationObserver::KEY);
+	for (auto checkpoint : {PopulationRelationCheckpoint::BEFORE_EXECUTE, PopulationRelationCheckpoint::BEFORE_SORT,
+	                        PopulationRelationCheckpoint::BEFORE_ENCODE}) {
+		RelationCancel(reader, objects, checkpoint);
+		Check(Scalar(reader, objects) == before, "relation cancel retains complete frozen links and recovers");
+	}
 }
 
 } // namespace

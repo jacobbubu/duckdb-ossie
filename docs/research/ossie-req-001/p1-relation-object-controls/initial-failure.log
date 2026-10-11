@@ -1,0 +1,21 @@
+72 |     plan = await json("ossie_relation_compile", name);
+73 |   assert.deepEqual(result.links, expected(threshold));
+74 |   assert.equal(result.link_count, String(expected(threshold).length));
+75 |   assert.equal(result.executed, true);
+76 |   assert.equal(result.members_computed, true);
+77 |   assert.equal(result.target_identity_relationship, "user_id");
+              ^
+AssertionError: Expected values to be strictly equal:
+
+'id' !== 'user_id'
+
+ generatedMessage: true,
+     actual: "id",
+   expected: "user_id",
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at check (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_relation_objects_artifact.ts:77:10)
+      at processTicksAndRejections (native:7:39)
+
+Bun v1.3.11 (macOS arm64)

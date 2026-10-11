@@ -1,0 +1,18 @@
+{
+  "profile": "observation-relation-program-v1",
+  "core": {
+    "path": "../../../../../test/fixtures/population-observation/core.json",
+    "name": "daily_observation_demo",
+    "sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77"
+  },
+  "ontology": {
+    "path": "ontology-2.json",
+    "name": "daily_observation_ontology",
+    "sha256": "7430cae8ed0dedfa41a8f59a3abf27ea7b6b37a5092d6501a54951dff75a35ae"
+  },
+  "mapping": {
+    "path": "../../../../../test/fixtures/population-observation/mapping.json",
+    "name": "daily_observation_mapping",
+    "sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228"
+  }
+}

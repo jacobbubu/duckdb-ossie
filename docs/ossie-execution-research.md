@@ -1503,3 +1503,21 @@ Advisor发现两次Current门禁竞态，修正为捕获并检查同一bundle；
 通过。原失败/先前版本证据保留，新CI命令未远端执行。完整关系对象/解释/发现/MCP
 和18/7全link oracle仍需下一切片，不以本包加载通过完成P1；状态/历史决策待答，
 混合粒度/窗口/五类全部范围/tidy/历史审计保留。无模型调用或推送。
+
+### P1完整关系对象实施 checkpoint（2026-10-11）
+
+恢复22a8c94与干净worktree，前轮加载/约束/并发修复及本地提交为progress。
+本轮新增关系专用对象和compile：同一捕获bundle与关系谓词，不叠加旧资格概念；
+完整源(User,date,product)+typed User目标、确定排序、完整JSON预算和六字段追溯。
+compile只绑定输出/解释，不执行或计算成员。独立23行18/7 link oracle、依赖多规则/
+源删除/prepared旧规则/资源拒绝与回归是验收，旧profile行为保持。完整P1及后续
+MCP/无模型/混合粒度/窗口/状态历史决策/tidy/历史审计均保留，无模型/推送。
+
+### P1完整关系对象本地验证（2026-10-11）
+
+[接口契约和证据](research/ossie-req-001/p1-relation-object-controls/contract.md)记录两个新
+入口的完整四列link和绑定逻辑计划；实际12检查/5拒绝、native308、SQL26/982及旧
+回归支持本工作包。六项追溯/旧prepared/源删除保持；宽DATE不能沿用每日decoder。
+排序取消和只绑定投影类型的声明已修正，原始失败保留。MCP未注册，旧回归不等于
+新MCP验收。下一行动为新profile MCP/严格输出解析和无模型演练，其他五类P1及
+待答状态/历史业务问题没有移除。无真实模型、推送/远端CI/Linux tidy/发布声明。

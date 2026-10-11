@@ -114,7 +114,7 @@ try {
   assert.equal(initial.source_types_bound, true);
   assert.equal(initial.load_constraints_validated, true);
   assert.equal(initial.query_executed, false);
-  assert.equal(initial.objects_queryable, false);
+  assert.equal(initial.objects_queryable, true);
   assert.deepEqual(
     initial.relations.map((r: any) => r.name),
     ["qualified_user", "audited_user"],

@@ -1419,3 +1419,15 @@ program发现明确未查询对象；旧接口对新profile拒绝。修复门禁
 旧native/Bun/质量/同最终SHA旧A1–A8/MCP/观察和每日模拟通过。CI命令增加但没有
 推送或远端结果。下一必要实施为完整关系对象的源tuple/typed目标、解释与发现、
 18/7全link独立oracle及MCP；原其他P1/状态历史决策/tidy/历史审计继续保留。
+
+完整关系对象恢复checkpoint（22a8c94）：按同一冻结bundle建立四列完整link查询及
+专用compile，保留目标User身份/类型和六hash追溯；独立成员oracle、重载/删除源/
+预算/原生取消及旧回归验证。compile不算成员，实际集合不能只distinct User。
+
+完整关系对象工作包验证：[契约](docs/research/ossie-req-001/p1-relation-object-controls/contract.md)
+和实际12检查/5拒绝证明完整源tuple/目标、18/7成员、规则并集/重命名、重载隔离、
+宽DATE、10000links及精确/转义JSON边界。native308含compile零执行与三点取消恢复；
+26SQL/982、Bun110/468及同SHA旧A1–A8/观察/每日MCP/两组离线模拟通过。
+失败原件保留；CI新增命令未推送或执行远端。下一必要步骤为新关系MCP严格decoder/
+独立无模型场景，然后多事实混合粒度/窗口等所有原P1，状态历史业务决策继续等待。
+本包不代表P1完成，授权仍不包含真实模型、推送或发布。

@@ -1173,6 +1173,16 @@ void ObserveDaily(ClientContext &context, PopulationDailyCheckpoint checkpoint) 
 	}
 }
 
+void ObserveRelation(ClientContext &context, PopulationRelationCheckpoint checkpoint) {
+	auto observer = context.registered_state->Get<PopulationRelationObserver>(PopulationRelationObserver::KEY);
+	if (observer) {
+		observer->Observe(checkpoint);
+	}
+	if (context.IsInterrupted()) {
+		throw InterruptException();
+	}
+}
+
 // Capture and validation use original datasets. Only the published execution model is flattened.
 void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Connection &engine) {
 	Keys(policy, {"fact", "dimension", "relationship", "type", "missing"}, "join policy");
@@ -2448,11 +2458,16 @@ DailyRequest ParseDailyRequest(const string &bytes) {
 // Check remaining capacity before appending even escaped metadata or a large identity.
 class DailyJSONWriter {
 public:
-	explicit DailyJSONWriter(ClientContext &context_p, string budget_p = "result_json_utf8_bytes")
-	    : context(context_p), budget(std::move(budget_p)) {
+	explicit DailyJSONWriter(ClientContext &context_p, string budget_p = "result_json_utf8_bytes",
+	                         string object_p = "daily_user_set")
+	    : context(context_p), budget(std::move(budget_p)), object(std::move(object_p)) {
 	}
 	void Append(const string &text) {
-		DailyBudget(budget, json.size() + text.size(), DAILY_RESULT_BYTES);
+		if (object == "daily_user_set") {
+			DailyBudget(budget, json.size() + text.size(), DAILY_RESULT_BYTES);
+		} else if (json.size() + text.size() > DAILY_RESULT_BYTES) {
+			Fail(object + "." + budget, "resource", "complete JSON exceeds 1MiB; no truncation");
+		}
 		json += text;
 	}
 	void Quoted(const string &text) {
@@ -2493,6 +2508,7 @@ public:
 private:
 	ClientContext &context;
 	string budget;
+	string object;
 	string json;
 };
 
@@ -2511,6 +2527,9 @@ struct PopulationBind : TableFunctionData {
 	bool daily = false;
 	bool daily_compile = false;
 	bool relation_discovery = false;
+	bool relation_objects = false;
+	bool relation_compile = false;
+	idx_t relation_index = 0;
 	DailyRequest daily_request;
 	vector<LogicalType> daily_input_types;
 	string concept;
@@ -2545,6 +2564,172 @@ shared_ptr<Bundle> LegacyCurrent(ClientContext &context, const string &operation
 		     "relation program profile currently exposes only program discovery; relation objects interface pending");
 	}
 	return bundle;
+}
+
+unique_ptr<FunctionData> RelationBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
+                                      vector<string> &names) {
+	auto result = make_uniq<PopulationBind>();
+	result->bundle = Current(context);
+	auto &b = *result->bundle;
+	if (!b.relation_program) {
+		Fail("relation", "capability", "relation program profile required");
+	}
+	if (input.inputs[0].IsNull()) {
+		Fail("relation", "arguments", "relationship name required");
+	}
+	auto name = input.inputs[0].GetValue<string>();
+	bool found = false;
+	for (idx_t i = 0; i < b.relation_program->relations.size(); i++) {
+		if (StringUtil::CIEquals(name, b.relation_program->relations[i].name)) {
+			result->relation_index = i;
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		Fail(name, "arguments", "unknown declared derived relationship");
+	}
+	auto &relation = b.relation_program->relations[result->relation_index];
+	result->concept = relation.name;
+	result->relation_objects = true;
+	result->relation_compile = input.table_function.name == "ossie_relation_compile";
+	lock_guard<mutex> guard(b.query_lock);
+	string projection = "SELECT ";
+	for (idx_t i = 0; i < b.observation_identity.size(); i++) {
+		if (i) {
+			projection += ",";
+		}
+		projection += FieldTree(b, b.observation_identity[i])->ToString();
+	}
+	projection += "," + FieldTree(b, b.identity)->ToString() + " FROM main.ossie_snapshot AS " +
+	              Quote(b.model.datasets[0].name) + " WHERE (" + relation.predicate->ToString() + ") IS TRUE";
+	result->statement = unique_ptr_cast<SQLStatement, SelectStatement>(FrozenSQL(b, projection));
+	auto engine = Engine(b);
+	auto prepared = engine->Prepare(result->statement->Copy());
+	if (prepared->HasError()) {
+		NormalizeError(prepared->GetErrorObject(), relation.name, "bind", ExceptionType::INVALID_INPUT);
+	}
+	result->result_types = prepared->GetTypes();
+	if (result->result_types !=
+	    vector<LogicalType> {LogicalType::VARCHAR, LogicalType::DATE, LogicalType::VARCHAR, LogicalType::VARCHAR}) {
+		Fail(relation.name, "bind", "full link output must be VARCHAR, DATE, VARCHAR, VARCHAR");
+	}
+	types = {LogicalType::VARCHAR};
+	names = {result->relation_compile ? "plan_json" : "result_json"};
+	return std::move(result);
+}
+
+string RelationJSON(ClientContext &context, const PopulationBind &data) {
+	auto &b = *data.bundle;
+	auto &relation = b.relation_program->relations[data.relation_index];
+	DailyJSONWriter writer(context, data.relation_compile ? "plan_json_utf8_bytes" : "result_json_utf8_bytes",
+	                       "relation");
+	writer.Append("{\"schema_version\":");
+	writer.Quoted(data.relation_compile ? "ossie-relation-plan-v1" : "ossie-relation-result-v1");
+	writer.Field("profile", b.profile);
+	writer.Field("relationship", relation.name);
+	writer.Field("root_concept", b.root);
+	writer.Field("target_concept", b.user_concept);
+	writer.Field("target_identity_relationship", b.user_id_relation);
+	writer.Field("target_identity_field", b.identity);
+	writer.Field("target_identity_bound_type", b.field_types.at(b.identity));
+	writer.Field("snapshot_id", b.snapshot_id);
+	writer.Field("content_sha256", b.content_hash);
+	writer.Field("core_sha256", b.core_hash);
+	writer.Field("ontology_sha256", b.ontology_hash);
+	writer.Field("mapping_sha256", b.mapping_hash);
+	writer.Field("manifest_sha256", b.manifest_hash);
+	writer.Append(",\"root_identity_fields\":" + JSONStrings(b.observation_identity) +
+	              ",\"root_identity_bound_types\":[\"VARCHAR\",\"DATE\",\"VARCHAR\"],\"scope\":\"entire captured root "
+	              "population; selected relationship predicate only\",\"qualification\":\"TRUE "
+	              "only\",\"load_constraints_validated\":true,\"dependencies\":" +
+	              JSONStrings(relation.dependencies) + ",\"derived_by\":" + JSONStrings(relation.rules));
+	writer.Field("bound_predicate", relation.predicate->ToString());
+	writer.Append(",\"ordering\":\"source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target "
+	              "User raw UTF-8 bytes\",\"paging\":false,\"truncated\":false,\"json_byte_limit\":1048576");
+	if (data.relation_compile) {
+		writer.Append(
+		    ",\"executed\":false,\"members_computed\":false,\"full_link_projection_types_bound\":true,\"physical_"
+		    "plan\":false,\"sql_replayable\":false");
+		writer.Field("projection_sql", data.statement->ToString());
+		writer.Append(",\"operators\":[\"frozen full-root projection with relationship TRUE predicate\",\"preserve "
+		              "complete typed root plus target User link\",\"raw identity and typed DATE ordering\",\"complete "
+		              "bounded JSON encoding\"]}");
+		return writer.Finish();
+	}
+	ObserveRelation(context, PopulationRelationCheckpoint::BEFORE_EXECUTE);
+	vector<vector<Value>> links;
+	{
+		lock_guard<mutex> guard(b.query_lock);
+		auto engine = Engine(b);
+		auto query = Run(context, *engine, data.statement->Copy());
+		if (query->types != data.result_types) {
+			Fail(relation.name, "execute", "bound full link types changed");
+		}
+		while (auto chunk = query->Fetch()) {
+			for (idx_t row = 0; row < chunk->size(); row++) {
+				if (context.IsInterrupted()) {
+					throw InterruptException();
+				}
+				if (links.size() >= MAX_ROWS) {
+					Fail(relation.name, "resource", "complete links exceed 10000");
+				}
+				vector<Value> link;
+				for (idx_t col = 0; col < 4; col++) {
+					auto value = chunk->GetValue(col, row);
+					if (value.IsNull()) {
+						Fail(relation.name, "execute", "NULL link identity prohibited");
+					}
+					link.push_back(std::move(value));
+				}
+				links.push_back(std::move(link));
+			}
+		}
+		if (query->HasError()) {
+			NormalizeError(query->GetErrorObject(), relation.name, "execute", ExceptionType::INVALID_INPUT);
+		}
+	}
+	ObserveRelation(context, PopulationRelationCheckpoint::BEFORE_SORT);
+	RawByteLess less;
+	std::sort(links.begin(), links.end(), [&](const vector<Value> &a, const vector<Value> &z) {
+		if (context.IsInterrupted()) {
+			throw InterruptException();
+		}
+		for (idx_t i = 0; i < 4; i++) {
+			if (i == 1) {
+				auto left = a[i].GetValue<date_t>().days, right = z[i].GetValue<date_t>().days;
+				if (left != right) {
+					return left < right;
+				}
+			} else {
+				const auto &left = StringValue::Get(a[i]);
+				const auto &right = StringValue::Get(z[i]);
+				if (left != right) {
+					return less(left, right);
+				}
+			}
+		}
+		return false;
+	});
+	ObserveRelation(context, PopulationRelationCheckpoint::BEFORE_ENCODE);
+	writer.Append(",\"executed\":true,\"members_computed\":true,\"links\":[");
+	for (idx_t i = 0; i < links.size(); i++) {
+		if (i) {
+			writer.Append(",");
+		}
+		writer.Append("[");
+		for (idx_t col = 0; col < 4; col++) {
+			if (col) {
+				writer.Append(",");
+			}
+			writer.Quoted(col == 1 ? links[i][col].ToString() : links[i][col].GetValue<string>());
+		}
+		writer.Append("]");
+	}
+	writer.Append("],\"link_count\":");
+	writer.Quoted(to_string(links.size()));
+	writer.Append("}");
+	return writer.Finish();
 }
 
 unique_ptr<FunctionData> DailyBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
@@ -3165,6 +3350,8 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 			throw InterruptException();
 		}
 		PopulationState::Get(context).SetBundle(std::move(bundle));
+	} else if (data.relation_objects) {
+		result->rows.push_back({Value(RelationJSON(context, data))});
 	} else if (data.relation_discovery) {
 		auto &b = *data.bundle;
 		auto &program = *b.relation_program;
@@ -3203,7 +3390,7 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 			        ",\"bound_predicate\":" + JSONString(relation.predicate->ToString()) +
 			        ",\"link_constraints\":" + JSONStrings(constraints) + "}";
 		}
-		json += "],\"objects_queryable\":false,\"mcp_registered\":false,\"constraint_scope\":\"entire root or actual "
+		json += "],\"objects_queryable\":true,\"mcp_registered\":false,\"constraint_scope\":\"entire root or actual "
 		        "complete relation links before atomic publish\","
 		        "\"predicate_sql_replayable\":false,\"json_byte_limit\":1048576}";
 		if (json.size() > DAILY_RESULT_BYTES) {
@@ -3294,6 +3481,9 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 		object = input.inputs[0].GetValue<string>();
 	}
 	return ErrorBoundary(object, "bind", [&]() {
+		if (name == "ossie_relation_objects_json" || name == "ossie_relation_compile") {
+			return RelationBind(context, input, types, names);
+		}
 		if (name == "ossie_relation_program") {
 			auto result = make_uniq<PopulationBind>();
 			result->bundle = Current(context);
@@ -3364,6 +3554,20 @@ void JSONListFunction(DataChunk &args, ExpressionState &, Vector &result) {
 } // namespace
 
 void RegisterPopulationFunctions(ExtensionLoader &loader) {
+	RegisterDescribe(
+	    loader,
+	    TableFunction("ossie_relation_objects_json", {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+	    "Return complete typed source User/date/product plus target User links for one declared derived relationship "
+	    "in observation-relation-program-v1. Entire captured scope, TRUE membership, deterministic raw identity and "
+	    "DATE order; max10000 links/1MiB complete JSON, no truncation.",
+	    "SELECT * FROM ossie_relation_objects_json('audited_user')");
+	RegisterDescribe(
+	    loader,
+	    TableFunction("ossie_relation_compile", {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+	    "Explain and bind the full relationship link projection without execution or member calculation. Same frozen "
+	    "profile and predicate as relation objects, with actual output types, target identity, dependencies and "
+	    "snapshot hashes; max1MiB complete JSON, no SQL replay or physical plan guarantee.",
+	    "SELECT * FROM ossie_relation_compile('audited_user')");
 	RegisterDescribe(loader, TableFunction("ossie_relation_program", {}, ScanBoundary, BindBoundary, InitBoundary),
 	                 "Discover bound nonrecursive relationship declarations, typed root/User, dependencies and "
 	                 "full-population load constraint validation in observation-relation-program-v1. Frozen snapshot; "
