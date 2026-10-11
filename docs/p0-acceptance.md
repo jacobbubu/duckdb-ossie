@@ -107,8 +107,11 @@ typed tuple及存在式distinct User投影；[本地SQL/原生及同产物旧pro
 后置裁定保留原始raw/replay/public evidence的pending，不称用户亲自查阅
 全部transcript。一次有指导的8行合成数据实验不证明可靠率或完整规范。
 
-当前远端仍是旧b2d486a，17项CI仅验证该旧提交；最新观察/Agent工作仍
-本地。新profile跨平台/远端tidy及最新tip CI尚待交付收口。CI现有观察SQL
-verifier和Bun质量步骤，未接入新观察MCP及脚本模拟重放的真实MCP演练。
+当前开发分支已交付至e3a6f5f，[新tip CI](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38122315959)
+17项全通过；[最终证据](research/ossie-req-001/ci-e9359d2-controls/final-state.json)
+保留首轮干净检出测试初始化失败与修复。Linux AMD64/macOS ARM64各
+24 SQL/931断言、观察MCP43/38、旧MCP330/106及四场景无模型演练/重放
+均通过，format/tidy通过。上游部分构建目标关闭测试的边界保留；模拟
+不是新一轮真实Agent验收，收口文档仅本地，未合并main或发布。
 完整剩余与建议顺序见[现计划](../ossie-duckdb-plan.md#剩余工作与建议顺序)，
-相关问题继续沿OSSIE-REQ-001；此状态整理不授权新实现、模型请求或推送。
+相关问题继续沿OSSIE-REQ-001；后续能力、模型请求、main合并/发布单独决定。

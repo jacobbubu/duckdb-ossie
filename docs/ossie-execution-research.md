@@ -1,5 +1,10 @@
 # OSSIE-REQ-001 本体执行基线研究
 
+当前交付更新（2026-10-11）：开发分支e3a6f5f的跨平台/观察验收/无模型
+演练/format/tidy及CI gate共17项已全部通过，见[最终证据](research/ossie-req-001/ci-e9359d2-controls/final-state.json)。
+下段及后续历史checkpoint保留各阶段状态；本更新和现计划优先于旧的
+“未推送/真实观察未运行/远端未验收”描述。收口记录仅本地，无main合并/发布。
+
 日期：2026-10-11。当前状态：调整范围的 A1–A8 本地验收、跨环境复现/Linux质量和远端 CI 工作包已完成。远端 `b2d486a` 在 [run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941) 的17项任务全部通过；[失败与重跑归档](research/ossie-req-001/ci-artifact-timeout/final-state.json)保留首次上传超时。Linux ARM64 CI只证明构建，本地Ubuntu ARM64原生/SQL/stock/MCP/tidy证据另见[跨环境控制](research/ossie-req-001/portability-control-results.json)。检修归档 `e5db46f` 尚未推送，不称本地新提交已通过远端CI。真实 Agent 工作已从研究推进至[最小程序实施与本地验证](agent-minimal-acceptance.md)，用户指定了网关/模型/凭据变量；三场景真实运行及委托Lead的口径/数据复核已完成，用户接受限定结论；原始失败与pending字段保持历史状态，数据真实性局限另记。观察粒度 SQL 最小切片已在本地完成，新观察 MCP 接入/无模型 Agent 准备工作包已本地完成；真实入口/离线重放/私有归档也已本地实现并模拟演练，真实观察 Agent 验收尚未运行。分页未启动。历史记录保留各包当时的范围与计数，当前语义结论见[验收入口](p0-acceptance.md)。
 
 本文件是 OSSIE-REQ-001 在本仓库的研究与验证记录，不另建实施 backlog。原始需求位于 `/tmp/duckdb-ossie-requirements.7kw5ic4l/需求.md`，保持不变；用户已决定仅支持固定快照的新格式，替代原 R1.3 的新旧共同支持要求，并相应调整 A8。
@@ -36,6 +41,26 @@ effective backend/effort/usage/billing未知。统计误读JSON文件名和一�
 仍需用户明确运行指示。无推送/远端CI/生产代码变更，原P1/分页保留。
 
 ## 范围与授权
+
+### 新tip分支交付验证完成（2026-10-11）
+
+开发分支已推送至e3a6f5f，[run38122315959](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38122315959)
+17项全成功，首次e9359d2失败保持原状。归档测试用现PrivateArchive创建
+干净检出父目录，隔离16/80与全量98/403通过；远端项目控制也恢复成功。
+[最终记录](research/ossie-req-001/ci-e9359d2-controls/final-state.json)绑定两轮
+head/任务与私有日志哈希；Linux AMD64原生19/42/210、Linux AMD64及
+macOS ARM64各24 SQL/931断言通过，format/tidy和最终gate通过。
+
+实际下载两平台验收报告，各观察stock25/48、观察MCP43/38、旧MCP330/106；
+四场景模拟7completion/4工具、完整重放与incomplete封存/拒绝通过，未读取
+provider配置、真实模型请求0。源文件哈希与现源码一致；同平台新旧报告
+使用同一产物，公开完整/失败衍生物逐文件哈希核对通过。CI raw不上传且为
+runner临时目录，完整真实Agent raw仍本地私有；不声称CI raw永久保留。
+Linux ARM64/macOS AMD64/Wasm threads/EH上游关闭测试，构建成功不能
+扩成这些目标的完整测试。两次GitHub TLS读超时后已成功复核；一次本地
+计数提取误把旧checks数组当整数已修正，未改或重跑CI证据。
+本交付包完成，非完整Ossie或一般多期推理；收口文档留本地，main/发布/
+新模型实验和已记录后续能力未授权。
 
 ### 新tip推送与跨平台/tidy核对 checkpoint（2026-10-11）
 

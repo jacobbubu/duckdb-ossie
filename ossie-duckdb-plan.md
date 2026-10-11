@@ -2,44 +2,41 @@
 
 ## Current delivery checkpoint — 2026-10-11
 
-用户现已明确授权推送当前分支并检查CI：e9359d2已推送，
-[run38122117803](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38122117803)
-正在执行。Project controls发现干净检出缺少私有父目录的测试初始化问题，
-[最小修复与隔离复现](docs/research/ossie-req-001/ci-e9359d2-controls/test-setup-repair.json)
-已通过16归档/80 expects及全部98 Bun/403 expects。沿同一分支推送授权
-交付此CI修复并核对修复后tip，保留首次失败；跨平台/tidy结果仍待完成。
-本轮将按实际head核对跨平台、观察无模型验收和tidy；下表旧远端
-描述保留先前检查基线，完成后更新当前结论。无main合并/发布授权。
+用户授权的分支推送与新tip验证已完成：origin/codex/ossie-execution为
+e3a6f5f，[run38122315959](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38122315959)
+17项全部成功。首轮干净检出的归档测试初始化失败已最小修复；
+[首次失败、隔离复现及最终产物证据](docs/research/ossie-req-001/ci-e9359d2-controls/final-state.json)
+分别保留。收口记录仅本地，不再触发文档CI；无main合并/发布授权。
 
 三个有界profile的本地实现与限定验收已有证据，两个真实Agent工作包的
-结论均获用户接受。当前主要缺口是把最新观察/Agent增量完成交付验证，
-不是继续修复已经通过的固定用例。范围仍固定Ossie `0.2.0.dev0` 快照与
+结论均获用户接受。最新观察/Agent增量已完成分支交付验证；更广能力
+仍须独立研究和授权。范围仍固定Ossie `0.2.0.dev0` 快照与
 DuckDB1.5.6，不宣称完整Ossie、一般推理或真实业务数据正确。
 
 | 工作包 | 当前结论与证据 | 交付边界 |
 | --- | --- | --- |
 | 原单表与安全双表profile | 调整后的A1–A8通过，[P0验收](docs/p0-acceptance.md)保存来源/规则/NULL/粒度/连接/追溯/typed与拒绝证据 | 旧profile跨环境与旧远端CI通过，不扩多事实/任意join或全部表达式 |
-| 每日观察profile | User稳定身份与User/date/product tuple、全批重复拒绝、观察/用户/非空金额分母；[最终SQL/原生及旧profile回归](docs/research/ossie-req-001/observation-schema-controls/verification-final.json)通过 | 本地b012058e产物；新profile跨平台/tidy/远端CI尚未验收，不是一般多期语义 |
-| 新观察MCP/发现/plan | v2 concepts/plan与五指标、三个工具，[43检查/38拒绝和同产物旧MCP回归](docs/research/ossie-req-001/observation-mcp-controls/verification.json)通过；[新增CI命令本地复现](docs/research/ossie-req-001/observation-ci-controls/verification.json)通过 | 新MCP与无模型演练已接入Linux AMD64/macOS ARM64产物任务，最新远端结果待推送后验证 |
+| 每日观察profile | User稳定身份与User/date/product tuple、全批重复拒绝、观察/用户/非空金额分母；本地及新tip Linux AMD64/macOS ARM64各24 SQL/931断言通过 | 新tip跨平台构建与tidy通过；Linux ARM64等matrix关闭测试的目标只证明构建，不是一般多期语义 |
+| 新观察MCP/发现/plan | 新tip两个产物各43检查/38拒绝，旧MCP各330检查/106拒绝；来源/同产物哈希核对通过 | 两个平台四场景模拟/重放/失败控制通过，真实模型请求0；模拟不是额外真实Agent验收 |
 | Agent入口/私有档案/离线重放 | [提示协议及98 Bun/403 expects验证](docs/research/ossie-req-001/observation-prompt-controls/verification.json)通过，失败封存与篡改拒绝有证据 | 用量/字节/时间限制不等于金额或服务端存储保证；完整transcript保持私有 |
 | 两次真实Agent限定验收 | [旧三场景用户裁定](docs/research/ossie-req-001/agent-live-corrected-controls/acceptance-decision.json)及[新四场景用户裁定](docs/research/ossie-req-001/observation-live-first-controls/acceptance-decision.json)均接受 | 新四场景8请求/5工具，仅一次合成数据集成实验；原pending/失败保留，不估计可靠率 |
-| 远端分支与CI | 本轮只读核对origin/codex/ossie-execution仍为b2d486a；[run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941)17项成功 | 此CI属于旧提交，不能覆盖后续观察/Agent增量；Linux ARM64上游测试跳过，旧本地Ubuntu证据另记 |
+| 远端分支与CI | e3a6f5f，run38122315959共17项成功，实际下载两平台报告/衍生哈希核对通过 | 覆盖新观察增量；保留上游部分目标跳过测试的边界，旧本地Ubuntu证据另记 |
 
 [状态核对快照](docs/research/ossie-req-001/observation-live-first-controls/delivery-state.json)
-以400b2cf为本轮基线：相对远端有19个本地提交；本轮文档裁定还会增加
-一个本地提交。未推送/合并/发布。历史段落保留各阶段计数和未完成描述，
+以400b2cf为先前基线，当时尚未推送；现开发分支已交付至e3a6f5f，未合并/
+发布，收口记录留本地。历史段落保留各阶段计数和未完成描述，
 不替代本当前状态。所有问题继续沿[OSSIE-REQ-001](docs/ossie-execution-research.md)，
 这里是现计划的交付收口，不创建第二backlog。
 
 ### 剩余工作与建议顺序
 
-1. **最新增量的交付准备**：观察MCP预检与四场景脚本模拟/实际MCP/
+1. **已完成的交付准备**：观察MCP预检与四场景脚本模拟/实际MCP/
    重放/失败封存已接入两种产物任务。本地新增命令及98 Bun/403 expects
    通过；[待推历史扫描](docs/research/ossie-req-001/observation-ci-controls/history-audit.json)
    未发现已知私有配置，私有原件保留。生产代码未改，上游构建/native与
-   format/tidy入口保留；最新跨平台/tidy结果仍须在推送后验证。本包不推送。
-2. **分支交付验证**：准备好可审阅包后，按用户具体推送指示更新分支，
-   核对新tip的CI与产物，失败保留并修复；旧b2d486a全绿不算新tip通过。
+   format/tidy入口保留，最新跨平台/tidy结果现已远端通过。
+2. **已完成的分支交付验证**：已推送并核对e3a6f5f的17项CI和两平台产物
+   报告，首轮失败与最小修复保留；当前收口文档仅本地，不冒充已过远端CI。
    main合并/发布单独决定，不因本地验收或继续整理而自动进行。
 3. **未来能力，先研究再定范围**：MCP大结果分页（用户要求先调研）、
    calendar补齐、窗口/as-of/期末状态、多事件/修订、每天用户交集、混合
@@ -49,8 +46,8 @@ DuckDB1.5.6，不宣称完整Ossie、一般推理或真实业务数据正确。
    仍是增强项，现semantic plan/概念发现不能冒充它们已实现；后续独立
    定范围，不重新标记调整后的P0为失败。
 
-真实Agent暂不重复调用。本轮完成无模型CI覆盖与待推历史审查；下一步
-须取得本分支的具体推送指示，再验证新tip的远端CI，不扩大分页或模型实验。
+真实Agent暂不重复调用。本轮分支交付验证完成；剩余第3/4项能力与
+main合并/发布仍须独立决定，本轮不扩大分页或模型实验。
 
 ## Historical error/discovery milestones — 2026-10-09
 

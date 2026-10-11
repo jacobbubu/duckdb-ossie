@@ -1,0 +1,225 @@
+{
+  "scope": "OSSIE-REQ-001 new-tip branch delivery, cross-platform and tidy CI verification",
+  "repository": "jacobbubu/duckdb-ossie",
+  "branch": "codex/ossie-execution",
+  "verified_remote_head": "e3a6f5f7f432f43de3807edfdcb5dab9ec2e598b",
+  "first_run": {
+    "head": "e9359d28d16dc0c7823b02c062ef183f6608209e",
+    "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38122117803",
+    "conclusion": "failure",
+    "failed_jobs": [
+      "Project quality controls",
+      "CI gate"
+    ],
+    "root_cause": "archive test parent absent on clean checkout; fixed by e3a6f5f; first failure retained"
+  },
+  "final_run": {
+    "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38122315959",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 114419409564,
+        "name": "Project quality controls",
+        "conclusion": "success"
+      },
+      {
+        "id": 114419409724,
+        "name": "Build extension binaries / Generate matrix",
+        "conclusion": "success"
+      },
+      {
+        "id": 114419409750,
+        "name": "Code Quality Check / Format Check",
+        "conclusion": "success"
+      },
+      {
+        "id": 114419409796,
+        "name": "Code Quality Check / Tidy Check",
+        "conclusion": "success"
+      },
+      {
+        "id": 114419436331,
+        "name": "Build extension binaries / Linux (linux_amd64, ubuntu-24.04, x64-linux-release, x64-linux-release, true, false)",
+        "conclusion": "success"
+      },
+      {
+        "id": 114419436332,
+        "name": "Build extension binaries / Linux (linux_arm64, ubuntu-24.04-arm, arm64-linux-release, arm64-linux-release, false, false)",
+        "conclusion": "success"
+      },
+      {
+        "id": 114420612567,
+        "name": "Build extension binaries / MacOS (osx_arm64, macos-15, arm64, arm64-osx-release, arm64-osx-release, true, false)",
+        "conclusion": "success"
+      },
+      {
+        "id": 114420612584,
+        "name": "Build extension binaries / DuckDB-Wasm (wasm_mvp, wasm32-emscripten, x64-linux, true, false)",
+        "conclusion": "success"
+      },
+      {
+        "id": 114420612587,
+        "name": "Build extension binaries / Windows (windows_amd64, windows-latest, x64-windows-static-release, x64-windows-static-release, t...",
+        "conclusion": "success"
+      },
+      {
+        "id": 114420612612,
+        "name": "Build extension binaries / Windows (windows_amd64_mingw, windows-latest, x64-mingw-static, x64-mingw-static, true, false)",
+        "conclusion": "success"
+      },
+      {
+        "id": 114420612630,
+        "name": "Build extension binaries / DuckDB-Wasm (wasm_threads, wasm32-emscripten, x64-linux, false, false)",
+        "conclusion": "success"
+      },
+      {
+        "id": 114420612638,
+        "name": "Build extension binaries / DuckDB-Wasm (wasm_eh, wasm32-emscripten, x64-linux, false, false)",
+        "conclusion": "success"
+      },
+      {
+        "id": 114420612690,
+        "name": "Build extension binaries / MacOS (osx_amd64, macos-15, x86_64, x64-osx-release, arm64-osx-release, false, false)",
+        "conclusion": "success"
+      },
+      {
+        "id": 114422062267,
+        "name": "Load built artifact (osx_arm64)",
+        "conclusion": "success"
+      },
+      {
+        "id": 114422062291,
+        "name": "MCP round trip",
+        "conclusion": "success"
+      },
+      {
+        "id": 114422062332,
+        "name": "Load built artifact (linux_amd64)",
+        "conclusion": "success"
+      },
+      {
+        "id": 114422167582,
+        "name": "CI gate",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "platform_evidence": [
+    {
+      "artifact": "ossie-independent-evidence-linux_amd64",
+      "extension_sha256": "c5570a39af55ca2a6b0f3d5f95b876b04134b1ad43b11df8996a39f01ae5bb1e",
+      "cli_sha256": "61238cfbe9dfeaad4bcfcd8a48f6f7123dae2e9603aaadb1f77a4217aeb8980c",
+      "mcp_sha256": "e97779931826de73549c8e8e8350a91316ac49ba03ae6b569fabed6d6c8d0eb4",
+      "stock_observation": {
+        "checks": 25,
+        "refusals": 48
+      },
+      "observation_mcp": {
+        "checks": 43,
+        "refusals": 38
+      },
+      "old_profile_mcp": {
+        "checks": 330,
+        "refusals": 106
+      },
+      "scripted": {
+        "scenes": 4,
+        "completions": 7,
+        "tool_calls": 4,
+        "provider_config_read": false,
+        "real_model_requests": 0,
+        "replay": "passed",
+        "incomplete_sealed_and_refused": "passed",
+        "derivative_hashes": "passed",
+        "raw_ci_retention": "not uploaded; runner-local transient archives"
+      },
+      "source_hashes_match_current_source": true,
+      "run_dirty": "?? downloaded/\n?? quality-reports/",
+      "report_sha256": {
+        "observation/mcp.json": "f8e0e460ca9d4da336a0fe7e99afa79280e3ca8f916081c591a095d92c0e33be",
+        "observation/offline.json": "a9fb298bba95278d35dd109fbc52571cca6427a4e68ec213e5b43e5c46bf8ec0",
+        "observation/simulated/derivative.json": "22eac1b4d9b76071dd574a978a0dc861b089aa04fb43fed04af51a5af523814e",
+        "observation/simulated-incomplete/derivative.json": "77e578e786f5f2f8566b4a11b1f3594d105eccb46974f76ce7e627a69f1c840e",
+        "observation-artifact-results.json": "5f3e59c9cfce1bc766800203a748352ab184dd19b454757c0d813a32980e07b5",
+        "p0-final-mcp-results.json": "e09ce13721077bd05596bab58d9a0116253aacb3cf93b97375f52b38ff020e52"
+      }
+    },
+    {
+      "artifact": "ossie-independent-evidence-osx_arm64",
+      "extension_sha256": "e4f0dd7d491b6583a77fd1be71079e70c75515b75adfbfd7326fb542ee9e808f",
+      "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+      "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+      "stock_observation": {
+        "checks": 25,
+        "refusals": 48
+      },
+      "observation_mcp": {
+        "checks": 43,
+        "refusals": 38
+      },
+      "old_profile_mcp": {
+        "checks": 330,
+        "refusals": 106
+      },
+      "scripted": {
+        "scenes": 4,
+        "completions": 7,
+        "tool_calls": 4,
+        "provider_config_read": false,
+        "real_model_requests": 0,
+        "replay": "passed",
+        "incomplete_sealed_and_refused": "passed",
+        "derivative_hashes": "passed",
+        "raw_ci_retention": "not uploaded; runner-local transient archives"
+      },
+      "source_hashes_match_current_source": true,
+      "run_dirty": "?? downloaded/\n?? quality-reports/",
+      "report_sha256": {
+        "observation/mcp.json": "bbb05532cadaad8a05f138226b4c4a587b5253ad9e0fa19348c1d489ba35db23",
+        "observation/offline.json": "10d882d577fe77f9fb8f8902892c6650de1b0aa0053dda579d906d2c5e7601f8",
+        "observation/simulated/derivative.json": "75b520361782a684ae8cf63e21a3e49c645ee55087ebcd3d3f5e618de47cdb9e",
+        "observation/simulated-incomplete/derivative.json": "842b1a8807d0fac3c263ed5a3168dd97a35ae7cd25696f826b9445bb4427ec6d",
+        "observation-artifact-results.json": "2a36b8f92935ad43cc96bc417f30ba2b8063cabbfa0f1cf88c396e7ca3239d63",
+        "p0-final-mcp-results.json": "eaa72f534269a292318dace75c2f40c02ab0f2ee9beb0d93c03b333846097524"
+      }
+    }
+  ],
+  "native": {
+    "linux_amd64": {
+      "state": 19,
+      "grain": 42,
+      "capture": 210,
+      "sql_cases": 24,
+      "sql_assertions": 931
+    },
+    "macos_arm64": {
+      "sql_cases": 24,
+      "sql_assertions": 931
+    }
+  },
+  "tooling": {
+    "bun_tests": 98,
+    "expects": 403,
+    "format": "passed",
+    "typecheck": "passed",
+    "architecture": "passed"
+  },
+  "boundaries": [
+    "Linux ARM64, macOS AMD64 and Wasm threads/EH upstream matrix skip tests; build success only for those targets.",
+    "Scripted CI completions are controls, not another real Agent acceptance.",
+    "CI raw archives are transient and not uploaded; complete real Agent evidence stays private locally.",
+    "Local source equality and report hashes do not prove general ontology or business data correctness.",
+    "GitHub reads twice encountered TLS timeout; later reads and downloaded artifacts verified.",
+    "First local report extraction mistook old MCP checks list for scalar; corrected to list length without rerunning or modifying CI evidence.",
+    "No real model calls, main merge or release. Closing documentation remains local rather than triggering another build."
+  ],
+  "private_capture_sha256": {
+    "first-run-final.json": "6b88fdfce58aa9c996a747c6753eaddc99a614088182f1c5c4b5702e2b760080",
+    "fixed-run-final.json": "d7d81dd1c9f3b456183ba2920b3060bb54b2264bfbc22b506c0c37fd00eafeb2",
+    "fixed-tidy.log": "2e76be8847db95ab4c1fc065dfbd351cfa26d2083d42f94fe7d27d334b52995f",
+    "fixed-linux-amd64.log": "2dabb8a779daf522563dfac3b7a3e28514f6f75e3bdc005518547087c7f28865",
+    "fixed-macos-arm64.log": "557890d133bec933e5026ba4d748f49c48b8db758bbe7bc4781dd3b29de84711",
+    "fixed-project-controls.log": "32d7d99f37715a4bbdf418a3f9f466dfc4ea9a70de6b330a213e2edba0be6d1a"
+  }
+}
