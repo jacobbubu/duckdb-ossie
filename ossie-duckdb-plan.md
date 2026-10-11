@@ -24,14 +24,18 @@ offline schema validation and final same-artifact legacy regression evidence.
 New-profile MCP wiring and four isolated no-model preparations are now locally
 complete, with 43 observation checks/38 refusals, same-artifact legacy MCP
 regression and 78 Bun tests. The live entry, ordered offline replay and private archive/export are locally
-complete with simulated rehearsal; real observation Agent acceptance remains
-unrun. [The prompt/budget/evidence review](docs/research/ossie-req-001/multi-period-research/agent-run-review.md)
+complete with simulated rehearsal. The subsequently authorized real four-scene
+observation run completed with 8 model requests/5 tool calls and exact offline
+replay; Lead semantic review found no discrepancy, final user acceptance remains
+pending. See [the real-run review](docs/research/ossie-req-001/observation-live-first-controls/review.md).
+[The prompt/budget/evidence review](docs/research/ossie-req-001/multi-period-research/agent-run-review.md)
 is complete; minimal prompt-contract alignment and no-model regression are now
 complete with 98 Bun tests and a fresh simulated rehearsal. The budget and gate
 are unchanged; old records retain their original prompt/source identity.
-No real observation model run is authorized. See [the live/replay guide](docs/agent-observation-run.md).
+The one authorized real run is complete; no repeat/budget expansion is authorized.
+See [the live/replay guide](docs/agent-observation-run.md).
 See [the preparation guide](docs/agent-observation-acceptance.md). This local
-package does not authorize live model requests or delivery.
+closure does not authorize another model run or delivery.
 
 The reviewed [minimal real Agent acceptance case](docs/agent-minimal-acceptance.md)
 has advanced to implementation after user continuation and gateway/model/key
@@ -1233,3 +1237,22 @@ text/summary structure, with failures retained separately from experiment result
 The local work package is complete; next is explicit user direction for any live
 four-scene run. Token-only budget limitations and pending semantic review remain.
 No new native/legacy-MCP/remote CI/tidy/push/release claim is made.
+
+## Observation first real four-scene run closure — 2026-10-11
+
+The user explicitly confirmed the fixed prompt/token-only budget. The run used
+adc626b runtime sources and the same b012058e artifact, with only its authorization
+checkpoint document dirty. Four fresh MCP/model contexts completed: 8 actual
+model requests, 5 model-selected tool calls, no retry or expansion. Numeric and
+execution-support gates pass for three scenes; the every-day scene probes daily
+counts then declines the unregistered intersection target without substituting
+a number. Lead checked formal thresholds, identities, literal date/product scope,
+NULL denominators, unit/precision and actual response columns/citations; no
+discrepancy found. Original pending semantic fields remain unchanged and final
+user acceptance is pending, separately from completed execution/Lead review.
+[Selected public evidence and limitations](docs/research/ossie-req-001/observation-live-first-controls/review.md)
+bind source/prompt/runtime/raw seal/file hashes and reported usage. Offline replay
+passes with zero new live requests and unchanged raw seal. Full transcript is
+private; only a provider-redacted selected summary is recorded publicly. This
+single guided synthetic-data run is not a reliability estimate or full compliance.
+No further live requests, source changes, remote CI, push/merge/release occur.

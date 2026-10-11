@@ -1,0 +1,338 @@
+{
+  "schema": "ossie-observation-live-review-v1",
+  "date": "2026-10-11",
+  "mode": "live",
+  "status": "four scenes complete; Lead semantic review passed within scope",
+  "user_acceptance": "pending",
+  "captured_head": "adc626b28d7e3c97122c87c338868de83b0b953d",
+  "captured_dirty": "M docs/ossie-execution-research.md",
+  "dirty_scope": "only authorization checkpoint document; runtime source hashes matched adc626b validation",
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+    "extension_sha256": "b012058ed30639a899ad20efdff18a5cd637077408c4b65d570b40d87dbf8db3",
+    "server_sha256": "3b2b04eb1c81d5b43ddad8cc43d858992055ba5d9b7343b66429ca4c98fdc1c4"
+  },
+  "budget": {
+    "per_scene": {
+      "rounds": 8,
+      "calls": 12,
+      "milliseconds": 120000,
+      "outputTokens": 2048,
+      "inputBytes": 131072
+    },
+    "scenes": 4,
+    "maximum_model_requests": 32,
+    "maximum_tool_calls": 48,
+    "maximum_requested_output_tokens": 65536,
+    "maximum_input_bytes_per_request": 131072,
+    "monetary_ceiling": "unknown; not enforced",
+    "input_token_ceiling": "not enforced"
+  },
+  "system_sha256": "70be89a22bf334d6867551459ed53e7fce89586c1cee5dd6144a75192d98da97",
+  "model_requests": 8,
+  "completed_responses": 8,
+  "mcp_tool_calls": 5,
+  "automatic_retries": 0,
+  "scenes": [
+    {
+      "scene": "baseline",
+      "threshold": 10,
+      "question_sha256": "cd4a74b857bc83f216e6a23a1afe0619e7c9264429580aaecca904b2b5db05dd",
+      "status": "complete",
+      "model_requests": 2,
+      "model_responses": 2,
+      "tool_calls": 1,
+      "elapsed_ms": 7636,
+      "max_request_bytes": 28659,
+      "capture_redactions": 0,
+      "binding": {
+        "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+        "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+        "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+        "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+        "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+        "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+      },
+      "metrics": {
+        "status": "answered",
+        "unit": "USD",
+        "observation_count": "6",
+        "user_count": "3",
+        "amount_value_count": "5",
+        "amount_sum": "31.00",
+        "mean_observation_amount": "6.2",
+        "daily_user_counts": null
+      },
+      "citations": [
+        "ossie://population/concepts",
+        "ossie://population/metrics",
+        "tool-1"
+      ],
+      "tools": [
+        {
+          "evidence_id": "tool-1",
+          "name": "population_query",
+          "arguments": {
+            "concept": "QualifiedObservation",
+            "metrics": "[\"observation_count\",\"user_count\",\"amount_value_count\",\"amount_sum\",\"mean_observation_amount\"]",
+            "dimensions": "[]",
+            "filters": "[\"observations.ds >= DATE '2026-01-31'\",\"observations.ds <= DATE '2026-02-01'\"]"
+          }
+        }
+      ],
+      "mechanical": {
+        "numerical_gate": "pass",
+        "executed_support": "pass",
+        "original_semantic_verdict": "pending"
+      },
+      "lead_semantic_review": "pass within this bounded synthetic-data case; final user acceptance pending"
+    },
+    {
+      "scene": "changed-rule",
+      "threshold": 20,
+      "question_sha256": "cd4a74b857bc83f216e6a23a1afe0619e7c9264429580aaecca904b2b5db05dd",
+      "status": "complete",
+      "model_requests": 2,
+      "model_responses": 2,
+      "tool_calls": 1,
+      "elapsed_ms": 7620,
+      "max_request_bytes": 28659,
+      "capture_redactions": 0,
+      "binding": {
+        "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+        "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+        "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+        "ontology_sha256": "b6aca7da28e4f0d3a2e00c2dc238f2b620964492d30b26f1f12c807f789d76ec",
+        "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+        "manifest_sha256": "b1c61aed4539201e40a3778f2f125fbb8372c562d6d419a4eb5b6d526aa8420b"
+      },
+      "metrics": {
+        "status": "answered",
+        "unit": "USD",
+        "observation_count": "3",
+        "user_count": "1",
+        "amount_value_count": "3",
+        "amount_sum": "17.00",
+        "mean_observation_amount": "5.666666666666667",
+        "daily_user_counts": null
+      },
+      "citations": [
+        "ossie://population/concepts",
+        "ossie://population/metrics",
+        "ossie://population/fields",
+        "ossie://population/capabilities",
+        "tool-1"
+      ],
+      "tools": [
+        {
+          "evidence_id": "tool-1",
+          "name": "population_query",
+          "arguments": {
+            "concept": "QualifiedObservation",
+            "metrics": "[\"observation_count\",\"user_count\",\"amount_value_count\",\"amount_sum\",\"mean_observation_amount\"]",
+            "dimensions": "[]",
+            "filters": "[\"observations.ds >= DATE '2026-01-31'\",\"observations.ds <= DATE '2026-02-01'\"]"
+          }
+        }
+      ],
+      "mechanical": {
+        "numerical_gate": "pass",
+        "executed_support": "pass",
+        "original_semantic_verdict": "pending"
+      },
+      "lead_semantic_review": "pass within this bounded synthetic-data case; final user acceptance pending"
+    },
+    {
+      "scene": "interval-users",
+      "threshold": 10,
+      "question_sha256": "f556fe1d43bf408e2882740195a6c2f568cc1d20ab1e86445c830a94db244206",
+      "status": "complete",
+      "model_requests": 2,
+      "model_responses": 2,
+      "tool_calls": 2,
+      "elapsed_ms": 8512,
+      "max_request_bytes": 28701,
+      "capture_redactions": 0,
+      "binding": {
+        "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+        "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+        "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+        "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+        "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+        "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+      },
+      "metrics": {
+        "status": "answered",
+        "unit": null,
+        "observation_count": null,
+        "user_count": "3",
+        "amount_value_count": null,
+        "amount_sum": null,
+        "mean_observation_amount": null,
+        "daily_user_counts": {
+          "2026-01-31": "1",
+          "2026-02-01": "3"
+        }
+      },
+      "citations": [
+        "ossie://population/concepts",
+        "ossie://population/metrics",
+        "ossie://population/capabilities",
+        "tool-1",
+        "tool-2"
+      ],
+      "tools": [
+        {
+          "evidence_id": "tool-1",
+          "name": "population_query",
+          "arguments": {
+            "concept": "QualifiedObservation",
+            "metrics": "[\"user_count\"]",
+            "dimensions": "[\"observations.ds\"]",
+            "filters": "[\"observations.ds >= DATE '2026-01-31'\",\"observations.ds <= DATE '2026-02-01'\"]"
+          }
+        },
+        {
+          "evidence_id": "tool-2",
+          "name": "population_query",
+          "arguments": {
+            "concept": "QualifiedObservation",
+            "metrics": "[\"user_count\"]",
+            "dimensions": "[]",
+            "filters": "[\"observations.ds >= DATE '2026-01-31'\",\"observations.ds <= DATE '2026-02-01'\"]"
+          }
+        }
+      ],
+      "mechanical": {
+        "numerical_gate": "pass",
+        "executed_support": "pass",
+        "original_semantic_verdict": "pending"
+      },
+      "lead_semantic_review": "pass within this bounded synthetic-data case; final user acceptance pending"
+    },
+    {
+      "scene": "unsupported-every-day",
+      "threshold": 10,
+      "question_sha256": "116330d7dd2ea340f84856903e53810568962e5e3ff67a64e7b15033f254aeae",
+      "status": "complete",
+      "model_requests": 2,
+      "model_responses": 2,
+      "tool_calls": 1,
+      "elapsed_ms": 14359,
+      "max_request_bytes": 28626,
+      "capture_redactions": 0,
+      "binding": {
+        "snapshot_id": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35:1",
+        "content_sha256": "71c47d16dd4c8b890d8f4696b74db8ec03968a2f00f081ec49cf4850bd5f7f35",
+        "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+        "ontology_sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+        "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+        "manifest_sha256": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a"
+      },
+      "metrics": {
+        "status": "unsupported",
+        "unit": null,
+        "observation_count": null,
+        "user_count": null,
+        "amount_value_count": null,
+        "amount_sum": null,
+        "mean_observation_amount": null,
+        "daily_user_counts": null
+      },
+      "citations": [
+        "ossie://population/concepts",
+        "ossie://population/capabilities",
+        "ossie://population/metrics",
+        "tool-1"
+      ],
+      "tools": [
+        {
+          "evidence_id": "tool-1",
+          "name": "population_query",
+          "arguments": {
+            "concept": "QualifiedObservation",
+            "metrics": "[\"user_count\"]",
+            "dimensions": "[\"observations.ds\"]",
+            "filters": "[\"observations.ds >= DATE '2026-01-31'\",\"observations.ds <= DATE '2026-02-01'\"]"
+          }
+        }
+      ],
+      "mechanical": {
+        "numerical_gate": "not applicable",
+        "executed_support": "not applicable",
+        "original_semantic_verdict": "pending"
+      },
+      "lead_semantic_review": "pass within this bounded synthetic-data case; final user acceptance pending"
+    }
+  ],
+  "provider_reported_usage": {
+    "input_tokens_sum": 67406,
+    "output_tokens_sum": 2671,
+    "total_tokens_sum": 70077,
+    "cached_input_tokens_subset": 45906,
+    "reasoning_tokens_subset": 1237,
+    "accounting": "sum of returned per-response usage; cached and reasoning are subsets, not extra tokens; not audited bill",
+    "billing": "unknown"
+  },
+  "private_archive": {
+    "path": ".local-agent-evidence/observation-live-20261011/first",
+    "seal_sha256": "94d9a1bfffbc51b47b827962b853939c6dc7ae98db84a2481fe7d541ae15a4f1",
+    "files": {
+      "baseline/events.jsonl": "6c9f784a0d4000d887ff3d7837e7982864d07c15153336479b9e5b0c8bd14cc8",
+      "baseline/model-context.json": "c6c7010be3e4c603f3aa21e6f6d47c5b0d876fdd4830d50fb8d50d58ef6fce2a",
+      "baseline/review.json": "7e744a2f99817ef1e34a1f56db4e4572aa1469755169631569a2f80c389d9f2b",
+      "baseline/setup.json": "7537b2eee71df3752769d4ed2baca0317a4643fa0e1c332b944155ffc4671f33",
+      "changed-rule/events.jsonl": "3cfd823f52bac89075b0a7b88caadf3fdcfbbe4db2f889408c5a00029fa9073e",
+      "changed-rule/model-context.json": "7ab00306d7a644b35074e826e37e81e4942c3c78ee595ba172e7a83fef478f8f",
+      "changed-rule/review.json": "7d11289951d9460ee1c88bdc1716e945c3f9e970259ddb26e60e2de260b72e16",
+      "changed-rule/setup.json": "c59204dcdae171f58957d10eae04b1175b761ed05459c58ca1c94b95fadf4d18",
+      "interval-users/events.jsonl": "5eb982447291169120e3bd06dee011ae1d31ac1bd6ccd4ec4546888477f3000c",
+      "interval-users/model-context.json": "565b30fa8d1fe1627cbabb5ddb3109cbc1c8e84208a43189013d36f1b53bd04b",
+      "interval-users/review.json": "91a394b0c9c74f061a713ed659c4a35b0371d006e676cb3898597cae0e0393d6",
+      "interval-users/setup.json": "19ba52c35d03365c70d618fd443dbc92a743e3399b4236fb2ab76a14a5f99647",
+      "run.json": "d11fbe338121d10d5a2976e8ffc2483381a78c1b0825e0a1a68514188ae17a28",
+      "summary.json": "e6f04d16cecc788d934f072a64dbe51665f7336761898adada6c1bef4ec79b39",
+      "unsupported-every-day/events.jsonl": "614f6fb8d148218d7a9a7b88a34d398aaaae1ab8765f236ff2fc7e23fcfd1a05",
+      "unsupported-every-day/model-context.json": "2d9699a3a183ee1e47e92da99ac5ac51601ee8eeb933333d649c50eff6ce232e",
+      "unsupported-every-day/review.json": "f40f6bdc54b041306bcf2c70d743bbf992b451ef98be2ba14145cb86c8cf7ada",
+      "unsupported-every-day/setup.json": "f03dbfd8516793ce3314e7ba7564ed971e18b3d8f178b133a50fe392fbdbe73d"
+    },
+    "full_transcript_exported": false
+  },
+  "offline_replay": {
+    "path": ".local-agent-evidence/observation-live-20261011/first-replay.json",
+    "sha256": "388560a4166dc7c5931c943900e510e6bd173040074dde3ca259613d791ac16b",
+    "status": "internally consistent replay",
+    "mode": "live",
+    "live_model_requests_during_replay": 0,
+    "original_pending_semantic_fields_preserved": true
+  },
+  "source_hashes": {
+    "examples/observation_server.sql": "3b2b04eb1c81d5b43ddad8cc43d858992055ba5d9b7343b66429ca4c98fdc1c4",
+    "docs/research/ossie-req-001/multi-period-research/observations.csv": "bfd38a0130028fe5829aa45e40dce8ac12e228cc2cc61e2f08f293493764f441",
+    "scripts/observation_agent_contract.ts": "2e642fa0e8b7025fc509f6fd4ec519a916fa0589c3ed3b700064fadbb9c6eb78",
+    "scripts/observation_agent_run.ts": "2adc9e3db3c19a91eb00f12d3bafe3cd1f214f84275e93c5c615b085b5c0e9f9",
+    "scripts/observation_agent_replay.ts": "be43c6f495ccbdbb2914c820e10eab832fda23830da8daf8e8c3a0d805a9eb0d",
+    "scripts/observation_agent_archive.ts": "dee3890dc2351d71994b9bd17525ee327a92d143aa7f0ae36ff83ef3f0648571",
+    "scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "scripts/observation_mcp.ts": "7556921b82350a20ba5b1083fe02b1ed014e3cf1c35155add6eeb9c4a9fd11a1",
+    "scripts/observation_evidence.ts": "4a58242be77cbad354bd597cdff530b5ffa5f1c95edab378b92800e89862d3a5",
+    "scripts/population_result.ts": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+    "scripts/population_error.ts": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff",
+    "scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b"
+  },
+  "publication": "manually selected local summary; not full transcript derivative or original wire bytes; provider endpoint/model/credentials omitted",
+  "limitations": [
+    "single run with public synthetic eight-row fixture; no reliability estimate or business-data authenticity claim",
+    "tool descriptions and output fields provide semantic vocabulary and nonadditivity guidance",
+    "registered every-day capability absent; raw detailed objects may allow client intersection calculations outside current contract",
+    "same query under different rule does not establish strategy change",
+    "hash/replay prove internal correspondence, not independent provider authentication or private reasoning",
+    "reported usage is not monetary cost; effective backend/effort/sampling and provider retention unknown",
+    "no new tests/native/remote CI/tidy run or push/release"
+  ]
+}
