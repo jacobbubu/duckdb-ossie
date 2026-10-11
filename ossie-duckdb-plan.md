@@ -1810,3 +1810,18 @@ history_at_observation算子，不冒充上游derived_by表达式；拒绝未执
 两源各≤10000行/256列，共同≤16MiB，源行数与index段数/输出link数分开。先固定
 schema与映射承载再native，原件/索引分离、全历史冲突先检查、无无限中间bag。
 下一为固定schema核对/明确角色name映射后native/完整接口；无模型/推送。
+
+历史有限域发现checkpoint：固定DuckDB Date::IsFinite仅排除±2147483647，stock CLI
+实测days=-2147483648为5877642-06-23 (BC)且finite=true；既有relationDate却要求
+>-2147483647，错误拒绝这个合法孤立下界。历史承载不可沿用错误范围。先在既有
+关系实际产物输出/decoder上验证并修复此P1相关缺陷、补native日期边界对照，保留
+原失败证据；再历史native。状态MCP/无模型原件保持，不回写其旧sourcehash。
+
+历史承载/日期修复工作包完成：独立四概念/双dataset/core-ontology-mapping fixture
+通过固定离线schema（原生历史尚未实施），[实施设计](docs/research/ossie-req-001/p1-history-carrier/design.md)
+明确项目算子而非忽略上游规则、全有限DATE和原件/索引分离。DATE孤立下界错误由
+既有关系原生产物真实输出证实并修复；五个有限值与实际epoch日一致、infinity/
+越界拒绝，138Bun/723及关系MCP14/13、多事实MCP32/48、类型/格式通过。原生Cpp
+与352e96f2产物不变，首轮错误拒绝和22私有文件清单保存，CI加边界验证但未运行
+远端。下一必要仍为历史native及完整接口；Linux/tidy和全P1审计不减少，不调用
+模型/推送。先前状态MCP的22源hash原件保持历史字节，不回写旧receipt。

@@ -59,7 +59,11 @@ export function relationDate(v: unknown): number {
     Math.floor(yoe / 100) +
     doy -
     719468;
-  assert(days > -2147483647 && days < 2147483647, "DATE infinity/out-of-range");
+  // DuckDB reserves +/-INT32_MAX for infinity, while INT32_MIN is finite.
+  assert(
+    days >= -2147483648 && days < 2147483647 && days !== -2147483647,
+    "DATE infinity/out-of-range",
+  );
   return days;
 }
 export function compareRelationLinks(a: string[], b: string[]) {

@@ -31,6 +31,8 @@ test("relation complete native envelopes retain full links and binding", () => {
 });
 test("relation DATE supports proleptic Gregorian BC and large years without JS Date", () => {
   expect(relationDate("1970-01-01")).toBe(0);
+  expect(relationDate("5877642-06-23 (BC)")).toBe(-2147483648);
+  expect(() => relationDate("5877642-06-22 (BC)")).toThrow();
   expect(relationDate("5877642-06-25 (BC)")).toBe(-2147483646);
   expect(relationDate("5881580-07-10")).toBe(2147483646);
   expect(() => relationDate("5877642-06-24 (BC)")).toThrow();

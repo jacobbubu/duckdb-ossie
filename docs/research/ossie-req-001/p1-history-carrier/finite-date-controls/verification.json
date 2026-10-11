@@ -1,0 +1,145 @@
+{
+  "scope": "complete finite Date native/decoder correspondence, not historical relation execution",
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "352e96f2f0a3dca9704e2cbdac1d6f1f2a83276dd6991fdc5c6d50ae530032bc",
+  "source_sha256": {
+    "scripts/verify_finite_dates_artifact.ts": "b95373016518fe6818f08bd801e0e93984d6e212ea597257f0b72777b7ea3082",
+    "scripts/relation_result.ts": "d263e74d9dd9e43bf08358269b3f4823aafa15169c0f9efbf1c749d3c4593eb0"
+  },
+  "actual": [
+    [
+      "5877642-06-23 (BC)",
+      true,
+      "-2147483648"
+    ],
+    [
+      "5877642-06-25 (BC)",
+      true,
+      "-2147483646"
+    ],
+    [
+      "271822-04-20 (BC)",
+      true,
+      "-100000000"
+    ],
+    [
+      "1970-01-01",
+      true,
+      "0"
+    ],
+    [
+      "5881580-07-10",
+      true,
+      "2147483646"
+    ]
+  ],
+  "result": {
+    "schema_version": "ossie-relation-result-v1",
+    "profile": "observation-relation-program-v1",
+    "relationship": "audited_user",
+    "root_concept": "DailyObservation",
+    "target_concept": "User",
+    "target_identity_relationship": "id",
+    "target_identity_field": "user_id",
+    "target_identity_bound_type": "VARCHAR",
+    "snapshot_id": "a064d6b24ce95a006887c5bf71ed022307bfbac985a89e7cb0c862760bbc7614:1",
+    "content_sha256": "a064d6b24ce95a006887c5bf71ed022307bfbac985a89e7cb0c862760bbc7614",
+    "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+    "ontology_sha256": "978f5fdc70c370fa04a10d0e61fdee53113559f6121c0243cc1fb3ff81f490ab",
+    "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+    "manifest_sha256": "00eb0111e28960804225c55ef6b3aa31366bef1178a64efbf06af9cd9bf352bd",
+    "root_identity_fields": [
+      "user_id",
+      "ds",
+      "product"
+    ],
+    "root_identity_bound_types": [
+      "VARCHAR",
+      "DATE",
+      "VARCHAR"
+    ],
+    "scope": "entire captured root population; selected relationship predicate only",
+    "qualification": "TRUE only",
+    "load_constraints_validated": true,
+    "dependencies": [
+      "qualified_user"
+    ],
+    "derived_by": [
+      "DailyObservation.qualified_user(User)"
+    ],
+    "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+    "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+    "paging": false,
+    "truncated": false,
+    "json_byte_limit": 1048576,
+    "executed": true,
+    "members_computed": true,
+    "links": [
+      [
+        "u",
+        "5877642-06-23 (BC)",
+        "p0",
+        "u"
+      ],
+      [
+        "u",
+        "5877642-06-25 (BC)",
+        "p1",
+        "u"
+      ],
+      [
+        "u",
+        "271822-04-20 (BC)",
+        "p2",
+        "u"
+      ],
+      [
+        "u",
+        "1970-01-01",
+        "p3",
+        "u"
+      ],
+      [
+        "u",
+        "5881580-07-10",
+        "p4",
+        "u"
+      ]
+    ],
+    "link_count": "5"
+  },
+  "expected_days": [
+    -2147483648,
+    -2147483646,
+    -100000000,
+    0,
+    2147483646
+  ],
+  "passed": true,
+  "refused": [
+    "negative infinity sentinel",
+    "positive infinity sentinel",
+    "below INT32_MIN"
+  ],
+  "private_manifest_sha256": "eb6aeb8abd05dc8196c4ab827f96c503b8481434b666c8159d3de98fa6dd32c6",
+  "failures_retained": [
+    "native old relation produces valid INT32_MIN DATE, old decoder refused it"
+  ],
+  "regression": {
+    "bun_tests": 138,
+    "expects": 723,
+    "relation_mcp_checks": 14,
+    "relation_mcp_refusals": 13,
+    "fact_mcp_checks": 32,
+    "fact_mcp_refusals": 48,
+    "types": true,
+    "typescript_format": true,
+    "real_model_requests": 0
+  },
+  "cpp_changed": false,
+  "history_execution_proven": false
+}

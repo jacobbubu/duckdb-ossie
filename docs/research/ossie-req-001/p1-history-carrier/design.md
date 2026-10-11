@@ -56,6 +56,14 @@ User/Team 合并重叠或相接区间，再按 User 排序；任何剩余异目�
 DuckDB canonical date-text，排序按日期值而非字典序；既有 relationDate helper
 支持有限域，可复用但须用新真实产物控制核对。
 
+承载核对发现并修复既有 decoder 的孤立下界错误，见
+[有限日期边界证据](finite-date-controls/verification.json)：DuckDB 的 ±INT32_MAX
+是 infinity，而 INT32_MIN 对应 `5877642-06-23 (BC)` 且有限。旧原生关系完整返回
+该日期，旧 decoder 拒绝；修正后五个有限日期实际输出与 epoch 日值一致，两个
+infinity 哨兵和越界前一日仍拒绝。138 Bun/723 expects、既有关系/多事实 MCP、
+类型/格式通过，原失败/修复证据保存。这里只验证边界/样本，不是枚举所有日期，
+也不证明尚未实施的历史算子。
+
 请求完整原始 JSON 最多 16 KiB，响应/解释/发现完整内层 JSON 最多 1 MiB，
 metadata、转义、结构计入；subset 产品沿既有 64 个/每项 256 UTF-8 字节。
 无分页、截断或 count-only 回退；数字不是 RSS/并发/完成时间承诺。compile 只绑定
