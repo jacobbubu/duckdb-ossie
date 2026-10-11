@@ -1,0 +1,278 @@
+{
+  "scope": "bounded core loader and metadata; no ontology execution",
+  "runtime": "Bun 1.3.11",
+  "client": "@duckdb/node-api 1.5.6-r.1",
+  "duckdb_version": "v1.5.6",
+  "duckdb_source_id": "069cc9f9b5",
+  "artifact_sha256": "ebcb7686846b6b201844d3b021285197de9c5370e97ce366521639a60bfd353a",
+  "artifact_loaded_in_stock_node_bindings": true,
+  "required_loader_functions": [
+    "ossie_compile",
+    "ossie_datasets",
+    "ossie_fields",
+    "ossie_load",
+    "ossie_metadata",
+    "ossie_metrics",
+    "ossie_query",
+    "ossie_relationships"
+  ],
+  "registered_public_functions": [
+    "ossie_bundle_load",
+    "ossie_compile",
+    "ossie_concept_compile",
+    "ossie_concept_query",
+    "ossie_concept_query_json",
+    "ossie_concepts",
+    "ossie_concepts_v2",
+    "ossie_daily_users_compile",
+    "ossie_daily_users_json",
+    "ossie_datasets",
+    "ossie_fields",
+    "ossie_load",
+    "ossie_metadata",
+    "ossie_metrics",
+    "ossie_objects",
+    "ossie_objects_json",
+    "ossie_population_capabilities",
+    "ossie_population_fields",
+    "ossie_population_metrics",
+    "ossie_population_strings",
+    "ossie_query",
+    "ossie_relationships"
+  ],
+  "rejected_documents": [
+    "empty_datasets.json",
+    "future_version.json",
+    "invalid_ai.json",
+    "invalid_datatype.json",
+    "invalid_dimension.json",
+    "invalid_instructions.json",
+    "invalid_metric_datatype.json",
+    "invalid_time.json",
+    "invalid_timestamp_datatype.json",
+    "missing_version.json",
+    "mixed_mapping.json",
+    "mixed_ontology.json",
+    "nonstring_examples.json",
+    "nonstring_synonyms.json",
+    "nul_version.json",
+    "null_datatype.json",
+    "null_version.json",
+    "numeric_version.json",
+    "old_version.json"
+  ],
+  "failed_load_preserves_model": true,
+  "strict_string_array_cases": [
+    {
+      "name": "model.synonyms.number",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "9036ef6aebe9d0fb8401126fe84ec73fb9e4ec9a58e5ec1f46d42e097cc20db6"
+    },
+    {
+      "name": "model.synonyms.boolean",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "5abd046f0cd0bd3cf870d136b821455ea6a0fb729fb58f7391c1d5dde797a073"
+    },
+    {
+      "name": "model.examples.number",
+      "diagnostic": "field 'examples' member at index 1 must be a string",
+      "document_sha256": "510fd948fb8a9cb4bfbf9f03513a4c8c72be4f2dee32c86ff30cc8d743b02607"
+    },
+    {
+      "name": "model.examples.boolean",
+      "diagnostic": "field 'examples' member at index 1 must be a string",
+      "document_sha256": "9b24893a3d1cc2e060631e7bcf50006bcacbde91f0540c19a4f63409fab2de6c"
+    },
+    {
+      "name": "dataset.synonyms.number",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "561af096cbf7d05b07da0767229205f5ede52fdfac090b47a0fb7f78d407e4f1"
+    },
+    {
+      "name": "dataset.synonyms.boolean",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "d9ae0d6e90584030924e48fdcb4af65846546bb7e45053baa1c2e75121d859e1"
+    },
+    {
+      "name": "dataset.examples.number",
+      "diagnostic": "field 'examples' member at index 1 must be a string",
+      "document_sha256": "17d88aae551d66030400fdc58b831997f399f9b598648c58dbd82a24a2ce759b"
+    },
+    {
+      "name": "dataset.examples.boolean",
+      "diagnostic": "field 'examples' member at index 1 must be a string",
+      "document_sha256": "3fce8de27fdd5a27a73f0361abb774ec2f1970f1c5c747aec073135537dfa7ef"
+    },
+    {
+      "name": "field.synonyms.number",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "a397555c27935c742adfc17fc24acbdf9f7f15c86381118f0443ee7a18afbe3d"
+    },
+    {
+      "name": "field.synonyms.boolean",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "870b9734f404bd36605cf5670fbf3b5cea8fb02f729f0fcc430c45892a363e36"
+    },
+    {
+      "name": "field.examples.number",
+      "diagnostic": "field 'examples' member at index 1 must be a string",
+      "document_sha256": "1208207b1c1b55f67ab701dab729911b38119cb92fa6ac8142204b125b81b70a"
+    },
+    {
+      "name": "field.examples.boolean",
+      "diagnostic": "field 'examples' member at index 1 must be a string",
+      "document_sha256": "d9572266da51f563bd679492b20bc5eeb150251a9319f75dc756f44d81cd504f"
+    },
+    {
+      "name": "metric.synonyms.number",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "da6b7152abe67d710baca90b1a406cd9fbf1de405e27ced09301ff4e9e627309"
+    },
+    {
+      "name": "metric.synonyms.boolean",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "130ab486050c3206dc288e76838b385f4bd9cebc7d56fc074d1a783272e6ddd9"
+    },
+    {
+      "name": "metric.examples.number",
+      "diagnostic": "field 'examples' member at index 1 must be a string",
+      "document_sha256": "4506cb9d7eca92972d37ba65f8dd622af589ac1cbc5c8171f921c0d2d7d57b30"
+    },
+    {
+      "name": "metric.examples.boolean",
+      "diagnostic": "field 'examples' member at index 1 must be a string",
+      "document_sha256": "aea524299207c43932f7a8d491f819526883d62da5e47a6e18080617ed11cb9c"
+    },
+    {
+      "name": "relationship.synonyms.number",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "0806314592eb4cc23a6fd279051029183bc66f4a20b7b03d1c05906ab9cb2b01"
+    },
+    {
+      "name": "relationship.synonyms.boolean",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "1ca610d54ad070f1bc4838bc82433de8ce862ad124d20e86eed9d7b3db6500a0"
+    },
+    {
+      "name": "relationship.examples.number",
+      "diagnostic": "field 'examples' member at index 1 must be a string",
+      "document_sha256": "6a1eefd60b10edebc4926c72c9f7960538a240e9910e2492daaf1df8aa54c386"
+    },
+    {
+      "name": "relationship.examples.boolean",
+      "diagnostic": "field 'examples' member at index 1 must be a string",
+      "document_sha256": "307f0dad9fcd21c6615764847f3b6bee9be25f2fd32125fb14b77b0dc0ce3dfd"
+    },
+    {
+      "name": "primary_key.number",
+      "diagnostic": "field 'primary_key' member at index 0 must be a string",
+      "document_sha256": "0fbbb222c79fb302a20638a549798b169ca24c780379941422218c1a6c151126"
+    },
+    {
+      "name": "primary_key.boolean",
+      "diagnostic": "field 'primary_key' member at index 0 must be a string",
+      "document_sha256": "bf129dbd0c0efc672f874211623a3a47558d7d7e94d5fc62d6c5195de85c5573"
+    },
+    {
+      "name": "from_columns.number",
+      "diagnostic": "field 'from_columns' member at index 0 must be a string",
+      "document_sha256": "bb4de6580cae912cdb3e8c0b7a11a88995d1320e195f880483ebc9b2c8adf617"
+    },
+    {
+      "name": "from_columns.boolean",
+      "diagnostic": "field 'from_columns' member at index 0 must be a string",
+      "document_sha256": "6d98ecfe58fa8ff2140061e4e758b1bc68db6c7c53cd158234bf3ffeb791ed93"
+    },
+    {
+      "name": "to_columns.number",
+      "diagnostic": "field 'to_columns' member at index 0 must be a string",
+      "document_sha256": "324497978ea7238b2d6d7de6a6474f75188517d2032357382555467360814242"
+    },
+    {
+      "name": "to_columns.boolean",
+      "diagnostic": "field 'to_columns' member at index 0 must be a string",
+      "document_sha256": "887a486cd4d7ea89a3feb1330f78877f6056e715658a7a6640a5dbce9c6e5d9b"
+    },
+    {
+      "name": "synonyms.member.null",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "28d49650d4e48034efd9f3d280240b0b4259867a4442d756ca5714d6001337d8"
+    },
+    {
+      "name": "synonyms.member.{}",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "d9bd8276773eac286964ccbe3497d06a0afd67b4a5321882ca1b3c015cfa2b71"
+    },
+    {
+      "name": "synonyms.member.[]",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "030aabeca009ab0ec037337be5905b7f946f34b8ec87d98ad27c1bf2682e4b27"
+    },
+    {
+      "name": "examples.array.null",
+      "diagnostic": "field 'examples' must be an array of strings",
+      "document_sha256": "d6030101d4f85c3f2f8ec25f3808909179211105f185621cf0c38a687a8d4dd8"
+    },
+    {
+      "name": "examples.array.\"text\"",
+      "diagnostic": "field 'examples' must be an array of strings",
+      "document_sha256": "f82a83d879ee8c9366a36b1252950704e82ab288a0fe74725a57c7ebf6ef15a4"
+    },
+    {
+      "name": "unique_keys.number",
+      "diagnostic": "non-string column in 'unique_keys'",
+      "document_sha256": "022df062898c701588e819d524706b5106ab132ef2293b94a6b08e1055fa5d81"
+    },
+    {
+      "name": "unique_keys.boolean",
+      "diagnostic": "non-string column in 'unique_keys'",
+      "document_sha256": "2ff31419f054f240b9898c8e08dbfa3eda78b04a6d5b34c74f21e14f8da39c12"
+    },
+    {
+      "name": "yaml.synonyms.123",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "2972e4281f69bcbcba845f7ad796fe9a4851f11332221e67752fa454c0560eff"
+    },
+    {
+      "name": "yaml.synonyms.true",
+      "diagnostic": "field 'synonyms' member at index 1 must be a string",
+      "document_sha256": "47d32f1256903c6d845a5025a4aa58d38fa46ec32e81c62089fd1735754a94e6"
+    }
+  ],
+  "string_array_bytes_preserved": true,
+  "strict_string_array_scope": "AI five scopes, primary_key and relationship columns; existing unique_keys rejection; empty/absent arrays",
+  "reference_metadata_scopes_checked": 46,
+  "multi_chunk_field_rows_checked": 2500,
+  "verification_script_sha256": "60f0f266ce31b337eb61d6c702759e013e4a4d06e5ee492deca5e0ff2ab49d0d",
+  "verification_helper_sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+  "implementation_sources_sha256": {
+    "src/model/parser.cpp": "efb44a16d4d8d0ed84b5918161ce651629073e6b7556bb3ce0260a89bea46a19",
+    "src/include/ossie/model.hpp": "0f51d181d2e2a7b280639133f86274a9e9b50542ae5f545103ecf2d86c05d4cd",
+    "src/functions/describe.cpp": "beca66aba1855721ab72ae06ecafff7f46a1a3cb9f148b3e18d4245b64b5c5c3"
+  },
+  "verification_inputs_sha256": {
+    "test/fixtures/tpcds_semantic_model.json": "7f8fa7a861b4a9a637fb579020e7d448e8d6a4afbbcaf82e4d2a3a3ec141244c",
+    "test/sql/ossie_loader_contract.test": "a207073de9b638f5d25334a8e5c38b027849b1f60158fac8cf6d0ba59360ef97",
+    "test/fixtures/loader_contract/empty_datasets.json": "918a2c062368020bac396d9c84e724c6165953ab95460f97cc3709aed375d695",
+    "test/fixtures/loader_contract/future_version.json": "7445a5010edc38aed0c031eea096bebece9c7a25704115c43fa0feb97739554e",
+    "test/fixtures/loader_contract/invalid_ai.json": "e7545b116471a10a4201e73ad972293e761170da6ae3ed31c7f2dcc6b6b21311",
+    "test/fixtures/loader_contract/invalid_datatype.json": "be0dda8d33f05b3591642179434c3c2fe31a22ee9a578bc6e329061caf3585f8",
+    "test/fixtures/loader_contract/invalid_dimension.json": "267bec0fa0cb45a1ea66ddd80b83ee9bcd0c990917567c14e9e784e067e863d3",
+    "test/fixtures/loader_contract/invalid_instructions.json": "cb89f3c98e1e83c102983c638eee51bb455ac9a930f867580cd462fc05401348",
+    "test/fixtures/loader_contract/invalid_metric_datatype.json": "bdcb097605f6cb4e22bfc225f6015215140ac8cf1f50b9323f38c4325fe9cee4",
+    "test/fixtures/loader_contract/invalid_time.json": "9582cbe55af65d707e971333b7201a1645480d248678193f6cbb230afcf67593",
+    "test/fixtures/loader_contract/invalid_timestamp_datatype.json": "1e15d7b50a548438abab72f0cf662415408e669fb32fedf1eeb6732b0d59f2d4",
+    "test/fixtures/loader_contract/missing_version.json": "c271d7817a4070806bf2331baa397c4400ea2b654ba1979b6f4f9a8f2448659e",
+    "test/fixtures/loader_contract/mixed_mapping.json": "580ff2c99f8f500503c7301c77790b12151e31a47fbcb2a20d1f5f7c5d56605b",
+    "test/fixtures/loader_contract/mixed_ontology.json": "5815fb7f19f63ebdda6d93ec16c50b98d69cf01f06aa7d475cc214ebf94b27b7",
+    "test/fixtures/loader_contract/nonstring_examples.json": "2faf98d3ac9b1e07e67ebd1ee08dfe096625496e250de854900a347e08b25479",
+    "test/fixtures/loader_contract/nonstring_synonyms.json": "a879eb6b851092b39555f742ed4cc0f3fea2acdfe14298484fd953ae4c6b626a",
+    "test/fixtures/loader_contract/nul_version.json": "78cac4de0b1bbd22b0b5978bf10e153841da27d75159df2822ea2d449d0b98f0",
+    "test/fixtures/loader_contract/null_datatype.json": "6fccdd01586a5fb3b54748729561a0838df8d8d44f93e317b53cf33e4e401cf8",
+    "test/fixtures/loader_contract/null_version.json": "db8011214a65a5400b2e9812bb6f37f68761ff0e3d3a7f5e6762f580595a3b0e",
+    "test/fixtures/loader_contract/numeric_version.json": "2b3ebbcd0ede2f95c40332363b99a4dfcbf680690c3bba360b23a3d718522a2b",
+    "test/fixtures/loader_contract/old_version.json": "7e09614914527541b67daa814d5135e946b322fc01e507f7fff21ea54a4b23f2",
+    "test/fixtures/loader_contract/valid.json": "293ec968269bb69b6f01136cda96e4bd48494eff901e231a65c962b29af0998f",
+    "test/fixtures/loader_contract/valid.yaml": "71132c08184ca71ffde7216179cf519d0c50deffe035d2ed520f405e6885fe7a"
+  }
+}

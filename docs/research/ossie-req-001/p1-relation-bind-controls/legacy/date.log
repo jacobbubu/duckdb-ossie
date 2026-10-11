@@ -1,0 +1,74 @@
+{
+  "scope": "Existing population DATE boundary and conversion controls; no timestamp/timezone execution expansion",
+  "runtime": "Bun 1.3.11",
+  "duckdb_version": "v1.5.6",
+  "duckdb_source_id": "069cc9f9b5",
+  "artifact_sha256": "ebcb7686846b6b201844d3b021285197de9c5370e97ce366521639a60bfd353a",
+  "script_sha256": "906751f19d4e8063afc7d26502246b3f13d60781c5c4290c63cf173f1884195d",
+  "helper_sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+  "rows": 11,
+  "host_boundary": [
+    "2024-03-01",
+    2,
+    "DATE",
+    "TIMESTAMP",
+    null,
+    "2024-02-29"
+  ],
+  "half_open_calendar_hand_derived": true,
+  "between_includes_upper": true,
+  "host_interval_timestamp_does_not_prove_profile_acceptance": true,
+  "object_metric_population_matches": true,
+  "sparse_grouping": true,
+  "null_and_infinity_native": true,
+  "raw_client_infinity_display": [
+    {
+      "days": 2147483647,
+      "is_finite": false,
+      "client_to_string": "5881580-07-11"
+    },
+    {
+      "days": -2147483647,
+      "is_finite": false,
+      "client_to_string": "5877642-06-24 (BC)"
+    }
+  ],
+  "string_prefix_is_not_instant_conversion": true,
+  "timezone_configurations_checked": [
+    "Pacific/Honolulu",
+    "Asia/Shanghai"
+  ],
+  "cast_failure_try_cast_null": true,
+  "failed_load_preserves_snapshot": true,
+  "rejected_controls": [
+    "numeric_interval_constructor",
+    "quoted_interval_constructor",
+    "invalid_calendar",
+    "invalid_month",
+    "current_date",
+    "current_date_call",
+    "relative_today",
+    "relative_now",
+    "timestamp_literal",
+    "time_literal",
+    "nested_timestamp_cast",
+    "timestamp",
+    "time",
+    "timezone_timestamp",
+    "date_trunc",
+    "numeric_date",
+    "invalid_field_cast_atomicity",
+    "interval_date_field",
+    "physical_time",
+    "physical_timestamp",
+    "physical_timestamptz"
+  ],
+  "inputs_sha256": {
+    "test/fixtures/population-dates/bundle.json": "1df325a4c60ca0057fded759b159780981ea9eafda5fcaeaa41c37a243265113",
+    "test/fixtures/population-dates/core.json": "7f1777266e03628dd2e6db3f4b9952c341dd3ac3bff7d6fdcf034185dad620dd",
+    "test/fixtures/population-dates/mapping.json": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807",
+    "test/fixtures/population-dates/ontology.json": "b7e1fe5e2c7bff95ef827d07d5ea64d855694453e89f73d67d9cffb8967aab13",
+    "test/fixtures/population-dates/rows.sql": "c15c7910076c44501172745a74ed3e8a10eb66da32bd64c7252413a75480e053"
+  },
+  "population_source_sha256": "d8b059206d4de8118210d037d4c0a39709cf110fc8883ec3ba25396a23ffdedd"
+}

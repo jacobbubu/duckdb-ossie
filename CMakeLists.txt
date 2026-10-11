@@ -33,7 +33,8 @@ set(EXTENSION_SOURCES
     src/functions/compile.cpp
     src/functions/describe.cpp
     src/functions/query.cpp
-    src/population/population.cpp)
+    src/population/population.cpp
+    src/population/relation_program.cpp)
 
 build_static_extension(${TARGET_NAME} ${EXTENSION_SOURCES})
 build_loadable_extension(${TARGET_NAME} " " ${EXTENSION_SOURCES})
@@ -56,12 +57,16 @@ if(BUILD_UNITTESTS AND NOT EXTENSION_TESTS_ONLY)
   add_executable(ossie_metric_grain_test EXCLUDE_FROM_ALL test/cpp/metric_grain_test.cpp)
   target_link_libraries(ossie_metric_grain_test duckdb_static)
   link_extension_libraries(ossie_metric_grain_test "")
+  add_executable(ossie_relation_program_test EXCLUDE_FROM_ALL
+                 test/cpp/relation_program_test.cpp src/population/relation_program.cpp)
+  target_link_libraries(ossie_relation_program_test duckdb_static)
+  link_extension_libraries(ossie_relation_program_test "")
 
   # The upstream Windows workflow initializes MSVC only in its build step.
   # Compile these executables there; the later test step runs without vcvars.
   # Other toolchains keep the explicit build performed by our test Make targets.
   if(MSVC)
-    set_target_properties(ossie_state_test ossie_population_capture_test ossie_metric_grain_test
+    set_target_properties(ossie_state_test ossie_population_capture_test ossie_metric_grain_test ossie_relation_program_test
                           PROPERTIES EXCLUDE_FROM_ALL FALSE)
   endif()
 endif()

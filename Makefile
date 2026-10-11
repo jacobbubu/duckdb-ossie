@@ -91,6 +91,16 @@ population-capture-test-debug:
 population-capture-test-reldebug:
 	cmake --build build/reldebug --target ossie_population_capture_test
 	./build/reldebug/extension/ossie/ossie_population_capture_test "$(PROJ_DIR)"
-test_release_internal: state-test-release metric-grain-test-release population-capture-test-release
-test_debug_internal: state-test-debug metric-grain-test-debug population-capture-test-debug
-test_reldebug_internal: state-test-reldebug metric-grain-test-reldebug population-capture-test-reldebug
+.PHONY: relation-program-test-release relation-program-test-debug relation-program-test-reldebug
+relation-program-test-release:
+	cmake --build build/release --target ossie_relation_program_test
+	./build/release/extension/ossie/ossie_relation_program_test
+relation-program-test-debug:
+	cmake --build build/debug --target ossie_relation_program_test
+	./build/debug/extension/ossie/ossie_relation_program_test
+relation-program-test-reldebug:
+	cmake --build build/reldebug --target ossie_relation_program_test
+	./build/reldebug/extension/ossie/ossie_relation_program_test
+test_release_internal: state-test-release metric-grain-test-release population-capture-test-release relation-program-test-release
+test_debug_internal: state-test-debug metric-grain-test-debug population-capture-test-debug relation-program-test-debug
+test_reldebug_internal: state-test-reldebug metric-grain-test-reldebug population-capture-test-reldebug relation-program-test-reldebug

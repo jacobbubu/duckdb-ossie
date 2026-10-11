@@ -1393,3 +1393,17 @@ passes with zero new live requests and unchanged raw seal. Full transcript is
 private; only a provider-redacted selected summary is recorded publicly. This
 single guided synthetic-data run is not a reliability estimate or full compliance.
 No further live requests, source changes, remote CI, push/merge/release occur.
+
+关系绑定实施恢复checkpoint（fa72a6c，干净）：先实现独立C++ binder和原生语义
+控制，为后续新profile提供typed角色/DAG/约束结果，旧profile不改。关系必须正向
+锚定同一映射User目标，NULL谓词不自动成为link。编译不等于源类型绑定、捕获/
+约束执行/原子发布；完整接口及所有P1仍必需，状态/历史业务问题待答。Lead负责
+实现，Advisor只读反证；禁止模型/推送保持。
+
+独立关系binder工作包完成：[契约](docs/research/ossie-req-001/p1-relation-bind-controls/contract.md)
+及原生55检查记录typed目标、正向角色绑定、拓扑/多规则/菱形/循环及复制前预算；
+总NULL约束保留两种模式、常量在声明类型范围内。仅编译逻辑，不代表新profile已
+加载或数据约束已验证。新SHA扩展的旧native19/42/254、SQL25/959、Bun110/468、
+A1–A8/MCP与观察/每日无模型回归通过，测试接入native CI入口但远端未执行。
+下一实施为加载器接入、实际类型预检、完整根/link约束与原子发布，再做完整对象/
+解释发现/MCP和独立link oracle；混合粒度/窗口/业务决策和全P1/tidy/历史审计仍必需。

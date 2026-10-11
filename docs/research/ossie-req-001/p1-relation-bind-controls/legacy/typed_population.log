@@ -1,0 +1,887 @@
+{
+  "scope": "Typed adapter ordinary-JSON exact integer/Decimal repair; no paging or universal output-size guarantee",
+  "artifact_sha256": "ebcb7686846b6b201844d3b021285197de9c5370e97ce366521639a60bfd353a",
+  "mcp_runtime": {
+    "engine": "v1.5.6",
+    "source": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "artifact_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e"
+  },
+  "source_sha256": {
+    "src/population/population.cpp": "d8b059206d4de8118210d037d4c0a39709cf110fc8883ec3ba25396a23ffdedd",
+    "scripts/verify_typed_population_artifact.ts": "aa490ef6c3f8031ef840103dfbe28630dd96676a7a9a216e03bb77ba79ecd1da",
+    "scripts/population_result.ts": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b",
+    "examples/population_server.sql": "7f1e5ee31da9b4527968eeb20a8f560db643f820efaeca445ceb62c8738237a3",
+    "test/fixtures/population-transport/core.json": "6b7ca2ceb7bd9694bb447cbf37e03b76d8b66b8322cfe623597390eb51c74e34",
+    "test/fixtures/population-transport/ontology.json": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+    "test/fixtures/population-transport/mapping.json": "6c52c3cbc9f7997d8e75d012ad9e0d9ed610455c457db97e1956329f835337c9",
+    "test/fixtures/population-transport/bundle.json": "871bdc218cd6fc797c00ec75b86cbd6ca504612e72051b1e326c0fb70930336f",
+    "test/fixtures/population-transport/numeric-rows.sql": "d39fa09ad7845610adc1e4d459caf48dd82247f5d80eccecbab34e28623ca9c5"
+  },
+  "checks": [
+    "native adapter objects: exact types, numbers, floats, DATE, Boolean and escaped strings",
+    "native Unicode case variants remain distinct bound columns",
+    "native typed aggregate keeps exact widened types and approximate NaN",
+    "native SQL APIs still return native types",
+    "same-name and case-variant duplicate result columns refuse",
+    "unknown metric retains callback error",
+    "runtime conversion fails with structured error, no partial envelope, and recovery",
+    "prepared adapter keeps old snapshot after explicit reload",
+    "empty derived result preserves columns and exact current hashes",
+    "failed load retains typed result batch",
+    "numeric: only three tools, no reload",
+    "MCP decoder follows DuckDB ASCII-only name folding",
+    "MCP ordinary JSON: exact strings, signed zero, nonfinite/date/NULL/Boolean",
+    "MCP exact SUM/HUGEINT and float NaN",
+    "MCP SUM beyond BIGINT preserves exact string",
+    "MCP grouped exact numerics and nulls",
+    "large: only three tools, no reload",
+    "MCP 10000 typed objects: every field and ID complete",
+    "MCP 10000 typed groups match independent cents/integer oracle",
+    "MCP empty objects: metadata/hash associated with actual batch",
+    "MCP empty grouped: metadata/hash associated with actual batch",
+    "MCP empty total: metadata/hash associated with actual batch",
+    "compile stays diagnostic/native projection semantics",
+    "interrupted typed query remains cancellation, retains batch and recovers"
+  ],
+  "observations": [
+    {
+      "case": "numeric",
+      "objects": {
+        "schema_version": "ossie-population-result-v1",
+        "request_kind": "objects",
+        "concept": "ValidUser",
+        "executed": true,
+        "profile": "gaap-scalar-population-v1",
+        "snapshot_id": "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+        "content_sha256": "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+        "core_sha256": "de6e9a22bba230df4a47daf0ec3a225573bdaaa60bf4469b38f610431ed2193b",
+        "ontology_sha256": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+        "mapping_sha256": "6c52c3cbc9f7997d8e75d012ad9e0d9ed610455c457db97e1956329f835337c9",
+        "manifest_sha256": "ddf52a6cce1124d8b984cbd5b3df3b243120c027167ce5c33aef8f8778f8617f",
+        "ordering": "unspecified",
+        "paging": false,
+        "truncated": false,
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "entity_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "record_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 3,
+            "name": "dws_gaap_di.ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 4,
+            "name": "dws_gaap_di.product",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 5,
+            "name": "dws_gaap_di.region",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 6,
+            "name": "dws_gaap_di.user_type",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 7,
+            "name": "dws_gaap_di.user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 8,
+            "name": "dws_gaap_di.gaap_val",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text"
+          },
+          {
+            "ordinal": 9,
+            "name": "dws_gaap_di.ytd_gaap",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text"
+          },
+          {
+            "ordinal": 10,
+            "name": "dws_gaap_di.ordinal",
+            "bound_type": "BIGINT",
+            "encoding": "integer-text"
+          },
+          {
+            "ordinal": 11,
+            "name": "dws_gaap_di.payload",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 12,
+            "name": "dws_gaap_di.double_value",
+            "bound_type": "DOUBLE",
+            "encoding": "ieee754-text"
+          },
+          {
+            "ordinal": 13,
+            "name": "dws_gaap_di.float_value",
+            "bound_type": "FLOAT",
+            "encoding": "ieee754-text"
+          },
+          {
+            "ordinal": 14,
+            "name": "dws_gaap_di.boolean_value",
+            "bound_type": "BOOLEAN",
+            "encoding": "boolean"
+          },
+          {
+            "ordinal": 15,
+            "name": "_ossie_snapshot_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 16,
+            "name": "_ossie_content_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 17,
+            "name": "_ossie_ontology_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          }
+        ],
+        "rows": [
+          [
+            "n01",
+            "n01",
+            "2026-03-10",
+            "X",
+            "N",
+            "A",
+            "n01",
+            "9007199254740992.01",
+            "10.00",
+            "9007199254740993",
+            "中文\"\\\n\t",
+            "+Infinity",
+            "+Infinity",
+            true,
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ],
+          [
+            "n02",
+            "n02",
+            "2026-03-10",
+            "X",
+            "N",
+            "A",
+            "n02",
+            "9007199254740992.02",
+            "10.00",
+            "9007199254740992",
+            "",
+            "-Infinity",
+            "-Infinity",
+            false,
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ],
+          [
+            "n03",
+            "n03",
+            "infinity",
+            "X",
+            "S",
+            "B",
+            "n03",
+            "123456789012345678901234567890123456.78",
+            "20.00",
+            "9223372036854775807",
+            "large",
+            "NaN",
+            "NaN",
+            null,
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ],
+          [
+            "n04",
+            "n04",
+            "-infinity",
+            "X",
+            "S",
+            "B",
+            "n04",
+            "-9007199254740992.01",
+            "20.00",
+            "-9007199254740993",
+            "negative",
+            "-0",
+            "-0",
+            null,
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ],
+          [
+            "n05",
+            "n05",
+            "2026-03-11",
+            "X",
+            "N",
+            "A",
+            "n05",
+            "-0.01",
+            "10.00",
+            "-9223372036854775807",
+            "small negative",
+            "1.25",
+            "1.25",
+            null,
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ],
+          [
+            "n06",
+            "n06",
+            "2026-03-11",
+            "X",
+            "N",
+            "A",
+            "n06",
+            null,
+            "10.00",
+            null,
+            null,
+            null,
+            null,
+            null,
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ]
+        ],
+        "row_count": 6
+      },
+      "totals": {
+        "schema_version": "ossie-population-result-v1",
+        "request_kind": "metrics",
+        "concept": "ValidUser",
+        "executed": true,
+        "profile": "gaap-scalar-population-v1",
+        "snapshot_id": "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+        "content_sha256": "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+        "core_sha256": "de6e9a22bba230df4a47daf0ec3a225573bdaaa60bf4469b38f610431ed2193b",
+        "ontology_sha256": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+        "mapping_sha256": "6c52c3cbc9f7997d8e75d012ad9e0d9ed610455c457db97e1956329f835337c9",
+        "manifest_sha256": "ddf52a6cce1124d8b984cbd5b3df3b243120c027167ce5c33aef8f8778f8617f",
+        "ordering": "unspecified",
+        "paging": false,
+        "truncated": false,
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "gaap_sum",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text"
+          },
+          {
+            "ordinal": 2,
+            "name": "integer_sum",
+            "bound_type": "HUGEINT",
+            "encoding": "integer-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "record_count",
+            "bound_type": "BIGINT",
+            "encoding": "integer-text"
+          },
+          {
+            "ordinal": 4,
+            "name": "double_average",
+            "bound_type": "DOUBLE",
+            "encoding": "ieee754-text"
+          },
+          {
+            "ordinal": 5,
+            "name": "_ossie_snapshot_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 6,
+            "name": "_ossie_content_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 7,
+            "name": "_ossie_ontology_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          }
+        ],
+        "rows": [
+          [
+            "123456789012345678910241767144864448.79",
+            "9007199254740992",
+            "6",
+            "NaN",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ]
+        ],
+        "row_count": 1
+      },
+      "widened": {
+        "schema_version": "ossie-population-result-v1",
+        "request_kind": "metrics",
+        "concept": "ValidUser",
+        "executed": true,
+        "profile": "gaap-scalar-population-v1",
+        "snapshot_id": "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+        "content_sha256": "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+        "core_sha256": "de6e9a22bba230df4a47daf0ec3a225573bdaaa60bf4469b38f610431ed2193b",
+        "ontology_sha256": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+        "mapping_sha256": "6c52c3cbc9f7997d8e75d012ad9e0d9ed610455c457db97e1956329f835337c9",
+        "manifest_sha256": "ddf52a6cce1124d8b984cbd5b3df3b243120c027167ce5c33aef8f8778f8617f",
+        "ordering": "unspecified",
+        "paging": false,
+        "truncated": false,
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "integer_sum",
+            "bound_type": "HUGEINT",
+            "encoding": "integer-text"
+          },
+          {
+            "ordinal": 2,
+            "name": "_ossie_snapshot_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 3,
+            "name": "_ossie_content_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 4,
+            "name": "_ossie_ontology_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          }
+        ],
+        "rows": [
+          [
+            "9241386435364257792",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ]
+        ],
+        "row_count": 1
+      },
+      "groups": {
+        "schema_version": "ossie-population-result-v1",
+        "request_kind": "metrics",
+        "concept": "ValidUser",
+        "executed": true,
+        "profile": "gaap-scalar-population-v1",
+        "snapshot_id": "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+        "content_sha256": "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+        "core_sha256": "de6e9a22bba230df4a47daf0ec3a225573bdaaa60bf4469b38f610431ed2193b",
+        "ontology_sha256": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+        "mapping_sha256": "6c52c3cbc9f7997d8e75d012ad9e0d9ed610455c457db97e1956329f835337c9",
+        "manifest_sha256": "ddf52a6cce1124d8b984cbd5b3df3b243120c027167ce5c33aef8f8778f8617f",
+        "ordering": "unspecified",
+        "paging": false,
+        "truncated": false,
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "dws_gaap_di.user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "gaap_sum",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "integer_sum",
+            "bound_type": "HUGEINT",
+            "encoding": "integer-text"
+          },
+          {
+            "ordinal": 4,
+            "name": "_ossie_snapshot_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 5,
+            "name": "_ossie_content_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 6,
+            "name": "_ossie_ontology_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          }
+        ],
+        "rows": [
+          [
+            "n02",
+            "9007199254740992.02",
+            "9007199254740992",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ],
+          [
+            "n03",
+            "123456789012345678901234567890123456.78",
+            "9223372036854775807",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ],
+          [
+            "n04",
+            "-9007199254740992.01",
+            "-9007199254740993",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ],
+          [
+            "n01",
+            "9007199254740992.01",
+            "9007199254740993",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ],
+          [
+            "n06",
+            null,
+            null,
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ],
+          [
+            "n05",
+            "-0.01",
+            "-9223372036854775807",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644:1",
+            "73d6ae1c710e51d1163b3a9aaed12633c2755f12ebcf47b4f2089d4f94fc7644",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ]
+        ],
+        "row_count": 6
+      },
+      "content_bytes": 4708,
+      "wire_bytes": 5750
+    },
+    {
+      "case": "empty_objects",
+      "envelope": {
+        "schema_version": "ossie-population-result-v1",
+        "request_kind": "objects",
+        "concept": "ValidUser",
+        "executed": true,
+        "profile": "gaap-scalar-population-v1",
+        "snapshot_id": "ee5fe5efbad5d21a335294a522c076ba1abaaa1a93aaa47a5d48038241d3abe1:1",
+        "content_sha256": "ee5fe5efbad5d21a335294a522c076ba1abaaa1a93aaa47a5d48038241d3abe1",
+        "core_sha256": "de6e9a22bba230df4a47daf0ec3a225573bdaaa60bf4469b38f610431ed2193b",
+        "ontology_sha256": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+        "mapping_sha256": "6c52c3cbc9f7997d8e75d012ad9e0d9ed610455c457db97e1956329f835337c9",
+        "manifest_sha256": "ddf52a6cce1124d8b984cbd5b3df3b243120c027167ce5c33aef8f8778f8617f",
+        "ordering": "unspecified",
+        "paging": false,
+        "truncated": false,
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "entity_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "record_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 3,
+            "name": "dws_gaap_di.ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 4,
+            "name": "dws_gaap_di.product",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 5,
+            "name": "dws_gaap_di.region",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 6,
+            "name": "dws_gaap_di.user_type",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 7,
+            "name": "dws_gaap_di.user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 8,
+            "name": "dws_gaap_di.gaap_val",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text"
+          },
+          {
+            "ordinal": 9,
+            "name": "dws_gaap_di.ytd_gaap",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text"
+          },
+          {
+            "ordinal": 10,
+            "name": "dws_gaap_di.ordinal",
+            "bound_type": "BIGINT",
+            "encoding": "integer-text"
+          },
+          {
+            "ordinal": 11,
+            "name": "dws_gaap_di.payload",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 12,
+            "name": "dws_gaap_di.double_value",
+            "bound_type": "DOUBLE",
+            "encoding": "ieee754-text"
+          },
+          {
+            "ordinal": 13,
+            "name": "dws_gaap_di.float_value",
+            "bound_type": "FLOAT",
+            "encoding": "ieee754-text"
+          },
+          {
+            "ordinal": 14,
+            "name": "dws_gaap_di.boolean_value",
+            "bound_type": "BOOLEAN",
+            "encoding": "boolean"
+          },
+          {
+            "ordinal": 15,
+            "name": "_ossie_snapshot_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 16,
+            "name": "_ossie_content_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 17,
+            "name": "_ossie_ontology_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          }
+        ],
+        "rows": [],
+        "row_count": 0
+      }
+    },
+    {
+      "case": "empty_grouped",
+      "envelope": {
+        "schema_version": "ossie-population-result-v1",
+        "request_kind": "metrics",
+        "concept": "ValidUser",
+        "executed": true,
+        "profile": "gaap-scalar-population-v1",
+        "snapshot_id": "ee5fe5efbad5d21a335294a522c076ba1abaaa1a93aaa47a5d48038241d3abe1:1",
+        "content_sha256": "ee5fe5efbad5d21a335294a522c076ba1abaaa1a93aaa47a5d48038241d3abe1",
+        "core_sha256": "de6e9a22bba230df4a47daf0ec3a225573bdaaa60bf4469b38f610431ed2193b",
+        "ontology_sha256": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+        "mapping_sha256": "6c52c3cbc9f7997d8e75d012ad9e0d9ed610455c457db97e1956329f835337c9",
+        "manifest_sha256": "ddf52a6cce1124d8b984cbd5b3df3b243120c027167ce5c33aef8f8778f8617f",
+        "ordering": "unspecified",
+        "paging": false,
+        "truncated": false,
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "dws_gaap_di.user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "gaap_sum",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "_ossie_snapshot_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 4,
+            "name": "_ossie_content_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 5,
+            "name": "_ossie_ontology_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          }
+        ],
+        "rows": [],
+        "row_count": 0
+      }
+    },
+    {
+      "case": "empty_total",
+      "envelope": {
+        "schema_version": "ossie-population-result-v1",
+        "request_kind": "metrics",
+        "concept": "ValidUser",
+        "executed": true,
+        "profile": "gaap-scalar-population-v1",
+        "snapshot_id": "ee5fe5efbad5d21a335294a522c076ba1abaaa1a93aaa47a5d48038241d3abe1:1",
+        "content_sha256": "ee5fe5efbad5d21a335294a522c076ba1abaaa1a93aaa47a5d48038241d3abe1",
+        "core_sha256": "de6e9a22bba230df4a47daf0ec3a225573bdaaa60bf4469b38f610431ed2193b",
+        "ontology_sha256": "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67",
+        "mapping_sha256": "6c52c3cbc9f7997d8e75d012ad9e0d9ed610455c457db97e1956329f835337c9",
+        "manifest_sha256": "ddf52a6cce1124d8b984cbd5b3df3b243120c027167ce5c33aef8f8778f8617f",
+        "ordering": "unspecified",
+        "paging": false,
+        "truncated": false,
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "record_count",
+            "bound_type": "BIGINT",
+            "encoding": "integer-text"
+          },
+          {
+            "ordinal": 2,
+            "name": "gaap_sum",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "_ossie_snapshot_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 4,
+            "name": "_ossie_content_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 5,
+            "name": "_ossie_ontology_sha256",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          }
+        ],
+        "rows": [
+          [
+            "0",
+            null,
+            "ee5fe5efbad5d21a335294a522c076ba1abaaa1a93aaa47a5d48038241d3abe1:1",
+            "ee5fe5efbad5d21a335294a522c076ba1abaaa1a93aaa47a5d48038241d3abe1",
+            "cca9d5fe1ca1f4c98aeb3105ff801d7d8b93ffb83b881bbf56bac9bbedcffe67"
+          ]
+        ],
+        "row_count": 1
+      }
+    },
+    {
+      "case": "large",
+      "objects": 10000,
+      "object_columns": [
+        {
+          "ordinal": 1,
+          "name": "entity_id",
+          "bound_type": "VARCHAR",
+          "encoding": "string"
+        },
+        {
+          "ordinal": 2,
+          "name": "record_id",
+          "bound_type": "VARCHAR",
+          "encoding": "string"
+        },
+        {
+          "ordinal": 3,
+          "name": "dws_gaap_di.ds",
+          "bound_type": "DATE",
+          "encoding": "date-text"
+        },
+        {
+          "ordinal": 4,
+          "name": "dws_gaap_di.product",
+          "bound_type": "VARCHAR",
+          "encoding": "string"
+        },
+        {
+          "ordinal": 5,
+          "name": "dws_gaap_di.region",
+          "bound_type": "VARCHAR",
+          "encoding": "string"
+        },
+        {
+          "ordinal": 6,
+          "name": "dws_gaap_di.user_type",
+          "bound_type": "VARCHAR",
+          "encoding": "string"
+        },
+        {
+          "ordinal": 7,
+          "name": "dws_gaap_di.user_id",
+          "bound_type": "VARCHAR",
+          "encoding": "string"
+        },
+        {
+          "ordinal": 8,
+          "name": "dws_gaap_di.gaap_val",
+          "bound_type": "DECIMAL(38,2)",
+          "encoding": "decimal-text"
+        },
+        {
+          "ordinal": 9,
+          "name": "dws_gaap_di.ytd_gaap",
+          "bound_type": "DECIMAL(38,2)",
+          "encoding": "decimal-text"
+        },
+        {
+          "ordinal": 10,
+          "name": "dws_gaap_di.ordinal",
+          "bound_type": "BIGINT",
+          "encoding": "integer-text"
+        },
+        {
+          "ordinal": 11,
+          "name": "dws_gaap_di.payload",
+          "bound_type": "VARCHAR",
+          "encoding": "string"
+        },
+        {
+          "ordinal": 12,
+          "name": "dws_gaap_di.double_value",
+          "bound_type": "DOUBLE",
+          "encoding": "ieee754-text"
+        },
+        {
+          "ordinal": 13,
+          "name": "dws_gaap_di.float_value",
+          "bound_type": "FLOAT",
+          "encoding": "ieee754-text"
+        },
+        {
+          "ordinal": 14,
+          "name": "dws_gaap_di.boolean_value",
+          "bound_type": "BOOLEAN",
+          "encoding": "boolean"
+        },
+        {
+          "ordinal": 15,
+          "name": "_ossie_snapshot_id",
+          "bound_type": "VARCHAR",
+          "encoding": "string"
+        },
+        {
+          "ordinal": 16,
+          "name": "_ossie_content_sha256",
+          "bound_type": "VARCHAR",
+          "encoding": "string"
+        },
+        {
+          "ordinal": 17,
+          "name": "_ossie_ontology_sha256",
+          "bound_type": "VARCHAR",
+          "encoding": "string"
+        }
+      ],
+      "object_content_bytes": 43340457,
+      "object_wire_bytes": 63181123,
+      "object_content_sha256": "b334f1d532d732b26ae3e15e96750c4eef646e5163430e06b7361697b3307641",
+      "groups": 10000,
+      "group_content_bytes": 2469414,
+      "group_wire_bytes": 2749800,
+      "snapshot_id": "ee5fe5efbad5d21a335294a522c076ba1abaaa1a93aaa47a5d48038241d3abe1:1"
+    },
+    {
+      "case": "cancellation",
+      "interrupt_calls": 1,
+      "phase": "timed actual query; exact encoding checkpoint not controlled",
+      "snapshot_id": "ee5fe5efbad5d21a335294a522c076ba1abaaa1a93aaa47a5d48038241d3abe1:4"
+    }
+  ],
+  "limitations": [
+    "Floats remain approximate; text does not preserve NaN payload bits",
+    "Complete response materialization; canonical input cap is not output/peak-memory cap",
+    "Same successful numeric schema change affects MCP consumers; native SQL remains unchanged",
+    "No remote CI, universal size bound or autonomous Agent verification"
+  ]
+}

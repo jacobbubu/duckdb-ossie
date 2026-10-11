@@ -1461,3 +1461,24 @@ SQL metadata库存测试还要求21注册/19名字；新增v2后应22/20，更�
 有界Advisor一轮只读反证（requested Astra/high；effective backend/effort/usage/billing unknown），Lead落实单一事件游标、投影/整理双表示核对、发现/模型/工具整体deadline及退出后封存、失败终态和mode贯穿、内存预扫描导出。新增16项反例/正例覆盖重算seal后的参数/续接/语义篡改、乱序/多余事件、错RPC、source/context/时间、失败缺文件、路径权限/credential/nested转义、原始目录保护与replay无fetch/进程启动。回归fixture明确synthetic重绑定当前源码，不冒充原raw。
 
 [verification.json](research/ossie-req-001/observation-agent-entry-controls/verification.json) 绑定最终源码/test/log/原seal及raw-derived SHA。全部94 Bun/391 expects、新观察MCP43检查/38拒绝、同b012058e下旧两profile330检查/106拒绝及format/typecheck/architecture通过；C++/fixture/旧例/旧driver未改，无新native或远端CI/tidy声明。当前授权工作包本地完成，下一必要事项为审阅四场景/预算/公开范围并由用户单独指示真实运行；当前暂不调用模型继续生效。不推送、合并或发布，通用P1/分页仍在原issue。
+
+### P1关系绑定实施 checkpoint（2026-10-11）
+
+恢复fa72a6c与干净worktree，上一轮八检查/三隔离拒绝及本地提交为实际进展。
+下一授权动作是独立C++ RelationProgram绑定器及直接原生测试：保留角色/根/目标
+类型和依赖，限定同一映射User目标的正向关系调用，校验DAG、未绑定角色及明确
+NULLguard约束。绑定器不读取源表、不发布快照；后续加载/完整人口约束/对象执行/
+解释发现/MCP和完整P1仍必需，不把编译测试称作新profile已可用。Lead实施；复用
+只读Advisor反证NULL关系成员和角色锚定。测试绑定与实际DuckDB谓词执行对照，
+包括多规则、阈值依赖、未知角色/引用/循环/预算拒绝；无模型/推送。
+
+### P1独立关系绑定工作包完成（2026-10-11）
+
+[绑定契约及证据范围](research/ossie-req-001/p1-relation-bind-controls/contract.md)记录
+新C++ binder与55项直接原生控制。保存typed根/目标、确定拓扑及约束，显式正向
+角色锚定，依赖UNKNOWN作为缺link处理；复制前预算、有限总NULL约束及常量类型
+范围校验落实。它尚未接入新profile或数据约束执行，不能称公开支持。旧三个profile
+保留，同新SHA产物旧native/SQL/A1–A8/MCP/观察及每日模拟回归通过。新测试加入
+native入口和MSVC构建阶段，远端未跑；失败构建及首版raw保留。下一授权动作是
+有限profile加载/实际类型/完整人口约束/原子发布与关系对象、解释和发现，后续MCP/
+混合粒度/窗口/全部P1收口仍必需。状态/历史决策等待；无模型调用或推送。

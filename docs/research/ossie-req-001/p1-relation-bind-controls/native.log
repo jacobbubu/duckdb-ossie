@@ -1,0 +1,56 @@
+PASS: dependency bound before caller, not declaration order
+PASS: preserve declaration dependency and depth
+PASS: preserve typed root and target, not infer from string equality
+PASS: declaration order independent AST
+PASS: native predicate fixture created
+PASS: lowered dependent union binds in actual DuckDB
+PASS: downstream consumes all upstream union links, excludes NULL predicate and target
+PASS: same User retains distinct root date/product rows
+PASS: explicit NULL constraint binds
+PASS: allow-NULL guard true, negative false, positive true
+PASS: reject-NULL guard differs from allow-NULL guard
+PASS: NULL/negative/equal/above guard truth table binds
+PASS: both explicit guard modes have complete non-UNKNOWN truth tables
+PASS: upstream UNKNOWN becomes absent link, boolean false downstream
+PASS: full root constraint catches excluded negative row
+PASS: reject unsupported/unanchored rule: DailyObservation.classification_value >= 10
+PASS: reject unsupported/unanchored rule: DailyObservation.user(User) OR DailyObservation.classification_value >= 10
+PASS: reject unsupported/unanchored rule: NOT DailyObservation.user(User)
+PASS: reject unsupported/unanchored rule: DailyObservation.user('User')
+PASS: reject unsupported/unanchored rule: DailyObservation.user(Other)
+PASS: reject unsupported/unanchored rule: Other.user(User)
+PASS: reject unsupported/unanchored rule: DailyObservation.missing(User)
+PASS: reject unsupported/unanchored rule: DailyObservation.user(User,User)
+PASS: reject unsupported/unanchored rule: DailyObservation.user(DISTINCT User)
+PASS: reject unsupported/unanchored rule: DailyObservation.user(User) FILTER (WHERE true)
+PASS: reject unsupported/unanchored rule: DailyObservation.user(User ORDER BY User)
+PASS: reject unsupported/unanchored rule: system.DailyObservation.user(User)
+PASS: reject unsupported/unanchored rule: DailyObservation.user(User) AND DailyObservation.classification_value = User
+PASS: reject unsupported/unanchored rule: "DailyObservation".user(User)
+PASS: reject unsupported/unanchored rule: DailyObservation.user(User) AND EXISTS(SELECT 1)
+PASS: reject unsupported/unanchored rule: DailyObservation.user(User) AND $1
+PASS: reject unsupported/unanchored rule: LAG(DailyObservation.classification_value) OVER() >= 10
+PASS: reject unsupported/unanchored rule: DailyObservation.user(User) AND DailyObservation.classification_value >= 1.5
+PASS: reject unsupported/unanchored rule: DailyObservation.user(User) AND DailyObservation.classification_value >= NULL
+PASS: indirect cycle rejected
+PASS: direct cycle rejected
+PASS: case-normalized duplicate declaration rejected
+PASS: mapped relation shadow rejected
+PASS: wrong declared role rejected
+PASS: multi-target declaration rejected
+PASS: no implicit string scalar comparison
+PASS: out-of-range declared integral constant rejected
+PASS: reject non-total/wrong-field guard: DailyObservation.classification_value >= 0
+PASS: reject non-total/wrong-field guard: DailyObservation.other_value IS NULL OR DailyObservation.classification_value >= 0
+PASS: reject non-total/wrong-field guard: DailyObservation.classification_value IS NOT NULL OR DailyObservation.classification_value >= 0
+PASS: reject non-total/wrong-field guard: DailyObservation.classification_value IS NULL AND DailyObservation.classification_value >= 0
+PASS: relationship rename preserves semantics
+PASS: unquoted identifier normalization declared explicitly
+PASS: seventeen-level chain rejected even when upstream cached
+PASS: sixteen dependency levels accepted at boundary
+PASS: diamond dependencies retained without treating repeated upstream as cycle
+PASS: changed upstream threshold propagates to dependent membership
+PASS: thirty-three declarations refused
+PASS: exponential expansion refused before oversized predicate copy
+PASS: rule byte budget checked before parse
+PASS relation program 55 checks

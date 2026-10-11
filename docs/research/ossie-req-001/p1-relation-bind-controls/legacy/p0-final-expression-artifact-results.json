@@ -1,0 +1,70 @@
+{
+  "scope": "R3 synthetic NULLIF and directly guarded division; not full R3 or safe joins",
+  "runtime": "Bun 1.3.11",
+  "duckdb_version": "v1.5.6",
+  "duckdb_source_id": "069cc9f9b5",
+  "artifact_sha256": "ebcb7686846b6b201844d3b021285197de9c5370e97ce366521639a60bfd353a",
+  "script_sha256": "c91435a6fc858380e31efcc7a5694d7e0f49f93f8eaea621de16b3b1b948e4fb",
+  "host_boundary": {
+    "integer_division_half": 0.5,
+    "decimal_division_type": "DOUBLE",
+    "division_zero_infinity": true,
+    "zero_zero_nan": true
+  },
+  "rows": 8,
+  "positive_membership": [
+    "fraction",
+    "positive"
+  ],
+  "row_and_aggregate_ratios_hand_derived": true,
+  "aggregate_zero_by_cancellation": true,
+  "zero_null_empty": true,
+  "count_distinct_excludes_null": true,
+  "core_nullifzero_lowering_checked": true,
+  "direct_rule_division_checked": true,
+  "recursive_aggregate_detection_checked": true,
+  "guarded_overflow": "native positive Infinity; zero guard does not ensure finite results",
+  "native_ratio_type": "DOUBLE",
+  "macro_shadowing_prevented": true,
+  "failed_load_preserves_snapshot": true,
+  "rejected_controls": [
+    "bare",
+    "nonzero",
+    "tiny_nonzero",
+    "maximum_scale_nonzero",
+    "string_zero",
+    "boolean_zero",
+    "null_zero",
+    "computed_zero",
+    "cast_zero",
+    "case_guard",
+    "wrapped_guard",
+    "nested_bare",
+    "metric_bare",
+    "rule_bare",
+    "qualified",
+    "unknown",
+    "integer_division",
+    "modulo",
+    "arity",
+    "no_aggregate",
+    "ungrouped_column",
+    "string_dividend",
+    "rule_nullifzero_alias",
+    "nested_aggregate",
+    "request_bare",
+    "request_numeric_truthiness",
+    "metric_ratio_declared_decimal"
+  ],
+  "inputs_sha256": {
+    "test/fixtures/population-expressions/bundle.json": "da3fd772535ab0b76dad1c9488d8ce687040ae24e6b7150a00b0078b99393148",
+    "test/fixtures/population-expressions/core.json": "e5ee6a7a0d3adf4a3c59df970f28290a3a8c4ae0135f99e50a7c56364359c247",
+    "test/fixtures/population-expressions/mapping.json": "621f6b1d41289b1c6bf19ac94afaa54a651f4fcfd2113e5188eacc4cacc9ec7a",
+    "test/fixtures/population-expressions/ontology.json": "88f6e6eb2e360c860fdc1caab0cc5b764daadf975528b2e3b6c900ef7d57d6da",
+    "test/fixtures/population-expressions/rows.sql": "06c004bee67511a0e9d759480a8e4d26c04913418914302e4bb01649bcbafd4b"
+  },
+  "implementation_sha256": {
+    "src/population/population.cpp": "d8b059206d4de8118210d037d4c0a39709cf110fc8883ec3ba25396a23ffdedd"
+  },
+  "helper_sha256": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c"
+}
