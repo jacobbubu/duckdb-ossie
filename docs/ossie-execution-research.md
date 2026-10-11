@@ -6,8 +6,9 @@
 
 最新观察Agent状态：[首次真实四场景](research/ossie-req-001/observation-live-first-controls/review.md)
 已按用户确认的固定提示词/预算完成，8次模型请求/5次工具调用，数值/
-执行支持和离线重放通过。Lead口径审阅未发现不一致，最终用户验收待
-裁定；以上及下文“未运行”描述保留各阶段历史范围，不能替代本更新。
+执行支持和离线重放通过。Lead口径审阅未发现不一致，用户已接受
+[本次限定结论](research/ossie-req-001/observation-live-first-controls/acceptance-decision.json)。
+原pending及以上/下文“未运行”描述保留各阶段历史范围，不能替代本更新。
 
 ### 四场景提示词、预算与证据范围审查 checkpoint（2026-10-11）
 
@@ -35,6 +36,34 @@ effective backend/effort/usage/billing未知。统计误读JSON文件名和一�
 仍需用户明确运行指示。无推送/远端CI/生产代码变更，原P1/分页保留。
 
 ## 范围与授权
+
+### 用户接受观察限定验收与整体交付梳理 checkpoint（2026-10-11）
+
+用户明确接受这次四场景限定验收结论，授权继续梳理整体交付及剩余工作。
+基线400b2cf；仅记录独立用户裁定、修正当前验收/计划入口、核对既有
+来源及实时只读远端分支/CI状态，不实现新能力、不调用模型、不推送。
+沿OSSIE-REQ-001及现计划，区分工作包完成、当前提交交付缺口和后续研究。
+保留raw/pending/历史报告；用户接受的是Lead所述限定结论，不声称用户
+逐条亲自查阅transcript，不扩展Ossie全规范或统计可靠性结论。
+
+### 整体交付状态梳理完成（2026-10-11）
+
+后置[用户裁定](research/ossie-req-001/observation-live-first-controls/acceptance-decision.json)
+绑定400b2cf审阅/evidence及raw seal，原件不变；[只读交付快照](research/ossie-req-001/observation-live-first-controls/delivery-state.json)
+绑定既有验证报告/CI workflow。实时ls-remote确认fork开发分支仍b2d486a，
+gh核对run38027392941 attempt2及17项成功，与原归档一致。400b2cf基线
+较远端有19本地提交，不能把旧CI当新观察/Agent提交的远端验证。计划
+首页及P0入口已区分三个有界profile本地、两次真实Agent用户接受、旧
+跨环境/远端证据。最新Bun98/403、观察MCP43/38与同b012058e下旧回归
+各有原报告，不把分阶段验证拼成刚刚重跑的完整门禁。
+
+建议下一工作包为最新增量交付准备：CI已有观察SQL及工具质量控制，
+缺新观察MCP和无模型实际MCP/重放演练调用；应先补覆盖、核对最新
+跨平台/原生/tidy和待推历史配置扫描，再按用户指示推送并核对新tipCI。
+未实施该提议。分页须先研究，calendar/window/as-of/多事件/修订/逐日
+用户交集/混合粒度/一般ontology未实现；观察最小切片不能等同整个P1。
+compile最终输出绑定和属性catalogue仍为增强项，沿现issue保留。
+本轮状态整理完成，无模型请求/新测试/CI触发/推送/合并/发布。
 
 ### 新观察四场景首次真实运行授权 checkpoint（2026-10-11）
 
@@ -552,9 +581,9 @@ MCP 示例现在有四个可读资源（concepts/metrics/fields/capabilities）�
 
 ## P0 当前证据矩阵（2026-10-10，基于 dc1801a；五轮第5轮）
 
-本表是当前状态，前面的 checkpoint 和原始报告保留各包当时的状态。判定对象为固定 `0.2.0.dev0`、DuckDB 1.5.6 的两个受限 population profile；不把 live core 的宽松函数/列透传当作 population 白名单，也不宣称全量 Ossie 符合性。“已验证”指该限定范围有实际执行或拒绝证据；“有偏离”指支持路径有证据但与规范/需求仍存在明确差异；“待补证据”不等于已发现计算错误。用户已将 R1.3/A8 改为仅支持新格式，YTD 阈值分类已接受，active/paid 未验证。
+本表是原两个profile的调整后P0矩阵；后续观察增量/Agent裁定及交付差距见本文页首和现计划。前面的checkpoint和原始报告保留各包当时的状态。判定对象为固定 `0.2.0.dev0`、DuckDB 1.5.6 的两个受限 population profile；不把 live core 的宽松函数/列透传当作 population 白名单，也不宣称全量 Ossie 符合性。“已验证”指该限定范围有实际执行或拒绝证据；“有偏离”指支持路径有证据但与规范/需求仍存在明确差异；“待补证据”不等于已发现计算错误。用户已将 R1.3/A8 改为仅支持新格式，YTD 阈值分类已接受，active/paid 未验证。
 
-证据索引（均为本地证据，远程 CI 未运行）：
+本节原审计的证据索引（下列报告为本地证据；远端当时未运行，后续旧b2d486aCI及最新差距另记）：
 
 - S：[固定来源清单](research/ossie-req-001/sources/manifest.json)、[固定表达式规范](research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md)、[原始提取](research/ossie-req-001/sources/business-source-extraction.json)、[对应关系审阅](research/ossie-req-001/source-correspondence-review.json)。后两者证明来源及人工对应，不证明视觉呈现或任意自然语言冲突自动检测；历史草案状态由本文后续用户决定与实际执行证据补充，原文件不改。
 - L：[当前 loader 验证](research/ossie-req-001/p0-final-loader-artifact-results.json)，19 类拒绝、46 个元数据对象及 2,500 字段跨批次。实现映射见 [parser.cpp](../src/model/parser.cpp)、[model.hpp](../src/include/ossie/model.hpp) 和 [describe.cpp](../src/functions/describe.cpp)。它不是完整 JSON Schema validator。

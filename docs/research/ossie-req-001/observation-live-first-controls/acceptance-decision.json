@@ -1,0 +1,31 @@
+{
+  "issue": "OSSIE-REQ-001",
+  "date": "2026-10-11",
+  "decision": "accepted for four bounded daily-observation Agent cases",
+  "decision_basis": "User explicitly accepted the stated limited conclusion; Lead reviewed scope/rule/denominator/unit/actual execution citations. No claim the user personally inspected every transcript.",
+  "accepted_user_statement": "好，接受这次限定验收结论。继续梳理整体交付状态和剩余工作。",
+  "execution_head": "adc626b28d7e3c97122c87c338868de83b0b953d",
+  "review_head": "400b2cf",
+  "evidence_sha256": "49211a03ef82edcbf6837290c0f60d548e3c53c30515aa9a201197f56cf83cf5",
+  "review_sha256": "689bc4812d0172c2bfc6898a2adc3dcc2e5209d9b95b64929bdb70c1c1505235",
+  "raw_seal_sha256": "94d9a1bfffbc51b47b827962b853939c6dc7ae98db84a2481fe7d541ae15a4f1",
+  "original_semantic_pending": "retained unchanged in raw/replay/original public evidence; later acceptance recorded separately",
+  "accepted_scope": [
+    "fixed new prompts, eight public synthetic observations and fixed two-date/all-product scope",
+    "observation/User/nonnull amount denominators and threshold10/20 rule-dependent results",
+    "daily distinct vs interval distinct counts",
+    "every-day registered capability refusal without replacement target value",
+    "one real run, eight completed responses/five tool calls and internally consistent offline replay"
+  ],
+  "limitations": [
+    "single run with public synthetic eight-row fixture; no reliability estimate or business-data authenticity claim",
+    "tool descriptions and output fields provide semantic vocabulary and nonadditivity guidance",
+    "registered every-day capability absent; raw detailed objects may allow client intersection calculations outside current contract",
+    "same query under different rule does not establish strategy change",
+    "hash/replay prove internal correspondence, not independent provider authentication or private reasoning",
+    "reported usage is not monetary cost; effective backend/effort/sampling and provider retention unknown",
+    "no new tests/native/remote CI/tidy run or push/release"
+  ],
+  "new_model_requests": 0,
+  "remote_mutated": false
+}

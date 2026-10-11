@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-11",
+  "scope": "delivery reconciliation, no implementation or new experiment",
+  "reviewed_local_head": "400b2cf",
+  "remote_branch": "origin/codex/ossie-execution",
+  "remote_tip_read": "b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af",
+  "local_commits_ahead_at_review": 19,
+  "scope_of_count": "review baseline; this new documentation commit adds another local commit",
+  "remote_ci_read": {
+    "attempt": 2,
+    "conclusion": "success",
+    "headSha": "b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "name": "Build extension binaries / MacOS (osx_arm64, macos-15, arm64, arm64-osx-release, arm64-osx-release, true, false)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Code Quality Check / Tidy Check",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Build extension binaries / Linux (linux_amd64, ubuntu-24.04, x64-linux-release, x64-linux-release, true, false)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Build extension binaries / Windows (windows_amd64, windows-latest, x64-windows-static-release, x64-windows-static-release, t...",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Build extension binaries / DuckDB-Wasm (wasm_eh, wasm32-emscripten, x64-linux, false, false)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Build extension binaries / DuckDB-Wasm (wasm_threads, wasm32-emscripten, x64-linux, false, false)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Build extension binaries / Windows (windows_amd64_mingw, windows-latest, x64-mingw-static, x64-mingw-static, true, false)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Code Quality Check / Format Check",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Build extension binaries / DuckDB-Wasm (wasm_mvp, wasm32-emscripten, x64-linux, true, false)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Build extension binaries / MacOS (osx_amd64, macos-15, x86_64, x64-osx-release, arm64-osx-release, false, false)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Project quality controls",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Build extension binaries / Generate matrix",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Build extension binaries / Linux (linux_arm64, ubuntu-24.04-arm, arm64-linux-release, arm64-linux-release, false, false)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "MCP round trip",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Load built artifact (osx_arm64)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Load built artifact (linux_amd64)",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "CI gate",
+        "status": "completed"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941"
+  },
+  "source_evidence_hashes": {
+    "docs/research/ossie-req-001/observation-schema-controls/verification-final.json": "744f82e8b2506a7e06817afbd551ec1bc8e54bec001c2097fd84bd10e1eb39cc",
+    "docs/research/ossie-req-001/observation-final-controls/acceptance.json": "bb4dbc84c2c60208169851bcaaf38087aaa7716cf7f87251e4b8d9bd8337fb2b",
+    "docs/research/ossie-req-001/observation-mcp-controls/verification.json": "1c5485df366d6195e915c477016c0d91430a96dc3c41079be2c40dc0331772cd",
+    "docs/research/ossie-req-001/observation-prompt-controls/verification.json": "45e45bc18bc31d81687d0517707590331a0df6798c9994c2092c32509faf7dec",
+    "docs/research/ossie-req-001/observation-live-first-controls/evidence.json": "49211a03ef82edcbf6837290c0f60d548e3c53c30515aa9a201197f56cf83cf5",
+    "docs/research/ossie-req-001/observation-live-first-controls/review.md": "689bc4812d0172c2bfc6898a2adc3dcc2e5209d9b95b64929bdb70c1c1505235",
+    "docs/research/ossie-req-001/observation-live-first-controls/acceptance-decision.json": "742d5aa4ea03d1676a762c5fafc035e51101dfc1504f1e19c06079965dd56c66",
+    "docs/research/ossie-req-001/agent-live-corrected-controls/acceptance-decision.json": "def3680cd0ef3e344a5113a2756d75f93f6f1cd6828063c32402b1277f93b1e5",
+    "docs/research/ossie-req-001/ci-artifact-timeout/final-state.json": "e475407a635dd4406dc5d1c313b53b23be5de77f79788ebff3fc7c3640e2b8e5",
+    ".github/workflows/MainDistributionPipeline.yml": "a1784ad3dbfb85296686d04ad2177952f24c8f3b381d8147bfbe494721b33d6a"
+  },
+  "read_only_observations": [
+    "ls-remote matched remote CI head; local ahead count based on b2d486a..400b2cf",
+    "remote CI validates only b2d486a, not later observation/Agent commits",
+    "artifact-load currently runs bounded P0 plus observation SQL verifier; project controls run Bun tests/type/format/architecture",
+    "current workflow has no invocation of observation MCP preflight or scripted observation Agent replay rehearsal",
+    "no latest observation cross-platform/tidy evidence was run in this reconciliation"
+  ],
+  "next_proposal": "prepare a latest-source delivery package: CI coverage for observation MCP/no-model rehearsal, pending-history privacy review, then user-directed push and current-tip CI verification",
+  "later_needs": [
+    "MCP pagination research before design; not required to close current bounded acceptance",
+    "calendar/window/as-of/events/revisions and every-day user intersection remain unimplemented",
+    "general ontology/full schema/language compliance remain outside supported profiles",
+    "compile output-binding guarantee and ontology attribute catalogue remain enhancements",
+    "merge/release decisions separate from local acceptance and branch push"
+  ],
+  "no_model_requests": true,
+  "no_push_merge_release": true
+}

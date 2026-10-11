@@ -17,7 +17,11 @@ whose version is `0.2.0.dev0`. This is a pinned development snapshot. Other vers
 strings, missing versions and legacy `semantic_model` wrappers are rejected.
 The core loader refuses ontology and mapping document markers. The separate
 `ossie_bundle_load` path executes bounded single-table and fact-dimension population profiles, described
-in [the profile contract](docs/population-profile.md). See the [bounded implementation record](docs/ossie-execution-research.md).
+in [the profile contract](docs/population-profile.md), and an opt-in
+[daily-observation profile](docs/population-observation.md) with typed User/date/product
+identity and distinct User counts. See the [bounded implementation record](docs/ossie-execution-research.md)
+and [current delivery status](ossie-duckdb-plan.md#current-delivery-checkpoint--2026-10-11)
+for accepted scopes, evidence and remaining verification.
 The [adjusted A1–A8 local acceptance](docs/p0-acceptance.md) records complete
 rule-driven GAAP results, declared refusals and reproducible evidence. With Bun
 dependencies, a release artifact and a stock DuckDB1.5.6 CLI on PATH, run

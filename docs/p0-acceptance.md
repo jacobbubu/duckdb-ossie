@@ -91,3 +91,24 @@ bun -e 'import {verifyAcceptance} from "./scripts/verify_p0_acceptance.ts"; cons
 ## 后续最小Agent验收裁定
 
 三个真实最小用例的数值/规则/范围/引用核对通过，用户接受委托Lead的判断；[裁定](research/ossie-req-001/agent-live-corrected-controls/acceptance-decision.json)独立记录，不覆盖历史raw/pending字段。原始475行仅是合成演示数据，不能证明累计YTD一致性或跨日期重复实体语义。下一[研究包](research/ossie-req-001/multi-period-research/research.md)仅研究身份与观察粒度，当前P0生产支持/拒绝边界保持不变。
+
+## 后续观察增量与当前交付状态（2026-10-11）
+
+上述P0矩阵/报告仍属于两个旧profile及各自当时的产物，不改写历史原件。
+后续研究已实现第三个opt-in daily-observation profile，新增User/date/product
+typed tuple及存在式distinct User投影；[本地SQL/原生及同产物旧profile
+回归](research/ossie-req-001/observation-schema-controls/verification-final.json)
+完成。观察MCP/发现/plan与无模型Agent归档/重放亦完成，最新工具质量
+检查为98 Bun/403 expects。这些来自各工作包，不是一场统一跨平台重跑。
+
+新四场景真实运行8请求/5工具，前三项数值/实际引用通过、每天口径按
+注册能力正确拒绝，Lead语义核对无不一致。用户现明确接受
+[此次限定验收结论](research/ossie-req-001/observation-live-first-controls/acceptance-decision.json)。
+后置裁定保留原始raw/replay/public evidence的pending，不称用户亲自查阅
+全部transcript。一次有指导的8行合成数据实验不证明可靠率或完整规范。
+
+当前远端仍是旧b2d486a，17项CI仅验证该旧提交；最新观察/Agent工作仍
+本地。新profile跨平台/远端tidy及最新tip CI尚待交付收口。CI现有观察SQL
+verifier和Bun质量步骤，未接入新观察MCP及脚本模拟重放的真实MCP演练。
+完整剩余与建议顺序见[现计划](../ossie-duckdb-plan.md#剩余工作与建议顺序)，
+相关问题继续沿OSSIE-REQ-001；此状态整理不授权新实现、模型请求或推送。

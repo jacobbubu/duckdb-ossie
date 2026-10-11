@@ -2,49 +2,45 @@
 
 ## Current delivery checkpoint — 2026-10-11
 
-The adjusted A1–A8 acceptance for two bounded population profiles, local
-cross-environment reproduction and remote CI packages are complete. Remote
-`b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af` passed all 17 jobs in
-[run 38027392941, attempt 2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941).
-The first attempt failed during macOS artifact upload; its raw log and the
-successful retry are retained in
-[the retry archive](docs/research/ossie-req-001/ci-artifact-timeout/final-state.json).
-Linux ARM64 CI establishes a build; its upstream test step is skipped. Local
-Ubuntu 24.04 ARM64 native/SQL/stock/MCP and tidy evidence remains separate.
-See [acceptance](docs/p0-acceptance.md), [Linux reproduction](docs/linux-reproduction.md)
-and [the issue record](docs/ossie-execution-research.md).
+三个有界profile的本地实现与限定验收已有证据，两个真实Agent工作包的
+结论均获用户接受。当前主要缺口是把最新观察/Agent增量完成交付验证，
+不是继续修复已经通过的固定用例。范围仍固定Ossie `0.2.0.dev0` 快照与
+DuckDB1.5.6，不宣称完整Ossie、一般推理或真实业务数据正确。
 
-Local `e5db46f` holds the retry archive and is not pushed; the verified remote
-commit remains `b2d486a`. No main merge or release has occurred. This completion
-covers the adjusted bounded profiles, not full Ossie/schema/language compliance.
-The three bounded real Agent cases are accepted following the delegated Lead
-review and user acceptance, with synthetic-data limits recorded separately. P1
-production work and pagination remain later work. The daily-observation local SQL slice is complete at `5c7f795`, with fixed
-offline schema validation and final same-artifact legacy regression evidence.
-New-profile MCP wiring and four isolated no-model preparations are now locally
-complete, with 43 observation checks/38 refusals, same-artifact legacy MCP
-regression and 78 Bun tests. The live entry, ordered offline replay and private archive/export are locally
-complete with simulated rehearsal. The subsequently authorized real four-scene
-observation run completed with 8 model requests/5 tool calls and exact offline
-replay; Lead semantic review found no discrepancy, final user acceptance remains
-pending. See [the real-run review](docs/research/ossie-req-001/observation-live-first-controls/review.md).
-[The prompt/budget/evidence review](docs/research/ossie-req-001/multi-period-research/agent-run-review.md)
-is complete; minimal prompt-contract alignment and no-model regression are now
-complete with 98 Bun tests and a fresh simulated rehearsal. The budget and gate
-are unchanged; old records retain their original prompt/source identity.
-The one authorized real run is complete; no repeat/budget expansion is authorized.
-See [the live/replay guide](docs/agent-observation-run.md).
-See [the preparation guide](docs/agent-observation-acceptance.md). This local
-closure does not authorize another model run or delivery.
+| 工作包 | 当前结论与证据 | 交付边界 |
+| --- | --- | --- |
+| 原单表与安全双表profile | 调整后的A1–A8通过，[P0验收](docs/p0-acceptance.md)保存来源/规则/NULL/粒度/连接/追溯/typed与拒绝证据 | 旧profile跨环境与旧远端CI通过，不扩多事实/任意join或全部表达式 |
+| 每日观察profile | User稳定身份与User/date/product tuple、全批重复拒绝、观察/用户/非空金额分母；[最终SQL/原生及旧profile回归](docs/research/ossie-req-001/observation-schema-controls/verification-final.json)通过 | 本地b012058e产物；新profile跨平台/tidy/远端CI尚未验收，不是一般多期语义 |
+| 新观察MCP/发现/plan | v2 concepts/plan与五指标、三个工具，[43检查/38拒绝和同产物旧MCP回归](docs/research/ossie-req-001/observation-mcp-controls/verification.json)通过 | 新MCP与无模型演练尚无对应远端CI步骤 |
+| Agent入口/私有档案/离线重放 | [提示协议及98 Bun/403 expects验证](docs/research/ossie-req-001/observation-prompt-controls/verification.json)通过，失败封存与篡改拒绝有证据 | 用量/字节/时间限制不等于金额或服务端存储保证；完整transcript保持私有 |
+| 两次真实Agent限定验收 | [旧三场景用户裁定](docs/research/ossie-req-001/agent-live-corrected-controls/acceptance-decision.json)及[新四场景用户裁定](docs/research/ossie-req-001/observation-live-first-controls/acceptance-decision.json)均接受 | 新四场景8请求/5工具，仅一次合成数据集成实验；原pending/失败保留，不估计可靠率 |
+| 远端分支与CI | 本轮只读核对origin/codex/ossie-execution仍为b2d486a；[run38027392941 attempt2](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38027392941)17项成功 | 此CI属于旧提交，不能覆盖后续观察/Agent增量；Linux ARM64上游测试跳过，旧本地Ubuntu证据另记 |
 
-The reviewed [minimal real Agent acceptance case](docs/agent-minimal-acceptance.md)
-has advanced to implementation after user continuation and gateway/model/key
-selection. Local controls and real MCP preparation passed. One corrected-config
-live run completed all three scenes: two numerical answers match the independent
-oracle and the unsupported scope is refused. The user accepted Lead judgement;
-this later scoped decision preserves pending fields in original run artifacts.
-The first HTTP 401 attempt is retained. See
-[the live review](docs/research/ossie-req-001/agent-live-corrected-controls/review.md).
+[状态核对快照](docs/research/ossie-req-001/observation-live-first-controls/delivery-state.json)
+以400b2cf为本轮基线：相对远端有19个本地提交；本轮文档裁定还会增加
+一个本地提交。未推送/合并/发布。历史段落保留各阶段计数和未完成描述，
+不替代本当前状态。所有问题继续沿[OSSIE-REQ-001](docs/ossie-execution-research.md)，
+这里是现计划的交付收口，不创建第二backlog。
+
+### 剩余工作与建议顺序
+
+1. **最新增量的交付准备**：CI现已接入观察SQL verifier和Bun质量控制，
+   尚未调用观察MCP预检或脚本模拟的真实MCP/重放演练。建议下一包先补
+   这些无模型CI覆盖、核对最新跨平台/原生/tidy验证入口，完成待推范围
+   的私有配置/历史扫描和证据清单。当前只做状态整理，尚未实施此建议。
+2. **分支交付验证**：准备好可审阅包后，按用户具体推送指示更新分支，
+   核对新tip的CI与产物，失败保留并修复；旧b2d486a全绿不算新tip通过。
+   main合并/发布单独决定，不因本地验收或继续整理而自动进行。
+3. **未来能力，先研究再定范围**：MCP大结果分页（用户要求先调研）、
+   calendar补齐、窗口/as-of/期末状态、多事件/修订、每天用户交集、混合
+   粒度/多事实/更广连接及一般ontology推理仍未实现。观察tuple和存在式
+   User投影只完成多期研究的一个最小切片；这些不阻塞已接受的限定用例。
+4. **已记录的接口改进**：compile最终输出绑定保证、ontology属性catalogue
+   仍是增强项，现semantic plan/概念发现不能冒充它们已实现；后续独立
+   定范围，不重新标记调整后的P0为失败。
+
+真实Agent暂不重复调用；本轮只记录用户裁定及交付状态。下一建议是
+第1项交付准备，而非直接开分页或扩大真实模型实验。
 
 ## Historical error/discovery milestones — 2026-10-09
 
