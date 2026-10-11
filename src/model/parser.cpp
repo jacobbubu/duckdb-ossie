@@ -527,7 +527,7 @@ string RebindMap::Apply(const string &source) const {
 	return *replacement + source.substr(matched_length);
 }
 
-Model ParseModel(const string &json_text, const RebindMap &rebind) {
+Model ParseModel(const string &json_text, const RebindMap &rebind, MetricReferencePolicy policy) {
 	JSONDocument document(yyjson_read(json_text.c_str(), json_text.size(), 0));
 	if (!document.doc) {
 		throw InvalidInputException("ossie_load: file is not valid JSON");
@@ -623,7 +623,7 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 		}
 	}
 
-	ValidateModel(result);
+	ValidateModel(result, policy);
 	ComputeCardinality(result);
 	return result;
 }

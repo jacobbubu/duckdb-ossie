@@ -1,0 +1,239 @@
+PASS: default core parser still refuses bare metric references
+PASS: explicit fact-only parser accepts known metric references and window metadata
+PASS: production loader publishes parent over two independent captures
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: rendered SQL without frozen AST dependencies is refused
+PASS: native weak probes observe live parent and two children
+PASS: old profile API refuses fact program: SELECT * FROM ossie_concepts()
+PASS: old profile API refuses fact program: SELECT * FROM ossie_population_metrics()
+PASS: old profile API refuses fact program: SELECT * FROM ossie_objects('User',[])
+PASS: old profile API refuses fact program: SELECT * FROM ossie_relation_program()
+PASS: old profile API refuses fact program: SELECT * FROM ossie_daily_users_json('User','{}')
+PASS: paired parent hash changes when sources change
+PASS: prepared old aggregate and single-source window survive reload with original values
+PASS: both prepared paths use frozen AST dependencies after source deletion
+PASS: single-source window retains old parent and unused second child
+PASS: releasing prepared statements releases old parent and children without ownership cycle
+PASS: concurrent two-table write between captures does not mix source transaction versions
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: second-capture interruption preserves native INTERRUPT class
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: complete new pair interrupted before publication preserves old parent
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: second capture failure refuses incomplete parent publication
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO cost VALUES ('A','2026-01-01','X',10)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO revenue VALUES ('A','2026-01-01',999)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO cost VALUES ('E','2026-02-01','X',99)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO revenue VALUES (NULL,DATE '2026-01-01',1)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO revenue VALUES ('Z',NULL,1)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO revenue VALUES ('Z',DATE 'infinity',1)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO revenue VALUES ('',DATE '2026-01-01',1)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO cost VALUES ('Z','2026-01-01','',1)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: over10000 rows in second fact refused without truncation
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: actual floating amount refused despite declared Decimal label
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: two individually under-budget captures refused when combined canonical bytes exceed16MiB
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: empty captures preserve metadata, source types and empty full domains
+PASS: empty capture physical metadata contributes to paired parent hash
+PASS: load preflight and explicit binary execution preserve raw case-distinct User identities
+PASS: window direction remains ascending under caller descending default
+PASS: default core parser still refuses bare metric references
+PASS: explicit fact-only parser accepts known metric references and window metadata
+PASS: production loader publishes parent over two independent captures
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: rendered SQL without frozen AST dependencies is refused
+PASS: native weak probes observe live parent and two children
+PASS: old profile API refuses fact program: SELECT * FROM ossie_concepts()
+PASS: old profile API refuses fact program: SELECT * FROM ossie_population_metrics()
+PASS: old profile API refuses fact program: SELECT * FROM ossie_objects('User',[])
+PASS: old profile API refuses fact program: SELECT * FROM ossie_relation_program()
+PASS: old profile API refuses fact program: SELECT * FROM ossie_daily_users_json('User','{}')
+PASS: paired parent hash changes when sources change
+PASS: prepared old aggregate and single-source window survive reload with original values
+PASS: both prepared paths use frozen AST dependencies after source deletion
+PASS: single-source window retains old parent and unused second child
+PASS: releasing prepared statements releases old parent and children without ownership cycle
+PASS: concurrent two-table write between captures does not mix source transaction versions
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: second-capture interruption preserves native INTERRUPT class
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: complete new pair interrupted before publication preserves old parent
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: second capture failure refuses incomplete parent publication
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO cost VALUES ('A','2026-01-01','X',10)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO revenue VALUES ('A','2026-01-01',999)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO cost VALUES ('E','2026-02-01','X',99)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO revenue VALUES (NULL,DATE '2026-01-01',1)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO revenue VALUES ('Z',NULL,1)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO revenue VALUES ('Z',DATE 'infinity',1)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO revenue VALUES ('',DATE '2026-01-01',1)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: full capture preflight rejects invalid or duplicate identity: INSERT INTO cost VALUES ('Z','2026-01-01','',1)
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: over10000 rows in second fact refused without truncation
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: actual floating amount refused despite declared Decimal label
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: two individually under-budget captures refused when combined canonical bytes exceed16MiB
+PASS: actual frozen common domain A/B/C retains all-NULL C and excludes D/E
+PASS: actual dual frozen collections produce independent cents oracle 29000/37500/8500
+PASS: frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved
+PASS: actual frozen sparse-date LAG and ROWS sum preserve January predecessor
+PASS: actual LAG and SUM window types differ and bind independently
+PASS: empty captures preserve metadata, source types and empty full domains
+PASS: empty capture physical metadata contributes to paired parent hash
+PASS: load preflight and explicit binary execution preserve raw case-distinct User identities
+PASS: window direction remains ascending under caller descending default
+PASS fact capture 238 checks; threads4/1

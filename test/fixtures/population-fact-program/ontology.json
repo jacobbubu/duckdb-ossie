@@ -1,0 +1,132 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "two_fact_ontology",
+  "ontology": [
+    {
+      "concept": "User",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne",
+          "verbalizes": [
+            "{id} relates to {String}"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "RevenueObservation",
+      "type": "EntityType",
+      "identify_by": [
+        "user",
+        "date"
+      ],
+      "relationships": [
+        {
+          "name": "user",
+          "roles": [
+            {
+              "concept": "User"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{user} relates to {User}"
+          ]
+        },
+        {
+          "name": "date",
+          "roles": [
+            {
+              "concept": "Date"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{date} relates to {Date}"
+          ]
+        },
+        {
+          "name": "amount",
+          "roles": [
+            {
+              "concept": "Decimal"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{amount} relates to {Decimal}"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "CostObservation",
+      "type": "EntityType",
+      "identify_by": [
+        "user",
+        "date",
+        "product"
+      ],
+      "relationships": [
+        {
+          "name": "user",
+          "roles": [
+            {
+              "concept": "User"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{user} relates to {User}"
+          ]
+        },
+        {
+          "name": "date",
+          "roles": [
+            {
+              "concept": "Date"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{date} relates to {Date}"
+          ]
+        },
+        {
+          "name": "product",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{product} relates to {String}"
+          ]
+        },
+        {
+          "name": "amount",
+          "roles": [
+            {
+              "concept": "Decimal"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{amount} relates to {Decimal}"
+          ]
+        }
+      ]
+    }
+  ]
+}

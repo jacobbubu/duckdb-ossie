@@ -111,6 +111,16 @@ fact-program-test-debug:
 fact-program-test-reldebug:
 	cmake --build build/reldebug --target ossie_fact_program_test
 	./build/reldebug/extension/ossie/ossie_fact_program_test
-test_release_internal: state-test-release metric-grain-test-release population-capture-test-release relation-program-test-release fact-program-test-release
-test_debug_internal: state-test-debug metric-grain-test-debug population-capture-test-debug relation-program-test-debug fact-program-test-debug
-test_reldebug_internal: state-test-reldebug metric-grain-test-reldebug population-capture-test-reldebug relation-program-test-reldebug fact-program-test-reldebug
+.PHONY: fact-capture-test-release fact-capture-test-debug fact-capture-test-reldebug
+fact-capture-test-release:
+	cmake --build build/release --target ossie_fact_capture_test
+	./build/release/extension/ossie/ossie_fact_capture_test $(CURDIR)/
+fact-capture-test-debug:
+	cmake --build build/debug --target ossie_fact_capture_test
+	./build/debug/extension/ossie/ossie_fact_capture_test $(CURDIR)/
+fact-capture-test-reldebug:
+	cmake --build build/reldebug --target ossie_fact_capture_test
+	./build/reldebug/extension/ossie/ossie_fact_capture_test $(CURDIR)/
+test_release_internal: state-test-release metric-grain-test-release population-capture-test-release relation-program-test-release fact-program-test-release fact-capture-test-release
+test_debug_internal: state-test-debug metric-grain-test-debug population-capture-test-debug relation-program-test-debug fact-program-test-debug fact-capture-test-debug
+test_reldebug_internal: state-test-reldebug metric-grain-test-reldebug population-capture-test-reldebug relation-program-test-reldebug fact-program-test-reldebug fact-capture-test-reldebug

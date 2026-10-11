@@ -68,11 +68,15 @@ if(BUILD_UNITTESTS AND NOT EXTENSION_TESTS_ONLY)
   target_link_libraries(ossie_fact_program_test duckdb_static)
   link_extension_libraries(ossie_fact_program_test "")
 
+  add_executable(ossie_fact_capture_test EXCLUDE_FROM_ALL test/cpp/fact_capture_test.cpp)
+  target_link_libraries(ossie_fact_capture_test duckdb_static)
+  link_extension_libraries(ossie_fact_capture_test "")
+
   # The upstream Windows workflow initializes MSVC only in its build step.
   # Compile these executables there; the later test step runs without vcvars.
   # Other toolchains keep the explicit build performed by our test Make targets.
   if(MSVC)
-    set_target_properties(ossie_state_test ossie_population_capture_test ossie_metric_grain_test ossie_relation_program_test ossie_fact_program_test
+    set_target_properties(ossie_state_test ossie_population_capture_test ossie_metric_grain_test ossie_relation_program_test ossie_fact_program_test ossie_fact_capture_test
                           PROPERTIES EXCLUDE_FROM_ALL FALSE)
   endif()
 endif()

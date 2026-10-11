@@ -1,0 +1,67 @@
+Makefile:33: warning: overriding commands for target `tidy-check'
+extension-ci-tools/makefiles/duckdb_extension.Makefile:273: warning: ignoring old commands for target `tidy-check'
+python3 duckdb/scripts/format.py --all --check --directories src test
+Checking all files
+src/compile/compile.cpp
+src/functions/compile.cpp
+src/functions/describe.cpp
+src/functions/load.cpp
+src/functions/query.cpp
+src/include/ossie/catalog.hpp
+src/include/ossie/compile.hpp
+src/include/ossie/describe_functions.hpp
+src/include/ossie/dialect.hpp
+src/include/ossie/fact_program.hpp
+src/include/ossie/functions.hpp
+src/include/ossie/graph.hpp
+src/include/ossie/model.hpp
+src/include/ossie/parser.hpp
+src/include/ossie/population_testing.hpp
+src/include/ossie/relation_program.hpp
+src/include/ossie/state.hpp
+src/include/ossie/validate.hpp
+src/include/ossie/yaml.hpp
+src/include/ossie_extension.hpp
+src/model/catalog.cpp
+src/model/dialect.cpp
+src/model/graph.cpp
+src/model/parser.cpp
+src/model/validate.cpp
+src/model/yaml.cpp
+src/ossie_extension.cpp
+src/population/fact_program.cpp
+src/population/population.cpp
+src/population/relation_program.cpp
+test/cpp/fact_capture_test.cpp
+test/cpp/fact_program_test.cpp
+test/cpp/metric_grain_test.cpp
+test/cpp/population_capture_test.cpp
+test/cpp/relation_program_test.cpp
+test/cpp/state_snapshot_test.cpp
+test/sql/ossie.test
+test/sql/ossie_compile.test
+test/sql/ossie_conformance.test
+test/sql/ossie_describe.test
+test/sql/ossie_differential.test
+test/sql/ossie_field_expansion.test
+test/sql/ossie_function_metadata.test
+test/sql/ossie_grain.test
+test/sql/ossie_join_research.test
+test/sql/ossie_joined_population.test
+test/sql/ossie_load.test
+test/sql/ossie_loader_contract.test
+test/sql/ossie_population.test
+test/sql/ossie_population_daily_users.test
+test/sql/ossie_population_dates.test
+test/sql/ossie_population_discovery.test
+test/sql/ossie_population_errors.test
+test/sql/ossie_population_expressions.test
+test/sql/ossie_population_observation.test
+test/sql/ossie_population_plan.test
+test/sql/ossie_population_relation_load.test
+test/sql/ossie_population_result.test
+test/sql/ossie_relationships.test
+test/sql/ossie_sql_2026.test
+test/sql/ossie_validate.test
+test/sql/ossie_yaml.test
+Passed format-check

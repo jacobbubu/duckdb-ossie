@@ -1,0 +1,313 @@
+{
+  "passed": true,
+  "scope": "relation program load and discovery only, not full P1 or objects",
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "25a7e3c415fdcfe00d4695b6b80c0a1cf377f16ae61363378b9049f14aa1a201",
+  "checks": [
+    "prepared old observation query retains old profile after relation publication",
+    "actual source-bound relation DAG loaded, full constraints validated, discovery not query execution",
+    "link constraints can be valid while root still includes low/NULL qualification values",
+    "empty actual link population satisfies link requires vacuously; no existence claim",
+    "prepared discovery retains its bound program across successful reload",
+    "source deletion does not change frozen discovery or prior validation",
+    "pending old query/capability surfaces explicitly refuse new profile"
+  ],
+  "refusals": [
+    {
+      "label": "root requires sees violation excluded by qualification",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "CONSTRAINT_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "constraint",
+        "reason": "entire declared population violates requires; snapshot not published",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=constraint reason=entire declared population violates requires; snapshot not published missing_capability=bounded population profile"
+      },
+      "old_snapshot_retained": true
+    },
+    {
+      "label": "requires validates actual qualified link population",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "CONSTRAINT_VIOLATION",
+        "object": "qualified_user",
+        "stage": "constraint",
+        "reason": "entire declared population violates requires; snapshot not published",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=qualified_user stage=constraint reason=entire declared population violates requires; snapshot not published missing_capability=bounded population profile"
+      },
+      "old_snapshot_retained": true
+    },
+    {
+      "label": "cycle refused before publication",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "DailyObservation",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie relation program: cyclic relationship dependency",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=DailyObservation stage=rule reason=Invalid Input Error: ossie relation program: cyclic relationship dependency missing_capability=bounded population profile"
+      },
+      "old_snapshot_retained": true
+    },
+    {
+      "label": "unbound User role refused",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "DailyObservation",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie relation program: unbound or wrong User role",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=DailyObservation stage=rule reason=Invalid Input Error: ossie relation program: unbound or wrong User role missing_capability=bounded population profile"
+      },
+      "old_snapshot_retained": true
+    },
+    {
+      "label": "unknown dependency refused",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "DailyObservation",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie relation program: unknown relationship reference",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=DailyObservation stage=rule reason=Invalid Input Error: ossie relation program: unknown relationship reference missing_capability=bounded population profile"
+      },
+      "old_snapshot_retained": true
+    },
+    {
+      "label": "derived name cannot shadow a mapped noninteger relationship",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "product",
+        "stage": "capability",
+        "reason": "duplicate mapped or derived relationship name",
+        "missing_capability": "duplicate mapped or derived relationship name",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=product stage=capability reason=duplicate mapped or derived relationship name missing_capability=bounded population profile"
+      },
+      "old_snapshot_retained": true
+    },
+    {
+      "label": "old profile continues refusing derived relations",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "concept",
+        "stage": "capability",
+        "reason": "unsupported nonempty requires",
+        "missing_capability": "unsupported nonempty requires",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=concept stage=capability reason=unsupported nonempty requires missing_capability=bounded population profile"
+      },
+      "old_snapshot_retained": true
+    },
+    {
+      "label": "unguarded nullable constraint refused",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "DailyObservation",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie relation program: constraint requires explicit same-field NULL guard",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=DailyObservation stage=rule reason=Invalid Input Error: ossie relation program: constraint requires explicit same-field NULL guard missing_capability=bounded population profile"
+      },
+      "old_snapshot_retained": true
+    },
+    {
+      "label": "actual captured scalar type mismatch refused before program binding",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "classification_value",
+        "stage": "bind",
+        "reason": "logical datatype incompatible with bound physical expression type",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=classification_value stage=bind reason=logical datatype incompatible with bound physical expression type missing_capability=bounded population profile"
+      },
+      "old_snapshot_retained": true
+    },
+    {
+      "label": "full source tuple duplicate rejected before constraints",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "DailyObservation",
+        "stage": "identity",
+        "reason": "entire batch contains duplicate observation tuple; identical and conflicting records both refused",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=DailyObservation stage=identity reason=entire batch contains duplicate observation tuple; identical and conflicting records both refused missing_capability=bounded population profile"
+      },
+      "old_snapshot_retained": true
+    },
+    {
+      "label": "new profile old query surface explicitly refused",
+      "sql": "SELECT * FROM ossie_concepts_v2()"
+    },
+    {
+      "label": "new profile old query surface explicitly refused",
+      "sql": "SELECT * FROM ossie_population_capabilities()"
+    },
+    {
+      "label": "new profile old query surface explicitly refused",
+      "sql": "SELECT * FROM ossie_objects('DailyObservation',[])"
+    },
+    {
+      "label": "new profile old query surface explicitly refused",
+      "sql": "SELECT * FROM ossie_daily_users_json('QualifiedObservation','{}')"
+    }
+  ],
+  "initial_program": {
+    "schema_version": "ossie-relation-program-v1",
+    "profile": "observation-relation-program-v1",
+    "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:2",
+    "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+    "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+    "ontology_sha256": "978f5fdc70c370fa04a10d0e61fdee53113559f6121c0243cc1fb3ff81f490ab",
+    "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+    "manifest_sha256": "ceb81e34a1616b1ddc2a32b33efdca2aa39f5a58278fbc4dec1aafd6a14934ac",
+    "root": "DailyObservation",
+    "target_concept": "User",
+    "mapped_user_relation": "user",
+    "root_identity_fields": [
+      "user_id",
+      "ds",
+      "product"
+    ],
+    "root_identity_bound_types": [
+      "VARCHAR",
+      "DATE",
+      "VARCHAR"
+    ],
+    "captured_rows": "23",
+    "source_types_bound": true,
+    "load_constraints_validated": true,
+    "query_executed": false,
+    "root_constraints": [
+      "DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0"
+    ],
+    "relations": [
+      {
+        "name": "qualified_user",
+        "target_concept": "User",
+        "dependencies": [],
+        "dependency_depth": 1,
+        "derived_by": [
+          "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+        ],
+        "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+        "link_constraints": []
+      },
+      {
+        "name": "audited_user",
+        "target_concept": "User",
+        "dependencies": [
+          "qualified_user"
+        ],
+        "dependency_depth": 2,
+        "derived_by": [
+          "DailyObservation.qualified_user(User)"
+        ],
+        "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+        "link_constraints": []
+      }
+    ],
+    "objects_queryable": true,
+    "mcp_registered": false,
+    "constraint_scope": "entire root or actual complete relation links before atomic publish",
+    "predicate_sql_replayable": false,
+    "json_byte_limit": 1048576
+  },
+  "final_program": {
+    "schema_version": "ossie-relation-program-v1",
+    "profile": "observation-relation-program-v1",
+    "snapshot_id": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7:13",
+    "content_sha256": "8f8cab288b42f33088d41ca3b9888b65e8232e5ef9f6afd038900bb6cae699c7",
+    "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+    "ontology_sha256": "7c8ab923d70907b0b2a9428305e5196cf6d050f1cac9c443f40ac526f5d5eb07",
+    "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+    "manifest_sha256": "c1a99b47d7cc6bf8cec110efc707999be0d633fdead3145e116148ba56325d09",
+    "root": "DailyObservation",
+    "target_concept": "User",
+    "mapped_user_relation": "user",
+    "root_identity_fields": [
+      "user_id",
+      "ds",
+      "product"
+    ],
+    "root_identity_bound_types": [
+      "VARCHAR",
+      "DATE",
+      "VARCHAR"
+    ],
+    "captured_rows": "23",
+    "source_types_bound": true,
+    "load_constraints_validated": true,
+    "query_executed": false,
+    "root_constraints": [
+      "DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0"
+    ],
+    "relations": [
+      {
+        "name": "qualified_user",
+        "target_concept": "User",
+        "dependencies": [],
+        "dependency_depth": 1,
+        "derived_by": [
+          "DailyObservation.classification_value >= 10 AND DailyObservation.user(User)"
+        ],
+        "bound_predicate": "((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL))",
+        "link_constraints": [
+          "((observations.classification_value IS NOT NULL) AND (observations.classification_value >= 10))"
+        ]
+      },
+      {
+        "name": "audited_user",
+        "target_concept": "User",
+        "dependencies": [
+          "qualified_user"
+        ],
+        "dependency_depth": 2,
+        "derived_by": [
+          "DailyObservation.qualified_user(User)"
+        ],
+        "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+        "link_constraints": []
+      }
+    ],
+    "objects_queryable": true,
+    "mcp_registered": false,
+    "constraint_scope": "entire root or actual complete relation links before atomic publish",
+    "predicate_sql_replayable": false,
+    "json_byte_limit": 1048576
+  },
+  "source_sha256": "3c0c4cc77140a84e01ec45d90e4386ffe01ac2a302ba5d79cb3ebc1152a2166f",
+  "real_model_calls": 0
+}

@@ -1573,3 +1573,33 @@ DuckDB执行反例，接收来源TableRef而非明细joinSQL；绑定测试不�
 观察行窗口及输出筛选阶段、实际精度/单位和有界拒绝。顾问排序/名称/元数据复制
 预算意见已修正；121Bun/544及质量通过。新profile未实现，下一为实际双事实冻结
 加载/完整预检/同事务/原子发布与prepared双依赖，再公开接口，整个P1仍未完成。
+
+双事实冻结加载恢复checkpoint（d79e8b6，干净）：前轮native绑定与证据提交为progress。
+沿OSSIE-REQ-001/实施契约接新multi-fact-user-program-v1，manifest program仅facts
+(dataset/concept/currency)及windows(core指标名)，不重复公式/不推断币种。固定core/
+ontology/mapping校验，根完整身份与同一User referent；显式新解析策略只允许此profile
+已声明指标引用，旧解析/旧Compile保持。两独立child冻结同事务源、总canonical预算/
+完整类型键预检，parent原子发布/hash及prepared保留双集合。先native-only AST seam
+验证真实冻结来源，不加临时公开查询；后续完整发现/查询/MCP/无模型仍必需，整个
+P1与业务状态历史待答/最终质量历史审计保持，禁止模型/推送。
+
+双事实加载回归checkpoint：原生238检查及新加载4检查/28拒绝通过；同产物旧
+A1–A8在joined_population超限拒绝文案处失败。实际拒绝发生，新的统一预算守卫
+改写了旧错误原因，故保留默认单捕获的“batch exceeds 16 MiB”前缀，仅剩余
+合计预算使用双捕获原因。失败日志保留，修复后需重建并重新绑定产物验收；
+未完成整体P1，公开多事实/窗口API及MCP、业务待答和最终质量仍必需。
+
+双事实加载兼容修复结果：重建产物后完整A1–A8 runner退出0，新加载4检查/28
+拒绝、238原生双事实检查、旧capture308/state19/grain42/relation55/fact78及
+26SQL/982断言通过；类型、原生/TypeScript格式和diff检查通过。最初joined
+超限文案失败以及误用native可执行文件路径的退出127保留。工作包仍未本地
+提交：需归档原件/hash派生证据，更新验收receipt并完成当前产物接口/离线回归
+复核。下一是公开多事实/窗口接口，整个P1及业务待答、最终tidy/跨平台仍未完成。
+没有真实模型请求、推送、合并或发布。
+
+双事实加载本地工作包完成：[验收与局限](research/ossie-req-001/p1-fact-load-controls/review.md)及receipt绑定当前扩展
+25a7e3c、238原生检查/加载4检查28拒绝、完整旧回归与无模型证据。默认超限
+文案兼容修复及测试/构建失败原件保留，16MiB只限canonical、hash非集合归一、
+探针固定binary及Prepare非溢出执行证据的限制明确。下一授权动作是公开多事实/
+窗口查询/编译解释/发现、私有Engine与JSON完整输出，再MCP/无模型；整个原P1
+及状态历史待答、最终tidy/跨平台/历史审计不缩减。未推送或调用模型。
