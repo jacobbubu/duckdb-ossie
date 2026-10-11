@@ -1,0 +1,12 @@
+[{"id":"X-two-days","eligible_ids":["B","F","H","K"],"user_count":4,"required_days":2},
+{"id":"XY-two-days","eligible_ids":["B","E","F","H","K"],"user_count":5,"required_days":2},
+{"id":"Y-two-days","eligible_ids":["K"],"user_count":1,"required_days":2},
+{"id":"all-two-days","eligible_ids":["B","E","F","H","K"],"user_count":5,"required_days":2},
+{"id":"empty-capture","eligible_ids":[],"user_count":0,"required_days":2},
+{"id":"global-missing-day","eligible_ids":[],"user_count":0,"required_days":3},
+{"id":"literal-unmatched-product","eligible_ids":[],"user_count":0,"required_days":2},
+{"id":"new-formal-rule-20","eligible_ids":["B","K"],"user_count":2,"required_days":2},
+{"id":"original-two-days","eligible_ids":["B"],"user_count":1,"required_days":2},
+{"id":"outside-only-day","eligible_ids":["J"],"user_count":1,"required_days":1},
+{"id":"single-first-day","eligible_ids":["B","E","F","G","H","K"],"user_count":6,"required_days":1},
+{"id":"single-last-day","eligible_ids":["A","B","C","E","F","H","K"],"user_count":7,"required_days":1}]

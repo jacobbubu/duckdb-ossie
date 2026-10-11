@@ -1,0 +1,59 @@
+{
+  "scope": "future acceptance design only; no product validator implemented",
+  "cases": [
+    {
+      "id": "dates_missing",
+      "trigger": "日期参数未明确",
+      "expected": "需明确范围，不能从记录日期推断",
+      "status": "designed; not run against product"
+    },
+    {
+      "id": "dates_reversed_or_empty",
+      "trigger": "start>end或显式空D",
+      "expected": "拒绝，避免真空成立",
+      "status": "designed; not run against product"
+    },
+    {
+      "id": "non_finite_or_timestamp",
+      "trigger": "日期无限值或未定义TIMESTAMP截日",
+      "expected": "拒绝此候选范围",
+      "status": "designed; not run against product"
+    },
+    {
+      "id": "product_scope_missing",
+      "trigger": "未指定all或subset",
+      "expected": "需明确范围，不猜all",
+      "status": "designed; not run against product"
+    },
+    {
+      "id": "explicit_empty_product_subset",
+      "trigger": "subset=[]",
+      "expected": "候选拒绝，区别空捕获的all",
+      "status": "designed; not run against product"
+    },
+    {
+      "id": "same_tuple_duplicates",
+      "trigger": "范围内或范围外完全重复/冲突",
+      "expected": "继承全批拒绝，不能筛选隐藏",
+      "status": "designed; not run against product"
+    },
+    {
+      "id": "mixed_binding",
+      "trigger": "不同快照或不同正式规则的逐日结果混合",
+      "expected": "不能构成同一请求的证明",
+      "status": "designed; not run against product"
+    },
+    {
+      "id": "counts_only_or_partial_objects",
+      "trigger": "仅逐日人数或不完整对象集合",
+      "expected": "不足以证明交集；不能报告目标人数",
+      "status": "designed; not run against product"
+    },
+    {
+      "id": "existing_profile_request",
+      "trigger": "当前profile/MCP的每天口径请求",
+      "expected": "保留既有unsupported，无客户端替代",
+      "status": "designed; not run against product"
+    }
+  ]
+}

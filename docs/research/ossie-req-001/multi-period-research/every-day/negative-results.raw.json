@@ -1,0 +1,4 @@
+[{"control":"empty_required_dates_vacuous_match","actual_users":10}]
+[{"control":"empty_product_set_has_no_witness","actual_users":0}]
+[{"control":"outside_interval_exact_duplicate","duplicate_tuples":1},
+{"control":"outside_interval_conflicting_duplicate","duplicate_tuples":1}]

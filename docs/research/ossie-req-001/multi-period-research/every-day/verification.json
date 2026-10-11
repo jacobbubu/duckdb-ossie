@@ -1,0 +1,95 @@
+{
+  "scope": "OSSIE-REQ-001 every-day User set research; not production implementation",
+  "baseline": "bd8c0eef7e3c78dfd6b3a1f6f60585355fe14ca8",
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "spec_local_hashes_verified": [
+    {
+      "path": "docs/research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md",
+      "sha256": "94b6a922f61afbc94576a9794e53f8dd02b3cc57bca123a6f20da5c97b9ed94f",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/core-spec/expression_language.md"
+    },
+    {
+      "path": "docs/research/ossie-req-001/sources/apache-ossie/ontology/ontology.md",
+      "sha256": "fcd7fa3e40f419f81143b1fbe523f97fc17935bc85bd0dc88f8b8b5c4103458d",
+      "url": "https://github.com/apache/ossie/blob/8dd6732da354f22ca71f16d82626a46039ecdcd9/ontology/ontology.md"
+    }
+  ],
+  "online_read": "same pinned commit ontology and expression documents read; no main/latest substitution",
+  "engine": "stock DuckDB 1.5.6; init disabled; ordinary in-memory SQL only",
+  "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+  "original_csv_sha256": "bfd38a0130028fe5829aa45e40dce8ac12e228cc2cc61e2f08f293493764f441",
+  "original_bytes_preserved_as_prefix": true,
+  "extended_rows": 23,
+  "sources_and_outputs_sha256": {
+    "cases.json": "a790d47f6cd8facff018efd10b93f933fe93a61117825b05173cf496aed4c0a9",
+    "independent.sql": "65c4eb9245d472c508631953e79a147732954907242a9897c219248c07b4219a",
+    "negative-cases.json": "4d3911bf4853fca1e6dee48be4828655fb3898d190e8caae3ba4de3feaecf0e5",
+    "negative-results.raw.json": "bd83d8fd6eecb67371e043f5e16c9b664440f8f0065d356635652cedaa7218af",
+    "negative-witness.sql": "6c5ba7936367b38afadc118bf4a0d1699000858d399fc0efe9eb85c4982da6bf",
+    "observations.csv": "3c0c4cc77140a84e01ec45d90e4386ffe01ac2a302ba5d79cb3ebc1152a2166f",
+    "research.md": "7ce7ea7e9850db43e853b98602ee91f610c7e007cf9e186a4a1aab336b4fe64d",
+    "set-results.raw.json": "41092f6b56d8c567769a99299ef255e3d6704c7aed5e64be4529710d42d2611c",
+    "sql-results.raw.json": "6316eb344e420f1f66da0f2e3b993b8cd056b936ad49d0b93f727623d36b6220",
+    "verify.ts": "73eccc2906a7f7aa29637c0e61e695dd752cfb2cde3f2aff6c8f1d22b04e81a7"
+  },
+  "computation": {
+    "hand_listed_members_and_sql_and_daily_set_intersection": "all 12 cases agree on identities, count and required day count",
+    "baseline_members": [
+      "B",
+      "E",
+      "F",
+      "H",
+      "K"
+    ],
+    "original_eight_row_members": [
+      "B"
+    ],
+    "alternative_quantifiers": {
+      "same_product_every_day": [
+        "B",
+        "F",
+        "H",
+        "K"
+      ],
+      "every_product_every_day": [
+        "K"
+      ],
+      "all_observations_qualify": [
+        "B",
+        "E",
+        "H",
+        "K"
+      ]
+    },
+    "negative_sql_counterexamples": {
+      "empty_required_dates_vacuous_match": 10,
+      "empty_product_set_has_no_witness": 0,
+      "outside_interval_exact_duplicate": 1,
+      "outside_interval_conflicting_duplicate": 1
+    },
+    "formatted_oracle_reexecution": "stdout exact byte match to preserved first raw result"
+  },
+  "future_acceptance": {
+    "negative_cases_designed": 9,
+    "product_negative_cases_executed": false,
+    "schema_or_profile_implementation": false
+  },
+  "production_paths_changed": [],
+  "ossie_loaded": false,
+  "mcp_sessions_started": 0,
+  "model_requests": 0,
+  "pushed": false,
+  "advisor": {
+    "trigger": "date/missing/product quantifier tradeoffs",
+    "requested": "Astra/high, one reused read-only Advisor",
+    "independent_reads": "existing minimal design, MCP/Agent design, pinned ontology/expression specification",
+    "did_not_read": "new fifteen fixture rows or final oracle; Lead independently verified",
+    "decision": "supports research candidate; no implementation approval",
+    "lead_disposition": "fixed whole-batch comparison product domain; separated unknown/empty product, business truth/observed coverage, current/historical rules and equal counts/different identities",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown"
+  },
+  "limitations": "Synthetic finite cases only; plain SQL oracle is not Ossie SQL2026 expression acceptance. No general complete-data business truth or current executor support claimed. Future input rejection cases are design only."
+}

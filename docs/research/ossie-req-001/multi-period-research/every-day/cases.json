@@ -1,0 +1,160 @@
+[
+  {
+    "id": "original-two-days",
+    "start": "2026-01-31",
+    "end": "2026-02-01",
+    "products": null,
+    "threshold": 10,
+    "dataset": "original",
+    "expected_ids": [
+      "B"
+    ]
+  },
+  {
+    "id": "all-two-days",
+    "start": "2026-01-31",
+    "end": "2026-02-01",
+    "products": null,
+    "threshold": 10,
+    "dataset": "extended",
+    "expected_ids": [
+      "B",
+      "E",
+      "F",
+      "H",
+      "K"
+    ]
+  },
+  {
+    "id": "X-two-days",
+    "start": "2026-01-31",
+    "end": "2026-02-01",
+    "products": [
+      "X"
+    ],
+    "threshold": 10,
+    "dataset": "extended",
+    "expected_ids": [
+      "B",
+      "F",
+      "H",
+      "K"
+    ]
+  },
+  {
+    "id": "Y-two-days",
+    "start": "2026-01-31",
+    "end": "2026-02-01",
+    "products": [
+      "Y"
+    ],
+    "threshold": 10,
+    "dataset": "extended",
+    "expected_ids": [
+      "K"
+    ]
+  },
+  {
+    "id": "XY-two-days",
+    "start": "2026-01-31",
+    "end": "2026-02-01",
+    "products": [
+      "X",
+      "Y"
+    ],
+    "threshold": 10,
+    "dataset": "extended",
+    "expected_ids": [
+      "B",
+      "E",
+      "F",
+      "H",
+      "K"
+    ]
+  },
+  {
+    "id": "single-first-day",
+    "start": "2026-01-31",
+    "end": "2026-01-31",
+    "products": null,
+    "threshold": 10,
+    "dataset": "extended",
+    "expected_ids": [
+      "B",
+      "E",
+      "F",
+      "G",
+      "H",
+      "K"
+    ]
+  },
+  {
+    "id": "single-last-day",
+    "start": "2026-02-01",
+    "end": "2026-02-01",
+    "products": null,
+    "threshold": 10,
+    "dataset": "extended",
+    "expected_ids": [
+      "A",
+      "B",
+      "C",
+      "E",
+      "F",
+      "H",
+      "K"
+    ]
+  },
+  {
+    "id": "global-missing-day",
+    "start": "2026-01-31",
+    "end": "2026-02-02",
+    "products": null,
+    "threshold": 10,
+    "dataset": "extended",
+    "expected_ids": []
+  },
+  {
+    "id": "outside-only-day",
+    "start": "2026-02-03",
+    "end": "2026-02-03",
+    "products": null,
+    "threshold": 10,
+    "dataset": "extended",
+    "expected_ids": [
+      "J"
+    ]
+  },
+  {
+    "id": "new-formal-rule-20",
+    "start": "2026-01-31",
+    "end": "2026-02-01",
+    "products": null,
+    "threshold": 20,
+    "dataset": "extended",
+    "expected_ids": [
+      "B",
+      "K"
+    ]
+  },
+  {
+    "id": "literal-unmatched-product",
+    "start": "2026-01-31",
+    "end": "2026-02-01",
+    "products": [
+      "Z"
+    ],
+    "threshold": 10,
+    "dataset": "extended",
+    "expected_ids": []
+  },
+  {
+    "id": "empty-capture",
+    "start": "2026-01-31",
+    "end": "2026-02-01",
+    "products": null,
+    "threshold": 10,
+    "dataset": "empty",
+    "expected_ids": []
+  }
+]
