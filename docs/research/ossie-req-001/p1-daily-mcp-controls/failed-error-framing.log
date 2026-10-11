@@ -1,0 +1,23 @@
+103 |           assert(
+104 |             reply.error || reply.result?.isError,
+105 |             `${label}: unexpectedly accepted`,
+106 |           );
+107 |           const text = JSON.stringify(reply);
+108 |           if (code) assert.equal(populationError(text)?.code, code, label);
+                                 ^
+AssertionError: population_daily_users: invalid calendar day
++ actual - expected
+
++ undefined
+- 'INVALID_REQUEST'
+
+ generatedMessage: false,
+     actual: undefined,
+   expected: "INVALID_REQUEST",
+   operator: "strictEqual",
+       code: "ERR_ASSERTION"
+
+      at refusal (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_daily_mcp.ts:108:28)
+      at processTicksAndRejections (native:7:39)
+
+Bun v1.3.11 (macOS arm64)

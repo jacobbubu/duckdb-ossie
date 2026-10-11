@@ -65,6 +65,38 @@ Advisor只读反证，Lead负责实施与独立控制。验证来源表删除/�
 原时间状态/历史关系业务问题尚未收到答复，依赖工作不默认实施，其他P1项保留。
 没有模型、推送/合并/发布。证据新增目录，不覆盖原首片raw。
 
+### P1每日MCP接入 checkpoint（2026-10-11）
+
+恢复83af415与干净工作树，前轮实际提交/证据为progress。沿原issue和五项P1矩阵，
+先核对已安装duckdb_mcp的6f9c4ba固定源码/实际参数行为，再新增独立示例服务的
+两个每日工具及对应专用严格carrier decoder和真实stock stdio控制。原观察服务的
+三个工具/四资源/每天拒绝不改；原生能力不冒充正在运行服务的注册状态。工具输入
+为concept/request_json两个String，内部JSON由native完整校验，外层额外参数的
+处理按实际上游行为明确而不猜additionalProperties。资源要区分SQL可用能力与
+这个服务实际暴露的工具集合。实测成员/解释/trace/错误/未知工具和解码反例；
+后续无模型支持式演练与CI仍必需。无模型调用/推送，业务决策依赖仍等待答复。
+
+### P1每日MCP接口本地完成（2026-10-11）
+
+[契约](population-daily-users.md)与[证据](research/ossie-req-001/p1-daily-mcp-controls/verification.json)
+记录独立二工具每日服务/五资源、严格result/plan结构decoder及真实固定stock MCP。
+12请求成员与已审查手列oracle一致，compile/execute范围/规则/六追溯一致；16检查/
+28拒绝含内JSON额外字段/坏日期/重复解码键/数字产品/预算、User/注入concept、
+外层missing/null/numeric及未暴露工具，失败后原集合仍可用。原观察三个工具/Agent
+文件未改，仍拒绝每天集合请求；SQL能力不等于本服务工具集合，新增daily-surface
+声明实际暴露。原生mcp_example_registered=false不检查运行中注册，以tools/list为准。
+
+固定duckdb_mcp6f9c4ba源码哈希/链接与实测证明未知外层参数忽略、object request
+可转换成JSON String；不伪造additionalProperties或完整schema执行。输入声明String，
+调用方必须发送String，所有范围在request_json；内部由native严格校验。decoder
+验证结构/字节预算/完整集合/日期/七步plan/追溯，不证明业务真实；普通JSON.parse
+不宣称外部重复对象键检测。六组损坏控制及全104Bun/454expects、格式/类型/架构通过。
+首轮误将escaped外层RPC文本交error parser导致门禁失败，原日志保留；按原观察
+verifier从message/content提取后通过，没有修改native错误。无C++/产物变更，本包
+引用83af415同SHA原生254/SQL959/旧A1–A8/MCP与模拟证据，不冒充新native运行。
+CI新增daily SQL/plan与每日MCP命令尚未远端执行。支持式无模型演练/重放/私有
+归档、业务语义答复、其余P1和最终tidy/全验收/历史审计仍必要；无模型/推送。
+
 ### P1每日逻辑解释本地完成（2026-10-11）
 
 [契约](population-daily-users.md)与[新证据](research/ossie-req-001/p1-daily-plan-controls/verification.json)

@@ -125,6 +125,13 @@ jobs:
       - name: Verify minimal daily observation profile against the same artifact
         run: bun scripts/verify_observation_artifact.ts downloaded/ossie.duckdb_extension --output quality-reports/observation-artifact-results.json
 
+      - name: Verify bounded daily User execution and logical plan against the same artifact
+        run: bun --no-env-file scripts/verify_daily_users_artifact.ts downloaded/ossie.duckdb_extension > quality-reports/daily-users.json
+
+      - name: Verify separate daily User MCP surface without a model
+        run: |
+          env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL bun --no-env-file scripts/verify_daily_mcp.ts "$(command -v duckdb)" downloaded/ossie.duckdb_extension quality-reports/daily-mcp.json
+
       # Both shipped architectures exercise the new MCP surface and scripted Agent loop.
       # No dotenv or provider credentials: the rehearsal injects completions locally.
       # Only public simulation derivatives are uploaded; sealed raw archives stay ignored.

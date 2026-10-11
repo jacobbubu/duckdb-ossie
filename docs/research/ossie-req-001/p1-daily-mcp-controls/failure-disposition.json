@@ -1,0 +1,7 @@
+{
+  "failure": "Verifier initially passed serialized outer RPC JSON into native error framing parser; escaped envelope was not decoded and expected INVALID_REQUEST comparison failed",
+  "raw_log": "failed-error-framing.log",
+  "resolution": "Extract known content block text or JSON-RPC error.message first, then frame native error JSON, as existing observation verifier does",
+  "production_changed_for_failure": false,
+  "other_discovery": "Fixed upstream coerces object request into JSON String and ignores unknown outer args; observed behavior recorded rather than falsely requiring schema-wide type/extra-property rejection"
+}

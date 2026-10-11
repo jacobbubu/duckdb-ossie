@@ -72,10 +72,33 @@ plan完整JSON同样按增量编码限制在1,048,576 UTF-8字节内，超限以
 尝试用更长规则触发plan上限会先被既有loader拒绝，未宣称精确1MiB plan边界实测。
 
 能力声明 `compile_supported=true` 与独立plan_schema。旧compile继续解释对象/指标。
-**当前未接新MCP工具或Agent场景**；`mcp_example_registered=false`表示原生声明中
-未验证新工具注册，不能据此查询任意运行中服务的tools/list。
-现观察MCP/Agent每天场景仍拒绝，后续接入必须单独实际验收；本入口不是一般calendar、
-窗口、历史规则/as-of、多事实、非递归关系或完整P1。
+专用[每日MCP示例](../examples/daily_user_server.sql)新增两个工具：
+`population_daily_users`与`population_daily_compile`。它独立于原观察服务，
+默认使用23行研究观察，当前阈值10；operator可选择已审查的阈值20。
+五个资源包含原概念/指标/字段/SQL能力及 `ossie://population/daily-surface`。
+最后一个明确此服务只暴露两个每日工具；SQL指标/对象可用不等于MCP工具存在。
+Agent无导入/reload/任意SQL工具；原观察服务三个工具和每天场景拒绝保持。
+
+参数为concept与request_json两个String，范围全在request_json。固定上游
+[6f9c4ba的参数绑定](https://github.com/teaguesterling/duckdb_mcp/blob/6f9c4ba1d2f1040c2a4638dabcd66da630a763ad/src/server/tool_handlers.cpp#L675)
+只按schema声明参数绑定，未知外层参数忽略，String参数可能从对象转为JSON文本；
+已实际验证对象request与字符串的scope一致。不能声称外层完整JSON Schema严格
+执行或additionalProperties=false生效，调用方必须发送String，禁止把filters或products
+单独放到外层期待筛选。内部request_json依然由native拒绝额外字段/重复键/坏日期/
+数字产品，missing/null/numeric request亦拒绝；MCP protocol error与native envelope
+分开解码。SQL/资源声明中的 `mcp_example_registered=false`表示原生不检查活动服务，
+本服务实际注册以tools/list/daily-surface为准。
+
+专用[Bun decoder](../scripts/daily_result.ts)验证carrier、版本、完整性、成员数整数字符串、
+原始UTF-8排序/唯一身份、正常日期/产品范围、类型/七步plan及追溯字段；不复用旧
+population-result decoder。它验证结构并比较compile/execute绑定，不证明数据真实或
+业务规则适当。使用普通JSON.parse，不声称检测任意外部carrier的重复对象键；native
+请求的重复键拒绝已有实测。输出1MiB限制指内部JSON，MCP外层转义可能更大。
+新工具已有12请求真实stock stdio与手列成员对照、解释/执行追溯及28拒绝/恢复，
+[证据](research/ossie-req-001/p1-daily-mcp-controls/verification.json)另记；新每日支持式
+无模型Agent演练仍待完成，未调用真实模型。CI已接每日SQL/plan与MCP命令，尚无
+远端运行证据。本入口不是一般calendar、窗口、历史规则/as-of、多事实、非递归关系
+或完整P1。
 
 [已接受语义研究](research/ossie-req-001/multi-period-research/every-day/research.md)、
 [原设计](research/ossie-req-001/multi-period-research/every-day/interface-design/design.md)与

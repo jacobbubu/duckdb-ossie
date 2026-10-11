@@ -1,0 +1,62 @@
+{
+  "scope": "P1 daily-only MCP local work package; whole P1 remains active",
+  "baseline": "83af415",
+  "artifact_sha256": "86fb826ba49ae9ec4318231ce9ac9c0c614066712d3d43d63a26c64784335b4b",
+  "reused_native_evidence": "../p1-daily-plan-controls/verification.json",
+  "reused_native_evidence_sha256": "2d63d6ee7327a97fae9dbea4d8ef187982702b7a13024c6d9d56a94b09c12a6f",
+  "sources_sha256": {
+    ".github/workflows/MainDistributionPipeline.yml": "799bc4d8a50d406c2f42abf631497c0a1d25592c3a5f9798dfe71e94f46b9ae1",
+    "examples/daily_user_server.sql": "0b209639cf7627bbb170228f3ca61a3546f6d0a298b58b2117920dffddb4a34c",
+    "scripts/daily_result.ts": "5eed49fe521bd5f2347c2b27d4fe2a505975b214f38889672800155cdf68b163",
+    "scripts/daily_mcp.ts": "56388ad64687c2baa145a1c99acf12bd5aa84d5f8871d29a09c3c4350420a272",
+    "scripts/verify_daily_mcp.ts": "1d6794ee171d20cde75da85b72d040eee233ded3abe4c71156648a181d9f412b",
+    "test/tooling/daily_result.test.ts": "31db5ec18cf7d0744792a42c0a21e6296531d0cd25b66c68eb73670437cd4cb6",
+    "docs/population-daily-users.md": "d98dc923d1aec55f4cdd17f78273a7870aae5d63746659117bad20da7bfbca9e",
+    "docs/population-discovery.md": "355248f42a91a92405a0e7a2d2c44af76914e33f274b21084aaf95283a58420a",
+    "docs/ossie-execution-research.md": "58271926f007c5e6319583dea4d8cf2ece0dde81c0ec77430a0b739b25c564df",
+    "ossie-duckdb-plan.md": "1a049fe2b865f490dcadaa5777328f8ee6b1a0f46fdc4ef0f385405f7f2afb81"
+  },
+  "evidence_sha256": {
+    "architecture.log": "2156cc40e9017725962fdb6a1a8fc1c560086aeabe7dffd152cc61e0787396d2",
+    "bun.log": "57b6974b34c8fec1e6e631e3bd68b02db413f81fa6eda718aacb6564b3c6933b",
+    "candidate-private-audit.json": "2b743a84924bfdeb895a1c015e72d76a3309b3e0faa6500059aeef9368b6eda1",
+    "decoder.log": "bba4c15b044f298dba1aee8a406f74e8f3f7cb02f01a0c5771981a80cfd306b9",
+    "failed-error-framing.log": "bb646bcf1f08f36cd4819cb323e12523abc425ab413f40db22ffd8959a8815b8",
+    "failure-disposition.json": "db42ec91a20deacb36f53cf8eeddeb72be865bdf47c80ac3ce3106304ca269c3",
+    "first-mcp.json": "e380e4c6069076257d12881589cf769fe57523fa7f483f72bc34ee557243e645",
+    "first-mcp.log": "5e77a90b630e6a058eb2c22a0217f8f956e3634f6b4603bade4cdfbe2d2c9a7e",
+    "format.log": "89b1264c8c3a787cd3a2b4de12aef0c722fff2f133072cc3b44269c35cd0c21c",
+    "mcp.json": "e0bb53928e3f9c423f751ecb421108f83b9c113468b630688e96ddb798079c86",
+    "mcp.log": "5e77a90b630e6a058eb2c22a0217f8f956e3634f6b4603bade4cdfbe2d2c9a7e",
+    "typecheck-initial.log": "4e8da542ccbffd70e1bacfda01f640a7a15c66d87fc2b7d4f58af694e973c17c",
+    "typecheck.log": "4e8da542ccbffd70e1bacfda01f640a7a15c66d87fc2b7d4f58af694e973c17c",
+    "upstream-review.json": "2fd9b738b5387e3abc45bc73e66ea482da7eb7b3a18c8b0622d9318c9ce0da82"
+  },
+  "passed": {
+    "actual_stock_mcp_checks": 16,
+    "actual_refusals_with_recovery": 28,
+    "same_scope_rule_binding_and_hand_member_cases": 12,
+    "tools": 2,
+    "resources": 5,
+    "decoder_controls": 6,
+    "bun_tests": 104,
+    "bun_expects": 454,
+    "format_typecheck_architecture": true,
+    "real_model_requests": 0
+  },
+  "limitations": [
+    "Outer argument JSON Schema constraints are not universally enforced by fixed upstream; extra keys ignored and object request can coerce",
+    "Native registration declaration is not tools/list; server exposure explicit in daily-surface",
+    "Ordinary JSON.parse decoder does not claim duplicate carrier object-key detection",
+    "No daily supportive no-model Agent rehearsal yet; no real model calls",
+    "CI commands wired locally, no remote CI/tidy run",
+    "No wire/peak-memory/time guarantee; internal1MiB JSON cap only"
+  ],
+  "remaining_necessities": [
+    "Daily supportive no-model Agent rehearsal/private sealed evidence/offline replay and CI",
+    "Observed state and historical relationship business decisions",
+    "Temporal/nonrecursive relationship constraints/mixed grains/multi-fact/cohorts/window SQL2026 support",
+    "Full P1 final current-artifact gates/compatibility matrix/outgoing history audit"
+  ],
+  "remote_mutated": false
+}

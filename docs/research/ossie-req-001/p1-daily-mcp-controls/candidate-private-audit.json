@@ -1,0 +1,8 @@
+{
+  "scope": "current changed/untracked nonignored candidate files; known provider/model/legacy-variable strings only",
+  "scanned_files": 23,
+  "matches": [],
+  "private_configuration_read": false,
+  "limitations": "Not final outgoing history or general secrets audit; full goal audit remains",
+  "remote_mutated": false
+}

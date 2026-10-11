@@ -1,0 +1,21 @@
+{
+  "commit": "6f9c4ba1d2f1040c2a4638dabcd66da630a763ad",
+  "sources": [
+    {
+      "url": "https://github.com/teaguesterling/duckdb_mcp/blob/6f9c4ba1d2f1040c2a4638dabcd66da630a763ad/src/server/tool_handlers.cpp",
+      "sha256": "848f4998e164111fa8b28d7a0f935eb3018d588f5e158db3dfa4bf9d0abd8318",
+      "private_raw_path": ".local-agent-evidence/p1-daily-mcp/upstream/upstream-tool_handlers.cpp"
+    },
+    {
+      "url": "https://github.com/teaguesterling/duckdb_mcp/blob/6f9c4ba1d2f1040c2a4638dabcd66da630a763ad/src/server/mcp_server.cpp",
+      "sha256": "f42f22168de5e1b2ea2d101146a037837c77879eb1781ad51220ad021a548b38",
+      "private_raw_path": ".local-agent-evidence/p1-daily-mcp/upstream/upstream-mcp_server.cpp"
+    }
+  ],
+  "review": {
+    "tool_handlers.cpp:675-726": "BuildNamedParameters only walks schema properties and converts string properties through GetValueAsString; it does not validate all JSON Schema constraints",
+    "tool_handlers.cpp:729-780": "Execute checks required fields, tries Prepare, binds recognized named parameters; otherwise interpolates template",
+    "mcp_server.cpp:751-760": "Unknown tool becomes protocol error; failed handler is forwarded as protocol error with the handler message"
+  },
+  "actual_runtime_controls": "Unknown outer args ignored; object request coerced to JSON String and preserves same scope; absent/null/numeric request refuses; request_json inner extra fields/numeric products/duplicate decoded keys refuse"
+}

@@ -102,6 +102,7 @@ schema, exact UTF-8 budgets and singleton qualified concept. The generic
 results/compile metadata above continues to describe existing objects/metrics;
 daily SQL ordering differs. Its dedicated logical compile declares actual bound
 identity types and the ordered C++ reduction, without calculating members or
-promising execution success. MCP integration remains pending. The native
+promising execution success. A separate daily-only example now publishes two tools and a daily-surface
+resource describing exposure; the observation example remains unchanged. The native
 `mcp_example_registered=false` field is an unverified example registration
 declaration, not an inspection of a running server. Actual tools/list is authoritative.
