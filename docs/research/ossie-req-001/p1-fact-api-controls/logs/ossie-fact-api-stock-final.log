@@ -1,0 +1,10 @@
+1 | /** Stock CLI loads the actual artifact and executes all five dedicated functions. */
+2 | import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+3 | import { join, resolve } from "node:path";
+4 | import { ROOT, assert, digest, sqlString } from "./artifact_helpers.ts";
+5 | const [cliArg, artifactArg, outArg] = process.argv.slice(2);
+                                          ^
+ReferenceError: Cannot access 'process' before initialization.
+      at ${WORKSPACE}/scripts/verify_fact_stock_cli.ts:5:39
+
+Bun v1.3.11 (macOS arm64)

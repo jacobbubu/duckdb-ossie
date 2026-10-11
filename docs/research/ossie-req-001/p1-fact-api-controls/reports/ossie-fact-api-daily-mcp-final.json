@@ -1,0 +1,358 @@
+{
+  "passed": true,
+  "scope": "daily MCP transport only; not whole P1 or real Agent acceptance",
+  "real_model_requests": 0,
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "install_path": "${USER_HOME}/.duckdb/extensions/v1.5.6/osx_arm64/duckdb_mcp.duckdb_extension",
+    "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+    "extension_sha256": "9ddb20dbc36bd92301b0a49178562f28a30b5e2ce774129964e7a9bd1216b5a9",
+    "server_sha256": "0b209639cf7627bbb170228f3ca61a3546f6d0a298b58b2117920dffddb4a34c"
+  },
+  "checks": [
+    "original-two-days: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "population_daily_users: fixed upstream coerces object request into JSON String with same scope",
+    "population_daily_compile: fixed upstream coerces object request into JSON String with same scope",
+    "upstream unknown outer arguments ignored without narrowing, documented boundary",
+    "outer RPC and carrier round trip preserve control/quote/backslash/Unicode scope",
+    "all-two-days: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "X-two-days: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "Y-two-days: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "XY-two-days: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "single-first-day: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "single-last-day: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "global-missing-day: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "outside-only-day: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "new-formal-rule-20: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "literal-unmatched-product: discovery, same scope/rule/binding, full hand-oracle members and count",
+    "empty-capture: discovery, same scope/rule/binding, full hand-oracle members and count"
+  ],
+  "refusals": [
+    {
+      "label": "population_daily_users: invalid calendar day",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"start_date\",\"stage\":\"arguments\",\"reason\":\"finite Gregorian date in years 0001..9999 required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=start_date stage=arguments reason=finite Gregorian date in years 0001..9999 required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_json($concept, $request_json)\n                      ^"
+        },
+        "id": 11
+      }
+    },
+    {
+      "label": "population_daily_users: extra scope field",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"request\",\"stage\":\"arguments\",\"reason\":\"undeclared JSON object key\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=request stage=arguments reason=undeclared JSON object key missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_json($concept, $request_json)\n                      ^"
+        },
+        "id": 13
+      }
+    },
+    {
+      "label": "population_daily_users: duplicate escaped key",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"request\",\"stage\":\"arguments\",\"reason\":\"duplicate JSON object key\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=request stage=arguments reason=duplicate JSON object key missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_json($concept, $request_json)\n                      ^"
+        },
+        "id": 15
+      }
+    },
+    {
+      "label": "population_daily_users: 367 days",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"RESOURCE_LIMIT_EXCEEDED\",\"object\":\"daily_user_set.inclusive_days\",\"stage\":\"resource\",\"reason\":\"maximum=366 actual=367\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=daily_user_set.inclusive_days stage=resource reason=maximum=366 actual=367 missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_json($concept, $request_json)\n                      ^"
+        },
+        "id": 17
+      }
+    },
+    {
+      "label": "population_daily_users: request bytes",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"RESOURCE_LIMIT_EXCEEDED\",\"object\":\"daily_user_set.request_json_utf8_bytes\",\"stage\":\"resource\",\"reason\":\"maximum=16384 actual=16385\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=daily_user_set.request_json_utf8_bytes stage=resource reason=maximum=16384 actual=16385 missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_json($concept, $request_json)\n                      ^"
+        },
+        "id": 19
+      }
+    },
+    {
+      "label": "population_daily_users: numeric product",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"products.values[0]\",\"stage\":\"arguments\",\"reason\":\"string required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=products.values[0] stage=arguments reason=string required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_json($concept, $request_json)\n                      ^"
+        },
+        "id": 21
+      }
+    },
+    {
+      "label": "population_daily_users: unsupported User",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"daily_user_set\",\"stage\":\"capability\",\"reason\":\"current registered qualified daily observation concept required\",\"missing_capability\":\"current registered qualified daily observation concept required\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=daily_user_set stage=capability reason=current registered qualified daily observation concept required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_json($concept, $request_json)\n                      ^"
+        },
+        "id": 23
+      }
+    },
+    {
+      "label": "population_daily_users: SQL injection concept",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"daily_user_set\",\"stage\":\"capability\",\"reason\":\"current registered qualified daily observation concept required\",\"missing_capability\":\"current registered qualified daily observation concept required\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=daily_user_set stage=capability reason=current registered qualified daily observation concept required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_json($concept, $request_json)\n                      ^"
+        },
+        "id": 25
+      }
+    },
+    {
+      "label": "population_daily_users: absent request",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "Invalid input: missing required fields"
+        },
+        "id": 27
+      }
+    },
+    {
+      "label": "population_daily_users: null request",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"daily_user_set\",\"stage\":\"arguments\",\"reason\":\"concept and request_json required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=daily_user_set stage=arguments reason=concept and request_json required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_json($concept, $request_json)\n                      ^"
+        },
+        "id": 29
+      }
+    },
+    {
+      "label": "population_daily_users: numeric request",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"request\",\"stage\":\"arguments\",\"reason\":\"JSON object required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=request stage=arguments reason=JSON object required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_json($concept, $request_json)\n                      ^"
+        },
+        "id": 32
+      }
+    },
+    {
+      "label": "population_daily_compile: invalid calendar day",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"start_date\",\"stage\":\"arguments\",\"reason\":\"finite Gregorian date in years 0001..9999 required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=start_date stage=arguments reason=finite Gregorian date in years 0001..9999 required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_compile($concept, $request_json)\n                      ^"
+        },
+        "id": 34
+      }
+    },
+    {
+      "label": "population_daily_compile: extra scope field",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"request\",\"stage\":\"arguments\",\"reason\":\"undeclared JSON object key\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=request stage=arguments reason=undeclared JSON object key missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_compile($concept, $request_json)\n                      ^"
+        },
+        "id": 36
+      }
+    },
+    {
+      "label": "population_daily_compile: duplicate escaped key",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"request\",\"stage\":\"arguments\",\"reason\":\"duplicate JSON object key\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=request stage=arguments reason=duplicate JSON object key missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_compile($concept, $request_json)\n                      ^"
+        },
+        "id": 38
+      }
+    },
+    {
+      "label": "population_daily_compile: 367 days",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"RESOURCE_LIMIT_EXCEEDED\",\"object\":\"daily_user_set.inclusive_days\",\"stage\":\"resource\",\"reason\":\"maximum=366 actual=367\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=daily_user_set.inclusive_days stage=resource reason=maximum=366 actual=367 missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_compile($concept, $request_json)\n                      ^"
+        },
+        "id": 40
+      }
+    },
+    {
+      "label": "population_daily_compile: request bytes",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"RESOURCE_LIMIT_EXCEEDED\",\"object\":\"daily_user_set.request_json_utf8_bytes\",\"stage\":\"resource\",\"reason\":\"maximum=16384 actual=16385\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=daily_user_set.request_json_utf8_bytes stage=resource reason=maximum=16384 actual=16385 missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_compile($concept, $request_json)\n                      ^"
+        },
+        "id": 42
+      }
+    },
+    {
+      "label": "population_daily_compile: numeric product",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"products.values[0]\",\"stage\":\"arguments\",\"reason\":\"string required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=products.values[0] stage=arguments reason=string required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_compile($concept, $request_json)\n                      ^"
+        },
+        "id": 44
+      }
+    },
+    {
+      "label": "population_daily_compile: unsupported User",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"daily_user_set\",\"stage\":\"capability\",\"reason\":\"current registered qualified daily observation concept required\",\"missing_capability\":\"current registered qualified daily observation concept required\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=daily_user_set stage=capability reason=current registered qualified daily observation concept required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_compile($concept, $request_json)\n                      ^"
+        },
+        "id": 46
+      }
+    },
+    {
+      "label": "population_daily_compile: SQL injection concept",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"UNSUPPORTED_CAPABILITY\",\"object\":\"daily_user_set\",\"stage\":\"capability\",\"reason\":\"current registered qualified daily observation concept required\",\"missing_capability\":\"current registered qualified daily observation concept required\",\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=daily_user_set stage=capability reason=current registered qualified daily observation concept required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_compile($concept, $request_json)\n                      ^"
+        },
+        "id": 48
+      }
+    },
+    {
+      "label": "population_daily_compile: absent request",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "Invalid input: missing required fields"
+        },
+        "id": 50
+      }
+    },
+    {
+      "label": "population_daily_compile: null request",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"daily_user_set\",\"stage\":\"arguments\",\"reason\":\"concept and request_json required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=daily_user_set stage=arguments reason=concept and request_json required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_compile($concept, $request_json)\n                      ^"
+        },
+        "id": 52
+      }
+    },
+    {
+      "label": "population_daily_compile: numeric request",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32003,
+          "message": "SQL error: Invalid Input Error: ossie_population_error_v1: {\"schema_version\":\"ossie-population-error-v1\",\"code\":\"INVALID_REQUEST\",\"object\":\"request\",\"stage\":\"arguments\",\"reason\":\"JSON object required\",\"missing_capability\":null,\"exception_type\":\"Invalid Input\",\"source_exception_type\":null,\"legacy_message\":\"ossie_population: object=request stage=arguments reason=JSON object required missing_capability=bounded population profile\"}\n\nLINE 1: SELECT * FROM ossie_daily_users_compile($concept, $request_json)\n                      ^"
+        },
+        "id": 55
+      }
+    },
+    {
+      "label": "unexposed tool query",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: query"
+        },
+        "id": 57
+      }
+    },
+    {
+      "label": "unexposed tool execute",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: execute"
+        },
+        "id": 59
+      }
+    },
+    {
+      "label": "unexposed tool population_objects",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: population_objects"
+        },
+        "id": 61
+      }
+    },
+    {
+      "label": "unexposed tool population_query",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: population_query"
+        },
+        "id": 63
+      }
+    },
+    {
+      "label": "unexposed tool population_compile",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: population_compile"
+        },
+        "id": 65
+      }
+    },
+    {
+      "label": "unexposed tool ossie_bundle_load",
+      "reply": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32002,
+          "message": "Tool not found: ossie_bundle_load"
+        },
+        "id": 67
+      }
+    }
+  ],
+  "sources_sha256": {
+    "examples/daily_user_server.sql": "0b209639cf7627bbb170228f3ca61a3546f6d0a298b58b2117920dffddb4a34c",
+    "scripts/daily_mcp.ts": "9e84c7c2166046ad7d44f1fdfd35475ac17bb8445d866db0f14bb029807d2821",
+    "scripts/daily_result.ts": "5eed49fe521bd5f2347c2b27d4fe2a505975b214f38889672800155cdf68b163",
+    "scripts/verify_daily_mcp.ts": "1d6794ee171d20cde75da85b72d040eee233ded3abe4c71156648a181d9f412b"
+  },
+  "limitations": [
+    "Fixed upstream outer unknown args ignored, no universal JSON Schema enforcement claim",
+    "Native mcp_example_registered is unobserved; actual tools/list and daily-surface define server exposure",
+    "No full result-byte wire/memory/time guarantee or new daily no-model Agent rehearsal here"
+  ],
+  "omitted_for_public_size": {
+    "sessions": 12,
+    "source": "complete RPC payload retained in immutable raw report identified by receipt"
+  }
+}

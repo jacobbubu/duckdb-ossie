@@ -168,7 +168,7 @@ struct Binder {
 			vector<unique_ptr<ParsedExpression>> children;
 			children.push_back(std::move(a));
 			children.push_back(std::move(b));
-			return make_uniq<FunctionExpression>(name, std::move(children), nullptr, nullptr, false, true);
+			return make_uniq<FunctionExpression>("system", "main", name, std::move(children));
 		}
 		if ((name != "sum" && name != "count") || f.children.size() != 1)
 			Reject("only single-field SUM/COUNT supported");
@@ -431,6 +431,30 @@ FactProgram BindFactProgram(const FactProgramInput &input) {
 	return std::move(p);
 }
 
+unique_ptr<SelectStatement> CompileFactCommonCount(const FactProgram &p, vector<unique_ptr<TableRef>> sources) {
+	if (sources.size() != 2 || !sources[0] || !sources[1])
+		Reject("two source ASTs required for common count");
+	auto statement = SQL("SELECT COUNT(*) AS common_user_count FROM (SELECT 1) AS f0 INNER JOIN (SELECT 1) AS f1 ON "
+	                     "f0.user_id=f1.user_id");
+	auto &count = statement->node->Cast<SelectNode>().select_list[0]->Cast<FunctionExpression>();
+	count.catalog = "system";
+	count.schema = "main";
+	auto &join = statement->node->Cast<SelectNode>().from_table->Cast<JoinRef>();
+	for (idx_t i = 0; i < 2; i++) {
+		auto &s = p.sources[i];
+		auto user = Q(s.dataset) + "." + Q(Field(s, s.user_field).physical_column);
+		auto reduction = SQL("SELECT " + user + " AS user_id FROM placeholder GROUP BY " + user);
+		sources[i]->alias = s.dataset;
+		reduction->node->Cast<SelectNode>().from_table = std::move(sources[i]);
+		auto table = make_uniq<SubqueryRef>(std::move(reduction), "f" + to_string(i));
+		if (i == 0)
+			join.left = std::move(table);
+		else
+			join.right = std::move(table);
+	}
+	return statement;
+}
+
 unique_ptr<SelectStatement> CompileFactUsers(const FactProgram &p, const vector<string> &names, const string &domain,
                                              const FactCohort &cohort, vector<unique_ptr<TableRef>> sources) {
 	SelectNames(names);
@@ -482,6 +506,7 @@ unique_ptr<SelectStatement> CompileFactWindows(const FactProgram &p, const vecto
 		Reject("explicit whole-capture window input and two source ASTs required");
 	optional_idx source_index;
 	string projection;
+	vector<unique_ptr<ParsedExpression>> window_trees;
 	for (auto &name : names) {
 		const FactWindow *window = nullptr;
 		for (auto &w : p.windows)
@@ -492,13 +517,20 @@ unique_ptr<SelectStatement> CompileFactWindows(const FactProgram &p, const vecto
 		if (source_index.IsValid() && source_index.GetIndex() != window->source)
 			Reject("window selection cannot mix fact grains");
 		source_index = window->source;
-		projection += "," + window->expression->ToString() + " AS " + Q(window->name);
+		projection += ",0 AS " + Q(window->name);
+		auto tree = window->expression->Copy();
+		tree->alias = window->name;
+		window_trees.push_back(std::move(tree));
 	}
 	auto i = source_index.GetIndex();
 	auto &s = p.sources[i];
 	auto inner =
 	    SQL("SELECT " + Q(s.dataset) + "." + Q(Field(s, s.user_field).physical_column) + " AS user_id," + Q(s.dataset) +
 	        "." + Q(Field(s, s.date_field).physical_column) + " AS ds" + projection + " FROM placeholder");
+	// DuckDB 1.5.6 WindowExpression::ToString omits catalog. Keep the typed
+	// tree rather than reparsing rendered windows and losing system binding.
+	for (idx_t w = 0; w < window_trees.size(); w++)
+		inner->node->Cast<SelectNode>().select_list[w + 2] = std::move(window_trees[w]);
 	sources[i]->alias = s.dataset;
 	inner->node->Cast<SelectNode>().from_table = std::move(sources[i]);
 	string out = "SELECT observed.user_id,observed.ds";

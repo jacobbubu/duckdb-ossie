@@ -33,6 +33,7 @@
 #include "duckdb/parser/expression/comparison_expression.hpp"
 #include "duckdb/parser/expression/constant_expression.hpp"
 #include "duckdb/parser/expression/function_expression.hpp"
+#include "duckdb/parser/expression/window_expression.hpp"
 #include "duckdb/parser/expression/type_expression.hpp"
 #include "duckdb/parser/parsed_expression_iterator.hpp"
 #include "duckdb/parser/parser.hpp"
@@ -2961,6 +2962,134 @@ private:
 	string json;
 };
 
+string FactString(yyjson_val *value, const string &name) {
+	auto text = DailyString(value, name);
+	if (text.find('\0') != string::npos)
+		Fail(name, "arguments", "NUL-containing request string prohibited");
+	return text;
+}
+struct FactRequest {
+	bool window = false;
+	string bytes;
+	vector<string> selected;
+	FactCohort cohort;
+	Value start, end;
+	idx_t window_source = 0;
+};
+void FactBudget(const string &name, idx_t actual, idx_t limit) {
+	if (actual > limit)
+		Fail("fact_program." + name, "resource", "request exceeds declared resource limit");
+}
+FactCohort ParseFactCohort(yyjson_val *value, idx_t depth, idx_t &nodes) {
+	FactBudget("cohort_depth", depth, 16);
+	FactBudget("cohort_nodes", ++nodes, 64);
+	DailyKeys(value, {"operation", "predicate", "children"});
+	FactCohort result;
+	result.operation = FactString(yyjson_obj_get(value, "operation"), "cohort.operation");
+	if (result.operation == "all") {
+		DailyKeys(value, {"operation"});
+		return result;
+	}
+	if (result.operation == "predicate") {
+		DailyKeys(value, {"operation", "predicate"});
+		result.predicate = FactString(yyjson_obj_get(value, "predicate"), "cohort.predicate");
+		if (result.predicate.empty())
+			Fail("cohort.predicate", "arguments", "nonempty comparison required");
+		return result;
+	}
+	if (result.operation != "intersection" && result.operation != "union" && result.operation != "difference")
+		Fail("cohort.operation", "arguments", "all, predicate or binary set operation required");
+	DailyKeys(value, {"operation", "children"});
+	auto children = yyjson_obj_get(value, "children");
+	if (!yyjson_is_arr(children) || yyjson_get_len(children) != 2)
+		Fail("cohort.children", "arguments", "exactly two ordered children required");
+	size_t i, n;
+	yyjson_val *child;
+	yyjson_arr_foreach(children, i, n, child) result.children.push_back(ParseFactCohort(child, depth + 1, nodes));
+	return result;
+}
+Value FactDisplayDate(yyjson_val *value, const string &name) {
+	auto text = FactString(value, name);
+	date_t date;
+	idx_t pos = 0;
+	bool special = false;
+	if (text.empty() || text.size() > 32 ||
+	    Date::TryConvertDate(text.data(), text.size(), pos, date, special, true) != DateCastResult::SUCCESS ||
+	    pos != text.size() || special || !Date::IsFinite(date) || Date::ToString(date) != text)
+		Fail(name, "arguments", "canonical finite DuckDB DATE text required, including BC and wide years");
+	return Value::DATE(date);
+}
+FactRequest ParseFactRequest(const string &bytes, const FactProgram &program, bool window) {
+	FactBudget("request_json_utf8_bytes", bytes.size(), DAILY_REQUEST_BYTES);
+	auto doc = yyjson_read(bytes.data(), bytes.size(), 0);
+	if (!doc)
+		Fail("fact_request", "arguments", "strict JSON object required");
+	std::unique_ptr<yyjson_doc, decltype(&yyjson_doc_free)> owner(doc, yyjson_doc_free);
+	auto root = yyjson_doc_get_root(doc);
+	DailyKeys(root, window ? vector<string> {"input_scope", "windows", "display"}
+	                       : vector<string> {"input_scope", "domain", "metrics", "cohort"});
+	if (FactString(yyjson_obj_get(root, "input_scope"), "input_scope") != "entire_capture")
+		Fail("input_scope", "capability", "explicit entire_capture required");
+	FactRequest request;
+	request.window = window;
+	request.bytes = bytes;
+	auto selection = yyjson_obj_get(root, window ? "windows" : "metrics");
+	if (!yyjson_is_arr(selection) || yyjson_get_len(selection) == 0)
+		Fail("selection", "arguments", "nonempty declared name array required");
+	FactBudget("selected_names", yyjson_get_len(selection), window ? 16 : 32);
+	case_insensitive_set_t seen;
+	size_t i, n;
+	yyjson_val *item;
+	yyjson_arr_foreach(selection, i, n, item) {
+		auto name = FactString(item, "selection");
+		if (name.empty())
+			Fail("selection", "arguments", "nonempty name required");
+		FactBudget("name_utf8_bytes", name.size(), 128);
+		if (!seen.insert(name).second)
+			Fail(name, "arguments", "case duplicate selected name");
+		bool found = false;
+		if (window) {
+			for (auto &w : program.windows)
+				if (StringUtil::CIEquals(w.name, name)) {
+					if (!request.selected.empty() && request.window_source != w.source)
+						Fail(name, "capability", "cannot mix source window grains");
+					request.window_source = w.source;
+					request.selected.push_back(w.name);
+					found = true;
+					break;
+				}
+		} else
+			for (auto &m : program.metrics)
+				if (StringUtil::CIEquals(m.name, name)) {
+					request.selected.push_back(m.name);
+					found = true;
+					break;
+				}
+		if (!found)
+			Fail(name, "arguments", "unknown declared selection or wrong metric/window kind");
+	}
+	if (window) {
+		auto display = yyjson_obj_get(root, "display");
+		DailyKeys(display, {"mode", "start_date", "end_date"});
+		auto mode = FactString(yyjson_obj_get(display, "mode"), "display.mode");
+		if (mode == "all")
+			DailyKeys(display, {"mode"});
+		else if (mode == "date_range") {
+			request.start = FactDisplayDate(yyjson_obj_get(display, "start_date"), "display.start_date");
+			request.end = FactDisplayDate(yyjson_obj_get(display, "end_date"), "display.end_date");
+			if (request.start.GetValue<date_t>().days > request.end.GetValue<date_t>().days)
+				Fail("display", "arguments", "ordered display dates required");
+		} else
+			Fail("display.mode", "arguments", "explicit all or date_range required");
+	} else {
+		if (FactString(yyjson_obj_get(root, "domain"), "domain") != "common")
+			Fail("domain", "capability", "explicit common row-presence User domain required");
+		idx_t nodes = 0;
+		request.cohort = ParseFactCohort(yyjson_obj_get(root, "cohort"), 1, nodes);
+	}
+	return request;
+}
+
 struct PopulationBind : TableFunctionData {
 	shared_ptr<Bundle> bundle;
 	string sql;
@@ -2975,6 +3104,11 @@ struct PopulationBind : TableFunctionData {
 	bool objects = false;
 	bool daily = false;
 	bool daily_compile = false;
+	bool fact_query = false;
+	bool fact_compile = false;
+	bool fact_discovery = false;
+	FactRequest fact_request;
+	unique_ptr<SelectStatement> fact_domain_statement;
 	bool relation_discovery = false;
 	bool relation_objects = false;
 	bool relation_compile = false;
@@ -3017,6 +3151,64 @@ shared_ptr<Bundle> LegacyCurrent(ClientContext &context, const string &operation
 		     "relation program profile currently exposes only program discovery; relation objects interface pending");
 	}
 	return bundle;
+}
+
+unique_ptr<FunctionData> FactBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
+                                  vector<string> &names) {
+	auto result = make_uniq<PopulationBind>();
+	result->bundle = Current(context);
+	auto &b = *result->bundle;
+	if (!b.fact_program)
+		Fail("fact_program", "capability", "multi-fact-user-program-v1 required");
+	result->fact_discovery = input.table_function.name == "ossie_fact_program";
+	if (result->fact_discovery) {
+		types = {LogicalType::VARCHAR};
+		names = {"program_json"};
+		return std::move(result);
+	}
+	if (input.inputs[0].IsNull())
+		Fail("fact_request", "arguments", "request JSON required");
+	bool window = input.table_function.name == "ossie_fact_windows_json" ||
+	              input.table_function.name == "ossie_fact_windows_compile";
+	result->fact_compile = input.table_function.name == "ossie_fact_users_compile" ||
+	                       input.table_function.name == "ossie_fact_windows_compile";
+	result->fact_query = true;
+	result->fact_request = ParseFactRequest(input.inputs[0].GetValue<string>(), *b.fact_program, window);
+	auto &r = result->fact_request;
+	lock_guard<mutex> guard(b.query_lock);
+	result->statement =
+	    window
+	        ? CompileFactWindows(*b.fact_program, r.selected, "entire_capture", r.start, r.end, FactSnapshotSources(b))
+	        : CompileFactUsers(*b.fact_program, r.selected, "common", r.cohort, FactSnapshotSources(b));
+	if (!window)
+		result->fact_domain_statement = CompileFactCommonCount(*b.fact_program, FactSnapshotSources(b));
+	auto engine = Engine(b);
+	auto prepared = engine->Prepare(result->statement->Copy());
+	if (prepared->HasError())
+		NormalizeError(prepared->GetErrorObject(), "fact_request", "bind", ExceptionType::INVALID_INPUT);
+	result->result_types = prepared->GetTypes();
+	result->result_names = prepared->GetNames();
+	vector<string> expected = {"user_id"};
+	if (window)
+		expected.push_back("ds");
+	for (auto &name : r.selected)
+		expected.push_back(name);
+	if (result->result_names != expected || result->result_types.size() != expected.size() ||
+	    result->result_types[0] != LogicalType::VARCHAR || (window && result->result_types[1] != LogicalType::DATE))
+		Fail("fact_request", "bind", "canonical typed output schema required");
+	for (idx_t i = 0; i < r.selected.size(); i++)
+		if (result->result_types[i + (window ? 2 : 1)].ToString() != b.metric_types.at(r.selected[i]))
+			Fail(r.selected[i], "bind", "output metric type changed from load binding");
+	if (!window) {
+		auto count = engine->Prepare(result->fact_domain_statement->Copy());
+		if (count->HasError())
+			NormalizeError(count->GetErrorObject(), "common_user_count", "bind", ExceptionType::INVALID_INPUT);
+		if (count->GetTypes() != vector<LogicalType> {LogicalType::BIGINT})
+			Fail("common_user_count", "bind", "BIGINT scalar required");
+	}
+	types = {LogicalType::VARCHAR};
+	names = {result->fact_compile ? "plan_json" : "result_json"};
+	return std::move(result);
 }
 
 unique_ptr<FunctionData> RelationBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
@@ -3790,6 +3982,259 @@ string ResultJSON(ClientContext &context, const PopulationBind &data, QueryResul
 	return json + "],\"row_count\":" + to_string(count) + "}";
 }
 
+void ObserveFact(ClientContext &context, PopulationFactCheckpoint checkpoint) {
+	auto observer = context.registered_state->Get<PopulationFactObserver>(PopulationFactObserver::KEY);
+	if (observer)
+		observer->Observe(checkpoint);
+	if (context.IsInterrupted())
+		throw InterruptException();
+}
+void FactIdentityJSON(DailyJSONWriter &writer, const Bundle &b) {
+	writer.Field("profile", b.profile);
+	writer.Field("snapshot_id", b.snapshot_id);
+	writer.Field("content_sha256", b.content_hash);
+	writer.Field("core_sha256", b.core_hash);
+	writer.Field("ontology_sha256", b.ontology_hash);
+	writer.Field("mapping_sha256", b.mapping_hash);
+	writer.Field("manifest_sha256", b.manifest_hash);
+	writer.Field("user_concept", b.fact_program->user_concept);
+	writer.Field("user_identity_relationship", b.fact_program->user_identity_relationship);
+}
+string FactProgramJSON(ClientContext &context, const PopulationBind &data) {
+	auto &b = *data.bundle;
+	auto &p = *b.fact_program;
+	DailyJSONWriter w(context, "program_json_utf8_bytes", "fact_program");
+	w.Append("{\"schema_version\":\"ossie-fact-program-v1\"");
+	FactIdentityJSON(w, b);
+	w.Field("project_api_version", POPULATION_API_VERSION);
+	w.Append(",\"query_executed\":false,\"counts_computed\":false,\"mcp_registered\":false,\"functions\":[\"ossie_fact_"
+	         "users_json\",\"ossie_fact_users_compile\",\"ossie_fact_windows_json\",\"ossie_fact_windows_compile\","
+	         "\"ossie_fact_program\"],\"sources\":[");
+	for (idx_t i = 0; i < p.sources.size(); i++) {
+		auto &s = p.sources[i];
+		auto &child = *b.fact_children[i];
+		if (i)
+			w.Append(",");
+		w.Append("{\"dataset\":");
+		w.Quoted(s.dataset);
+		w.Field("concept", s.concept);
+		w.Field("user_concept", s.user_concept);
+		w.Field("target_identity_relationship", s.target_identity_relationship);
+		w.Field("source", b.model.FindDataset(s.dataset)->source_bound);
+		w.Field("currency", s.currency);
+		w.Field("content_sha256", child.content_hash);
+		w.Field("captured_rows", to_string(child.rows));
+		w.Append(",\"identity_fields\":" + JSONStrings(s.identity_fields) + ",\"user_field\":");
+		w.Quoted(s.user_field);
+		w.Field("date_field", s.date_field);
+		w.Field("product_field", s.product_field);
+		w.Field("amount_field", s.amount_field);
+		w.Append(",\"fields\":[");
+		for (idx_t f = 0; f < s.fields.size(); f++) {
+			auto &field = s.fields[f];
+			if (f)
+				w.Append(",");
+			w.Append("{\"name\":");
+			w.Quoted(field.name);
+			w.Field("physical_column", field.physical_column);
+			w.Field("bound_type", field.type.ToString());
+			w.Append("}");
+		}
+		w.Append("]}");
+	}
+	w.Append("],\"metrics\":[");
+	for (idx_t i = 0; i < p.metrics.size(); i++) {
+		auto &m = p.metrics[i];
+		if (i)
+			w.Append(",");
+		w.Append("{\"name\":");
+		w.Quoted(m.name);
+		w.Field("original_definition", b.fact_input.metrics[i].sql);
+		w.Field("unit", m.unit);
+		w.Field("bound_type", b.metric_types.at(m.name));
+		w.Append("}");
+	}
+	w.Append("],\"windows\":[");
+	for (idx_t i = 0; i < p.windows.size(); i++) {
+		auto &window = p.windows[i];
+		if (i)
+			w.Append(",");
+		w.Append("{\"name\":");
+		w.Quoted(window.name);
+		w.Field("original_definition", b.fact_input.windows[i].sql);
+		w.Field("unit", window.unit);
+		w.Field("bound_type", b.metric_types.at(window.name));
+		w.Field("dataset", p.sources[window.source].dataset);
+		w.Field("bound_expression", window.expression->ToString());
+		w.Field("bound_catalog", window.expression->Cast<WindowExpression>().catalog);
+		w.Field("bound_schema", window.expression->Cast<WindowExpression>().schema);
+		w.Append("}");
+	}
+	w.Append("],\"domain\":\"common User by row presence in both separately reduced "
+	         "sources\",\"cohort_semantics\":\"TRUE atomic member sets; binary intersection, union and ordered "
+	         "difference within common\",\"count_semantics\":\"COUNT(User) source rows; COUNT(amount) nonNULL values; "
+	         "common_user_count before cohort, selected_user_count after "
+	         "cohort\",\"input_scope\":\"entire_capture\",\"window_semantics\":\"single User/date fact; explicit User "
+	         "partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 "
+	         "includes NULL, ROWS0..366 observes rows not calendar days\",\"supported_aggregates\":[\"SUM(mapped "
+	         "amount)\",\"COUNT(mapped User or amount)\",\"same-currency SUM components +/-\"],\"refused\":[\"raw "
+	         "fact-to-fact fan-out\",\"AVG/COUNT(*) in declarations\",\"cross-fact aggregate leaves\",\"ratios or "
+	         "mixed measure units\",\"input/date/product filtering\",\"recursive cohorts or dependencies\",\"mixed "
+	         "window fact grains\",\"calendar filling or history/state inference\",\"ordinary rendered SQL "
+	         "replay\"],\"limits\":{\"sources\":2,\"rows_per_source\":10000,\"physical_columns_per_source\":256,"
+	         "\"combined_canonical_bytes\":16777216,\"regular_metrics\":32,\"window_metrics\":16,\"name_ascii_bytes\":"
+	         "128,\"rule_bytes\":16384,\"total_rule_bytes\":131072,\"expression_depth\":32,\"expression_nodes\":1024,"
+	         "\"expanded_program_nodes\":32768,\"metric_dependency_depth\":16,\"cohort_nodes\":64,\"cohort_depth\":16,"
+	         "\"request_json_bytes\":16384,\"complete_json_bytes\":1048576,\"result_rows\":10000},\"paging\":false,"
+	         "\"truncated\":false,\"peak_memory_bound\":false,\"hash_set_normalized\":false}");
+	return w.Finish();
+}
+string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
+	auto &b = *data.bundle;
+	auto &r = data.fact_request;
+	auto &p = *b.fact_program;
+	DailyJSONWriter w(context, data.fact_compile ? "plan_json_utf8_bytes" : "result_json_utf8_bytes", "fact_program");
+	w.Append("{\"schema_version\":");
+	w.Quoted(r.window ? (data.fact_compile ? "ossie-fact-windows-plan-v1" : "ossie-fact-windows-result-v1")
+	                  : (data.fact_compile ? "ossie-fact-users-plan-v1" : "ossie-fact-users-result-v1"));
+	FactIdentityJSON(w, b);
+	w.Append(",\"request\":" + r.bytes + ",\"selected\":" + JSONStrings(r.selected) +
+	         ",\"input_scope\":\"entire_capture\",\"columns\":[");
+	for (idx_t c = 0; c < data.result_types.size(); c++) {
+		if (c)
+			w.Append(",");
+		w.Append("{\"ordinal\":" + to_string(c + 1) + ",\"name\":");
+		w.Quoted(data.result_names[c]);
+		w.Field("bound_type", data.result_types[c].ToString());
+		w.Field("encoding", ResultEncoding(data.result_types[c]));
+		if (c >= (r.window ? 2 : 1)) {
+			auto &name = r.selected[c - (r.window ? 2 : 1)];
+			string unit;
+			if (r.window)
+				for (auto &m : p.windows) {
+					if (m.name == name)
+						unit = m.unit;
+				}
+			else
+				for (auto &m : p.metrics) {
+					if (m.name == name)
+						unit = m.unit;
+				}
+			w.Field("unit", unit);
+		}
+		w.Append("}");
+	}
+	w.Append("],\"paging\":false,\"truncated\":false,\"json_byte_limit\":1048576,\"ordering\":");
+	w.Quoted(r.window ? "raw User UTF8 bytes ASC then DATE chronological ASC" : "raw User UTF8 bytes ASC");
+	if (r.window) {
+		auto &s = p.sources[r.window_source];
+		w.Field("dataset", s.dataset);
+		w.Field("source_concept", s.concept);
+		w.Field("source_captured_rows", to_string(b.fact_children[r.window_source]->rows));
+		w.Append(",\"source_identity_fields\":" + JSONStrings(s.identity_fields) +
+		         ",\"output_identity_fields\":[\"user_id\",\"ds\"],\"display_stage\":\"after whole capture window "
+		         "computation\"");
+	} else {
+		w.Append(",\"domain\":\"common\",\"domain_semantics\":\"row presence in both facts before "
+		         "cohort\",\"cohort_semantics\":\"TRUE member sets; difference excludes RHS TRUE only\"");
+	}
+	if (data.fact_compile) {
+		w.Append(",\"executed\":false,\"members_computed\":false,\"counts_computed\":false,\"physical_plan\":false,"
+		         "\"sql_replayable\":false");
+		w.Field("projection_sql", data.statement->ToString());
+		if (!r.window)
+			w.Field("common_count_sql", data.fact_domain_statement->ToString());
+		w.Append(",\"operators\":");
+		w.Append(r.window
+		             ? "[\"frozen single-source User/date projection\",\"whole capture window computation\",\"display "
+		               "DATE filtering\",\"raw identity sorting\",\"complete bounded encoding\"]}"
+		             : "[\"separate source User aggregation\",\"row-presence common domain\",\"same-unit metric "
+		               "combination\",\"TRUE cohort set filtering\",\"independent common domain count\",\"raw User "
+		               "sorting\",\"complete bounded encoding\"]}");
+		return w.Finish();
+	}
+	vector<vector<Value>> rows;
+	idx_t common = 0;
+	ObserveFact(context, PopulationFactCheckpoint::BEFORE_EXECUTE);
+	{
+		lock_guard<mutex> guard(b.query_lock);
+		auto engine = Engine(b);
+		if (!r.window) {
+			auto count = Run(context, *engine, data.fact_domain_statement->Copy());
+			auto &material = count->Cast<MaterializedQueryResult>();
+			if (count->types != vector<LogicalType> {LogicalType::BIGINT} || material.RowCount() != 1 ||
+			    material.GetValue(0, 0).IsNull())
+				Fail("common_user_count", "execute", "one nonNULL BIGINT count required");
+			auto value = material.GetValue(0, 0).GetValue<int64_t>();
+			if (value < 0 || value > int64_t(MAX_ROWS))
+				Fail("common_user_count", "execute", "common domain count outside bounded source");
+			common = idx_t(value);
+			ObserveFact(context, PopulationFactCheckpoint::AFTER_DOMAIN);
+		}
+		auto query = Run(context, *engine, data.statement->Copy());
+		if (query->types != data.result_types || query->names != data.result_names)
+			Fail("fact_query", "execute", "actual typed schema changed");
+		while (auto chunk = query->Fetch())
+			for (idx_t row = 0; row < chunk->size(); row++) {
+				if (context.IsInterrupted())
+					throw InterruptException();
+				if (rows.size() >= MAX_ROWS)
+					Fail("fact_query", "resource", "complete rows exceed10000; no truncation");
+				vector<Value> values;
+				for (idx_t c = 0; c < data.result_types.size(); c++)
+					values.push_back(chunk->GetValue(c, row));
+				if (values[0].IsNull() || StringValue::Get(values[0]).empty() ||
+				    (r.window && (values[1].IsNull() || !Date::IsFinite(values[1].GetValue<date_t>()))))
+					Fail("fact_query", "execute", "nonempty User and finite DATE identities required");
+				rows.push_back(std::move(values));
+			}
+		if (query->HasError())
+			NormalizeError(query->GetErrorObject(), "fact_query", "execute", ExceptionType::INVALID_INPUT);
+	}
+	ObserveFact(context, PopulationFactCheckpoint::BEFORE_SORT);
+	RawByteLess less;
+	std::sort(rows.begin(), rows.end(), [&](const vector<Value> &a, const vector<Value> &z) {
+		if (context.IsInterrupted())
+			throw InterruptException();
+		auto &left = StringValue::Get(a[0]);
+		auto &right = StringValue::Get(z[0]);
+		if (left != right)
+			return less(left, right);
+		return r.window && a[1].GetValue<date_t>().days < z[1].GetValue<date_t>().days;
+	});
+	for (idx_t i = 1; i < rows.size(); i++)
+		if (StringValue::Get(rows[i - 1][0]) == StringValue::Get(rows[i][0]) &&
+		    (!r.window || rows[i - 1][1].GetValue<date_t>() == rows[i][1].GetValue<date_t>()))
+			Fail("fact_query", "execute", "duplicate output identity");
+	if (!r.window && rows.size() > common)
+		Fail("fact_query", "execute", "selected Users exceed common domain");
+	ObserveFact(context, PopulationFactCheckpoint::BEFORE_ENCODE);
+	w.Append(",\"executed\":true,\"members_computed\":true,\"counts_computed\":true");
+	w.Field("row_count", to_string(rows.size()));
+	if (!r.window) {
+		w.Field("common_user_count", to_string(common));
+		w.Field("selected_user_count", to_string(rows.size()));
+	}
+	w.Append(",\"rows\":[");
+	for (idx_t i = 0; i < rows.size(); i++) {
+		if (i)
+			w.Append(",");
+		w.Append("[");
+		for (idx_t c = 0; c < rows[i].size(); c++) {
+			if (c)
+				w.Append(",");
+			auto &value = rows[i][c];
+			if (value.IsNull())
+				w.Append("null");
+			else
+				w.Quoted(value.type() == LogicalType::VARCHAR ? StringValue::Get(value) : value.ToString());
+		}
+		w.Append("]");
+	}
+	w.Append("]}");
+	return w.Finish();
+}
+
 unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionInitInput &input) {
 	auto result = make_uniq<PopulationScan>();
 	auto &data = input.bind_data->Cast<PopulationBind>();
@@ -3803,6 +4248,10 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 			throw InterruptException();
 		}
 		PopulationState::Get(context).SetBundle(std::move(bundle));
+	} else if (data.fact_discovery) {
+		result->rows.push_back({Value(FactProgramJSON(context, data))});
+	} else if (data.fact_query) {
+		result->rows.push_back({Value(FactQueryJSON(context, data))});
 	} else if (data.relation_objects) {
 		result->rows.push_back({Value(RelationJSON(context, data))});
 	} else if (data.relation_discovery) {
@@ -3934,6 +4383,9 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 		object = input.inputs[0].GetValue<string>();
 	}
 	return ErrorBoundary(object, "bind", [&]() {
+		if (name == "ossie_fact_program" || name == "ossie_fact_users_json" || name == "ossie_fact_users_compile" ||
+		    name == "ossie_fact_windows_json" || name == "ossie_fact_windows_compile")
+			return FactBind(context, input, types, names);
 		if (name == "ossie_relation_objects_json" || name == "ossie_relation_compile") {
 			return RelationBind(context, input, types, names);
 		}
@@ -4034,6 +4486,29 @@ vector<std::function<bool()>> PopulationFactLifetimeForTesting(ClientContext &co
 }
 
 void RegisterPopulationFunctions(ExtensionLoader &loader) {
+	for (auto name : {"ossie_fact_users_json", "ossie_fact_users_compile", "ossie_fact_windows_json",
+	                  "ossie_fact_windows_compile"}) {
+		RegisterDescribe(
+		    loader, TableFunction(name, {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+		    "Dedicated frozen multi-fact-user-program-v1 request. Users use common row-presence domain, "
+		    "separately reduced metrics and TRUE cohort sets; windows compute whole single-source "
+		    "observations before display DATE filtering. Strict16KiB JSON, actual bound types, raw "
+		    "User/DATE identity ordering, complete1MiB JSON without truncation. Compile functions bind only "
+		    "and never execute/count; rendered SQL requires frozen AST dependencies.",
+		    "SELECT * FROM " + string(name) +
+		        (string(name).find("windows") != string::npos
+		             ? "('{\"input_scope\":\"entire_capture\",\"windows\":[\"previous\",\"rolling\"],\"display\":{"
+		               "\"mode\":\"all\"}}')"
+		             : "('{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\"],"
+		               "\"cohort\":{\"operation\":\"all\"}}')"));
+	}
+	RegisterDescribe(
+	    loader, TableFunction("ossie_fact_program", {}, ScanBoundary, BindBoundary, InitBoundary),
+	    "Discover frozen two-fact identities, mapped actual types, original metric/window definitions, units, load "
+	    "capture metadata and bounded support/refusal contracts. No query execution or common/selected count "
+	    "computation; max1MiB complete JSON. Native declaration does not infer external MCP registration.",
+	    "SELECT * FROM ossie_fact_program()");
+
 	RegisterDescribe(
 	    loader,
 	    TableFunction("ossie_relation_objects_json", {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
@@ -4082,13 +4557,15 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	RegisterDescribe(
 	    loader, TableFunction("ossie_bundle_load", {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
 	    "Load a hash-bound local core/ontology/mapping bundle for gaap-scalar-population-v1 or "
-	    "fact-dimension-population-v1 or daily-observation-population-v1 or observation-relation-program-v1. Captures "
+	    "fact-dimension-population-v1 or daily-observation-population-v1 or observation-relation-program-v1 or "
+	    "multi-fact-user-program-v1. Captures "
 	    "a "
-	    "committed native table into a frozen typed observation batch (AST dependency required) and "
+	    "committed native sources into frozen typed batches (AST dependencies required) and "
 	    "preflights entire-batch "
 	    "identity before publishing. Requires autocommit, one dataset or an explicit INTEGER-key "
-	    "INNER/reject pair, at most 10000 rows/256 columns per batch and "
-	    "16 MiB canonical values. Explicit reload is required to observe source changes.",
+	    "INNER/reject pair, or two explicit independent same-unit facts. At most 10000 rows/256 columns per source and "
+	    "16 MiB canonical values (combined for independent facts, including metadata). Explicit reload is required to "
+	    "observe source changes.",
 	    "CALL ossie_bundle_load('bundle.json')");
 	RegisterDescribe(loader, TableFunction("ossie_concepts", {}, ScanBoundary, BindBoundary, InitBoundary),
 	                 "Discover the two executable concepts in the current frozen batch, with parent, identity, rule, "

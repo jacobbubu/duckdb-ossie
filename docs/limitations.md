@@ -17,6 +17,12 @@ execution, arbitrary joins, mixed-grain aggregates and calendar completion remai
 outside these profiles. The live core join/filter behavior below is a separate
 contract; it does not describe the stricter population path.
 
+The opt-in [two-fact profile](population-facts.md) has a separate contract: independently
+reduce User/date and User/date/product facts before combining same-unit SUM measures,
+apply bounded TRUE cohorts, or compute explicit User/date observation windows before
+display filtering. Its dedicated SQL query/compile/discovery functions do not relax the
+generic core refusals below. MCP/Agent integration for this profile is still pending.
+
 ## Loader string arrays
 
 AI `synonyms`/`examples`, dataset `primary_key` and relationship

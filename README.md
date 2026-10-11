@@ -19,7 +19,10 @@ The core loader refuses ontology and mapping document markers. The separate
 `ossie_bundle_load` path executes bounded single-table and fact-dimension population profiles, described
 in [the profile contract](docs/population-profile.md), and an opt-in
 [daily-observation profile](docs/population-observation.md) with typed User/date/product
-identity and distinct User counts. See the [bounded implementation record](docs/ossie-execution-research.md)
+identity and distinct User counts. Opt-in [declared relations](docs/population-relations.md)
+and [independent two-fact metrics, cohorts and observation windows](docs/population-facts.md)
+have dedicated interfaces; the latter SQL interface is local, with MCP/Agent integration still pending.
+See the [bounded implementation record](docs/ossie-execution-research.md)
 and [current delivery status](ossie-duckdb-plan.md#current-delivery-checkpoint--2026-10-11)
 for accepted scopes, evidence and remaining verification.
 The [adjusted A1–A8 local acceptance](docs/p0-acceptance.md) records complete
@@ -60,7 +63,8 @@ Claims about a file format should be checkable, so:
 Models use the flat document shape of Ossie 0.2.0.dev0, one model per file, with expressions in
 `OSSIE_SQL_2026` (the spec's own expression language) or `ANSI_SQL`. What is not yet supported is
 listed in [docs/limitations.md](docs/limitations.md): table-backed sources only, and metrics that
-span more than one grain or use a window function are refused rather than answered wrongly.
+span more than one grain or use a window function are refused by the generic core query path.
+The separate two-fact profile supports only its explicitly declared grains and bounded window subset.
 
 ```sql
 CALL ossie_load('model.json', rebind => MAP{'tpcds.public': 'tpcds.main'});

@@ -1,0 +1,783 @@
+{
+  "passed": true,
+  "scope": "production dedicated fact users/windows/compile/program; no MCP or real Agent acceptance",
+  "artifact_sha256": "9ddb20dbc36bd92301b0a49178562f28a30b5e2ce774129964e7a9bd1216b5a9",
+  "checks": [
+    "independent integer-cents and complete User/count oracle A/B/C; D/E excluded",
+    "actual output types and USD scale2 units; NULL vs zero preserved",
+    "empty selected cohort still carries actual pre-cohort common denominator3",
+    "condition may use unprojected metric; case-insensitive selection returns canonical column name",
+    "complete intersection/union/ordered difference identities within row-presence common domain",
+    "whole capture sparse-row windows computed before display; noncommon D remains, NULL and actual precisions preserved",
+    "window scope is single fact complete8 rows rather than common3 Users",
+    "discovery declares both complete grains/actual types/original definitions and honest limits without computed common counts",
+    "compile has actual typed schema but no computed counts/members; denominator SQL only distinct User reductions",
+    "exact16384-byte strict JSON request accepted;16385 refused before parsing/copying",
+    "same-name count_star/SUM/COUNT/arithmetic macros cannot change multiple/single/empty common counts or metric/window values",
+    "swapped fact order preserves dataset/source/child hash/rows/fields/window source and both complete execution oracles",
+    "explicit reload and UNKNOWN RHS difference retain N rather than nullable SQL NOT dropping it",
+    "public private binary Engine preserves A/a under caller nocase and descending defaults",
+    "public current frozen queries survive deletion of original source tables",
+    "empty dual captures preserve exact columns and zero domain/window outputs",
+    "canonical BC DATE display and lossless output round-trip",
+    "canonical min/max finite DATE and year10000 preserve chronological window/display order",
+    "cohort63 nodes and depth16 accepted;65 nodes and depth17 refused",
+    "complete user JSON exact1048576 bytes accepted;1048577 bytes refused without truncation",
+    "complete long raw User encoded without truncation while under1MiB",
+    "JSON escaping contributes to byte budget and refuses both complete responses",
+    "complete10000 Users/windows returned with first/last identities and correct pre-cohort denominator",
+    "actual maximum32 regular and16 window declarations/selected outputs including128-byte identifier accepted with exact empty schema",
+    "33rd regular/17th window declaration refused atomically, original maximum program remains queryable",
+    "all16 public window outputs execute with14 zero-preceding frames selecting only current observation",
+    "derived amount addition remains110 under same-name plus macro returning98"
+  ],
+  "refusals": [
+    {
+      "name": "missing explicit scope",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "input_scope",
+        "stage": "arguments",
+        "reason": "string required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=input_scope stage=arguments reason=string required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "wrong scope",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "input_scope",
+        "stage": "capability",
+        "reason": "explicit entire_capture required",
+        "missing_capability": "explicit entire_capture required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=input_scope stage=capability reason=explicit entire_capture required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "wrong domain",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "domain",
+        "stage": "capability",
+        "reason": "explicit common row-presence User domain required",
+        "missing_capability": "explicit common row-presence User domain required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=domain stage=capability reason=explicit common row-presence User domain required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "missing cohort",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "JSON object required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=JSON object required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "unknown key",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "undeclared JSON object key",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=undeclared JSON object key missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "empty metrics",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "selection",
+        "stage": "arguments",
+        "reason": "nonempty declared name array required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=selection stage=arguments reason=nonempty declared name array required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "nonstring selection",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "selection",
+        "stage": "arguments",
+        "reason": "string required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=selection stage=arguments reason=string required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "duplicate case name",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "INCOME",
+        "stage": "arguments",
+        "reason": "case duplicate selected name",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=INCOME stage=arguments reason=case duplicate selected name missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "unknown name",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "missing",
+        "stage": "arguments",
+        "reason": "unknown declared selection or wrong metric/window kind",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=missing stage=arguments reason=unknown declared selection or wrong metric/window kind missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "window as regular",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "previous",
+        "stage": "arguments",
+        "reason": "unknown declared selection or wrong metric/window kind",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=previous stage=arguments reason=unknown declared selection or wrong metric/window kind missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "name budget",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "fact_program.name_utf8_bytes",
+        "stage": "resource",
+        "reason": "request exceeds declared resource limit",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_program.name_utf8_bytes stage=resource reason=request exceeds declared resource limit missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "all with predicate",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "undeclared JSON object key",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=undeclared JSON object key missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "unary difference",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "cohort.children",
+        "stage": "arguments",
+        "reason": "exactly two ordered children required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=cohort.children stage=arguments reason=exactly two ordered children required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "ternary union",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "cohort.children",
+        "stage": "arguments",
+        "reason": "exactly two ordered children required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=cohort.children stage=arguments reason=exactly two ordered children required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "predicate with children",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "undeclared JSON object key",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=undeclared JSON object key missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "unknown operation",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "cohort.operation",
+        "stage": "arguments",
+        "reason": "all, predicate or binary set operation required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=cohort.operation stage=arguments reason=all, predicate or binary set operation required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "expression not comparison",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income\"}}",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_fact_program: one metric comparison required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income\"}} stage=bind reason=Invalid Input Error: ossie_fact_program: one metric comparison required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "arbitrary function",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"abs(income)>0\"}}",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_fact_program: metric compared to typed numeric constant required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"abs(income)>0\"}} stage=bind reason=Invalid Input Error: ossie_fact_program: metric compared to typed numeric constant required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "cross metric comparison",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>expense\"}}",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_fact_program: metric compared to typed numeric constant required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>expense\"}} stage=bind reason=Invalid Input Error: ossie_fact_program: metric compared to typed numeric constant required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "NULL comparison",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>NULL\"}}",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_fact_program: finite exact numeric constant required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>NULL\"}} stage=bind reason=Invalid Input Error: ossie_fact_program: finite exact numeric constant required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "float comparison",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>1e0\"}}",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_fact_program: finite exact numeric constant required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>1e0\"}} stage=bind reason=Invalid Input Error: ossie_fact_program: finite exact numeric constant required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "scale3 comparison",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>0.001\"}}",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_fact_program: comparison amount scale exceeds2",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>0.001\"}} stage=bind reason=Invalid Input Error: ossie_fact_program: comparison amount scale exceeds2 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "decimal count comparison",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"revenue_rows>1.5\"}}",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_fact_program: count comparison requires integer constant",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"revenue_rows>1.5\"}} stage=bind reason=Invalid Input Error: ossie_fact_program: count comparison requires integer constant missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "unknown predicate metric",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"missing>0\"}}",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_fact_program: unknown selected metric",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"missing>0\"}} stage=bind reason=Invalid Input Error: ossie_fact_program: unknown selected metric missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "window predicate",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"previous>0\"}}",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_fact_program: unknown selected metric",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"previous>0\"}} stage=bind reason=Invalid Input Error: ossie_fact_program: unknown selected metric missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "sql statement injection",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>0;SELECT 1\"}}",
+        "stage": "bind",
+        "reason": "Parser Error: Expected a single SELECT statement",
+        "missing_capability": null,
+        "exception_type": "Parser",
+        "source_exception_type": "Parser",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>0;SELECT 1\"}} stage=bind reason=Parser Error: Expected a single SELECT statement missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "NUL predicate",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "cohort.predicate",
+        "stage": "arguments",
+        "reason": "NUL-containing request string prohibited",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=cohort.predicate stage=arguments reason=NUL-containing request string prohibited missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "comparison alias",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>0 AS hidden\"}}",
+        "stage": "bind",
+        "reason": "Invalid Input Error: ossie_fact_program: one unaliased expression required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object={\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"balance\",\"income\",\"expense\",\"revenue_rows\",\"revenue_values\",\"cost_rows\",\"cost_values\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"income>0 AS hidden\"}} stage=bind reason=Invalid Input Error: ossie_fact_program: one unaliased expression required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "duplicate root key",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "duplicate JSON object key",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=duplicate JSON object key missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "escaped duplicate key",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "duplicate JSON object key",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=duplicate JSON object key missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "non-object",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "JSON object required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=JSON object required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "YAML refusal",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "fact_request",
+        "stage": "arguments",
+        "reason": "strict JSON object required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_request stage=arguments reason=strict JSON object required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "cohort depth17",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "fact_program.cohort_depth",
+        "stage": "resource",
+        "reason": "request exceeds declared resource limit",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_program.cohort_depth stage=resource reason=request exceeds declared resource limit missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "cohort127 nodes",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "fact_program.cohort_nodes",
+        "stage": "resource",
+        "reason": "request exceeds declared resource limit",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_program.cohort_nodes stage=resource reason=request exceeds declared resource limit missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "request16385 bytes",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "fact_program.request_json_utf8_bytes",
+        "stage": "resource",
+        "reason": "request exceeds declared resource limit",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_program.request_json_utf8_bytes stage=resource reason=request exceeds declared resource limit missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "missing display",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "JSON object required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=JSON object required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "wrong input scope",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "input_scope",
+        "stage": "capability",
+        "reason": "explicit entire_capture required",
+        "missing_capability": "explicit entire_capture required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=input_scope stage=capability reason=explicit entire_capture required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "regular as window",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "income",
+        "stage": "arguments",
+        "reason": "unknown declared selection or wrong metric/window kind",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=income stage=arguments reason=unknown declared selection or wrong metric/window kind missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "duplicate windows",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "PREVIOUS",
+        "stage": "arguments",
+        "reason": "case duplicate selected name",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=PREVIOUS stage=arguments reason=case duplicate selected name missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "all with dates",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "request",
+        "stage": "arguments",
+        "reason": "undeclared JSON object key",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=request stage=arguments reason=undeclared JSON object key missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "range missing end",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "display.end_date",
+        "stage": "arguments",
+        "reason": "string required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=display.end_date stage=arguments reason=string required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "infinite date",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "display.start_date",
+        "stage": "arguments",
+        "reason": "canonical finite DuckDB DATE text required, including BC and wide years",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=display.start_date stage=arguments reason=canonical finite DuckDB DATE text required, including BC and wide years missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "noncanonical date",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "display.start_date",
+        "stage": "arguments",
+        "reason": "canonical finite DuckDB DATE text required, including BC and wide years",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=display.start_date stage=arguments reason=canonical finite DuckDB DATE text required, including BC and wide years missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "reversed date",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "display",
+        "stage": "arguments",
+        "reason": "ordered display dates required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=display stage=arguments reason=ordered display dates required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "implicit all",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "display.mode",
+        "stage": "arguments",
+        "reason": "string required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=display.mode stage=arguments reason=string required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "cohort exact65 nodes",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "fact_program.cohort_nodes",
+        "stage": "resource",
+        "reason": "request exceeds declared resource limit",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_program.cohort_nodes stage=resource reason=request exceeds declared resource limit missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "complete JSON exact1MiB plus1 byte",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "fact_program.result_json_utf8_bytes",
+        "stage": "resource",
+        "reason": "complete JSON exceeds 1MiB; no truncation",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_program.result_json_utf8_bytes stage=resource reason=complete JSON exceeds 1MiB; no truncation missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "escaped identity complete JSON over1MiB",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "fact_program.result_json_utf8_bytes",
+        "stage": "resource",
+        "reason": "complete JSON exceeds 1MiB; no truncation",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_program.result_json_utf8_bytes stage=resource reason=complete JSON exceeds 1MiB; no truncation missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "escaped window identity over1MiB",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "fact_program.result_json_utf8_bytes",
+        "stage": "resource",
+        "reason": "complete JSON exceeds 1MiB; no truncation",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_program.result_json_utf8_bytes stage=resource reason=complete JSON exceeds 1MiB; no truncation missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "selected33 regular entries",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "fact_program.selected_names",
+        "stage": "resource",
+        "reason": "request exceeds declared resource limit",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_program.selected_names stage=resource reason=request exceeds declared resource limit missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "selected17 windows",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RESOURCE_LIMIT_EXCEEDED",
+        "object": "fact_program.selected_names",
+        "stage": "resource",
+        "reason": "request exceeds declared resource limit",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact_program.selected_names stage=resource reason=request exceeds declared resource limit missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "declared33 regular",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "fact program",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie_fact_program: two facts,1..32 metrics,0..16 windows required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=fact program stage=rule reason=Invalid Input Error: ossie_fact_program: two facts,1..32 metrics,0..16 windows required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "declared17 windows",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "fact program",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie_fact_program: two facts,1..32 metrics,0..16 windows required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=fact program stage=rule reason=Invalid Input Error: ossie_fact_program: two facts,1..32 metrics,0..16 windows required missing_capability=bounded population profile"
+      }
+    }
+  ],
+  "sources": {
+    "scripts/verify_fact_objects_artifact.ts": "86184b5ea03ffcb206aa0cf20b4e15495504fed791931554c9fa3665ef04ff2c",
+    "src/population/population.cpp": "f00a0307bfceb6905633ac65af63f2b6bb1a75fe3eb8592b6c815b7b6c5aa434",
+    "src/population/fact_program.cpp": "975a2e5ea68cc3ef42e7a0b6bdb01319a33f6f0ae36389241c1cab197a360b6b"
+  }
+}

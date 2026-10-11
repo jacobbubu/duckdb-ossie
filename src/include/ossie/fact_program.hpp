@@ -60,6 +60,8 @@ struct FactCohort {
 FactProgram BindFactProgram(const FactProgramInput &input);
 // Every source TableRef is supplied explicitly. The loader must supply frozen
 // AST dependencies from one validated batch, rather than a raw fact-to-fact join.
+// Counts the row-presence common User domain without evaluating monetary metrics.
+unique_ptr<SelectStatement> CompileFactCommonCount(const FactProgram &program, vector<unique_ptr<TableRef>> sources);
 unique_ptr<SelectStatement> CompileFactUsers(const FactProgram &program, const vector<string> &metrics,
                                              const string &domain, const FactCohort &cohort,
                                              vector<unique_ptr<TableRef>> sources);

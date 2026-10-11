@@ -1,0 +1,32 @@
+Filters: test/sql/*
+
+[0/27] (0%): test/sql/ossie_join_research.test
+[1/27] (3%): test/sql/ossie_field_expansion.test
+[2/27] (7%): test/sql/ossie_describe.test
+[3/27] (11%): test/sql/ossie_loader_contract.test
+[4/27] (14%): test/sql/ossie_population_relation_load.test
+[5/27] (18%): test/sql/ossie_relationships.test
+[6/27] (22%): test/sql/ossie_population_observation.test
+[7/27] (25%): test/sql/ossie_population_expressions.test
+[8/27] (29%): test/sql/ossie_population.test
+[9/27] (33%): test/sql/ossie_population_daily_users.test
+[10/27] (37%): test/sql/ossie_population_result.test
+[11/27] (40%): test/sql/ossie_population_discovery.test
+[12/27] (44%): test/sql/ossie_population_errors.test
+[13/27] (48%): test/sql/ossie_sql_2026.test
+[14/27] (51%): test/sql/ossie_yaml.test
+[15/27] (55%): test/sql/ossie_population_plan.test
+[16/27] (59%): test/sql/ossie_differential.test
+[17/27] (62%): test/sql/ossie_function_metadata.test
+[18/27] (66%): test/sql/ossie_population_fact_program.test
+[19/27] (70%): test/sql/ossie_conformance.test
+[20/27] (74%): test/sql/ossie_population_dates.test
+[21/27] (77%): test/sql/ossie_compile.test
+[22/27] (81%): test/sql/ossie_joined_population.test
+[23/27] (85%): test/sql/ossie_grain.test
+[24/27] (88%): test/sql/ossie_load.test
+[25/27] (92%): test/sql/ossie.test
+[26/27] (96%): test/sql/ossie_validate.test
+[27/27] (100%): test/sql/ossie_validate.test
+===============================================================================
+All tests passed (1026 assertions in 27 test cases)

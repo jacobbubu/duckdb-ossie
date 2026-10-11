@@ -1,0 +1,17 @@
+227 |     ])
+228 |       assert(!(key in p));
+229 |     assert.equal(p.content_sha256, initial.content_sha256);
+230 |     if (p.common_count_sql) {
+231 |       assert(!/sum|income|expense|balance/i.test(p.common_count_sql));
+232 |       assert(/count\(\*\)/i.test(p.common_count_sql));
+            ^
+AssertionError: false == true
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "==",
+       code: "ERR_ASSERTION"
+
+      at ${WORKSPACE}/scripts/verify_fact_objects_artifact.ts:232:7
+
+Bun v1.3.11 (macOS arm64)

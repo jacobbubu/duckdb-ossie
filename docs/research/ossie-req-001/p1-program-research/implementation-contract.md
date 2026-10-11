@@ -1,5 +1,7 @@
 # 下一实施阶段：多事实、不同粒度和观察行窗口
 
+当前实施状态：双事实加载及五个专用SQL接口已本地实现/验收，见[加载证据](../p1-fact-load-controls/review.md)与[接口证据](../p1-fact-api-controls/review.md)。以下保留设计时的范围与技术选择；MCP/无模型及整个P1尚未完成。
+
 本契约沿OSSIE-REQ-001与完整P1目标，是下一阶段的技术选择，不是当前已支持的能力。原研究SQL与整数分oracle保持不变。关系/MCP/无模型工作包闭合后，Lead实施独立有界FactProgram及新显式 `multi-fact-user-program-v1`，保留旧Compile单粒度/fan-out拒绝和四个现有profile行为，不伪造旧classification/qualification角色。
 
 首个实际输入为User实体，以及RevenueObservation(User/date)和CostObservation(User/date/product)两种完整根身份。映射使用既有core/ontology/mapping格式，User跨事实通过明确的同一对象身份角色绑定，不能只凭两个字段标签相同认定实体相同。每事实字段和完整主键需全批预检，User/product非空原始VARCHAR、日期非NULL且有限、金额实际DECIMAL(18,2)。输入金额单位需明确声明为同一currency/scale，不能从列名或AST推断。单位元数据是该项目profile的明确政策，不能称为上游Ossie强制单位标准。
@@ -39,3 +41,24 @@ compile schema为 `ossie-fact-users-plan-v1` / `ossie-fact-windows-plan-v1`，�
 program发现schema为 `ossie-fact-program-v1`：两源声明dataset/concept/User/id、完整身份字段、映射角色及实际类型、captured_rows/child hash、显式currency；regular/window原始定义、规范名、单位、输出实际类型及窗口source；完整资源/支持/拒绝边界、common行存在语义、TRUE集合语义、窗口基础行范围/排序/帧和输出过滤阶段；六项父身份及项目API版本。声明五个专用函数，native仍mcp_registered=false，由后续MCP实际工具声明，不能让native推断外部注册。发现不执行对象查询，common/selected计数未计算。
 
 只读Advisor反证后采纳真实32/16/128上限、独立分母AST、空结果保留分母、DATE全有限往返规范、未投影条件指标、严格递归前预算与RPC单次快照边界。请求Astra/high，有效backend/effort/usage/billing未知；顾问未执行测试。Lead后续必须以实际插件验收：common3/selected0、全NULL C、UNKNOWN差集、union不带D/E、未投影条件指标、窗口包含单侧User、稀疏日期先算后筛、BC/有限极值、case区分、请求和结果字节边界、计数后取消、prepared跨reload/drop，以及compile未执行。随后接MCP/无模型、全部旧回归；最终整个P1/状态历史待答/兼容矩阵/跨平台tidy和历史审计保持。
+
+实现期间的新反证已保留：同名count_star宏能将共同1用户改成42，减号宏
+能将100-10改成99，且仅检查BIGINT/DECIMAL类型不能识别。内部生成count
+及金额+/-显式绑定system.main；窗口渲染会遗漏catalog，因此直接嵌入
+已验证窗口AST副本，禁止渲染再解析丢失系统绑定。交换facts合法且来源
+发现须按dataset名称查找；不能假定manifest与core数组顺序相同。
+
+### 金额精度边界的验收澄清
+
+既有契约要求实际核验精度/越界，不能只凭Prepare。现按冻结的18,2输入、
+每事实10000行和单指标1024节点证明：每个SUM组件的绝对cents至多
+10000×(10^18−1)；仅二元+/-与组件叶的合法指标至多512叶，故所有非NULL
+中间/最终绝对cents≤512×10000×(10^18−1)，远小于DECIMAL38,2的10^38−1。
+COUNT≤10000；窗口SUM≤367×(10^18−1)，LAG保留输入18,2。NULL按原传播，
+不产生未定义数值。按当前事先冻结边界，不能用合法程序制造38精度溢出。
+
+实际扩展已用两源各10000行、最大18,2输入和1023节点/512叶的派生值执行，
+与独立BigInt cents完整对照；下一2047节点展开和更宽38,2物理源均拒绝并
+保留旧快照。这是最大合法值精度与越界拒绝证据，不是声称触发了金额运行
+时溢出。原防错误金额目标保持；未来若扩宽类型、行数、函数或表达式预算，
+必须重新检查此界限及增加对应实际溢出测试，不能沿本证明放行新范围。

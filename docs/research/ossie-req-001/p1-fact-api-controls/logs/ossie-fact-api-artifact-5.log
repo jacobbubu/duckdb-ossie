@@ -1,0 +1,15 @@
+90 |           Array.isArray(value) ? LIST(VARCHAR) : VARCHAR,
+91 |         ),
+92 |       );
+93 |       return result.getRows().map((row) => row.map(cell));
+94 |     } catch (error) {
+95 |       throw new Error(
+                     ^
+error: artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {"schema_version":"ossie-population-error-v1","code":"INVALID_REQUEST","object":"fact windows","stage":"bind","reason":"Binder Error: Window function macros must be functions","missing_capability":null,"exception_type":"Invalid Input","source_exception_type":"Binder","legacy_message":"ossie_population: object=fact windows stage=bind reason=Binder Error: Window function macros must be functions missing_capability=bounded population profile"}
+      at rows (${WORKSPACE}/scripts/artifact_helpers.ts:95:17)
+      at async run (${WORKSPACE}/scripts/artifact_helpers.ts:107:16)
+      at async load (${WORKSPACE}/scripts/verify_fact_objects_artifact.ts:65:12)
+
+error: Invalid Input Error: ossie_population_error_v1: {"schema_version":"ossie-population-error-v1","code":"INVALID_REQUEST","object":"fact windows","stage":"bind","reason":"Binder Error: Window function macros must be functions","missing_capability":null,"exception_type":"Invalid Input","source_exception_type":"Binder","legacy_message":"ossie_population: object=fact windows stage=bind reason=Binder Error: Window function macros must be functions missing_capability=bounded population profile"}
+
+Bun v1.3.11 (macOS arm64)

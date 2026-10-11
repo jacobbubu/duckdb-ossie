@@ -88,6 +88,15 @@ public:
 	}
 	std::function<void(PopulationLoadCheckpoint)> action;
 };
+class FactObserver : public PopulationFactObserver {
+public:
+	explicit FactObserver(std::function<void(PopulationFactCheckpoint)> fn) : fn(std::move(fn)) {
+	}
+	void Observe(PopulationFactCheckpoint checkpoint) override {
+		fn(checkpoint);
+	}
+	std::function<void(PopulationFactCheckpoint)> fn;
+};
 struct Gate {
 	std::mutex lock;
 	std::condition_variable cv;
@@ -173,6 +182,37 @@ void Run(const string &root, int threads) {
 	Baseline(reader);
 	Check(reader.Query(PopulationFactStatementForTesting(*reader.context, false)->ToString())->HasError(),
 	      "rendered SQL without frozen AST dependencies is refused");
+
+	const auto users_request = string("{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":["
+	                                  "\"balance\"],\"cohort\":{\"operation\":\"all\"}}");
+	const auto windows_request =
+	    string("{\"input_scope\":\"entire_capture\",\"windows\":[\"previous\",\"rolling\"],\"display\":{\"mode\":"
+	           "\"date_range\",\"start_date\":\"2026-02-01\",\"end_date\":\"2026-02-01\"}}");
+	const auto users_sql = "SELECT * FROM ossie_fact_users_json(" + Literal(users_request) + ")";
+	const auto windows_sql = "SELECT * FROM ossie_fact_windows_json(" + Literal(windows_request) + ")";
+	auto public_users = reader.Prepare(users_sql), public_window = reader.Prepare(windows_sql);
+	Check(!public_users->HasError() && !public_window->HasError(),
+	      "public prepared JSON binds both actual typed projections");
+	reader.context->registered_state->Insert(
+	    PopulationFactObserver::KEY,
+	    make_shared_ptr<FactObserver>([&](PopulationFactCheckpoint) { throw std::runtime_error("compile executed"); }));
+	auto compile = Query(reader, "SELECT * FROM ossie_fact_users_compile(" + Literal(users_request) + ")");
+	Check(compile->GetValue(0, 0).ToString().find("\"counts_computed\":false") != string::npos,
+	      "public compile performs no execution or count checkpoints");
+	reader.context->registered_state->Remove(PopulationFactObserver::KEY);
+	for (auto checkpoint : {PopulationFactCheckpoint::AFTER_DOMAIN, PopulationFactCheckpoint::BEFORE_SORT,
+	                        PopulationFactCheckpoint::BEFORE_ENCODE}) {
+		reader.context->registered_state->Insert(PopulationFactObserver::KEY,
+		                                         make_shared_ptr<FactObserver>([&](PopulationFactCheckpoint p) {
+			                                         if (p == checkpoint)
+				                                         reader.Interrupt();
+		                                         }));
+		auto canceled = reader.Query(users_sql);
+		Check(canceled->HasError() && canceled->GetErrorObject().Type() == ExceptionType::INTERRUPT,
+		      "public query cancellation after count/sort/encode returns native INTERRUPT, no partial JSON");
+		reader.context->registered_state->Remove(PopulationFactObserver::KEY);
+		Check(Query(reader, users_sql)->RowCount() == 1, "complete public query succeeds after canceled execution");
+	}
 	auto retained = Prepare(reader), retained_window = Prepare(reader, true);
 	auto old_life = PopulationFactLifetimeForTesting(*reader.context);
 	Check(old_life.size() == 3 && old_life[0]() && old_life[1]() && old_life[2](),
@@ -192,6 +232,21 @@ void Run(const string &root, int threads) {
 	Check(Execute(*retained)->GetValue(2, 0).ToString() == "375.00" &&
 	          Execute(*retained_window)->GetValue(3, 2).ToString() == "250.00",
 	      "both prepared paths use frozen AST dependencies after source deletion");
+
+	Query(writer, "CREATE MACRO count_star() AS 42::BIGINT;CREATE MACRO \"-\"(a,b) AS 99::DECIMAL(38,2);CREATE MACRO "
+	              "sum(x) AS 97::DECIMAL(38,2)");
+	auto old_users = Execute(*public_users)->GetValue(0, 0).ToString();
+	auto old_window = Execute(*public_window)->GetValue(0, 0).ToString();
+	Check(old_users.find("[\"A\",\"290.00\"]") != string::npos &&
+	          old_users.find("\"common_user_count\":\"3\"") != string::npos &&
+	          old_window.find("[\"A\",\"2026-02-01\",\"200.00\",\"250.00\"]") != string::npos,
+	      "public prepared results preserve old paired snapshot after reload and source deletion");
+	Query(writer, "DROP MACRO count_star;DROP MACRO \"-\";DROP MACRO sum");
+	Check(old_users.find("\"common_user_count\":\"3\"") != string::npos &&
+	          old_users.find("[\"A\",\"290.00\"]") != string::npos,
+	      "public prepared results remain stable when same-name persistent macros are created after bind");
+	public_users.reset();
+	public_window.reset();
 	retained.reset();
 	Check(old_life[0]() && old_life[1]() && old_life[2](),
 	      "single-source window retains old parent and unused second child");
@@ -291,6 +346,14 @@ void Run(const string &root, int threads) {
 	Check(binary->RowCount() == 4 && binary->GetValue(0, 0).ToString() == "A" &&
 	          binary->GetValue(0, 3).ToString() == "a",
 	      "load preflight and explicit binary execution preserve raw case-distinct User identities");
+
+	Query(reader, "SET SESSION default_collation='nocase';SET SESSION default_order='DESC'");
+	auto raw_public = Query(reader, users_sql)->GetValue(0, 0).ToString();
+	Check(raw_public.find("[\"A\",\"290.00\"]") != string::npos &&
+	          raw_public.find("[\"a\",\"0.00\"]") != string::npos &&
+	          raw_public.find("\"common_user_count\":\"4\"") != string::npos,
+	      "public private binary execution/count preserves A/a under caller nocase");
+	Query(reader, "SET SESSION default_collation='binary'");
 	Check(Execute(*Prepare(reader, true))->GetValue(2, 2).ToString() == "200.00",
 	      "window direction remains ascending under caller descending default");
 }

@@ -1,0 +1,157 @@
+bun test v1.3.11 (af24e281)
+
+test/tooling/daily_result.test.ts:
+(pass) daily decoders preserve all twelve real scope/rule/hash/member envelopes [13.54ms]
+(pass) daily members retain raw Unicode/case/control IDs and integer-text count [2.35ms]
+(pass) daily decoder refuses partial/truncated/count-number and unproven execution metadata [4.25ms]
+(pass) daily normalized scope rejects invalid calendars, extra filters, wrong days and product identity loss [0.52ms]
+(pass) daily plan refuses execution/physical claims, missing reduction, guessed types and mismatched binding [2.18ms]
+(pass) daily carrier refuses foreign format, multiple envelopes and oversize bytes [7.34ms]
+
+test/tooling/population_result.test.ts:
+(pass) decoder uses DuckDB ASCII case rules for output names [0.46ms]
+(pass) ordinary JSON decoding retains exact integer/Decimal strings
+(pass) typed decoder refuses numeric cells and mismatched type/encoding [0.45ms]
+(pass) empty typed result keeps schema, snapshot and null cells stay null [0.13ms]
+(pass) typed decoder refuses malformed carrier, unknown schema and broken row width [0.34ms]
+
+test/tooling/quality_controls.test.ts:
+(pass) direct forbidden [27.51ms]
+(pass) indirect forbidden [32.84ms]
+(pass) model forbidden [33.91ms]
+(pass) header cycle [31.71ms]
+(pass) relative AST and comments [32.00ms]
+(pass) missing quoted reference [36.14ms]
+(pass) missing angle reference [31.52ms]
+(pass) indirect runtime [36.09ms]
+(pass) nonliteral reference [31.89ms]
+(pass) zero inputs [26.44ms]
+(pass) unscanned source [34.38ms]
+(pass) undeclared source [30.32ms]
+(pass) empty compiled inventory [30.84ms]
+(pass) compiler IO [34.89ms]
+(pass) precise parser adapter [199.59ms]
+(pass) parser exception cannot permit state [32.13ms]
+(pass) script formatting failure and recovery [517.08ms]
+(pass) state, grain and production capture runners required before SQL [15.85ms]
+(pass) actual CI gate fails closed for every dependency [72.55ms]
+(pass) current project graph scans nonzero inventory [16.64ms]
+(pass) strict typecheck rejects a runtime-valid type error and recovers [1508.41ms]
+(pass) CI uses frozen Bun tooling and the complete same-artifact acceptance runner [0.42ms]
+(pass) stock artifact CLI and all verifiers consume the downloaded artifact [0.29ms]
+
+test/tooling/observation_archive.test.ts:
+(pass) raw archive is private, exclusive, sealed and unchanged by exact offline replay [95.21ms]
+(pass) offline replay performs no fetch or subprocess startup [54.64ms]
+(pass) changed bytes, missing files and extra files refuse integrity verification [127.44ms]
+(pass) recomputed seal cannot hide wrong continuation, call_id or RPC id [158.30ms]
+(pass) ordered replay rejects reordered, duplicate and trailing events even with new seal [152.40ms]
+(pass) saved normalized answer cannot disagree with public Responses projection [44.61ms]
+(pass) setup, discovered model context and source inventory are independently checked [120.93ms]
+(pass) failure and partial archives may retain integrity but cannot pass complete replay [37.71ms]
+(pass) original timing checks do not rely on fast replay elapsed time [48.53ms]
+(pass) public paths, traversal, symlink and tracked targets cannot receive raw archives [42.96ms]
+(pass) seal path and duplicate keys are rejected without executing any archived code [87.25ms]
+(pass) derivative export redacts nested escaped provider configuration before public writes [106.61ms]
+(pass) credential echoes are removed from private projected records; keys are never archived [17.73ms]
+(pass) live entry needs explicit mode and token-budget choice; standard config validation is local [0.44ms]
+(pass) runtime failure is sealed, has safe diagnostics and makes no simulated/model completion call [18.70ms]
+(pass) replay report stays outside the sealed tree and refuses overwrites [114.18ms]
+
+test/tooling/population_error.test.ts:
+(pass) error framing respects quoted braces, escapes and marker text [0.16ms]
+(pass) external, incomplete and invalid-schema diagnostics stay unclassified
+
+test/tooling/source_evidence.test.ts:
+(pass) fresh checkout verifies 20 sources and the original requirement without external paths [10.81ms]
+(pass) missing and single-byte changed source copies refuse [24.63ms]
+(pass) wrong manifest binding, duplicate, missing and unknown locators refuse [35.49ms]
+(pass) absolute, parent traversal and escaping symlink targets refuse [31.91ms]
+(pass) locator content hash cannot override the manifest's expected source hash [14.68ms]
+
+test/tooling/fixed_schema.test.ts:
+(pass) pinned schemas accept standard compound identity sketches without remote resolution [33.91ms]
+(pass) fixed schema rejects wrong version, datatype and malformed nested mapping [0.86ms]
+(pass) tampered schema cannot replace a pinned local schema [5.41ms]
+(pass) both observation fixture bundles are hash-bound and schema accepted [1.36ms]
+
+test/tooling/agent_loop.test.ts:
+(pass) model arguments and exact numeric MCP strings reach the next model request unchanged [1.04ms]
+(pass) unknown tool or malformed arguments never reach MCP [0.55ms]
+(pass) call and round budgets terminate without successful-call substitution
+(pass) deadline and byte budget stop requests; provider length is a failure [12.81ms]
+(pass) provider forwards only model-visible response fields, refuses redirects and HTTP failure without retries [0.37ms]
+(pass) boundary scene accepts zero calls but numerical hallucination is refused [0.18ms]
+(pass) correct-looking final numbers without executed citations cannot pass
+(pass) standard OpenAI configuration accepts compatible HTTPS services and rejects credential-bearing URLs [0.27ms]
+(pass) shared scene deadline prevents setup from borrowing more time or starting after expiry [12.36ms]
+(pass) filtered/unknown provider termination cannot be a final answer [0.79ms]
+(pass) failure remains authoritative in the experiment summary [0.07ms]
+(pass) Responses wire bodies repeat instructions/tools and keep continuation IDs isolated [0.31ms]
+(pass) Responses call_id rather than item ID binds multiple tool outputs; mixed prose is not final [0.28ms]
+(pass) Responses incomplete/failed outcomes never execute partially generated calls [0.19ms]
+(pass) missing/repeated Responses IDs and invalid call batches stop before further MCP execution
+(pass) Responses refusal and declined provider continuation do not trigger protocol fallback [0.31ms]
+
+test/tooling/artifact_cli.test.ts:
+(pass) missing stock CLI fails instead of using build-tree engine [21.10ms]
+(pass) missing artifact fails before invoking the CLI [25.75ms]
+(pass) artifact loading failure is fatal and retains its diagnostic [563.28ms]
+(pass) relative artifact paths are normalized before stock CLI loading [215.45ms]
+
+test/tooling/daily_agent.test.ts:
+(pass) daily audit compares full membership to independent hand oracle even when answer and tool agree [1.68ms]
+(pass) daily audit rejects matching empty answers from wrong request scope [0.65ms]
+(pass) daily audit rejects wrong rule with unchanged members/count and stale trace [0.62ms]
+(pass) compile-only cannot support even the correct oracle number or an unrelated citation [0.47ms]
+(pass) shared Agent dispatcher rejects publisher coercions and unknown outer scope before RPC [0.21ms]
+(pass) daily rehearsal/replay expose no live mode or provider environment and use injected transport [0.25ms]
+
+test/tooling/artifact_values.test.ts:
+(pass) native DATE adapter preserves finite dates, infinity and NULL [0.19ms]
+
+test/tooling/relation_agent_contract.test.ts:
+(pass) all six relation audits require actual semantic object and full independent links [1.63ms]
+(pass) answer cannot use count-only, distinct users, false trace or compile citations [4.35ms]
+(pass) schema-valid synchronized count/member forgery still fails independent oracle [0.97ms]
+(pass) compile-only cannot calculate members or claim unsupported [1.71ms]
+(pass) same-members wrong declaration and hidden scope fail audit [0.48ms]
+
+test/tooling/mcp_transport.test.ts:
+(pass) MCP ignores banners, receives RPC, and cleans up child [27.77ms]
+(pass) silent MCP server hits a real read deadline and is terminated [35.97ms]
+(pass) server setup failure reaches reader with stderr [17.51ms]
+
+test/tooling/observation_agent.test.ts:
+(pass) answer protocol rejects fences, extra keys and empty required descriptions [1.36ms]
+(pass) formal concept and actual execution citations are separately required [0.14ms]
+(pass) unit is monetary USD for amount answers and null for count-only answers [0.24ms]
+(pass) rounded display may explain but cannot replace the executed numeric field [0.52ms]
+(pass) oracle distinguishes observation, User and nonnull denominators
+(pass) correct same-scope metrics may be supported by separate actual replies [0.45ms]
+(pass) equal User number in product X does not prove all-product scope [0.16ms]
+(pass) wider date range with identical members and missing date bounds remain pending [0.14ms]
+(pass) inclusive and exclusive equivalent date bounds pass
+(pass) unknown filter cannot hide wrong metric, grouping, final value or result value [0.29ms]
+(pass) wrong concept, cross-scene citation, duplicate id and stale hashes fail
+(pass) raw captured counts, wrong average denominator and fake citations are refused [0.44ms]
+(pass) complete two-day objects can derive both daily counts and interval distinct [0.20ms]
+(pass) incomplete, duplicate, wrong typed or null-to-zero objects refuse derivation [0.57ms]
+(pass) grouped rows bind date keys, not order or values from another row [0.07ms]
+(pass) failed RPC or isError with a successful-looking carrier cannot become evidence [0.06ms]
+(pass) unsupported may follow successful probing but must not return target numbers [0.21ms]
+(pass) external claims require runtime metric/date/value validation [0.05ms]
+(pass) prepare driver has no live mode or model configuration arguments [0.09ms]
+
+test/tooling/relation_result.test.ts:
+(pass) relation complete native envelopes retain full links and binding [2.75ms]
+(pass) relation DATE supports proleptic Gregorian BC and large years without JS Date [0.63ms]
+(pass) relation decoder refuses partial, reordered, duplicate, mismatched or foreign-target links [1.09ms]
+(pass) relation compile cannot claim execution or smuggle computed links [3.91ms]
+(pass) relation carrier must be one bounded string JSON payload [1.00ms]
+(pass) requested declaration and discovery reject jointly wrong semantic responses [2.78ms]
+
+ 121 pass
+ 0 fail
+ 544 expect() calls
+Ran 121 tests across 15 files. [5.69s]
