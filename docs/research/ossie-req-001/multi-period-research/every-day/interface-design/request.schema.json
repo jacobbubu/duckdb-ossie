@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:ossie:design:daily-users:request:v1",
+  "title": "Proposed request shape; not a production validator",
+  "type": "object",
+  "required": ["start_date", "end_date", "products"],
+  "properties": {
+    "start_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "end_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "products": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["mode"],
+          "properties": {
+            "mode": {
+              "const": "all"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["mode", "values"],
+          "properties": {
+            "mode": {
+              "const": "subset"
+            },
+            "values": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "$comment": "Calendar validity, years 0001..9999, ordered inclusive span <=366, per-product UTF-8 <=256 bytes and serialized request <=16384 bytes require semantic validation. Duplicate JSON object keys must be rejected before object parsing discards them."
+}

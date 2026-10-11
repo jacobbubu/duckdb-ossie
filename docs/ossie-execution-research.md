@@ -42,6 +42,38 @@ effective backend/effort/usage/billing未知。统计误读JSON文件名和一�
 
 ## 范围与授权
 
+### 每天合格集合最小接口/能力设计 checkpoint（2026-10-11）
+
+用户接受55531fe的日期/缺失/产品候选口径，授权继续设计最小接口、能力
+声明、资源限制及支持/拒绝边界，暂不实现。沿OSSIE-REQ-001现多期项，
+保留原始研究、三个profile、原user_count及MCP/Agent拒绝行为。记录独立
+候选接受裁定与可评审接口草图，不更改生产代码/注册/配置，不启动MCP/
+模型或推送。先读现接口/错误/限制与证据，复用Advisor一轮只读兼容及
+资源反证；验证设计例子与接受契约对应，schema只证明结构，不当实现。
+
+### 每天合格集合最小接口/能力设计完成（2026-10-11）
+
+用户的[候选接受裁定](research/ossie-req-001/multi-period-research/every-day/interface-design/acceptance-decision.json)
+单独绑定55531fe原研究/核验，不重写原件。[设计](research/ossie-req-001/multi-period-research/every-day/interface-design/design.md)
+选择专用SQL JSON入口、单一MCP工具和独立结果schema，当前正式QualifiedObservation
+为唯一target，输出完整raw User名单/整数文本人数/日期产品/规则与同bundle trace。
+保留原user_count、referent-only User、旧profile/plan/result；候选API2.2.0及error-v1
+新增resource码均未实施。能力草图disabled，未来SQL与MCP实际注册分别验收。
+
+366日/64产品/256解码UTF-8字节/16KiB完整请求/1MiB完整内部结果为保守设计门槛，
+未测性能适足性；all不限制源产品域。全批身份/载入限制继续，超预算整体拒绝；
+不承诺进程峰值、MCP外层字节或服务deadline。Advisor指出singleton concept、
+未知错误码兼容与按operation声明result schema；Lead检查实际fixture/参考decoder
+后落实。requested Astra/high，有效backend/effort/usage/billing未知，未委派实现。
+
+[核验记录](research/ossie-req-001/multi-period-research/every-day/interface-design/verification.json)
+记录3结构正例/8反例及64/65项边界；5个结构合法但语义/预算应拒绝的例子强调
+schema不证明真实公历、跨度或字节限制。64×256字节请求实际16667字节，未来须
+整体资源拒绝，本轮未执行该产品拒绝。旧10源/输出哈希与两项接受源哈希保持。
+未改生产路径/配置/注册、未启动MCP或模型、未推送。设计工作包本地完成；
+下一步先评审接口/预算再单独授权最小SQL/资源守卫实施，之后才MCP/无模型验收。
+原研究/实时Agent限定裁定与分页/通用P1/main合并/发布边界继续保留。
+
 ### 每天合格User集合研究 checkpoint（2026-10-11）
 
 用户授权研究日期集合、缺失观察、产品范围及最小验收用例，暂不实现。

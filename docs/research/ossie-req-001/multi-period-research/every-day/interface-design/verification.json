@@ -1,0 +1,62 @@
+{
+  "scope": "OSSIE-REQ-001 accepted every-day candidate, interface/capability/resource design only",
+  "baseline": "55531fe",
+  "outcome": "design package complete locally; proposed interface/budgets not yet accepted or implemented",
+  "artifacts_sha256": {
+    "acceptance-decision.json": "985c415c726588dd8f5d66dd0c72cb3fcc4949eb6f004720630c4c9814648e3b",
+    "advisor-review.json": "99811aa5f2784e26083580868c8e2bb04bb97118718d5d7f961d4abefbeb1dbe",
+    "capability.draft.json": "f2f574c24d00ae2222073f6ae72cfd0959b4b5865f62b1ff9779ab5588e61f62",
+    "design.md": "b878c5ff0e09107c6500f26083117108a119a318e8acf936534126abf02af152",
+    "request.examples.json": "a023aac592747b1e3ac6f9ce07a7f424acc336c7ece2b0a5b66ee380d92b10b9",
+    "request.schema.json": "8db0d395ac6488a4a154889f5e65f95c5de687b0621d6b7cfc04450dd1aa0d9c",
+    "shape-results.raw.json": "354d158b5e3b3dd060595b84059099bafafcf4918be159dd9a66d86bd227f282",
+    "verify-design.ts": "85ca949b6e990b2ca23dfff4f5501d84b453b0a679304fb7071e707dca1a57cc"
+  },
+  "checks": {
+    "design_local_links_exist": [
+      "../research.md",
+      "acceptance-decision.json",
+      "request.schema.json",
+      "capability.draft.json"
+    ],
+    "shape_report": {
+      "scope": "Design shape and artifact integrity only; no semantic validator/executor implemented",
+      "shape_positive_examples": 3,
+      "shape_negative_examples": 8,
+      "product_cardinality_boundary_shapes": 2,
+      "deliberately_shape_valid_future_semantic_refusals": 5,
+      "simultaneous_caps_example": {
+        "products": 64,
+        "each_ascii_utf8_bytes": 256,
+        "request_utf8_bytes": 16667,
+        "future_expected": "RESOURCE_LIMIT_EXCEEDED; not executed"
+      },
+      "old_source_output_hashes_unchanged": 10,
+      "accepted_source_hashes_verified": 2,
+      "runtime_support_enabled": false,
+      "accepted_witness_members": ["B", "E", "F", "H", "K"],
+      "production_imports": 0,
+      "mcp_sessions": 0,
+      "model_requests": 0
+    },
+    "repeat_stdout_exact_bytes": true,
+    "research_checker_typecheck": "passed, isolated tsc noEmit with Bun types",
+    "diff_whitespace": "passed",
+    "format_control": {
+      "initial": "Broad formatting check flagged generated raw output and verification indentation",
+      "resolution": "Preserved raw bytes; formatted editable manifest and checked only editable JSON/TS sources",
+      "raw_output_reformatted": false
+    }
+  },
+  "production_paths_changed": [],
+  "mcp_sessions_started": 0,
+  "model_requests": 0,
+  "pushed": false,
+  "limitations": [
+    "Schema validation is structure only; invalid calendar/date ordering/span/product bytes can remain shape-valid.",
+    "No production request/result encoder, budget rejection, cancellation, resource guards, MCP registration or runtime capabilities verified.",
+    "Numeric budgets are conservative proposals, not measured latency/peak-memory/wire guarantees.",
+    "Reference error decoder accepts string codes; external closed-enum compatibility remains unproven."
+  ],
+  "next_authorized_action": "Deliver reviewable design; implementation remains prohibited until separately authorized"
+}

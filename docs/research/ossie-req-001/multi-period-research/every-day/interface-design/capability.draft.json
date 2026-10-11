@@ -1,0 +1,53 @@
+{
+  "artifact_status": "proposed design, not runtime capabilities",
+  "current_api_version": "2.1.0",
+  "future_api_version_if_implemented": "2.2.0",
+  "daily_user_set": {
+    "enabled": false,
+    "disabled_reason": "not implemented; no tool registration",
+    "intended_profile": "daily-observation-population-v1",
+    "sql_function": "ossie_daily_users_json(VARCHAR, VARCHAR)",
+    "mcp_tool": "population_daily_users",
+    "request_schema": "ossie-daily-users-request-v1",
+    "result_schema": "ossie-daily-user-set-result-v1",
+    "supported_concepts": [],
+    "future_supported_concepts_source": "bound bundle registration for QualifiedObservation only",
+    "semantics": "every_calendar_day_exists_qualifying_observation",
+    "calendar": "inclusive consecutive Gregorian DATE, years 0001..9999",
+    "products": "explicit all or nonempty distinct subset, raw binary comparison, may vary by day",
+    "rule_scope": "same current formal rule and same frozen bundle",
+    "missing_observation": "no witness; does not establish real business status",
+    "ordering": "raw User UTF-8 byte ascending",
+    "paging": false,
+    "truncated": false,
+    "limits_proposed": {
+      "input_rows": 10000,
+      "physical_columns": 256,
+      "canonical_input_bytes": 16777216,
+      "request_json_utf8_bytes": 16384,
+      "inclusive_days": 366,
+      "subset_products": 64,
+      "product_decoded_utf8_bytes": 256,
+      "unique_user_date_pairs": 10000,
+      "members": 10000,
+      "result_json_utf8_bytes_including_metadata": 1048576
+    },
+    "guarantees_not_claimed": {
+      "hard_execution_deadline": false,
+      "peak_process_memory_bound": false,
+      "outer_mcp_wire_byte_bound": false,
+      "cross_rpc_snapshot_atomicity": false,
+      "business_data_completeness": false
+    },
+    "cancellation": "native cooperative interrupt and drain; client timeout not server deadline",
+    "future_supported_concepts_if_registered": ["QualifiedObservation"],
+    "error_schema": "ossie-population-error-v1",
+    "new_error_code_proposed": "RESOURCE_LIMIT_EXCEEDED"
+  },
+  "mcp_operation_result_schemas_proposed": {
+    "population_objects": "ossie-population-result-v1",
+    "population_query": "ossie-population-result-v1",
+    "population_compile": "ossie-population-plan-v2",
+    "population_daily_users": "ossie-daily-user-set-result-v1"
+  }
+}

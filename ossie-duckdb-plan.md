@@ -52,7 +52,7 @@ DuckDB1.5.6，不宣称完整Ossie、一般推理或真实业务数据正确。
 至少一次合格，逐日人数不够证明用户交集。它直接承接已接受观察用例，
 比同时引入窗口/修订/多事实更容易限定范围；分页保持先调研的独立需求。
 研究先定义必需日期、缺失观察、产品范围与每日资格，再以独立小数据见证
-确定接口支持/拒绝和最小切片。此为建议，尚未启动研究/实现；main审阅/
+确定接口支持/拒绝和最小切片。此为原建议，研究与后续设计现已完成、实现尚未启动；main审阅/
 合并/发布与接口增强可分别决定，不因建议而自动执行。
 
 此研究包已完成（2026-10-11，bd8c0ee基线）：
@@ -63,6 +63,18 @@ DuckDB1.5.6，不宣称完整Ossie、一般推理或真实业务数据正确。
 拒绝用例只作设计，未新增validator/profile。生产路径及旧Agent拒绝不改，
 无Ossie LOAD、MCP启动、模型调用或推送。下一步先审阅并接受候选业务
 契约，再单独授权表达承载/发现/最小接口与资源门禁设计，暂不实现。
+
+用户已接受该集合口径，独立[接受裁定](docs/research/ossie-req-001/multi-period-research/every-day/interface-design/acceptance-decision.json)
+绑定55531fe研究与原验证哈希；原候选文件保留历史未批准描述。
+[最小接口/能力设计](docs/research/ossie-req-001/multi-period-research/every-day/interface-design/design.md)
+本地完成：独立SQL JSON入口/MCP工具/结果schema，唯一QualifiedObservation，
+原user_count不变；API2.2.0与资源错误码只作未来实施方案，当前2.1.0仍不支持。
+候选366日/64产品/256字节产品/16KiB请求/1MiB内部完整结果；无峰值内存、
+外层MCP报文或硬deadline承诺。[设计核验](docs/research/ossie-req-001/multi-period-research/every-day/interface-design/verification.json)
+记录结构正反例、独立门槛组合与旧10文件哈希不变；没有生产语义/资源执行证据。
+本轮只设计，未改生产/注册/配置、未启动MCP/模型、未推送。设计工作包完成，
+下一步先审阅接口/预算并另行授权最小SQL及资源守卫实施，验证后再接MCP/Agent；
+分页/通用P1及main合并/发布仍是后续，不因本次口径接受而启动。
 
 真实Agent暂不重复调用。本轮分支交付验证完成；剩余第3/4项能力与
 main合并/发布仍须独立决定，本轮不扩大分页或模型实验。

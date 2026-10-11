@@ -1,0 +1,13 @@
+{
+  "scope": "Accepted every-day semantic candidate only; interface design authorized, implementation not authorized",
+  "date": "2026-10-11",
+  "source_commit": "55531fe",
+  "user_instruction": "好，接受这个候选口径。继续设计最小接口和能力声明，明确资源限制与支持、拒绝边界，暂不实现。",
+  "accepted_sources_sha256": {
+    "research.md": "7ce7ea7e9850db43e853b98602ee91f610c7e007cf9e186a4a1aab336b4fe64d",
+    "verification.json": "4c47ae0f942814bd04aae4ae4262a3d2ecbaddcbefce14eaf70ca85618866b92"
+  },
+  "original_records_modified": false,
+  "interface_decision": "proposed, not yet accepted",
+  "production_support": "not implemented"
+}

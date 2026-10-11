@@ -1,0 +1,21 @@
+{
+  "requested": "Astra/high, reused read-only Advisor",
+  "effective_backend": "unknown",
+  "effective_effort": "unknown",
+  "usage": "unknown",
+  "billing": "unknown",
+  "decision": "Dedicated operation coherent; reuse error-v1 with additive resource code; freeze singleton concept and exact byte scopes before implementation",
+  "independent_read_scope": [
+    "existing accepted research",
+    "population discovery/result/errors contracts",
+    "reference population_error.ts decoder"
+  ],
+  "did_not_execute": "no implementation tests or model requests",
+  "lead_verified": {
+    "singleton_concept": "fixture ontology.json and ontology-20.json both register QualifiedObservation",
+    "error_decoder": "code validated as string, not closed enum; no external compatibility guarantee",
+    "mcp_schema": "existing single mcp_example result schema needs separate operation mapping",
+    "budget": "all source product domain not subset-limited; all caps simultaneous; inner encoding includes metadata and escapes"
+  },
+  "disposition": "Adopted, with current support explicitly disabled and future runtime/tool registration separately gated"
+}
