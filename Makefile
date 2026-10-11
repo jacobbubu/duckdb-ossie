@@ -124,3 +124,17 @@ fact-capture-test-reldebug:
 test_release_internal: state-test-release metric-grain-test-release population-capture-test-release relation-program-test-release fact-program-test-release fact-capture-test-release
 test_debug_internal: state-test-debug metric-grain-test-debug population-capture-test-debug relation-program-test-debug fact-program-test-debug fact-capture-test-debug
 test_reldebug_internal: state-test-reldebug metric-grain-test-reldebug population-capture-test-reldebug relation-program-test-reldebug fact-program-test-reldebug fact-capture-test-reldebug
+
+.PHONY: history-program-test-release history-program-test-debug history-program-test-reldebug
+history-program-test-release:
+	cmake --build build/release --target ossie_history_program_test
+	./build/release/extension/ossie/ossie_history_program_test
+history-program-test-debug:
+	cmake --build build/debug --target ossie_history_program_test
+	./build/debug/extension/ossie/ossie_history_program_test
+history-program-test-reldebug:
+	cmake --build build/reldebug --target ossie_history_program_test
+	./build/reldebug/extension/ossie/ossie_history_program_test
+test_release_internal: history-program-test-release
+test_debug_internal: history-program-test-debug
+test_reldebug_internal: history-program-test-reldebug
