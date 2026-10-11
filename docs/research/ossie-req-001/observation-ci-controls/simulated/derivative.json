@@ -1,0 +1,82 @@
+{
+  "schema": "ossie-observation-agent-derivative-v1",
+  "source_seal_sha256": "5ce2926296ef0d7c18f295cf0ba2ccb520a124df5d05c5aebf37dd07f82c39af",
+  "mode": "simulated",
+  "derived": true,
+  "exact_original_request_bytes": false,
+  "source_integrity": "verify against separate private raw archive; public rewritten serialized_body is not the original wire",
+  "files": {
+    "baseline/events.jsonl": {
+      "raw_sha256": "8993bdd1315b48d68213edd4f127abf3e0263f67fce50e39b0809792fd2c2ddc",
+      "derived_sha256": "c747a2de8a6e256e6bd7d3726461ac15b9f1f54529da81cf6003e00958815849"
+    },
+    "baseline/model-context.json": {
+      "raw_sha256": "c6c7010be3e4c603f3aa21e6f6d47c5b0d876fdd4830d50fb8d50d58ef6fce2a",
+      "derived_sha256": "c6c7010be3e4c603f3aa21e6f6d47c5b0d876fdd4830d50fb8d50d58ef6fce2a"
+    },
+    "baseline/review.json": {
+      "raw_sha256": "276ea74731018f2a9c18b6396aa9a18eeef7a366b4af6e50ecdd76b13431cee8",
+      "derived_sha256": "276ea74731018f2a9c18b6396aa9a18eeef7a366b4af6e50ecdd76b13431cee8"
+    },
+    "baseline/setup.json": {
+      "raw_sha256": "7537b2eee71df3752769d4ed2baca0317a4643fa0e1c332b944155ffc4671f33",
+      "derived_sha256": "7537b2eee71df3752769d4ed2baca0317a4643fa0e1c332b944155ffc4671f33"
+    },
+    "changed-rule/events.jsonl": {
+      "raw_sha256": "d1f5bd159ab044abd6a8ea5f27e79d58de247b97df8dc034177b819de8276680",
+      "derived_sha256": "38ee330c94b4a54d031ddbbb0ef542ca6fae56b66dc0a146be2660677e7817a4"
+    },
+    "changed-rule/model-context.json": {
+      "raw_sha256": "7ab00306d7a644b35074e826e37e81e4942c3c78ee595ba172e7a83fef478f8f",
+      "derived_sha256": "7ab00306d7a644b35074e826e37e81e4942c3c78ee595ba172e7a83fef478f8f"
+    },
+    "changed-rule/review.json": {
+      "raw_sha256": "0088c89d8c745bda8324752e7ce131bcf308dd0170e5587654d9824dc450cc33",
+      "derived_sha256": "0088c89d8c745bda8324752e7ce131bcf308dd0170e5587654d9824dc450cc33"
+    },
+    "changed-rule/setup.json": {
+      "raw_sha256": "c59204dcdae171f58957d10eae04b1175b761ed05459c58ca1c94b95fadf4d18",
+      "derived_sha256": "c59204dcdae171f58957d10eae04b1175b761ed05459c58ca1c94b95fadf4d18"
+    },
+    "interval-users/events.jsonl": {
+      "raw_sha256": "b26d50cdaedcf14afbafaf03747d874521cec4912b218554b00c81257dd89b9e",
+      "derived_sha256": "68ef6e7d6ebd3fccb7c2662409441d5e36521e20d6ce4f7c05aaa96832212cad"
+    },
+    "interval-users/model-context.json": {
+      "raw_sha256": "565b30fa8d1fe1627cbabb5ddb3109cbc1c8e84208a43189013d36f1b53bd04b",
+      "derived_sha256": "565b30fa8d1fe1627cbabb5ddb3109cbc1c8e84208a43189013d36f1b53bd04b"
+    },
+    "interval-users/review.json": {
+      "raw_sha256": "0b8b820e5ef60af0be0f8fe11b12d4a1360020a713d29165c29463b2e321de4b",
+      "derived_sha256": "0b8b820e5ef60af0be0f8fe11b12d4a1360020a713d29165c29463b2e321de4b"
+    },
+    "interval-users/setup.json": {
+      "raw_sha256": "19ba52c35d03365c70d618fd443dbc92a743e3399b4236fb2ab76a14a5f99647",
+      "derived_sha256": "19ba52c35d03365c70d618fd443dbc92a743e3399b4236fb2ab76a14a5f99647"
+    },
+    "run.json": {
+      "raw_sha256": "0c7f4623f811a39e2c7fdfd4a14ef37482aad73c4dae6dcc2ad701a3250c4417",
+      "derived_sha256": "9072a3c2d4670afed61e580896fd2905aaa871016862a420a55d8847f635e925"
+    },
+    "summary.json": {
+      "raw_sha256": "8cff6c963243662246592425e7ed65874d543eaf136964ff519f071f6045e57f",
+      "derived_sha256": "8cff6c963243662246592425e7ed65874d543eaf136964ff519f071f6045e57f"
+    },
+    "unsupported-every-day/events.jsonl": {
+      "raw_sha256": "2ee07d3e3d4f4e9795e819ca9ec6ef3fc5438ab4a764f965dfe755758b7687e8",
+      "derived_sha256": "389685335a1536a580d413a761be205e9ac646a7b85363692170312c3c3fd977"
+    },
+    "unsupported-every-day/model-context.json": {
+      "raw_sha256": "2d9699a3a183ee1e47e92da99ac5ac51601ee8eeb933333d649c50eff6ce232e",
+      "derived_sha256": "2d9699a3a183ee1e47e92da99ac5ac51601ee8eeb933333d649c50eff6ce232e"
+    },
+    "unsupported-every-day/review.json": {
+      "raw_sha256": "343efa0d9a92ca6b4afe4258d88d66cd99fef87ee6675a0c20322a7f41e404d8",
+      "derived_sha256": "343efa0d9a92ca6b4afe4258d88d66cd99fef87ee6675a0c20322a7f41e404d8"
+    },
+    "unsupported-every-day/setup.json": {
+      "raw_sha256": "f03dbfd8516793ce3314e7ba7564ed971e18b3d8f178b133a50fe392fbdbe73d",
+      "derived_sha256": "f03dbfd8516793ce3314e7ba7564ed971e18b3d8f178b133a50fe392fbdbe73d"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "category": "AssertionError",
+  "stage": "baseline: model/tool loop",
+  "provider_http_status": null,
+  "details": "inspect preserved projected events; arbitrary exception text is not archived"
+}

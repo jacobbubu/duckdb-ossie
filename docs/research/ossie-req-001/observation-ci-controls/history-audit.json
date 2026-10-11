@@ -1,0 +1,26 @@
+{
+  "scope": "OSSIE-REQ-001 outgoing history and current candidate files; known private fingerprints and selected common credential patterns",
+  "base": "b2d486a4bec4941531e8a8daf5aa82ac3bc7c2af",
+  "scanned_tip": "9980d0cbbdaa0326172ab7949755153eee6af98c",
+  "commits": 20,
+  "full_snapshot_paths": 13264,
+  "unique_snapshot_blobs": 780,
+  "current_candidate_files": 832,
+  "known_fingerprint_categories": [
+    "provider_url",
+    "provider_host",
+    "model_id",
+    "api_key",
+    "legacy_key_variable"
+  ],
+  "escaped_and_base64_variants": true,
+  "matches": [],
+  "common_credential_pattern_matches": [],
+  "tracked_private_paths": [],
+  "ignored_private_configuration": true,
+  "ignored_raw_archives": true,
+  "protected_private_files_unchanged": 10,
+  "limitations": "Known values and selected common patterns checked, not a guarantee against unknown secrets, business data or arbitrary encodings. Local paths/provenance metadata retained in reviewed simulation derivatives. Ignored backups/reflogs/unreachable objects are outside outgoing commit history.",
+  "remote_mutated": false,
+  "real_model_requests": 0
+}
