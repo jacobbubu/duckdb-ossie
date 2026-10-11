@@ -1,0 +1,412 @@
+{
+  "passed": true,
+  "scope": "production artifact typed dual capture and strict profile definitions; no public objects/MCP or frozen execution claim",
+  "artifact_sha256": "9ddb20dbc36bd92301b0a49178562f28a30b5e2ce774129964e7a9bd1216b5a9",
+  "checks": [
+    "fixed core/ontology/mapping schema accepted",
+    "production artifact publishes two-fact parent with18 captured rows",
+    "valid reload after refused definitions reproduces original paired hash",
+    "default old core entry still refuses bare metric dependencies"
+  ],
+  "refusals": [
+    {
+      "name": "unknown bare metric reference",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "LOAD_FAILED",
+        "object": "<tmp>/ossie-fact-offline-load-final-20261011/bundle-1.json",
+        "stage": "load",
+        "reason": "Invalid Input Error: ossie_load: metric \"balance\" references \"missing\"; a metric must qualify every column as dataset.field so its grain is unambiguous",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=<tmp>/ossie-fact-offline-load-final-20261011/bundle-1.json stage=load reason=Invalid Input Error: ossie_load: metric \"balance\" references \"missing\"; a metric must qualify every column as dataset.field so its grain is unambiguous missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "metric cycle",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "fact program",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie_fact_program: metric dependency cycle",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=fact program stage=rule reason=Invalid Input Error: ossie_fact_program: metric dependency cycle missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "window omitted from classification",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "fact program",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie_fact_program: only SUM/COUNT and same-unit metric +/- supported",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=fact program stage=rule reason=Invalid Input Error: ossie_fact_program: only SUM/COUNT and same-unit metric +/- supported missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "non-window classified as window",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "fact program",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie_fact_program: unknown metric reference",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=fact program stage=rule reason=Invalid Input Error: ossie_fact_program: unknown metric reference missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "case duplicate window",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "PREVIOUS",
+        "stage": "capability",
+        "reason": "distinct declared window names required",
+        "missing_capability": "distinct declared window names required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=PREVIOUS stage=capability reason=distinct declared window names required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "unknown classified window",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "missing",
+        "stage": "capability",
+        "reason": "distinct declared window names required",
+        "missing_capability": "distinct declared window names required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=missing stage=capability reason=distinct declared window names required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "ordinary metric depends on window",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "fact program",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie_fact_program: unknown metric reference",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=fact program stage=rule reason=Invalid Input Error: ossie_fact_program: unknown metric reference missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "missing product from full physical key",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "cost",
+        "stage": "identity",
+        "reason": "full physical primary key required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=cost stage=identity reason=full physical primary key required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "swapped physical key order",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "revenue",
+        "stage": "identity",
+        "reason": "physical key order must agree with mapped identity",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=revenue stage=identity reason=physical key order must agree with mapped identity missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "computed source role field",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "user_id",
+        "stage": "capability",
+        "reason": "direct physical field required before model lowering",
+        "missing_capability": "direct physical field required before model lowering",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=user_id stage=capability reason=direct physical field required before model lowering missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "currency mismatch",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "fact program",
+        "stage": "capability",
+        "reason": "same explicit currency required",
+        "missing_capability": "same explicit currency required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact program stage=capability reason=same explicit currency required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "missing explicit unit",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "DEFINITION_INVALID",
+        "object": "currency",
+        "stage": "parse",
+        "reason": "required nonempty string",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=currency stage=parse reason=required nonempty string missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "root concept override",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "RevenueObservation",
+        "stage": "capability",
+        "reason": "one User referent required",
+        "missing_capability": "one User referent required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=RevenueObservation stage=capability reason=one User referent required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "same dataset twice",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "facts",
+        "stage": "bind",
+        "reason": "distinct declared datasets and root concepts required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=facts stage=bind reason=distinct declared datasets and root concepts required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "same underlying native table twice",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "SNAPSHOT_REJECTED",
+        "object": "cost",
+        "stage": "snapshot",
+        "reason": "two distinct native source tables required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=cost stage=snapshot reason=two distinct native source tables required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "different underlying source databases",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "SNAPSHOT_REJECTED",
+        "object": "cost",
+        "stage": "snapshot",
+        "reason": "both sources must belong to the same underlying database",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=cost stage=snapshot reason=both sources must belong to the same underlying database missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "deep expression before core lowering",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "fact program",
+        "stage": "capability",
+        "reason": "expression depth32/node1024 before model lowering/copy",
+        "missing_capability": "expression depth32/node1024 before model lowering/copy",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact program stage=capability reason=expression depth32/node1024 before model lowering/copy missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "nested User identity override",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "MAPPING_INVALID",
+        "object": "CostObservation",
+        "stage": "mapping",
+        "reason": "same declared User id required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=CostObservation stage=mapping reason=same declared User id required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "root object versus link identity mismatch",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "RevenueObservation",
+        "stage": "identity",
+        "reason": "object and link identity differ",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=RevenueObservation stage=identity reason=object and link identity differ missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "missing mapped amount link",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "MAPPING_INVALID",
+        "object": "RevenueObservation",
+        "stage": "mapping",
+        "reason": "all links and full mapped identity must agree",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=RevenueObservation stage=mapping reason=all links and full mapped identity must agree missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "wrong ontology User role",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "user",
+        "stage": "capability",
+        "reason": "one User/Date[/product String]/Decimal role required",
+        "missing_capability": "one User/Date[/product String]/Decimal role required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=user stage=capability reason=one User/Date[/product String]/Decimal role required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "unbound extra ontology relationship",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "other_amount",
+        "stage": "capability",
+        "reason": "one User/Date[/product String]/Decimal role required",
+        "missing_capability": "one User/Date[/product String]/Decimal role required",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=other_amount stage=capability reason=one User/Date[/product String]/Decimal role required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "incomplete ontology identity",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "IDENTITY_VIOLATION",
+        "object": "CostObservation",
+        "stage": "identity",
+        "reason": "ordered User/date[/product] identity and amount required",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=CostObservation stage=identity reason=ordered User/date[/product] identity and amount required missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "metric declared Float versus bound Decimal",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "balance",
+        "stage": "bind",
+        "reason": "declared metric datatype differs from reduced/combined output",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=balance stage=bind reason=declared metric datatype differs from reduced/combined output missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "window declared Integer versus actual Decimal",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "previous",
+        "stage": "bind",
+        "reason": "declared window datatype differs from actual output",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=previous stage=bind reason=declared window datatype differs from actual output missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "ANSI-only declaration",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "income",
+        "stage": "capability",
+        "reason": "fact program declarations require OSSIE_SQL_2026",
+        "missing_capability": "fact program declarations require OSSIE_SQL_2026",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=income stage=capability reason=fact program declarations require OSSIE_SQL_2026 missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "oversized expression before core parse",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "UNSUPPORTED_CAPABILITY",
+        "object": "fact program",
+        "stage": "capability",
+        "reason": "bounded rule bytes required before core parsing",
+        "missing_capability": "bounded rule bytes required before core parsing",
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=fact program stage=capability reason=bounded rule bytes required before core parsing missing_capability=bounded population profile"
+      }
+    },
+    {
+      "name": "raw cross-fact aggregate leaf",
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "RULE_REJECTED",
+        "object": "fact program",
+        "stage": "rule",
+        "reason": "Invalid Input Error: ossie_fact_program: aggregate/window value must be declared source field",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": "Invalid Input",
+        "legacy_message": "ossie_population: object=fact program stage=rule reason=Invalid Input Error: ossie_fact_program: aggregate/window value must be declared source field missing_capability=bounded population profile"
+      }
+    }
+  ],
+  "source_sha256": {
+    "scripts/verify_fact_load_artifact.ts": "13bd22894c7c3745dc9cff2007284e55134b255993a1efa8a58434170c6f98d3",
+    "src/population/population.cpp": "f00a0307bfceb6905633ac65af63f2b6bb1a75fe3eb8592b6c815b7b6c5aa434",
+    "src/model/parser.cpp": "b41fb17f468d56560085e3993ffecd5282a684e6fb9a7f9308d9f35015b6645e",
+    "src/model/validate.cpp": "5c3841623d681b777a3a09480eec5e21f1aaa2e4f3a1b65db493e1b9757d10d2"
+  },
+  "real_model_requests": 0
+}

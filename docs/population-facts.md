@@ -1,6 +1,6 @@
 # 两事实指标、人群集合与观察行窗口
 
-`multi-fact-user-program-v1` 面向同一User的两种独立事实粒度：User/date与User/date/product。先各自聚合到User，再组合金额和筛选人群，避免原始明细相连造成重复累计。原生加载、专用SQL接口及独立MCP服务已本地验收，无模型Agent验收仍待完成。示例采用合成的加性USD观察值，不代表GAAP或累计年内数值。
+`multi-fact-user-program-v1` 面向同一User的两种独立事实粒度：User/date与User/date/product。先各自聚合到User，再组合金额和筛选人群，避免原始明细相连造成重复累计。原生加载、专用SQL接口、独立MCP及无模型Agent集成/重放已本地验收；完整P1仍未完成。示例采用合成的加性USD观察值，不代表GAAP或累计年内数值。
 
 加载[完整示例](../test/fixtures/population-fact-program/bundle.json)前，先执行[来源表脚本](../test/fixtures/population-fact-program/rows.sql)。manifest引用固定core/ontology/mapping，program只指定两个dataset/concept/显式currency，以及core中的窗口指标名。User身份关系必须相同且映射对象/完整关联树一致；金额实际类型DECIMAL(18,2)，User和product非空原始VARCHAR，DATE非NULL且有限，完整源身份唯一。错误、重复、取消或任一来源捕获失败都不替换当前有效快照；源改变需显式重新加载。
 
@@ -63,6 +63,19 @@ SELECT * FROM ossie_fact_windows_json(
 伪造成员。外层8MiB是本地decoder保护，不是服务器wire保证。schema或hash
 一致仍不能证明金额/成员真值，实际[MCP验收](research/ossie-req-001/p1-fact-mcp-controls/review.md)
 另以独立BigInt及完整身份oracle核对，包括10000行与先窗口后展示。
+
+[无模型演练入口](../scripts/verify_fact_agent_offline.ts)以标准客户端运行实际MCP，
+注入模拟Responses，覆盖八个有限场景并严格顺序重放。CLI参数依次为客户端、
+新扩展产物、项目下全新的`.local-agent-evidence/...`私有目录、全新的receipt路径。
+用`bun --no-env-file`启动；入口没有live模式或服务配置读取。原始RPC、上下文
+和答案留在忽略的私有封存目录，receipt只输出选择的审计结论。
+
+答案保留完整执行envelope与执行引用；仅解释场景不调用查询、不提供成员/金额/
+计数。独立oracle核对完整行、精确金额、共同分母和先窗口后展示。八场景是
+脚本集成验收，不证明模型自主选择工具、真实输出token预算足够或生产数据
+业务口径正确。模拟reason/limitations采用固定声明，不能外推为真实模型文本审计。
+[工作包证据](research/ossie-req-001/p1-fact-agent-controls/review.md)区分源文件/定义
+绑定、事件对应和独立计算；hash封存不提供执行历史的真实性认证。
 
 金额同币种/scale才可组合；只支持SUM(mapped amount)、COUNT(mapped User或amount)、同单位SUM组件加减。AVG、声明COUNT(*)、嵌套/跨事实聚合、聚合修饰、比率、混合单位、原始明细fan-out、递归程序、跨来源窗口、未声明SQL、日历补齐/状态/历史推断均拒绝。受限输入与表达式预算内，Prepare证明类型，实际精度仍应对照执行证据；超范围金额必须在加载实际类型/数据转换阶段拒绝，不把未构造的溢出场景称已验收。
 

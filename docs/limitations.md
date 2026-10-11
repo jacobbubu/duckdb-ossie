@@ -22,7 +22,8 @@ reduce User/date and User/date/product facts before combining same-unit SUM meas
 apply bounded TRUE cohorts, or compute explicit User/date observation windows before
 display filtering. Its dedicated SQL query/compile/discovery functions do not relax the
 generic core refusals below. Its independent four-tool MCP surface is locally verified;
-Agent integration and final P1 acceptance are still pending.
+Scripted no-model Agent integration and offline replay are locally verified;
+final P1 acceptance is still pending.
 
 ## Loader string arrays
 

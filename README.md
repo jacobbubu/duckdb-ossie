@@ -21,8 +21,8 @@ in [the profile contract](docs/population-profile.md), and an opt-in
 [daily-observation profile](docs/population-observation.md) with typed User/date/product
 identity and distinct User counts. Opt-in [declared relations](docs/population-relations.md)
 and [independent two-fact metrics, cohorts and observation windows](docs/population-facts.md)
-have dedicated interfaces; the latter SQL and independent MCP interfaces are locally verified,
-with Agent integration still pending.
+have dedicated interfaces; the latter SQL, independent MCP and scripted Agent/replay
+interfaces are locally verified. Full P1 acceptance is still pending.
 See the [bounded implementation record](docs/ossie-execution-research.md)
 and [current delivery status](ossie-duckdb-plan.md#current-delivery-checkpoint--2026-10-11)
 for accepted scopes, evidence and remaining verification.

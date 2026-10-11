@@ -1,0 +1,1366 @@
+{
+  "scope": "Reviewed actual synthetic MCP replies for regression; tests rebuild simulated events with current source hashes, not original evidence replay",
+  "source_seal_sha256": "a74256797b20828b196f5e85433d0369fdec3aba834887c0f66044844de00bb0",
+  "source_hashes": {
+    "examples/fact_server.sql": "0c4379c68f1588645a498cf88c2fad2e606615b50728b193652c887af2bf3cd8",
+    "test/fixtures/population-fact-program/core.json": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+    "test/fixtures/population-fact-program/ontology.json": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+    "test/fixtures/population-fact-program/mapping.json": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+    "test/fixtures/population-fact-program/bundle.json": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+    "test/fixtures/population-fact-program/rows.sql": "78df68efcb6e2d5226d76d888aa91bea36f20e6e244df8038398538e3a17ef4d",
+    "scripts/fact_agent_contract.ts": "9e4ffa057f25726170a0b1f06da3b6ab8d5e720bdad739be2155552095cac491",
+    "scripts/fact_agent_rehearsal.ts": "4ad63c31cbcaea53f08e6e175e3c29abace0223ded31e337bc0914a39a2958aa",
+    "scripts/fact_agent_replay.ts": "64d761d1b2e19b03dbad65734cda7fd6f49abdccae5abd0d42a7181015d77930",
+    "scripts/fact_mcp.ts": "e1c58aaac113f6cd94b5c2e77c88ed2608046544dd662664c4f279b282472bc9",
+    "scripts/fact_result.ts": "84b6b023719cb0d031adb0341a506dc89f9d63e2385426e80a09c7126a036835",
+    "scripts/fact_oracle.ts": "e7d84437e0698865acfa7114b3f49136f16c30d38aaa1874353c83ae852a5ba7",
+    "scripts/daily_mcp.ts": "9e84c7c2166046ad7d44f1fdfd35475ac17bb8445d866db0f14bb029807d2821",
+    "scripts/relation_result.ts": "d916862c473e615f08f5ade2ce78401b214b73c5e5b79e21cfeedb8fd9895706",
+    "scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "scripts/observation_mcp.ts": "91c9f6c7d3e900a65a6b596fb0100a4d28f9fa94d852fb7a8054fbb26775e8eb",
+    "scripts/observation_evidence.ts": "4a58242be77cbad354bd597cdff530b5ffa5f1c95edab378b92800e89862d3a5",
+    "scripts/observation_agent_archive.ts": "dee3890dc2351d71994b9bd17525ee327a92d143aa7f0ae36ff83ef3f0648571",
+    "scripts/observation_agent_replay.ts": "be43c6f495ccbdbb2914c820e10eab832fda23830da8daf8e8c3a0d805a9eb0d",
+    "scripts/observation_agent_contract.ts": "2e642fa0e8b7025fc509f6fd4ec519a916fa0589c3ed3b700064fadbb9c6eb78",
+    "scripts/population_result.ts": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+    "scripts/population_error.ts": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff"
+  },
+  "scenes": [
+    {
+      "scene": "separate-grains",
+      "raw_events_sha256": "d9cb6623b39ac7d07bd188f70297db5ed9bfa85441c93de7a6fea29d99070d3d",
+      "rpc_replies": [
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+              "name": "DuckDB MCP Server",
+              "version": "2.0.0"
+            },
+            "capabilities": {
+              "resources": {
+                "subscribe": false,
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              },
+              "prompts": {
+                "listChanged": true
+              }
+            }
+          },
+          "id": 1
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "name": "population_fact_windows_compile",
+                "description": "Bind and explain the same window/display request without execution or members/counts. Parse plan_json as ossie-fact-windows-plan-v1; executed, members_computed, counts_computed false. Whole-capture windows precede display DATE filtering. Logical operators and diagnostic SQL are not a physical plan or replayable SQL; compare discovery, request, units, source grain and six bindings. Compilation success does not guarantee result budget. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No input filter, common-domain restriction, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_windows",
+                "description": "Return complete discovered windows from one frozen User/date fact. Discover program first. request_json explicitly contains input_scope=entire_capture, windows and display (all or canonical finite DATE range). Compute over whole capture before display filtering. ROWS counts observations rather than calendar days, LAG includes NULL; no filling or carry-forward. Parse result_json as ossie-fact-windows-result-v1. Exact decimal text/NULL; User raw UTF8 bytes then DATE chronological ordering. Full finite DuckDB DATE text includes BC and years beyond9999. At most10000 rows and1MiB complete inner JSON; no paging/truncation or peak memory/outer message guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no common User restriction, input filters, history/state inference, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users_compile",
+                "description": "Bind and explain the same common User request without executing or calculating members/counts. Discover program first. Parse plan_json as ossie-fact-users-plan-v1; executed, members_computed, counts_computed are false. Separate aggregation and independent denominator are logical steps, not a physical plan; diagnostic SQL is not replayable. Compare request, canonical selections, units, identity and six bindings against discovery and any result. Execution may exceed the complete1MiB result limit even when compile succeeds. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no input filters, arbitrary SQL or reload.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users",
+                "description": "Return complete common User rows for discovered regular metrics and a bounded TRUE cohort set. Discover program, units, identity and six snapshot bindings first. request_json must explicitly contain domain=common, input_scope=entire_capture, metrics and cohort. Reduce each frozen fact separately before combining; common_user_count is the row-presence domain before cohort, selected_user_count after cohort, both integer text. Parse result_json as ossie-fact-users-result-v1. Money is exact decimal text, COUNT is integer text, NULL remains null. User ordering uses raw UTF8 bytes. At most10000 rows and1MiB complete inner JSON; no paging or truncation, no peak memory or outer message bound. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner unknown/duplicate fields are refused. No input/date/product filtering, raw fan-out, arbitrary SQL, reload or history/state inference.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              }
+            ]
+          },
+          "id": 2
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "resources": [
+              {
+                "uri": "ossie://facts/surface",
+                "name": "ossie://facts/surface",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              },
+              {
+                "uri": "ossie://facts/program",
+                "name": "ossie://facts/program",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              }
+            ]
+          },
+          "id": 3
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/program",
+                "mimeType": "application/json",
+                "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-program-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"project_api_version\\\":\\\"2.2.0\\\",\\\"query_executed\\\":false,\\\"counts_computed\\\":false,\\\"mcp_registered\\\":false,\\\"functions\\\":[\\\"ossie_fact_users_json\\\",\\\"ossie_fact_users_compile\\\",\\\"ossie_fact_windows_json\\\",\\\"ossie_fact_windows_compile\\\",\\\"ossie_fact_program\\\"],\\\"sources\\\":[{\\\"dataset\\\":\\\"revenue\\\",\\\"concept\\\":\\\"RevenueObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.revenue\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"7cada9bc880c3d5b119ce371f67ff1d3bc9055874488ca949c05336860ac8bd3\\\",\\\"captured_rows\\\":\\\"8\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]},{\\\"dataset\\\":\\\"cost\\\",\\\"concept\\\":\\\"CostObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.cost\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"bd058f6bb1fea56521599f956d037bac77b854e06d46a359e7fc2458b19a8ef5\\\",\\\"captured_rows\\\":\\\"10\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"product\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"product\\\",\\\"physical_column\\\":\\\"item\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]}],\\\"metrics\\\":[{\\\"name\\\":\\\"balance\\\",\\\"original_definition\\\":\\\"income-expense\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"income\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"expense\\\",\\\"original_definition\\\":\\\"SUM(cost.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"revenue_rows\\\",\\\"original_definition\\\":\\\"COUNT(revenue.user_id)\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"revenue_values\\\",\\\"original_definition\\\":\\\"COUNT(revenue.amount)\\\",\\\"unit\\\":\\\"count:RevenueObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_rows\\\",\\\"original_definition\\\":\\\"COUNT(cost.user_id)\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_values\\\",\\\"original_definition\\\":\\\"COUNT(cost.amount)\\\",\\\"unit\\\":\\\"count:CostObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"}],\\\"windows\\\":[{\\\"name\\\":\\\"previous\\\",\\\"original_definition\\\":\\\"LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"},{\\\"name\\\":\\\"rolling\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"}],\\\"domain\\\":\\\"common User by row presence in both separately reduced sources\\\",\\\"cohort_semantics\\\":\\\"TRUE atomic member sets; binary intersection, union and ordered difference within common\\\",\\\"count_semantics\\\":\\\"COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"window_semantics\\\":\\\"single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days\\\",\\\"supported_aggregates\\\":[\\\"SUM(mapped amount)\\\",\\\"COUNT(mapped User or amount)\\\",\\\"same-currency SUM components +/-\\\"],\\\"refused\\\":[\\\"raw fact-to-fact fan-out\\\",\\\"AVG/COUNT(*) in declarations\\\",\\\"cross-fact aggregate leaves\\\",\\\"ratios or mixed measure units\\\",\\\"input/date/product filtering\\\",\\\"recursive cohorts or dependencies\\\",\\\"mixed window fact grains\\\",\\\"calendar filling or history/state inference\\\",\\\"ordinary rendered SQL replay\\\"],\\\"limits\\\":{\\\"sources\\\":2,\\\"rows_per_source\\\":10000,\\\"physical_columns_per_source\\\":256,\\\"combined_canonical_bytes\\\":16777216,\\\"regular_metrics\\\":32,\\\"window_metrics\\\":16,\\\"name_ascii_bytes\\\":128,\\\"rule_bytes\\\":16384,\\\"total_rule_bytes\\\":131072,\\\"expression_depth\\\":32,\\\"expression_nodes\\\":1024,\\\"expanded_program_nodes\\\":32768,\\\"metric_dependency_depth\\\":16,\\\"cohort_nodes\\\":64,\\\"cohort_depth\\\":16,\\\"request_json_bytes\\\":16384,\\\"complete_json_bytes\\\":1048576,\\\"result_rows\\\":10000},\\\"paging\\\":false,\\\"truncated\\\":false,\\\"peak_memory_bound\\\":false,\\\"hash_set_normalized\\\":false}\"}]"
+              }
+            ]
+          },
+          "id": 4
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/surface",
+                "mimeType": "application/json",
+                "text": "[{\"schema_version\":\"ossie-fact-mcp-surface-v1\",\"tools_json\":\"[\\\"population_fact_users\\\",\\\"population_fact_users_compile\\\",\\\"population_fact_windows\\\",\\\"population_fact_windows_compile\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send request_json Strings\"}]"
+              }
+            ]
+          },
+          "id": 5
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-users-plan-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"domain\\\":\\\"common\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"metrics\\\":[\\\"balance\\\",\\\"income\\\",\\\"expense\\\",\\\"revenue_rows\\\",\\\"revenue_values\\\",\\\"cost_rows\\\",\\\"cost_values\\\"],\\\"cohort\\\":{\\\"operation\\\":\\\"all\\\"}},\\\"selected\\\":[\\\"balance\\\",\\\"income\\\",\\\"expense\\\",\\\"revenue_rows\\\",\\\"revenue_values\\\",\\\"cost_rows\\\",\\\"cost_values\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"balance\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":3,\\\"name\\\":\\\"income\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":4,\\\"name\\\":\\\"expense\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":5,\\\"name\\\":\\\"revenue_rows\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\"},{\\\"ordinal\\\":6,\\\"name\\\":\\\"revenue_values\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:RevenueObservation:amount\\\"},{\\\"ordinal\\\":7,\\\"name\\\":\\\"cost_rows\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\"},{\\\"ordinal\\\":8,\\\"name\\\":\\\"cost_values\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:CostObservation:amount\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC\\\",\\\"domain\\\":\\\"common\\\",\\\"domain_semantics\\\":\\\"row presence in both facts before cohort\\\",\\\"cohort_semantics\\\":\\\"TRUE member sets; difference excludes RHS TRUE only\\\",\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"counts_computed\\\":false,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT combined.user_id, combined.balance, combined.income, combined.expense, combined.revenue_rows, combined.revenue_values, combined.cost_rows, combined.cost_values FROM (SELECT \\\\\\\"system\\\\\\\".main.\\\\\\\"-\\\\\\\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \\\\\\\"system\\\\\\\".main.sum(revenue.\\\\\\\"value\\\\\\\") AS c0, \\\\\\\"system\\\\\\\".main.count(revenue.who) AS c2, \\\\\\\"system\\\\\\\".main.count(revenue.\\\\\\\"value\\\\\\\") AS c3 FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \\\\\\\"cost\\\\\\\".who AS user_id, \\\\\\\"system\\\\\\\".main.sum(\\\\\\\"cost\\\\\\\".\\\\\\\"value\\\\\\\") AS c1, \\\\\\\"system\\\\\\\".main.count(\\\\\\\"cost\\\\\\\".who) AS c4, \\\\\\\"system\\\\\\\".main.count(\\\\\\\"cost\\\\\\\".\\\\\\\"value\\\\\\\") AS c5 FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS \\\\\\\"cost\\\\\\\" GROUP BY \\\\\\\"cost\\\\\\\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE CAST('t' AS BOOLEAN) ORDER BY combined.user_id ASC NULLS LAST\\\",\\\"common_count_sql\\\":\\\"SELECT \\\\\\\"system\\\\\\\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \\\\\\\"cost\\\\\\\".who AS user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS \\\\\\\"cost\\\\\\\" GROUP BY \\\\\\\"cost\\\\\\\".who) AS f1 ON ((f0.user_id = f1.user_id))\\\",\\\"operators\\\":[\\\"separate source User aggregation\\\",\\\"row-presence common domain\\\",\\\"same-unit metric combination\\\",\\\"TRUE cohort set filtering\\\",\\\"independent common domain count\\\",\\\"raw User sorting\\\",\\\"complete bounded encoding\\\"]}\"}]"
+              }
+            ]
+          },
+          "id": 6
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-users-result-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"domain\\\":\\\"common\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"metrics\\\":[\\\"balance\\\",\\\"income\\\",\\\"expense\\\",\\\"revenue_rows\\\",\\\"revenue_values\\\",\\\"cost_rows\\\",\\\"cost_values\\\"],\\\"cohort\\\":{\\\"operation\\\":\\\"all\\\"}},\\\"selected\\\":[\\\"balance\\\",\\\"income\\\",\\\"expense\\\",\\\"revenue_rows\\\",\\\"revenue_values\\\",\\\"cost_rows\\\",\\\"cost_values\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"balance\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":3,\\\"name\\\":\\\"income\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":4,\\\"name\\\":\\\"expense\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":5,\\\"name\\\":\\\"revenue_rows\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\"},{\\\"ordinal\\\":6,\\\"name\\\":\\\"revenue_values\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:RevenueObservation:amount\\\"},{\\\"ordinal\\\":7,\\\"name\\\":\\\"cost_rows\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\"},{\\\"ordinal\\\":8,\\\"name\\\":\\\"cost_values\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:CostObservation:amount\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC\\\",\\\"domain\\\":\\\"common\\\",\\\"domain_semantics\\\":\\\"row presence in both facts before cohort\\\",\\\"cohort_semantics\\\":\\\"TRUE member sets; difference excludes RHS TRUE only\\\",\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"counts_computed\\\":true,\\\"row_count\\\":\\\"3\\\",\\\"common_user_count\\\":\\\"3\\\",\\\"selected_user_count\\\":\\\"3\\\",\\\"rows\\\":[[\\\"A\\\",\\\"290.00\\\",\\\"375.00\\\",\\\"85.00\\\",\\\"4\\\",\\\"4\\\",\\\"6\\\",\\\"6\\\"],[\\\"B\\\",\\\"50.00\\\",\\\"80.00\\\",\\\"30.00\\\",\\\"2\\\",\\\"2\\\",\\\"2\\\",\\\"2\\\"],[\\\"C\\\",null,null,null,\\\"1\\\",\\\"0\\\",\\\"1\\\",\\\"0\\\"]]}\"}]"
+              }
+            ]
+          },
+          "id": 7
+        }
+      ]
+    },
+    {
+      "scene": "difference-unknown",
+      "raw_events_sha256": "05fe6d7ee77ac20911319ab38664f8b01a7ea3e46cb3830dde98ab1d1cc138a0",
+      "rpc_replies": [
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+              "name": "DuckDB MCP Server",
+              "version": "2.0.0"
+            },
+            "capabilities": {
+              "resources": {
+                "subscribe": false,
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              },
+              "prompts": {
+                "listChanged": true
+              }
+            }
+          },
+          "id": 1
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "name": "population_fact_windows_compile",
+                "description": "Bind and explain the same window/display request without execution or members/counts. Parse plan_json as ossie-fact-windows-plan-v1; executed, members_computed, counts_computed false. Whole-capture windows precede display DATE filtering. Logical operators and diagnostic SQL are not a physical plan or replayable SQL; compare discovery, request, units, source grain and six bindings. Compilation success does not guarantee result budget. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No input filter, common-domain restriction, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_windows",
+                "description": "Return complete discovered windows from one frozen User/date fact. Discover program first. request_json explicitly contains input_scope=entire_capture, windows and display (all or canonical finite DATE range). Compute over whole capture before display filtering. ROWS counts observations rather than calendar days, LAG includes NULL; no filling or carry-forward. Parse result_json as ossie-fact-windows-result-v1. Exact decimal text/NULL; User raw UTF8 bytes then DATE chronological ordering. Full finite DuckDB DATE text includes BC and years beyond9999. At most10000 rows and1MiB complete inner JSON; no paging/truncation or peak memory/outer message guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no common User restriction, input filters, history/state inference, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users_compile",
+                "description": "Bind and explain the same common User request without executing or calculating members/counts. Discover program first. Parse plan_json as ossie-fact-users-plan-v1; executed, members_computed, counts_computed are false. Separate aggregation and independent denominator are logical steps, not a physical plan; diagnostic SQL is not replayable. Compare request, canonical selections, units, identity and six bindings against discovery and any result. Execution may exceed the complete1MiB result limit even when compile succeeds. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no input filters, arbitrary SQL or reload.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users",
+                "description": "Return complete common User rows for discovered regular metrics and a bounded TRUE cohort set. Discover program, units, identity and six snapshot bindings first. request_json must explicitly contain domain=common, input_scope=entire_capture, metrics and cohort. Reduce each frozen fact separately before combining; common_user_count is the row-presence domain before cohort, selected_user_count after cohort, both integer text. Parse result_json as ossie-fact-users-result-v1. Money is exact decimal text, COUNT is integer text, NULL remains null. User ordering uses raw UTF8 bytes. At most10000 rows and1MiB complete inner JSON; no paging or truncation, no peak memory or outer message bound. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner unknown/duplicate fields are refused. No input/date/product filtering, raw fan-out, arbitrary SQL, reload or history/state inference.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              }
+            ]
+          },
+          "id": 2
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "resources": [
+              {
+                "uri": "ossie://facts/surface",
+                "name": "ossie://facts/surface",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              },
+              {
+                "uri": "ossie://facts/program",
+                "name": "ossie://facts/program",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              }
+            ]
+          },
+          "id": 3
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/program",
+                "mimeType": "application/json",
+                "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-program-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"project_api_version\\\":\\\"2.2.0\\\",\\\"query_executed\\\":false,\\\"counts_computed\\\":false,\\\"mcp_registered\\\":false,\\\"functions\\\":[\\\"ossie_fact_users_json\\\",\\\"ossie_fact_users_compile\\\",\\\"ossie_fact_windows_json\\\",\\\"ossie_fact_windows_compile\\\",\\\"ossie_fact_program\\\"],\\\"sources\\\":[{\\\"dataset\\\":\\\"revenue\\\",\\\"concept\\\":\\\"RevenueObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.revenue\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"7cada9bc880c3d5b119ce371f67ff1d3bc9055874488ca949c05336860ac8bd3\\\",\\\"captured_rows\\\":\\\"8\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]},{\\\"dataset\\\":\\\"cost\\\",\\\"concept\\\":\\\"CostObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.cost\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"bd058f6bb1fea56521599f956d037bac77b854e06d46a359e7fc2458b19a8ef5\\\",\\\"captured_rows\\\":\\\"10\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"product\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"product\\\",\\\"physical_column\\\":\\\"item\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]}],\\\"metrics\\\":[{\\\"name\\\":\\\"balance\\\",\\\"original_definition\\\":\\\"income-expense\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"income\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"expense\\\",\\\"original_definition\\\":\\\"SUM(cost.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"revenue_rows\\\",\\\"original_definition\\\":\\\"COUNT(revenue.user_id)\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"revenue_values\\\",\\\"original_definition\\\":\\\"COUNT(revenue.amount)\\\",\\\"unit\\\":\\\"count:RevenueObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_rows\\\",\\\"original_definition\\\":\\\"COUNT(cost.user_id)\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_values\\\",\\\"original_definition\\\":\\\"COUNT(cost.amount)\\\",\\\"unit\\\":\\\"count:CostObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"}],\\\"windows\\\":[{\\\"name\\\":\\\"previous\\\",\\\"original_definition\\\":\\\"LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"},{\\\"name\\\":\\\"rolling\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"}],\\\"domain\\\":\\\"common User by row presence in both separately reduced sources\\\",\\\"cohort_semantics\\\":\\\"TRUE atomic member sets; binary intersection, union and ordered difference within common\\\",\\\"count_semantics\\\":\\\"COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"window_semantics\\\":\\\"single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days\\\",\\\"supported_aggregates\\\":[\\\"SUM(mapped amount)\\\",\\\"COUNT(mapped User or amount)\\\",\\\"same-currency SUM components +/-\\\"],\\\"refused\\\":[\\\"raw fact-to-fact fan-out\\\",\\\"AVG/COUNT(*) in declarations\\\",\\\"cross-fact aggregate leaves\\\",\\\"ratios or mixed measure units\\\",\\\"input/date/product filtering\\\",\\\"recursive cohorts or dependencies\\\",\\\"mixed window fact grains\\\",\\\"calendar filling or history/state inference\\\",\\\"ordinary rendered SQL replay\\\"],\\\"limits\\\":{\\\"sources\\\":2,\\\"rows_per_source\\\":10000,\\\"physical_columns_per_source\\\":256,\\\"combined_canonical_bytes\\\":16777216,\\\"regular_metrics\\\":32,\\\"window_metrics\\\":16,\\\"name_ascii_bytes\\\":128,\\\"rule_bytes\\\":16384,\\\"total_rule_bytes\\\":131072,\\\"expression_depth\\\":32,\\\"expression_nodes\\\":1024,\\\"expanded_program_nodes\\\":32768,\\\"metric_dependency_depth\\\":16,\\\"cohort_nodes\\\":64,\\\"cohort_depth\\\":16,\\\"request_json_bytes\\\":16384,\\\"complete_json_bytes\\\":1048576,\\\"result_rows\\\":10000},\\\"paging\\\":false,\\\"truncated\\\":false,\\\"peak_memory_bound\\\":false,\\\"hash_set_normalized\\\":false}\"}]"
+              }
+            ]
+          },
+          "id": 4
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/surface",
+                "mimeType": "application/json",
+                "text": "[{\"schema_version\":\"ossie-fact-mcp-surface-v1\",\"tools_json\":\"[\\\"population_fact_users\\\",\\\"population_fact_users_compile\\\",\\\"population_fact_windows\\\",\\\"population_fact_windows_compile\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send request_json Strings\"}]"
+              }
+            ]
+          },
+          "id": 5
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-users-plan-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"domain\\\":\\\"common\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"metrics\\\":[\\\"balance\\\"],\\\"cohort\\\":{\\\"operation\\\":\\\"difference\\\",\\\"children\\\":[{\\\"operation\\\":\\\"all\\\"},{\\\"operation\\\":\\\"predicate\\\",\\\"predicate\\\":\\\"expense>50\\\"}]}},\\\"selected\\\":[\\\"balance\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"balance\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC\\\",\\\"domain\\\":\\\"common\\\",\\\"domain_semantics\\\":\\\"row presence in both facts before cohort\\\",\\\"cohort_semantics\\\":\\\"TRUE member sets; difference excludes RHS TRUE only\\\",\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"counts_computed\\\":false,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT combined.user_id, combined.balance FROM (SELECT \\\\\\\"system\\\\\\\".main.\\\\\\\"-\\\\\\\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \\\\\\\"system\\\\\\\".main.sum(revenue.\\\\\\\"value\\\\\\\") AS c0, \\\\\\\"system\\\\\\\".main.count(revenue.who) AS c2, \\\\\\\"system\\\\\\\".main.count(revenue.\\\\\\\"value\\\\\\\") AS c3 FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \\\\\\\"cost\\\\\\\".who AS user_id, \\\\\\\"system\\\\\\\".main.sum(\\\\\\\"cost\\\\\\\".\\\\\\\"value\\\\\\\") AS c1, \\\\\\\"system\\\\\\\".main.count(\\\\\\\"cost\\\\\\\".who) AS c4, \\\\\\\"system\\\\\\\".main.count(\\\\\\\"cost\\\\\\\".\\\\\\\"value\\\\\\\") AS c5 FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS \\\\\\\"cost\\\\\\\" GROUP BY \\\\\\\"cost\\\\\\\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE (CAST('t' AS BOOLEAN) AND (CAST((combined.expense > 50.00) AS BOOLEAN) IS DISTINCT FROM true)) ORDER BY combined.user_id ASC NULLS LAST\\\",\\\"common_count_sql\\\":\\\"SELECT \\\\\\\"system\\\\\\\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \\\\\\\"cost\\\\\\\".who AS user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS \\\\\\\"cost\\\\\\\" GROUP BY \\\\\\\"cost\\\\\\\".who) AS f1 ON ((f0.user_id = f1.user_id))\\\",\\\"operators\\\":[\\\"separate source User aggregation\\\",\\\"row-presence common domain\\\",\\\"same-unit metric combination\\\",\\\"TRUE cohort set filtering\\\",\\\"independent common domain count\\\",\\\"raw User sorting\\\",\\\"complete bounded encoding\\\"]}\"}]"
+              }
+            ]
+          },
+          "id": 6
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-users-result-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"domain\\\":\\\"common\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"metrics\\\":[\\\"balance\\\"],\\\"cohort\\\":{\\\"operation\\\":\\\"difference\\\",\\\"children\\\":[{\\\"operation\\\":\\\"all\\\"},{\\\"operation\\\":\\\"predicate\\\",\\\"predicate\\\":\\\"expense>50\\\"}]}},\\\"selected\\\":[\\\"balance\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"balance\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC\\\",\\\"domain\\\":\\\"common\\\",\\\"domain_semantics\\\":\\\"row presence in both facts before cohort\\\",\\\"cohort_semantics\\\":\\\"TRUE member sets; difference excludes RHS TRUE only\\\",\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"counts_computed\\\":true,\\\"row_count\\\":\\\"2\\\",\\\"common_user_count\\\":\\\"3\\\",\\\"selected_user_count\\\":\\\"2\\\",\\\"rows\\\":[[\\\"B\\\",\\\"50.00\\\"],[\\\"C\\\",null]]}\"}]"
+              }
+            ]
+          },
+          "id": 7
+        }
+      ]
+    },
+    {
+      "scene": "empty-cohort",
+      "raw_events_sha256": "2d2783640a43f9e3b101b3585e274d1699888bdb426963075ff07b8dc529c02d",
+      "rpc_replies": [
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+              "name": "DuckDB MCP Server",
+              "version": "2.0.0"
+            },
+            "capabilities": {
+              "resources": {
+                "subscribe": false,
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              },
+              "prompts": {
+                "listChanged": true
+              }
+            }
+          },
+          "id": 1
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "name": "population_fact_windows_compile",
+                "description": "Bind and explain the same window/display request without execution or members/counts. Parse plan_json as ossie-fact-windows-plan-v1; executed, members_computed, counts_computed false. Whole-capture windows precede display DATE filtering. Logical operators and diagnostic SQL are not a physical plan or replayable SQL; compare discovery, request, units, source grain and six bindings. Compilation success does not guarantee result budget. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No input filter, common-domain restriction, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_windows",
+                "description": "Return complete discovered windows from one frozen User/date fact. Discover program first. request_json explicitly contains input_scope=entire_capture, windows and display (all or canonical finite DATE range). Compute over whole capture before display filtering. ROWS counts observations rather than calendar days, LAG includes NULL; no filling or carry-forward. Parse result_json as ossie-fact-windows-result-v1. Exact decimal text/NULL; User raw UTF8 bytes then DATE chronological ordering. Full finite DuckDB DATE text includes BC and years beyond9999. At most10000 rows and1MiB complete inner JSON; no paging/truncation or peak memory/outer message guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no common User restriction, input filters, history/state inference, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users_compile",
+                "description": "Bind and explain the same common User request without executing or calculating members/counts. Discover program first. Parse plan_json as ossie-fact-users-plan-v1; executed, members_computed, counts_computed are false. Separate aggregation and independent denominator are logical steps, not a physical plan; diagnostic SQL is not replayable. Compare request, canonical selections, units, identity and six bindings against discovery and any result. Execution may exceed the complete1MiB result limit even when compile succeeds. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no input filters, arbitrary SQL or reload.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users",
+                "description": "Return complete common User rows for discovered regular metrics and a bounded TRUE cohort set. Discover program, units, identity and six snapshot bindings first. request_json must explicitly contain domain=common, input_scope=entire_capture, metrics and cohort. Reduce each frozen fact separately before combining; common_user_count is the row-presence domain before cohort, selected_user_count after cohort, both integer text. Parse result_json as ossie-fact-users-result-v1. Money is exact decimal text, COUNT is integer text, NULL remains null. User ordering uses raw UTF8 bytes. At most10000 rows and1MiB complete inner JSON; no paging or truncation, no peak memory or outer message bound. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner unknown/duplicate fields are refused. No input/date/product filtering, raw fan-out, arbitrary SQL, reload or history/state inference.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              }
+            ]
+          },
+          "id": 2
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "resources": [
+              {
+                "uri": "ossie://facts/surface",
+                "name": "ossie://facts/surface",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              },
+              {
+                "uri": "ossie://facts/program",
+                "name": "ossie://facts/program",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              }
+            ]
+          },
+          "id": 3
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/program",
+                "mimeType": "application/json",
+                "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-program-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"project_api_version\\\":\\\"2.2.0\\\",\\\"query_executed\\\":false,\\\"counts_computed\\\":false,\\\"mcp_registered\\\":false,\\\"functions\\\":[\\\"ossie_fact_users_json\\\",\\\"ossie_fact_users_compile\\\",\\\"ossie_fact_windows_json\\\",\\\"ossie_fact_windows_compile\\\",\\\"ossie_fact_program\\\"],\\\"sources\\\":[{\\\"dataset\\\":\\\"revenue\\\",\\\"concept\\\":\\\"RevenueObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.revenue\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"7cada9bc880c3d5b119ce371f67ff1d3bc9055874488ca949c05336860ac8bd3\\\",\\\"captured_rows\\\":\\\"8\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]},{\\\"dataset\\\":\\\"cost\\\",\\\"concept\\\":\\\"CostObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.cost\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"bd058f6bb1fea56521599f956d037bac77b854e06d46a359e7fc2458b19a8ef5\\\",\\\"captured_rows\\\":\\\"10\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"product\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"product\\\",\\\"physical_column\\\":\\\"item\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]}],\\\"metrics\\\":[{\\\"name\\\":\\\"balance\\\",\\\"original_definition\\\":\\\"income-expense\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"income\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"expense\\\",\\\"original_definition\\\":\\\"SUM(cost.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"revenue_rows\\\",\\\"original_definition\\\":\\\"COUNT(revenue.user_id)\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"revenue_values\\\",\\\"original_definition\\\":\\\"COUNT(revenue.amount)\\\",\\\"unit\\\":\\\"count:RevenueObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_rows\\\",\\\"original_definition\\\":\\\"COUNT(cost.user_id)\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_values\\\",\\\"original_definition\\\":\\\"COUNT(cost.amount)\\\",\\\"unit\\\":\\\"count:CostObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"}],\\\"windows\\\":[{\\\"name\\\":\\\"previous\\\",\\\"original_definition\\\":\\\"LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"},{\\\"name\\\":\\\"rolling\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"}],\\\"domain\\\":\\\"common User by row presence in both separately reduced sources\\\",\\\"cohort_semantics\\\":\\\"TRUE atomic member sets; binary intersection, union and ordered difference within common\\\",\\\"count_semantics\\\":\\\"COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"window_semantics\\\":\\\"single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days\\\",\\\"supported_aggregates\\\":[\\\"SUM(mapped amount)\\\",\\\"COUNT(mapped User or amount)\\\",\\\"same-currency SUM components +/-\\\"],\\\"refused\\\":[\\\"raw fact-to-fact fan-out\\\",\\\"AVG/COUNT(*) in declarations\\\",\\\"cross-fact aggregate leaves\\\",\\\"ratios or mixed measure units\\\",\\\"input/date/product filtering\\\",\\\"recursive cohorts or dependencies\\\",\\\"mixed window fact grains\\\",\\\"calendar filling or history/state inference\\\",\\\"ordinary rendered SQL replay\\\"],\\\"limits\\\":{\\\"sources\\\":2,\\\"rows_per_source\\\":10000,\\\"physical_columns_per_source\\\":256,\\\"combined_canonical_bytes\\\":16777216,\\\"regular_metrics\\\":32,\\\"window_metrics\\\":16,\\\"name_ascii_bytes\\\":128,\\\"rule_bytes\\\":16384,\\\"total_rule_bytes\\\":131072,\\\"expression_depth\\\":32,\\\"expression_nodes\\\":1024,\\\"expanded_program_nodes\\\":32768,\\\"metric_dependency_depth\\\":16,\\\"cohort_nodes\\\":64,\\\"cohort_depth\\\":16,\\\"request_json_bytes\\\":16384,\\\"complete_json_bytes\\\":1048576,\\\"result_rows\\\":10000},\\\"paging\\\":false,\\\"truncated\\\":false,\\\"peak_memory_bound\\\":false,\\\"hash_set_normalized\\\":false}\"}]"
+              }
+            ]
+          },
+          "id": 4
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/surface",
+                "mimeType": "application/json",
+                "text": "[{\"schema_version\":\"ossie-fact-mcp-surface-v1\",\"tools_json\":\"[\\\"population_fact_users\\\",\\\"population_fact_users_compile\\\",\\\"population_fact_windows\\\",\\\"population_fact_windows_compile\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send request_json Strings\"}]"
+              }
+            ]
+          },
+          "id": 5
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-users-plan-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"domain\\\":\\\"common\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"metrics\\\":[\\\"balance\\\"],\\\"cohort\\\":{\\\"operation\\\":\\\"predicate\\\",\\\"predicate\\\":\\\"balance>999999\\\"}},\\\"selected\\\":[\\\"balance\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"balance\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC\\\",\\\"domain\\\":\\\"common\\\",\\\"domain_semantics\\\":\\\"row presence in both facts before cohort\\\",\\\"cohort_semantics\\\":\\\"TRUE member sets; difference excludes RHS TRUE only\\\",\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"counts_computed\\\":false,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT combined.user_id, combined.balance FROM (SELECT \\\\\\\"system\\\\\\\".main.\\\\\\\"-\\\\\\\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \\\\\\\"system\\\\\\\".main.sum(revenue.\\\\\\\"value\\\\\\\") AS c0, \\\\\\\"system\\\\\\\".main.count(revenue.who) AS c2, \\\\\\\"system\\\\\\\".main.count(revenue.\\\\\\\"value\\\\\\\") AS c3 FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \\\\\\\"cost\\\\\\\".who AS user_id, \\\\\\\"system\\\\\\\".main.sum(\\\\\\\"cost\\\\\\\".\\\\\\\"value\\\\\\\") AS c1, \\\\\\\"system\\\\\\\".main.count(\\\\\\\"cost\\\\\\\".who) AS c4, \\\\\\\"system\\\\\\\".main.count(\\\\\\\"cost\\\\\\\".\\\\\\\"value\\\\\\\") AS c5 FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS \\\\\\\"cost\\\\\\\" GROUP BY \\\\\\\"cost\\\\\\\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE (CAST((combined.balance > 999999.00) AS BOOLEAN) IS NOT DISTINCT FROM true) ORDER BY combined.user_id ASC NULLS LAST\\\",\\\"common_count_sql\\\":\\\"SELECT \\\\\\\"system\\\\\\\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \\\\\\\"cost\\\\\\\".who AS user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS \\\\\\\"cost\\\\\\\" GROUP BY \\\\\\\"cost\\\\\\\".who) AS f1 ON ((f0.user_id = f1.user_id))\\\",\\\"operators\\\":[\\\"separate source User aggregation\\\",\\\"row-presence common domain\\\",\\\"same-unit metric combination\\\",\\\"TRUE cohort set filtering\\\",\\\"independent common domain count\\\",\\\"raw User sorting\\\",\\\"complete bounded encoding\\\"]}\"}]"
+              }
+            ]
+          },
+          "id": 6
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-users-result-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"domain\\\":\\\"common\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"metrics\\\":[\\\"balance\\\"],\\\"cohort\\\":{\\\"operation\\\":\\\"predicate\\\",\\\"predicate\\\":\\\"balance>999999\\\"}},\\\"selected\\\":[\\\"balance\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"balance\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC\\\",\\\"domain\\\":\\\"common\\\",\\\"domain_semantics\\\":\\\"row presence in both facts before cohort\\\",\\\"cohort_semantics\\\":\\\"TRUE member sets; difference excludes RHS TRUE only\\\",\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"counts_computed\\\":true,\\\"row_count\\\":\\\"0\\\",\\\"common_user_count\\\":\\\"3\\\",\\\"selected_user_count\\\":\\\"0\\\",\\\"rows\\\":[]}\"}]"
+              }
+            ]
+          },
+          "id": 7
+        }
+      ]
+    },
+    {
+      "scene": "displayed-window",
+      "raw_events_sha256": "ac5cf8dbdf556272ba1c90ae24b2e65d28836a150b894d19bd2105231fb88bc4",
+      "rpc_replies": [
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+              "name": "DuckDB MCP Server",
+              "version": "2.0.0"
+            },
+            "capabilities": {
+              "resources": {
+                "subscribe": false,
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              },
+              "prompts": {
+                "listChanged": true
+              }
+            }
+          },
+          "id": 1
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "name": "population_fact_windows_compile",
+                "description": "Bind and explain the same window/display request without execution or members/counts. Parse plan_json as ossie-fact-windows-plan-v1; executed, members_computed, counts_computed false. Whole-capture windows precede display DATE filtering. Logical operators and diagnostic SQL are not a physical plan or replayable SQL; compare discovery, request, units, source grain and six bindings. Compilation success does not guarantee result budget. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No input filter, common-domain restriction, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_windows",
+                "description": "Return complete discovered windows from one frozen User/date fact. Discover program first. request_json explicitly contains input_scope=entire_capture, windows and display (all or canonical finite DATE range). Compute over whole capture before display filtering. ROWS counts observations rather than calendar days, LAG includes NULL; no filling or carry-forward. Parse result_json as ossie-fact-windows-result-v1. Exact decimal text/NULL; User raw UTF8 bytes then DATE chronological ordering. Full finite DuckDB DATE text includes BC and years beyond9999. At most10000 rows and1MiB complete inner JSON; no paging/truncation or peak memory/outer message guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no common User restriction, input filters, history/state inference, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users_compile",
+                "description": "Bind and explain the same common User request without executing or calculating members/counts. Discover program first. Parse plan_json as ossie-fact-users-plan-v1; executed, members_computed, counts_computed are false. Separate aggregation and independent denominator are logical steps, not a physical plan; diagnostic SQL is not replayable. Compare request, canonical selections, units, identity and six bindings against discovery and any result. Execution may exceed the complete1MiB result limit even when compile succeeds. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no input filters, arbitrary SQL or reload.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users",
+                "description": "Return complete common User rows for discovered regular metrics and a bounded TRUE cohort set. Discover program, units, identity and six snapshot bindings first. request_json must explicitly contain domain=common, input_scope=entire_capture, metrics and cohort. Reduce each frozen fact separately before combining; common_user_count is the row-presence domain before cohort, selected_user_count after cohort, both integer text. Parse result_json as ossie-fact-users-result-v1. Money is exact decimal text, COUNT is integer text, NULL remains null. User ordering uses raw UTF8 bytes. At most10000 rows and1MiB complete inner JSON; no paging or truncation, no peak memory or outer message bound. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner unknown/duplicate fields are refused. No input/date/product filtering, raw fan-out, arbitrary SQL, reload or history/state inference.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              }
+            ]
+          },
+          "id": 2
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "resources": [
+              {
+                "uri": "ossie://facts/surface",
+                "name": "ossie://facts/surface",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              },
+              {
+                "uri": "ossie://facts/program",
+                "name": "ossie://facts/program",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              }
+            ]
+          },
+          "id": 3
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/program",
+                "mimeType": "application/json",
+                "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-program-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"project_api_version\\\":\\\"2.2.0\\\",\\\"query_executed\\\":false,\\\"counts_computed\\\":false,\\\"mcp_registered\\\":false,\\\"functions\\\":[\\\"ossie_fact_users_json\\\",\\\"ossie_fact_users_compile\\\",\\\"ossie_fact_windows_json\\\",\\\"ossie_fact_windows_compile\\\",\\\"ossie_fact_program\\\"],\\\"sources\\\":[{\\\"dataset\\\":\\\"revenue\\\",\\\"concept\\\":\\\"RevenueObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.revenue\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"7cada9bc880c3d5b119ce371f67ff1d3bc9055874488ca949c05336860ac8bd3\\\",\\\"captured_rows\\\":\\\"8\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]},{\\\"dataset\\\":\\\"cost\\\",\\\"concept\\\":\\\"CostObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.cost\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"bd058f6bb1fea56521599f956d037bac77b854e06d46a359e7fc2458b19a8ef5\\\",\\\"captured_rows\\\":\\\"10\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"product\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"product\\\",\\\"physical_column\\\":\\\"item\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]}],\\\"metrics\\\":[{\\\"name\\\":\\\"balance\\\",\\\"original_definition\\\":\\\"income-expense\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"income\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"expense\\\",\\\"original_definition\\\":\\\"SUM(cost.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"revenue_rows\\\",\\\"original_definition\\\":\\\"COUNT(revenue.user_id)\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"revenue_values\\\",\\\"original_definition\\\":\\\"COUNT(revenue.amount)\\\",\\\"unit\\\":\\\"count:RevenueObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_rows\\\",\\\"original_definition\\\":\\\"COUNT(cost.user_id)\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_values\\\",\\\"original_definition\\\":\\\"COUNT(cost.amount)\\\",\\\"unit\\\":\\\"count:CostObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"}],\\\"windows\\\":[{\\\"name\\\":\\\"previous\\\",\\\"original_definition\\\":\\\"LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"},{\\\"name\\\":\\\"rolling\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"}],\\\"domain\\\":\\\"common User by row presence in both separately reduced sources\\\",\\\"cohort_semantics\\\":\\\"TRUE atomic member sets; binary intersection, union and ordered difference within common\\\",\\\"count_semantics\\\":\\\"COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"window_semantics\\\":\\\"single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days\\\",\\\"supported_aggregates\\\":[\\\"SUM(mapped amount)\\\",\\\"COUNT(mapped User or amount)\\\",\\\"same-currency SUM components +/-\\\"],\\\"refused\\\":[\\\"raw fact-to-fact fan-out\\\",\\\"AVG/COUNT(*) in declarations\\\",\\\"cross-fact aggregate leaves\\\",\\\"ratios or mixed measure units\\\",\\\"input/date/product filtering\\\",\\\"recursive cohorts or dependencies\\\",\\\"mixed window fact grains\\\",\\\"calendar filling or history/state inference\\\",\\\"ordinary rendered SQL replay\\\"],\\\"limits\\\":{\\\"sources\\\":2,\\\"rows_per_source\\\":10000,\\\"physical_columns_per_source\\\":256,\\\"combined_canonical_bytes\\\":16777216,\\\"regular_metrics\\\":32,\\\"window_metrics\\\":16,\\\"name_ascii_bytes\\\":128,\\\"rule_bytes\\\":16384,\\\"total_rule_bytes\\\":131072,\\\"expression_depth\\\":32,\\\"expression_nodes\\\":1024,\\\"expanded_program_nodes\\\":32768,\\\"metric_dependency_depth\\\":16,\\\"cohort_nodes\\\":64,\\\"cohort_depth\\\":16,\\\"request_json_bytes\\\":16384,\\\"complete_json_bytes\\\":1048576,\\\"result_rows\\\":10000},\\\"paging\\\":false,\\\"truncated\\\":false,\\\"peak_memory_bound\\\":false,\\\"hash_set_normalized\\\":false}\"}]"
+              }
+            ]
+          },
+          "id": 4
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/surface",
+                "mimeType": "application/json",
+                "text": "[{\"schema_version\":\"ossie-fact-mcp-surface-v1\",\"tools_json\":\"[\\\"population_fact_users\\\",\\\"population_fact_users_compile\\\",\\\"population_fact_windows\\\",\\\"population_fact_windows_compile\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send request_json Strings\"}]"
+              }
+            ]
+          },
+          "id": 5
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-windows-plan-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"input_scope\\\":\\\"entire_capture\\\",\\\"windows\\\":[\\\"previous\\\",\\\"rolling\\\"],\\\"display\\\":{\\\"mode\\\":\\\"date_range\\\",\\\"start_date\\\":\\\"2026-02-01\\\",\\\"end_date\\\":\\\"2026-02-01\\\"}},\\\"selected\\\":[\\\"previous\\\",\\\"rolling\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"ds\\\",\\\"bound_type\\\":\\\"DATE\\\",\\\"encoding\\\":\\\"date-text\\\"},{\\\"ordinal\\\":3,\\\"name\\\":\\\"previous\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":4,\\\"name\\\":\\\"rolling\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC then DATE chronological ASC\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"source_concept\\\":\\\"RevenueObservation\\\",\\\"source_captured_rows\\\":\\\"8\\\",\\\"source_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"output_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"display_stage\\\":\\\"after whole capture window computation\\\",\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"counts_computed\\\":false,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\\\\\\\"day\\\\\\\" AS ds, main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST) AS previous, main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue) AS observed WHERE (observed.ds BETWEEN CAST('2026-02-01' AS \\\\\\\"DATE\\\\\\\") AND CAST('2026-02-01' AS \\\\\\\"DATE\\\\\\\")) ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST\\\",\\\"operators\\\":[\\\"frozen single-source User/date projection\\\",\\\"whole capture window computation\\\",\\\"display DATE filtering\\\",\\\"raw identity sorting\\\",\\\"complete bounded encoding\\\"]}\"}]"
+              }
+            ]
+          },
+          "id": 6
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-windows-result-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"input_scope\\\":\\\"entire_capture\\\",\\\"windows\\\":[\\\"previous\\\",\\\"rolling\\\"],\\\"display\\\":{\\\"mode\\\":\\\"date_range\\\",\\\"start_date\\\":\\\"2026-02-01\\\",\\\"end_date\\\":\\\"2026-02-01\\\"}},\\\"selected\\\":[\\\"previous\\\",\\\"rolling\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"ds\\\",\\\"bound_type\\\":\\\"DATE\\\",\\\"encoding\\\":\\\"date-text\\\"},{\\\"ordinal\\\":3,\\\"name\\\":\\\"previous\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":4,\\\"name\\\":\\\"rolling\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC then DATE chronological ASC\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"source_concept\\\":\\\"RevenueObservation\\\",\\\"source_captured_rows\\\":\\\"8\\\",\\\"source_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"output_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"display_stage\\\":\\\"after whole capture window computation\\\",\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"counts_computed\\\":true,\\\"row_count\\\":\\\"4\\\",\\\"rows\\\":[[\\\"A\\\",\\\"2026-02-01\\\",\\\"200.00\\\",\\\"250.00\\\"],[\\\"B\\\",\\\"2026-02-01\\\",\\\"80.00\\\",\\\"80.00\\\"],[\\\"C\\\",\\\"2026-02-01\\\",null,null],[\\\"D\\\",\\\"2026-02-01\\\",null,\\\"40.00\\\"]]}\"}]"
+              }
+            ]
+          },
+          "id": 7
+        }
+      ]
+    },
+    {
+      "scene": "empty-sources",
+      "raw_events_sha256": "ed8e055152cbf682ba59b95aac326445ebdb82f1f77a1c5c14f04fe51002b95c",
+      "rpc_replies": [
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+              "name": "DuckDB MCP Server",
+              "version": "2.0.0"
+            },
+            "capabilities": {
+              "resources": {
+                "subscribe": false,
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              },
+              "prompts": {
+                "listChanged": true
+              }
+            }
+          },
+          "id": 1
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "name": "population_fact_windows_compile",
+                "description": "Bind and explain the same window/display request without execution or members/counts. Parse plan_json as ossie-fact-windows-plan-v1; executed, members_computed, counts_computed false. Whole-capture windows precede display DATE filtering. Logical operators and diagnostic SQL are not a physical plan or replayable SQL; compare discovery, request, units, source grain and six bindings. Compilation success does not guarantee result budget. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No input filter, common-domain restriction, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_windows",
+                "description": "Return complete discovered windows from one frozen User/date fact. Discover program first. request_json explicitly contains input_scope=entire_capture, windows and display (all or canonical finite DATE range). Compute over whole capture before display filtering. ROWS counts observations rather than calendar days, LAG includes NULL; no filling or carry-forward. Parse result_json as ossie-fact-windows-result-v1. Exact decimal text/NULL; User raw UTF8 bytes then DATE chronological ordering. Full finite DuckDB DATE text includes BC and years beyond9999. At most10000 rows and1MiB complete inner JSON; no paging/truncation or peak memory/outer message guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no common User restriction, input filters, history/state inference, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users_compile",
+                "description": "Bind and explain the same common User request without executing or calculating members/counts. Discover program first. Parse plan_json as ossie-fact-users-plan-v1; executed, members_computed, counts_computed are false. Separate aggregation and independent denominator are logical steps, not a physical plan; diagnostic SQL is not replayable. Compare request, canonical selections, units, identity and six bindings against discovery and any result. Execution may exceed the complete1MiB result limit even when compile succeeds. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no input filters, arbitrary SQL or reload.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users",
+                "description": "Return complete common User rows for discovered regular metrics and a bounded TRUE cohort set. Discover program, units, identity and six snapshot bindings first. request_json must explicitly contain domain=common, input_scope=entire_capture, metrics and cohort. Reduce each frozen fact separately before combining; common_user_count is the row-presence domain before cohort, selected_user_count after cohort, both integer text. Parse result_json as ossie-fact-users-result-v1. Money is exact decimal text, COUNT is integer text, NULL remains null. User ordering uses raw UTF8 bytes. At most10000 rows and1MiB complete inner JSON; no paging or truncation, no peak memory or outer message bound. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner unknown/duplicate fields are refused. No input/date/product filtering, raw fan-out, arbitrary SQL, reload or history/state inference.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              }
+            ]
+          },
+          "id": 2
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "resources": [
+              {
+                "uri": "ossie://facts/surface",
+                "name": "ossie://facts/surface",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              },
+              {
+                "uri": "ossie://facts/program",
+                "name": "ossie://facts/program",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              }
+            ]
+          },
+          "id": 3
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/program",
+                "mimeType": "application/json",
+                "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-program-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148:1\\\",\\\"content_sha256\\\":\\\"4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"project_api_version\\\":\\\"2.2.0\\\",\\\"query_executed\\\":false,\\\"counts_computed\\\":false,\\\"mcp_registered\\\":false,\\\"functions\\\":[\\\"ossie_fact_users_json\\\",\\\"ossie_fact_users_compile\\\",\\\"ossie_fact_windows_json\\\",\\\"ossie_fact_windows_compile\\\",\\\"ossie_fact_program\\\"],\\\"sources\\\":[{\\\"dataset\\\":\\\"revenue\\\",\\\"concept\\\":\\\"RevenueObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.revenue\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"04d8e684154f0d8f1e65d3392651e353d6f0bfa78187221737b9eed1e4a88ab8\\\",\\\"captured_rows\\\":\\\"0\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]},{\\\"dataset\\\":\\\"cost\\\",\\\"concept\\\":\\\"CostObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.cost\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"7f233e677870bae6e8a00af78be44ab39dc64b4616c8a4701fea318cdd336eed\\\",\\\"captured_rows\\\":\\\"0\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"product\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"product\\\",\\\"physical_column\\\":\\\"item\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]}],\\\"metrics\\\":[{\\\"name\\\":\\\"balance\\\",\\\"original_definition\\\":\\\"income-expense\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"income\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"expense\\\",\\\"original_definition\\\":\\\"SUM(cost.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"revenue_rows\\\",\\\"original_definition\\\":\\\"COUNT(revenue.user_id)\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"revenue_values\\\",\\\"original_definition\\\":\\\"COUNT(revenue.amount)\\\",\\\"unit\\\":\\\"count:RevenueObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_rows\\\",\\\"original_definition\\\":\\\"COUNT(cost.user_id)\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_values\\\",\\\"original_definition\\\":\\\"COUNT(cost.amount)\\\",\\\"unit\\\":\\\"count:CostObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"}],\\\"windows\\\":[{\\\"name\\\":\\\"previous\\\",\\\"original_definition\\\":\\\"LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"},{\\\"name\\\":\\\"rolling\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"}],\\\"domain\\\":\\\"common User by row presence in both separately reduced sources\\\",\\\"cohort_semantics\\\":\\\"TRUE atomic member sets; binary intersection, union and ordered difference within common\\\",\\\"count_semantics\\\":\\\"COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"window_semantics\\\":\\\"single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days\\\",\\\"supported_aggregates\\\":[\\\"SUM(mapped amount)\\\",\\\"COUNT(mapped User or amount)\\\",\\\"same-currency SUM components +/-\\\"],\\\"refused\\\":[\\\"raw fact-to-fact fan-out\\\",\\\"AVG/COUNT(*) in declarations\\\",\\\"cross-fact aggregate leaves\\\",\\\"ratios or mixed measure units\\\",\\\"input/date/product filtering\\\",\\\"recursive cohorts or dependencies\\\",\\\"mixed window fact grains\\\",\\\"calendar filling or history/state inference\\\",\\\"ordinary rendered SQL replay\\\"],\\\"limits\\\":{\\\"sources\\\":2,\\\"rows_per_source\\\":10000,\\\"physical_columns_per_source\\\":256,\\\"combined_canonical_bytes\\\":16777216,\\\"regular_metrics\\\":32,\\\"window_metrics\\\":16,\\\"name_ascii_bytes\\\":128,\\\"rule_bytes\\\":16384,\\\"total_rule_bytes\\\":131072,\\\"expression_depth\\\":32,\\\"expression_nodes\\\":1024,\\\"expanded_program_nodes\\\":32768,\\\"metric_dependency_depth\\\":16,\\\"cohort_nodes\\\":64,\\\"cohort_depth\\\":16,\\\"request_json_bytes\\\":16384,\\\"complete_json_bytes\\\":1048576,\\\"result_rows\\\":10000},\\\"paging\\\":false,\\\"truncated\\\":false,\\\"peak_memory_bound\\\":false,\\\"hash_set_normalized\\\":false}\"}]"
+              }
+            ]
+          },
+          "id": 4
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/surface",
+                "mimeType": "application/json",
+                "text": "[{\"schema_version\":\"ossie-fact-mcp-surface-v1\",\"tools_json\":\"[\\\"population_fact_users\\\",\\\"population_fact_users_compile\\\",\\\"population_fact_windows\\\",\\\"population_fact_windows_compile\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send request_json Strings\"}]"
+              }
+            ]
+          },
+          "id": 5
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-users-plan-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148:1\\\",\\\"content_sha256\\\":\\\"4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"domain\\\":\\\"common\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"metrics\\\":[\\\"balance\\\",\\\"revenue_rows\\\",\\\"cost_rows\\\"],\\\"cohort\\\":{\\\"operation\\\":\\\"all\\\"}},\\\"selected\\\":[\\\"balance\\\",\\\"revenue_rows\\\",\\\"cost_rows\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"balance\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":3,\\\"name\\\":\\\"revenue_rows\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\"},{\\\"ordinal\\\":4,\\\"name\\\":\\\"cost_rows\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC\\\",\\\"domain\\\":\\\"common\\\",\\\"domain_semantics\\\":\\\"row presence in both facts before cohort\\\",\\\"cohort_semantics\\\":\\\"TRUE member sets; difference excludes RHS TRUE only\\\",\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"counts_computed\\\":false,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT combined.user_id, combined.balance, combined.revenue_rows, combined.cost_rows FROM (SELECT \\\\\\\"system\\\\\\\".main.\\\\\\\"-\\\\\\\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \\\\\\\"system\\\\\\\".main.sum(revenue.\\\\\\\"value\\\\\\\") AS c0, \\\\\\\"system\\\\\\\".main.count(revenue.who) AS c2, \\\\\\\"system\\\\\\\".main.count(revenue.\\\\\\\"value\\\\\\\") AS c3 FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \\\\\\\"cost\\\\\\\".who AS user_id, \\\\\\\"system\\\\\\\".main.sum(\\\\\\\"cost\\\\\\\".\\\\\\\"value\\\\\\\") AS c1, \\\\\\\"system\\\\\\\".main.count(\\\\\\\"cost\\\\\\\".who) AS c4, \\\\\\\"system\\\\\\\".main.count(\\\\\\\"cost\\\\\\\".\\\\\\\"value\\\\\\\") AS c5 FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS \\\\\\\"cost\\\\\\\" GROUP BY \\\\\\\"cost\\\\\\\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE CAST('t' AS BOOLEAN) ORDER BY combined.user_id ASC NULLS LAST\\\",\\\"common_count_sql\\\":\\\"SELECT \\\\\\\"system\\\\\\\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \\\\\\\"cost\\\\\\\".who AS user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS \\\\\\\"cost\\\\\\\" GROUP BY \\\\\\\"cost\\\\\\\".who) AS f1 ON ((f0.user_id = f1.user_id))\\\",\\\"operators\\\":[\\\"separate source User aggregation\\\",\\\"row-presence common domain\\\",\\\"same-unit metric combination\\\",\\\"TRUE cohort set filtering\\\",\\\"independent common domain count\\\",\\\"raw User sorting\\\",\\\"complete bounded encoding\\\"]}\"}]"
+              }
+            ]
+          },
+          "id": 6
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-users-result-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148:1\\\",\\\"content_sha256\\\":\\\"4827fb66245fb4522ee476099cd2612a638a68405573c926a2083f714f644148\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"domain\\\":\\\"common\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"metrics\\\":[\\\"balance\\\",\\\"revenue_rows\\\",\\\"cost_rows\\\"],\\\"cohort\\\":{\\\"operation\\\":\\\"all\\\"}},\\\"selected\\\":[\\\"balance\\\",\\\"revenue_rows\\\",\\\"cost_rows\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"balance\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":3,\\\"name\\\":\\\"revenue_rows\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\"},{\\\"ordinal\\\":4,\\\"name\\\":\\\"cost_rows\\\",\\\"bound_type\\\":\\\"BIGINT\\\",\\\"encoding\\\":\\\"integer-text\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC\\\",\\\"domain\\\":\\\"common\\\",\\\"domain_semantics\\\":\\\"row presence in both facts before cohort\\\",\\\"cohort_semantics\\\":\\\"TRUE member sets; difference excludes RHS TRUE only\\\",\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"counts_computed\\\":true,\\\"row_count\\\":\\\"0\\\",\\\"common_user_count\\\":\\\"0\\\",\\\"selected_user_count\\\":\\\"0\\\",\\\"rows\\\":[]}\"}]"
+              }
+            ]
+          },
+          "id": 7
+        }
+      ]
+    },
+    {
+      "scene": "wide-window",
+      "raw_events_sha256": "f0883e3af601e808006408107acd59322d98c1881f23e4376c6e7433d1a004fb",
+      "rpc_replies": [
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+              "name": "DuckDB MCP Server",
+              "version": "2.0.0"
+            },
+            "capabilities": {
+              "resources": {
+                "subscribe": false,
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              },
+              "prompts": {
+                "listChanged": true
+              }
+            }
+          },
+          "id": 1
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "name": "population_fact_windows_compile",
+                "description": "Bind and explain the same window/display request without execution or members/counts. Parse plan_json as ossie-fact-windows-plan-v1; executed, members_computed, counts_computed false. Whole-capture windows precede display DATE filtering. Logical operators and diagnostic SQL are not a physical plan or replayable SQL; compare discovery, request, units, source grain and six bindings. Compilation success does not guarantee result budget. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No input filter, common-domain restriction, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_windows",
+                "description": "Return complete discovered windows from one frozen User/date fact. Discover program first. request_json explicitly contains input_scope=entire_capture, windows and display (all or canonical finite DATE range). Compute over whole capture before display filtering. ROWS counts observations rather than calendar days, LAG includes NULL; no filling or carry-forward. Parse result_json as ossie-fact-windows-result-v1. Exact decimal text/NULL; User raw UTF8 bytes then DATE chronological ordering. Full finite DuckDB DATE text includes BC and years beyond9999. At most10000 rows and1MiB complete inner JSON; no paging/truncation or peak memory/outer message guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no common User restriction, input filters, history/state inference, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users_compile",
+                "description": "Bind and explain the same common User request without executing or calculating members/counts. Discover program first. Parse plan_json as ossie-fact-users-plan-v1; executed, members_computed, counts_computed are false. Separate aggregation and independent denominator are logical steps, not a physical plan; diagnostic SQL is not replayable. Compare request, canonical selections, units, identity and six bindings against discovery and any result. Execution may exceed the complete1MiB result limit even when compile succeeds. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no input filters, arbitrary SQL or reload.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users",
+                "description": "Return complete common User rows for discovered regular metrics and a bounded TRUE cohort set. Discover program, units, identity and six snapshot bindings first. request_json must explicitly contain domain=common, input_scope=entire_capture, metrics and cohort. Reduce each frozen fact separately before combining; common_user_count is the row-presence domain before cohort, selected_user_count after cohort, both integer text. Parse result_json as ossie-fact-users-result-v1. Money is exact decimal text, COUNT is integer text, NULL remains null. User ordering uses raw UTF8 bytes. At most10000 rows and1MiB complete inner JSON; no paging or truncation, no peak memory or outer message bound. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner unknown/duplicate fields are refused. No input/date/product filtering, raw fan-out, arbitrary SQL, reload or history/state inference.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              }
+            ]
+          },
+          "id": 2
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "resources": [
+              {
+                "uri": "ossie://facts/surface",
+                "name": "ossie://facts/surface",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              },
+              {
+                "uri": "ossie://facts/program",
+                "name": "ossie://facts/program",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              }
+            ]
+          },
+          "id": 3
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/program",
+                "mimeType": "application/json",
+                "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-program-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1\\\",\\\"content_sha256\\\":\\\"2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"project_api_version\\\":\\\"2.2.0\\\",\\\"query_executed\\\":false,\\\"counts_computed\\\":false,\\\"mcp_registered\\\":false,\\\"functions\\\":[\\\"ossie_fact_users_json\\\",\\\"ossie_fact_users_compile\\\",\\\"ossie_fact_windows_json\\\",\\\"ossie_fact_windows_compile\\\",\\\"ossie_fact_program\\\"],\\\"sources\\\":[{\\\"dataset\\\":\\\"revenue\\\",\\\"concept\\\":\\\"RevenueObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.revenue\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"ec91096742b5d354bb1396ace6b1d864ae1a0919aa10201f6b017373bf220add\\\",\\\"captured_rows\\\":\\\"5\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]},{\\\"dataset\\\":\\\"cost\\\",\\\"concept\\\":\\\"CostObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.cost\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"a2903e3ce0d0bd2d19576e576725c04caf79c6228ee76baec9e09a484d839a1d\\\",\\\"captured_rows\\\":\\\"5\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"product\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"product\\\",\\\"physical_column\\\":\\\"item\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]}],\\\"metrics\\\":[{\\\"name\\\":\\\"balance\\\",\\\"original_definition\\\":\\\"income-expense\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"income\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"expense\\\",\\\"original_definition\\\":\\\"SUM(cost.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"revenue_rows\\\",\\\"original_definition\\\":\\\"COUNT(revenue.user_id)\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"revenue_values\\\",\\\"original_definition\\\":\\\"COUNT(revenue.amount)\\\",\\\"unit\\\":\\\"count:RevenueObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_rows\\\",\\\"original_definition\\\":\\\"COUNT(cost.user_id)\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_values\\\",\\\"original_definition\\\":\\\"COUNT(cost.amount)\\\",\\\"unit\\\":\\\"count:CostObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"}],\\\"windows\\\":[{\\\"name\\\":\\\"previous\\\",\\\"original_definition\\\":\\\"LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"},{\\\"name\\\":\\\"rolling\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"}],\\\"domain\\\":\\\"common User by row presence in both separately reduced sources\\\",\\\"cohort_semantics\\\":\\\"TRUE atomic member sets; binary intersection, union and ordered difference within common\\\",\\\"count_semantics\\\":\\\"COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"window_semantics\\\":\\\"single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days\\\",\\\"supported_aggregates\\\":[\\\"SUM(mapped amount)\\\",\\\"COUNT(mapped User or amount)\\\",\\\"same-currency SUM components +/-\\\"],\\\"refused\\\":[\\\"raw fact-to-fact fan-out\\\",\\\"AVG/COUNT(*) in declarations\\\",\\\"cross-fact aggregate leaves\\\",\\\"ratios or mixed measure units\\\",\\\"input/date/product filtering\\\",\\\"recursive cohorts or dependencies\\\",\\\"mixed window fact grains\\\",\\\"calendar filling or history/state inference\\\",\\\"ordinary rendered SQL replay\\\"],\\\"limits\\\":{\\\"sources\\\":2,\\\"rows_per_source\\\":10000,\\\"physical_columns_per_source\\\":256,\\\"combined_canonical_bytes\\\":16777216,\\\"regular_metrics\\\":32,\\\"window_metrics\\\":16,\\\"name_ascii_bytes\\\":128,\\\"rule_bytes\\\":16384,\\\"total_rule_bytes\\\":131072,\\\"expression_depth\\\":32,\\\"expression_nodes\\\":1024,\\\"expanded_program_nodes\\\":32768,\\\"metric_dependency_depth\\\":16,\\\"cohort_nodes\\\":64,\\\"cohort_depth\\\":16,\\\"request_json_bytes\\\":16384,\\\"complete_json_bytes\\\":1048576,\\\"result_rows\\\":10000},\\\"paging\\\":false,\\\"truncated\\\":false,\\\"peak_memory_bound\\\":false,\\\"hash_set_normalized\\\":false}\"}]"
+              }
+            ]
+          },
+          "id": 4
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/surface",
+                "mimeType": "application/json",
+                "text": "[{\"schema_version\":\"ossie-fact-mcp-surface-v1\",\"tools_json\":\"[\\\"population_fact_users\\\",\\\"population_fact_users_compile\\\",\\\"population_fact_windows\\\",\\\"population_fact_windows_compile\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send request_json Strings\"}]"
+              }
+            ]
+          },
+          "id": 5
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-windows-plan-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1\\\",\\\"content_sha256\\\":\\\"2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"input_scope\\\":\\\"entire_capture\\\",\\\"windows\\\":[\\\"previous\\\",\\\"rolling\\\"],\\\"display\\\":{\\\"mode\\\":\\\"all\\\"}},\\\"selected\\\":[\\\"previous\\\",\\\"rolling\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"ds\\\",\\\"bound_type\\\":\\\"DATE\\\",\\\"encoding\\\":\\\"date-text\\\"},{\\\"ordinal\\\":3,\\\"name\\\":\\\"previous\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":4,\\\"name\\\":\\\"rolling\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC then DATE chronological ASC\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"source_concept\\\":\\\"RevenueObservation\\\",\\\"source_captured_rows\\\":\\\"5\\\",\\\"source_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"output_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"display_stage\\\":\\\"after whole capture window computation\\\",\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"counts_computed\\\":false,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\\\\\\\"day\\\\\\\" AS ds, main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST) AS previous, main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue) AS observed ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST\\\",\\\"operators\\\":[\\\"frozen single-source User/date projection\\\",\\\"whole capture window computation\\\",\\\"display DATE filtering\\\",\\\"raw identity sorting\\\",\\\"complete bounded encoding\\\"]}\"}]"
+              }
+            ]
+          },
+          "id": 6
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-windows-result-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0:1\\\",\\\"content_sha256\\\":\\\"2af6daf3f4cd79618b4713620cb8e911a5045942ac095600567d9b0eade2d8b0\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"input_scope\\\":\\\"entire_capture\\\",\\\"windows\\\":[\\\"previous\\\",\\\"rolling\\\"],\\\"display\\\":{\\\"mode\\\":\\\"all\\\"}},\\\"selected\\\":[\\\"previous\\\",\\\"rolling\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"ds\\\",\\\"bound_type\\\":\\\"DATE\\\",\\\"encoding\\\":\\\"date-text\\\"},{\\\"ordinal\\\":3,\\\"name\\\":\\\"previous\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":4,\\\"name\\\":\\\"rolling\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC then DATE chronological ASC\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"source_concept\\\":\\\"RevenueObservation\\\",\\\"source_captured_rows\\\":\\\"5\\\",\\\"source_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"output_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"display_stage\\\":\\\"after whole capture window computation\\\",\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"counts_computed\\\":true,\\\"row_count\\\":\\\"5\\\",\\\"rows\\\":[[\\\"D\\\",\\\"5877642-06-25 (BC)\\\",null,\\\"1.01\\\"],[\\\"D\\\",\\\"0001-01-01 (BC)\\\",\\\"1.01\\\",\\\"2.02\\\"],[\\\"D\\\",\\\"2026-01-01\\\",\\\"1.01\\\",\\\"2.02\\\"],[\\\"D\\\",\\\"10000-01-01\\\",\\\"1.01\\\",\\\"2.02\\\"],[\\\"D\\\",\\\"5881580-07-10\\\",\\\"1.01\\\",\\\"2.02\\\"]]}\"}]"
+              }
+            ]
+          },
+          "id": 7
+        }
+      ]
+    },
+    {
+      "scene": "raw-identity",
+      "raw_events_sha256": "8aae5b2df1b5bdaf192e632be87859cdaef42307ec87ab779f8ebf8f21b43e66",
+      "rpc_replies": [
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+              "name": "DuckDB MCP Server",
+              "version": "2.0.0"
+            },
+            "capabilities": {
+              "resources": {
+                "subscribe": false,
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              },
+              "prompts": {
+                "listChanged": true
+              }
+            }
+          },
+          "id": 1
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "name": "population_fact_windows_compile",
+                "description": "Bind and explain the same window/display request without execution or members/counts. Parse plan_json as ossie-fact-windows-plan-v1; executed, members_computed, counts_computed false. Whole-capture windows precede display DATE filtering. Logical operators and diagnostic SQL are not a physical plan or replayable SQL; compare discovery, request, units, source grain and six bindings. Compilation success does not guarantee result budget. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No input filter, common-domain restriction, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_windows",
+                "description": "Return complete discovered windows from one frozen User/date fact. Discover program first. request_json explicitly contains input_scope=entire_capture, windows and display (all or canonical finite DATE range). Compute over whole capture before display filtering. ROWS counts observations rather than calendar days, LAG includes NULL; no filling or carry-forward. Parse result_json as ossie-fact-windows-result-v1. Exact decimal text/NULL; User raw UTF8 bytes then DATE chronological ordering. Full finite DuckDB DATE text includes BC and years beyond9999. At most10000 rows and1MiB complete inner JSON; no paging/truncation or peak memory/outer message guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no common User restriction, input filters, history/state inference, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users_compile",
+                "description": "Bind and explain the same common User request without executing or calculating members/counts. Discover program first. Parse plan_json as ossie-fact-users-plan-v1; executed, members_computed, counts_computed are false. Separate aggregation and independent denominator are logical steps, not a physical plan; diagnostic SQL is not replayable. Compare request, canonical selections, units, identity and six bindings against discovery and any result. Execution may exceed the complete1MiB result limit even when compile succeeds. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no input filters, arbitrary SQL or reload.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users",
+                "description": "Return complete common User rows for discovered regular metrics and a bounded TRUE cohort set. Discover program, units, identity and six snapshot bindings first. request_json must explicitly contain domain=common, input_scope=entire_capture, metrics and cohort. Reduce each frozen fact separately before combining; common_user_count is the row-presence domain before cohort, selected_user_count after cohort, both integer text. Parse result_json as ossie-fact-users-result-v1. Money is exact decimal text, COUNT is integer text, NULL remains null. User ordering uses raw UTF8 bytes. At most10000 rows and1MiB complete inner JSON; no paging or truncation, no peak memory or outer message bound. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner unknown/duplicate fields are refused. No input/date/product filtering, raw fan-out, arbitrary SQL, reload or history/state inference.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              }
+            ]
+          },
+          "id": 2
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "resources": [
+              {
+                "uri": "ossie://facts/surface",
+                "name": "ossie://facts/surface",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              },
+              {
+                "uri": "ossie://facts/program",
+                "name": "ossie://facts/program",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              }
+            ]
+          },
+          "id": 3
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/program",
+                "mimeType": "application/json",
+                "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-program-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd:1\\\",\\\"content_sha256\\\":\\\"9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"project_api_version\\\":\\\"2.2.0\\\",\\\"query_executed\\\":false,\\\"counts_computed\\\":false,\\\"mcp_registered\\\":false,\\\"functions\\\":[\\\"ossie_fact_users_json\\\",\\\"ossie_fact_users_compile\\\",\\\"ossie_fact_windows_json\\\",\\\"ossie_fact_windows_compile\\\",\\\"ossie_fact_program\\\"],\\\"sources\\\":[{\\\"dataset\\\":\\\"revenue\\\",\\\"concept\\\":\\\"RevenueObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.revenue\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"cb800bf35b79ab2dcad530a2af26e8a89c9ffad0a547894e75056fa4b0300ead\\\",\\\"captured_rows\\\":\\\"4\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]},{\\\"dataset\\\":\\\"cost\\\",\\\"concept\\\":\\\"CostObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.cost\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"77e8a6bf2b74cea89b1407c7fffce8345d215a85c14ec0e7231cb527b25c5233\\\",\\\"captured_rows\\\":\\\"4\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"product\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"product\\\",\\\"physical_column\\\":\\\"item\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]}],\\\"metrics\\\":[{\\\"name\\\":\\\"balance\\\",\\\"original_definition\\\":\\\"income-expense\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"income\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"expense\\\",\\\"original_definition\\\":\\\"SUM(cost.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"revenue_rows\\\",\\\"original_definition\\\":\\\"COUNT(revenue.user_id)\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"revenue_values\\\",\\\"original_definition\\\":\\\"COUNT(revenue.amount)\\\",\\\"unit\\\":\\\"count:RevenueObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_rows\\\",\\\"original_definition\\\":\\\"COUNT(cost.user_id)\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_values\\\",\\\"original_definition\\\":\\\"COUNT(cost.amount)\\\",\\\"unit\\\":\\\"count:CostObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"}],\\\"windows\\\":[{\\\"name\\\":\\\"previous\\\",\\\"original_definition\\\":\\\"LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"},{\\\"name\\\":\\\"rolling\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"}],\\\"domain\\\":\\\"common User by row presence in both separately reduced sources\\\",\\\"cohort_semantics\\\":\\\"TRUE atomic member sets; binary intersection, union and ordered difference within common\\\",\\\"count_semantics\\\":\\\"COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"window_semantics\\\":\\\"single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days\\\",\\\"supported_aggregates\\\":[\\\"SUM(mapped amount)\\\",\\\"COUNT(mapped User or amount)\\\",\\\"same-currency SUM components +/-\\\"],\\\"refused\\\":[\\\"raw fact-to-fact fan-out\\\",\\\"AVG/COUNT(*) in declarations\\\",\\\"cross-fact aggregate leaves\\\",\\\"ratios or mixed measure units\\\",\\\"input/date/product filtering\\\",\\\"recursive cohorts or dependencies\\\",\\\"mixed window fact grains\\\",\\\"calendar filling or history/state inference\\\",\\\"ordinary rendered SQL replay\\\"],\\\"limits\\\":{\\\"sources\\\":2,\\\"rows_per_source\\\":10000,\\\"physical_columns_per_source\\\":256,\\\"combined_canonical_bytes\\\":16777216,\\\"regular_metrics\\\":32,\\\"window_metrics\\\":16,\\\"name_ascii_bytes\\\":128,\\\"rule_bytes\\\":16384,\\\"total_rule_bytes\\\":131072,\\\"expression_depth\\\":32,\\\"expression_nodes\\\":1024,\\\"expanded_program_nodes\\\":32768,\\\"metric_dependency_depth\\\":16,\\\"cohort_nodes\\\":64,\\\"cohort_depth\\\":16,\\\"request_json_bytes\\\":16384,\\\"complete_json_bytes\\\":1048576,\\\"result_rows\\\":10000},\\\"paging\\\":false,\\\"truncated\\\":false,\\\"peak_memory_bound\\\":false,\\\"hash_set_normalized\\\":false}\"}]"
+              }
+            ]
+          },
+          "id": 4
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/surface",
+                "mimeType": "application/json",
+                "text": "[{\"schema_version\":\"ossie-fact-mcp-surface-v1\",\"tools_json\":\"[\\\"population_fact_users\\\",\\\"population_fact_users_compile\\\",\\\"population_fact_windows\\\",\\\"population_fact_windows_compile\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send request_json Strings\"}]"
+              }
+            ]
+          },
+          "id": 5
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-users-plan-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd:1\\\",\\\"content_sha256\\\":\\\"9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"domain\\\":\\\"common\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"metrics\\\":[\\\"balance\\\"],\\\"cohort\\\":{\\\"operation\\\":\\\"all\\\"}},\\\"selected\\\":[\\\"balance\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"balance\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC\\\",\\\"domain\\\":\\\"common\\\",\\\"domain_semantics\\\":\\\"row presence in both facts before cohort\\\",\\\"cohort_semantics\\\":\\\"TRUE member sets; difference excludes RHS TRUE only\\\",\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"counts_computed\\\":false,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT combined.user_id, combined.balance FROM (SELECT \\\\\\\"system\\\\\\\".main.\\\\\\\"-\\\\\\\"(f0.c0, f1.c1) AS balance, f0.c0 AS income, f1.c1 AS expense, f0.c2 AS revenue_rows, f0.c3 AS revenue_values, f1.c4 AS cost_rows, f1.c5 AS cost_values, f0.user_id AS user_id FROM (SELECT revenue.who AS user_id, \\\\\\\"system\\\\\\\".main.sum(revenue.\\\\\\\"value\\\\\\\") AS c0, \\\\\\\"system\\\\\\\".main.count(revenue.who) AS c2, \\\\\\\"system\\\\\\\".main.count(revenue.\\\\\\\"value\\\\\\\") AS c3 FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \\\\\\\"cost\\\\\\\".who AS user_id, \\\\\\\"system\\\\\\\".main.sum(\\\\\\\"cost\\\\\\\".\\\\\\\"value\\\\\\\") AS c1, \\\\\\\"system\\\\\\\".main.count(\\\\\\\"cost\\\\\\\".who) AS c4, \\\\\\\"system\\\\\\\".main.count(\\\\\\\"cost\\\\\\\".\\\\\\\"value\\\\\\\") AS c5 FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS \\\\\\\"cost\\\\\\\" GROUP BY \\\\\\\"cost\\\\\\\".who) AS f1 ON ((f0.user_id = f1.user_id))) AS combined WHERE CAST('t' AS BOOLEAN) ORDER BY combined.user_id ASC NULLS LAST\\\",\\\"common_count_sql\\\":\\\"SELECT \\\\\\\"system\\\\\\\".main.count_star() AS common_user_count FROM (SELECT revenue.who AS user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue GROUP BY revenue.who) AS f0 INNER JOIN (SELECT \\\\\\\"cost\\\\\\\".who AS user_id FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS \\\\\\\"cost\\\\\\\" GROUP BY \\\\\\\"cost\\\\\\\".who) AS f1 ON ((f0.user_id = f1.user_id))\\\",\\\"operators\\\":[\\\"separate source User aggregation\\\",\\\"row-presence common domain\\\",\\\"same-unit metric combination\\\",\\\"TRUE cohort set filtering\\\",\\\"independent common domain count\\\",\\\"raw User sorting\\\",\\\"complete bounded encoding\\\"]}\"}]"
+              }
+            ]
+          },
+          "id": 6
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"result_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-users-result-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd:1\\\",\\\"content_sha256\\\":\\\"9897f5003e64fad540c84f51e20daf03a8b64783821e065ce1b30dcb272c83bd\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"domain\\\":\\\"common\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"metrics\\\":[\\\"balance\\\"],\\\"cohort\\\":{\\\"operation\\\":\\\"all\\\"}},\\\"selected\\\":[\\\"balance\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"balance\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC\\\",\\\"domain\\\":\\\"common\\\",\\\"domain_semantics\\\":\\\"row presence in both facts before cohort\\\",\\\"cohort_semantics\\\":\\\"TRUE member sets; difference excludes RHS TRUE only\\\",\\\"executed\\\":true,\\\"members_computed\\\":true,\\\"counts_computed\\\":true,\\\"row_count\\\":\\\"4\\\",\\\"common_user_count\\\":\\\"4\\\",\\\"selected_user_count\\\":\\\"4\\\",\\\"rows\\\":[[\\\"A\\\",\\\"0.99\\\"],[\\\"a\\\",\\\"0.99\\\"],[\\\"a\\\\u0000\\\",\\\"0.99\\\"],[\\\"é\\\",\\\"0.99\\\"]]}\"}]"
+              }
+            ]
+          },
+          "id": 7
+        }
+      ]
+    },
+    {
+      "scene": "compile-only",
+      "raw_events_sha256": "bdb5285551fa88a344cb56b19bb8e0eb33f5d21136510b560d755749b4f05c49",
+      "rpc_replies": [
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+              "name": "DuckDB MCP Server",
+              "version": "2.0.0"
+            },
+            "capabilities": {
+              "resources": {
+                "subscribe": false,
+                "listChanged": true
+              },
+              "tools": {
+                "listChanged": true
+              },
+              "prompts": {
+                "listChanged": true
+              }
+            }
+          },
+          "id": 1
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "tools": [
+              {
+                "name": "population_fact_windows_compile",
+                "description": "Bind and explain the same window/display request without execution or members/counts. Parse plan_json as ossie-fact-windows-plan-v1; executed, members_computed, counts_computed false. Whole-capture windows precede display DATE filtering. Logical operators and diagnostic SQL are not a physical plan or replayable SQL; compare discovery, request, units, source grain and six bindings. Compilation success does not guarantee result budget. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. No input filter, common-domain restriction, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_windows",
+                "description": "Return complete discovered windows from one frozen User/date fact. Discover program first. request_json explicitly contains input_scope=entire_capture, windows and display (all or canonical finite DATE range). Compute over whole capture before display filtering. ROWS counts observations rather than calendar days, LAG includes NULL; no filling or carry-forward. Parse result_json as ossie-fact-windows-result-v1. Exact decimal text/NULL; User raw UTF8 bytes then DATE chronological ordering. Full finite DuckDB DATE text includes BC and years beyond9999. At most10000 rows and1MiB complete inner JSON; no paging/truncation or peak memory/outer message guarantee. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no common User restriction, input filters, history/state inference, reload or arbitrary SQL.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users_compile",
+                "description": "Bind and explain the same common User request without executing or calculating members/counts. Discover program first. Parse plan_json as ossie-fact-users-plan-v1; executed, members_computed, counts_computed are false. Separate aggregation and independent denominator are logical steps, not a physical plan; diagnostic SQL is not replayable. Compare request, canonical selections, units, identity and six bindings against discovery and any result. Execution may exceed the complete1MiB result limit even when compile succeeds. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner request strict; no input filters, arbitrary SQL or reload.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              },
+              {
+                "name": "population_fact_users",
+                "description": "Return complete common User rows for discovered regular metrics and a bounded TRUE cohort set. Discover program, units, identity and six snapshot bindings first. request_json must explicitly contain domain=common, input_scope=entire_capture, metrics and cohort. Reduce each frozen fact separately before combining; common_user_count is the row-presence domain before cohort, selected_user_count after cohort, both integer text. Parse result_json as ossie-fact-users-result-v1. Money is exact decimal text, COUNT is integer text, NULL remains null. User ordering uses raw UTF8 bytes. At most10000 rows and1MiB complete inner JSON; no paging or truncation, no peak memory or outer message bound. Unknown outer arguments are ignored; upstream may coerce non-string values, so clients must send Strings. Inner unknown/duplicate fields are refused. No input/date/product filtering, raw fan-out, arbitrary SQL, reload or history/state inference.",
+                "inputSchema": {
+                  "type": "object",
+                  "properties": {
+                    "request_json": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "request_json"
+                  ]
+                }
+              }
+            ]
+          },
+          "id": 2
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "resources": [
+              {
+                "uri": "ossie://facts/surface",
+                "name": "ossie://facts/surface",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              },
+              {
+                "uri": "ossie://facts/program",
+                "name": "ossie://facts/program",
+                "description": "Query result in json format (refresh: 0s)",
+                "mimeType": "application/json"
+              }
+            ]
+          },
+          "id": 3
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/program",
+                "mimeType": "application/json",
+                "text": "[{\"program_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-program-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"project_api_version\\\":\\\"2.2.0\\\",\\\"query_executed\\\":false,\\\"counts_computed\\\":false,\\\"mcp_registered\\\":false,\\\"functions\\\":[\\\"ossie_fact_users_json\\\",\\\"ossie_fact_users_compile\\\",\\\"ossie_fact_windows_json\\\",\\\"ossie_fact_windows_compile\\\",\\\"ossie_fact_program\\\"],\\\"sources\\\":[{\\\"dataset\\\":\\\"revenue\\\",\\\"concept\\\":\\\"RevenueObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.revenue\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"7cada9bc880c3d5b119ce371f67ff1d3bc9055874488ca949c05336860ac8bd3\\\",\\\"captured_rows\\\":\\\"8\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]},{\\\"dataset\\\":\\\"cost\\\",\\\"concept\\\":\\\"CostObservation\\\",\\\"user_concept\\\":\\\"User\\\",\\\"target_identity_relationship\\\":\\\"id\\\",\\\"source\\\":\\\"memory.main.cost\\\",\\\"currency\\\":\\\"USD\\\",\\\"content_sha256\\\":\\\"bd058f6bb1fea56521599f956d037bac77b854e06d46a359e7fc2458b19a8ef5\\\",\\\"captured_rows\\\":\\\"10\\\",\\\"identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\",\\\"product\\\"],\\\"user_field\\\":\\\"user_id\\\",\\\"date_field\\\":\\\"ds\\\",\\\"product_field\\\":\\\"product\\\",\\\"amount_field\\\":\\\"amount\\\",\\\"fields\\\":[{\\\"name\\\":\\\"user_id\\\",\\\"physical_column\\\":\\\"who\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"ds\\\",\\\"physical_column\\\":\\\"day\\\",\\\"bound_type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"product\\\",\\\"physical_column\\\":\\\"item\\\",\\\"bound_type\\\":\\\"VARCHAR\\\"},{\\\"name\\\":\\\"amount\\\",\\\"physical_column\\\":\\\"value\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\"}]}],\\\"metrics\\\":[{\\\"name\\\":\\\"balance\\\",\\\"original_definition\\\":\\\"income-expense\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"income\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"expense\\\",\\\"original_definition\\\":\\\"SUM(cost.amount)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\"},{\\\"name\\\":\\\"revenue_rows\\\",\\\"original_definition\\\":\\\"COUNT(revenue.user_id)\\\",\\\"unit\\\":\\\"count:RevenueObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"revenue_values\\\",\\\"original_definition\\\":\\\"COUNT(revenue.amount)\\\",\\\"unit\\\":\\\"count:RevenueObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_rows\\\",\\\"original_definition\\\":\\\"COUNT(cost.user_id)\\\",\\\"unit\\\":\\\"count:CostObservation:user_id\\\",\\\"bound_type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"cost_values\\\",\\\"original_definition\\\":\\\"COUNT(cost.amount)\\\",\\\"unit\\\":\\\"count:CostObservation:amount\\\",\\\"bound_type\\\":\\\"BIGINT\\\"}],\\\"windows\\\":[{\\\"name\\\":\\\"previous\\\",\\\"original_definition\\\":\\\"LAG(revenue.amount,1,NULL) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"},{\\\"name\\\":\\\"rolling\\\",\\\"original_definition\\\":\\\"SUM(revenue.amount) OVER(PARTITION BY revenue.user_id ORDER BY revenue.ds ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"bound_expression\\\":\\\"main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)\\\",\\\"bound_catalog\\\":\\\"system\\\",\\\"bound_schema\\\":\\\"main\\\"}],\\\"domain\\\":\\\"common User by row presence in both separately reduced sources\\\",\\\"cohort_semantics\\\":\\\"TRUE atomic member sets; binary intersection, union and ordered difference within common\\\",\\\"count_semantics\\\":\\\"COUNT(User) source rows; COUNT(amount) nonNULL values; common_user_count before cohort, selected_user_count after cohort\\\",\\\"input_scope\\\":\\\"entire_capture\\\",\\\"window_semantics\\\":\\\"single User/date fact; explicit User partition and DATE ASC NULLS LAST; whole capture computation before display DATE filtering; LAG1 includes NULL, ROWS0..366 observes rows not calendar days\\\",\\\"supported_aggregates\\\":[\\\"SUM(mapped amount)\\\",\\\"COUNT(mapped User or amount)\\\",\\\"same-currency SUM components +/-\\\"],\\\"refused\\\":[\\\"raw fact-to-fact fan-out\\\",\\\"AVG/COUNT(*) in declarations\\\",\\\"cross-fact aggregate leaves\\\",\\\"ratios or mixed measure units\\\",\\\"input/date/product filtering\\\",\\\"recursive cohorts or dependencies\\\",\\\"mixed window fact grains\\\",\\\"calendar filling or history/state inference\\\",\\\"ordinary rendered SQL replay\\\"],\\\"limits\\\":{\\\"sources\\\":2,\\\"rows_per_source\\\":10000,\\\"physical_columns_per_source\\\":256,\\\"combined_canonical_bytes\\\":16777216,\\\"regular_metrics\\\":32,\\\"window_metrics\\\":16,\\\"name_ascii_bytes\\\":128,\\\"rule_bytes\\\":16384,\\\"total_rule_bytes\\\":131072,\\\"expression_depth\\\":32,\\\"expression_nodes\\\":1024,\\\"expanded_program_nodes\\\":32768,\\\"metric_dependency_depth\\\":16,\\\"cohort_nodes\\\":64,\\\"cohort_depth\\\":16,\\\"request_json_bytes\\\":16384,\\\"complete_json_bytes\\\":1048576,\\\"result_rows\\\":10000},\\\"paging\\\":false,\\\"truncated\\\":false,\\\"peak_memory_bound\\\":false,\\\"hash_set_normalized\\\":false}\"}]"
+              }
+            ]
+          },
+          "id": 4
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "contents": [
+              {
+                "uri": "ossie://facts/surface",
+                "mimeType": "application/json",
+                "text": "[{\"schema_version\":\"ossie-fact-mcp-surface-v1\",\"tools_json\":\"[\\\"population_fact_users\\\",\\\"population_fact_users_compile\\\",\\\"population_fact_windows\\\",\\\"population_fact_windows_compile\\\"]\",\"generic_objects_tool\":false,\"reload_tool\":false,\"arbitrary_sql_tool\":false,\"argument_boundary\":\"Unknown outer arguments are ignored; clients must send request_json Strings\"}]"
+              }
+            ]
+          },
+          "id": 5
+        },
+        {
+          "jsonrpc": "2.0",
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "[{\"plan_json\":\"{\\\"schema_version\\\":\\\"ossie-fact-windows-plan-v1\\\",\\\"profile\\\":\\\"multi-fact-user-program-v1\\\",\\\"snapshot_id\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a:1\\\",\\\"content_sha256\\\":\\\"74989444c02258643ce10f5ead0f8f3d666e352b9b538271eb56bdaa199f381a\\\",\\\"core_sha256\\\":\\\"8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942\\\",\\\"ontology_sha256\\\":\\\"558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0\\\",\\\"mapping_sha256\\\":\\\"85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f\\\",\\\"manifest_sha256\\\":\\\"960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e\\\",\\\"user_concept\\\":\\\"User\\\",\\\"user_identity_relationship\\\":\\\"id\\\",\\\"request\\\":{\\\"input_scope\\\":\\\"entire_capture\\\",\\\"windows\\\":[\\\"previous\\\",\\\"rolling\\\"],\\\"display\\\":{\\\"mode\\\":\\\"date_range\\\",\\\"start_date\\\":\\\"2026-02-01\\\",\\\"end_date\\\":\\\"2026-02-01\\\"}},\\\"selected\\\":[\\\"previous\\\",\\\"rolling\\\"],\\\"input_scope\\\":\\\"entire_capture\\\",\\\"columns\\\":[{\\\"ordinal\\\":1,\\\"name\\\":\\\"user_id\\\",\\\"bound_type\\\":\\\"VARCHAR\\\",\\\"encoding\\\":\\\"string\\\"},{\\\"ordinal\\\":2,\\\"name\\\":\\\"ds\\\",\\\"bound_type\\\":\\\"DATE\\\",\\\"encoding\\\":\\\"date-text\\\"},{\\\"ordinal\\\":3,\\\"name\\\":\\\"previous\\\",\\\"bound_type\\\":\\\"DECIMAL(18,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"},{\\\"ordinal\\\":4,\\\"name\\\":\\\"rolling\\\",\\\"bound_type\\\":\\\"DECIMAL(38,2)\\\",\\\"encoding\\\":\\\"decimal-text\\\",\\\"unit\\\":\\\"currency:USD:scale2\\\"}],\\\"paging\\\":false,\\\"truncated\\\":false,\\\"json_byte_limit\\\":1048576,\\\"ordering\\\":\\\"raw User UTF8 bytes ASC then DATE chronological ASC\\\",\\\"dataset\\\":\\\"revenue\\\",\\\"source_concept\\\":\\\"RevenueObservation\\\",\\\"source_captured_rows\\\":\\\"8\\\",\\\"source_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"output_identity_fields\\\":[\\\"user_id\\\",\\\"ds\\\"],\\\"display_stage\\\":\\\"after whole capture window computation\\\",\\\"executed\\\":false,\\\"members_computed\\\":false,\\\"counts_computed\\\":false,\\\"physical_plan\\\":false,\\\"sql_replayable\\\":false,\\\"projection_sql\\\":\\\"SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\\\\\\\"day\\\\\\\" AS ds, main.lag(revenue.\\\\\\\"value\\\\\\\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST) AS previous, main.sum(revenue.\\\\\\\"value\\\\\\\") OVER (PARTITION BY revenue.who ORDER BY revenue.\\\\\\\"day\\\\\\\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \\\\\\\"system\\\\\\\".main._ossie_snapshot_rows() AS revenue) AS observed WHERE (observed.ds BETWEEN CAST('2026-02-01' AS \\\\\\\"DATE\\\\\\\") AND CAST('2026-02-01' AS \\\\\\\"DATE\\\\\\\")) ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST\\\",\\\"operators\\\":[\\\"frozen single-source User/date projection\\\",\\\"whole capture window computation\\\",\\\"display DATE filtering\\\",\\\"raw identity sorting\\\",\\\"complete bounded encoding\\\"]}\"}]"
+              }
+            ]
+          },
+          "id": 6
+        }
+      ]
+    }
+  ],
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "install_path": "<synthetic-recorded-runtime-path>",
+    "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+    "extension_sha256": "9ddb20dbc36bd92301b0a49178562f28a30b5e2ce774129964e7a9bd1216b5a9",
+    "server_sha256": "0c4379c68f1588645a498cf88c2fad2e606615b50728b193652c887af2bf3cd8"
+  }
+}

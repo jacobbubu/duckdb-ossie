@@ -312,3 +312,40 @@ test("stock artifact CLI and all verifiers consume the downloaded artifact", () 
   expect(runner).toContain('"scripts/full_functionality_check.sh"');
   expect(runner).not.toContain("INSTALL ossie");
 });
+
+test("fact CI requires native public APIs stock MCP and private no-model replay on each shipped platform", () => {
+  const workflow = readFileSync(
+    join(ROOT, ".github/workflows/MainDistributionPipeline.yml"),
+    "utf8",
+  );
+  const artifact = workflow.split("  artifact-load:")[1].split("  ci-gate:")[0];
+  for (const script of [
+    "verify_fact_load_artifact",
+    "verify_fact_objects_artifact",
+    "verify_fact_stock_cli",
+    "verify_fact_mcp",
+    "verify_fact_agent_offline",
+  ]) {
+    const line = artifact
+      .split("\n")
+      .find((line) => line.includes(`scripts/${script}.ts`));
+    expect(line).toBeDefined();
+    expect(line).toContain("downloaded/ossie.duckdb_extension");
+    expect(line).toContain("bun --no-env-file");
+  }
+  for (const script of ["verify_fact_mcp", "verify_fact_agent_offline"]) {
+    const line = artifact
+      .split("\n")
+      .find((line) => line.includes(`scripts/${script}.ts`))!;
+    expect(line).toContain(
+      "env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL",
+    );
+  }
+  expect(artifact).toContain("linux_amd64");
+  expect(artifact).toContain("osx_arm64");
+  expect(artifact).not.toContain("continue-on-error");
+  expect(artifact).toContain(
+    ".local-agent-evidence/fact-ci/run quality-reports/fact-offline.json",
+  );
+  expect(artifact).toContain("path: quality-reports/");
+});
