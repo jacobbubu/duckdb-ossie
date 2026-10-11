@@ -1,0 +1,38 @@
+{
+  "schema": "ossie-observation-agent-derivative-v1",
+  "source_seal_sha256": "940f2219b1fe52b2ab4204d9b682995848947ef0775916f6ffba766ebdd8d3f2",
+  "mode": "simulated",
+  "derived": true,
+  "exact_original_request_bytes": false,
+  "source_integrity": "verify against separate private raw archive; public rewritten serialized_body is not the original wire",
+  "files": {
+    "baseline/events.jsonl": {
+      "raw_sha256": "92d8e152818db6979da236fd20c61e91d00cf5df9107f4a01c9cc2787823c4df",
+      "derived_sha256": "5cc27757d42b5817ad092447ed828b49bd365b5d7f906b5ca2e92cc400e455b1"
+    },
+    "baseline/failure.json": {
+      "raw_sha256": "8dbd071411a65ed806c5fa2f15853a27a2f68141cc7a46ddc1c823bb9b15c970",
+      "derived_sha256": "8dbd071411a65ed806c5fa2f15853a27a2f68141cc7a46ddc1c823bb9b15c970"
+    },
+    "baseline/model-context.json": {
+      "raw_sha256": "13c4913b6bbf4cab3425538be50b4a5dc568bb9b29e11344183fe1f99f11da9b",
+      "derived_sha256": "13c4913b6bbf4cab3425538be50b4a5dc568bb9b29e11344183fe1f99f11da9b"
+    },
+    "baseline/setup.json": {
+      "raw_sha256": "7537b2eee71df3752769d4ed2baca0317a4643fa0e1c332b944155ffc4671f33",
+      "derived_sha256": "7537b2eee71df3752769d4ed2baca0317a4643fa0e1c332b944155ffc4671f33"
+    },
+    "failure.json": {
+      "raw_sha256": "8dbd071411a65ed806c5fa2f15853a27a2f68141cc7a46ddc1c823bb9b15c970",
+      "derived_sha256": "8dbd071411a65ed806c5fa2f15853a27a2f68141cc7a46ddc1c823bb9b15c970"
+    },
+    "run.json": {
+      "raw_sha256": "a8ea6dc62f415c31ef8f274aedfd8f4ba52065d964a4ec7060e505e7dabe0e85",
+      "derived_sha256": "8d8a16b3468e007df878880d75c44628107cbce521f8f6bb9599f0068a3d367f"
+    },
+    "summary.json": {
+      "raw_sha256": "4aa08eba0113a49554bc2e0f9591c8cf2e0052457b5a0d28dd422ddf91bfacb7",
+      "derived_sha256": "4aa08eba0113a49554bc2e0f9591c8cf2e0052457b5a0d28dd422ddf91bfacb7"
+    }
+  }
+}

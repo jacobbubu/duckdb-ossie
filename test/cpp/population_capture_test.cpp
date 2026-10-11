@@ -230,6 +230,13 @@ void Controls(const string &root, int threads) {
 	      "observer removed; reload succeeds");
 	Check(Scalar(reader, TOTAL) == "154.01", "final valid snapshot query");
 }
+class DailyCounter : public PopulationDailyObserver {
+public:
+	void Observe(PopulationDailyCheckpoint) override {
+		count++;
+	}
+	idx_t count = 0;
+};
 class DailyObserver : public PopulationDailyObserver {
 public:
 	DailyObserver(Gate &gate, PopulationDailyCheckpoint checkpoint) : gate(gate), checkpoint(checkpoint) {
@@ -303,6 +310,17 @@ void ObservationControls(const string &root, int threads) {
 	    "'{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}}')";
 	auto daily_before = Scalar(reader, daily);
 	Check(daily_before.find("\"members\":[\"B\"]") != string::npos, "native daily membership");
+	const string daily_plan = "SELECT plan_json" + daily.substr(daily.find(" FROM "));
+	const string plan_sql = StringUtil::Replace(daily_plan, "ossie_daily_users_json", "ossie_daily_users_compile");
+	auto counter = make_shared_ptr<DailyCounter>();
+	reader.context->registered_state->Insert(PopulationDailyObserver::KEY, counter);
+	auto plan_before = Scalar(reader, plan_sql);
+	Check(counter->count == 0, "daily compile does not enter execution or member encoding checkpoints");
+	Check(Scalar(reader, daily) == daily_before && counter->count == 2,
+	      "daily execute reaches both counter checkpoints");
+	reader.context->registered_state->Remove(PopulationDailyObserver::KEY);
+	auto plan_prepared = reader.Prepare(plan_sql);
+	Check(!plan_prepared->HasError(), "daily plan prepared frozen binding");
 	auto daily_prepared = reader.Prepare(daily);
 	Check(!daily_prepared->HasError(), "daily prepared binds frozen bundle");
 	for (auto checkpoint : {PopulationDailyCheckpoint::BEFORE_EXECUTE, PopulationDailyCheckpoint::BEFORE_ENCODE}) {
@@ -327,6 +345,10 @@ void ObservationControls(const string &root, int threads) {
 	Check(!daily_old->HasError() && daily_old->Fetch()->GetValue(0, 0).ToString() == daily_before,
 	      "daily prepared retains old rule and all trace across reload");
 	Check(Scalar(reader, daily) != daily_before, "fresh daily binds new complete rule and trace");
+	auto plan_old = plan_prepared->Execute();
+	Check(!plan_old->HasError() && plan_old->Fetch()->GetValue(0, 0).ToString() == plan_before,
+	      "prepared daily plan retains old rule and all trace across reload");
+	Check(Scalar(reader, plan_sql) != plan_before, "fresh daily plan binds new rule and trace");
 
 	Check(Scalar(reader, snapshot) != before, "observation atomic publication changes snapshot");
 	auto original = prepared->Execute();

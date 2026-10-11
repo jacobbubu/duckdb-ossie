@@ -1,0 +1,18 @@
+90 |           Array.isArray(value) ? LIST(VARCHAR) : VARCHAR,
+91 |         ),
+92 |       );
+93 |       return result.getRows().map((row) => row.map(cell));
+94 |     } catch (error) {
+95 |       throw new Error(
+                     ^
+error: artifact query failed (CALL ossie_bundle_load(?)): Error: Invalid Input Error: ossie_population_error_v1: {"schema_version":"ossie-population-error-v1","code":"RULE_REJECTED","object":"expression","stage":"rule","reason":"request/rule exceeds 16 KiB SQL limit","missing_capability":null,"exception_type":"Invalid Input","source_exception_type":null,"legacy_message":"ossie_population: object=expression stage=rule reason=request/rule exceeds 16 KiB SQL limit missing_capability=bounded population profile"}
+      at rows (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/artifact_helpers.ts:95:17)
+      at async run (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/artifact_helpers.ts:107:16)
+      at async loadPadded (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_daily_users_artifact.ts:592:18)
+      at async <anonymous> (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_daily_users_artifact.ts:603:13)
+      at async temporary (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/artifact_helpers.ts:34:18)
+      at async verifyDailyUsers (/Users/rongshen/.codex/worktrees/ossie-execution/duckdb-ossie/scripts/verify_daily_users_artifact.ts:568:11)
+
+error: Invalid Input Error: ossie_population_error_v1: {"schema_version":"ossie-population-error-v1","code":"RULE_REJECTED","object":"expression","stage":"rule","reason":"request/rule exceeds 16 KiB SQL limit","missing_capability":null,"exception_type":"Invalid Input","source_exception_type":null,"legacy_message":"ossie_population: object=expression stage=rule reason=request/rule exceeds 16 KiB SQL limit missing_capability=bounded population profile"}
+
+Bun v1.3.11 (macOS arm64)

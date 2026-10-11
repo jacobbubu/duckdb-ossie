@@ -100,5 +100,8 @@ API2.2.0 adds the separate `daily_user_set` operation declaration. See
 [the daily User set contract](population-daily-users.md) for its independent result
 schema, exact UTF-8 budgets and singleton qualified concept. The generic
 results/compile metadata above continues to describe existing objects/metrics;
-daily SQL ordering differs and its dedicated compile/plan and MCP integration
-are not implemented yet. `mcp_example_registered=false` is distinct from SQL enabled.
+daily SQL ordering differs. Its dedicated logical compile declares actual bound
+identity types and the ordered C++ reduction, without calculating members or
+promising execution success. MCP integration remains pending. The native
+`mcp_example_registered=false` field is an unverified example registration
+declaration, not an inspection of a running server. Actual tools/list is authoritative.

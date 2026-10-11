@@ -2361,10 +2361,11 @@ DailyRequest ParseDailyRequest(const string &bytes) {
 // Check remaining capacity before appending even escaped metadata or a large identity.
 class DailyJSONWriter {
 public:
-	explicit DailyJSONWriter(ClientContext &context_p) : context(context_p) {
+	explicit DailyJSONWriter(ClientContext &context_p, string budget_p = "result_json_utf8_bytes")
+	    : context(context_p), budget(std::move(budget_p)) {
 	}
 	void Append(const string &text) {
-		DailyBudget("result_json_utf8_bytes", json.size() + text.size(), DAILY_RESULT_BYTES);
+		DailyBudget(budget, json.size() + text.size(), DAILY_RESULT_BYTES);
 		json += text;
 	}
 	void Quoted(const string &text) {
@@ -2404,6 +2405,7 @@ public:
 
 private:
 	ClientContext &context;
+	string budget;
 	string json;
 };
 
@@ -2420,7 +2422,9 @@ struct PopulationBind : TableFunctionData {
 	bool encoded = false;
 	bool objects = false;
 	bool daily = false;
+	bool daily_compile = false;
 	DailyRequest daily_request;
+	vector<LogicalType> daily_input_types;
 	string concept;
 	vector<LogicalType> result_types;
 	vector<string> result_names;
@@ -2456,6 +2460,7 @@ unique_ptr<FunctionData> DailyBind(ClientContext &context, TableFunctionBindInpu
 	}
 	result->daily_request = ParseDailyRequest(input.inputs[1].GetValue<string>());
 	result->daily = true;
+	result->daily_compile = input.table_function.name == "ossie_daily_users_compile";
 	lock_guard<mutex> guard(bundle.query_lock);
 	result->statement = QueryAST(bundle, result->concept, {}, {}, {}, true);
 	auto &select = result->statement->node->Cast<SelectNode>();
@@ -2471,11 +2476,13 @@ unique_ptr<FunctionData> DailyBind(ClientContext &context, TableFunctionBindInpu
 	if (prepared->HasError()) {
 		NormalizeError(prepared->GetErrorObject(), "daily_user_set", "bind", ExceptionType::INVALID_INPUT);
 	}
-	if (prepared->GetTypes() != vector<LogicalType> {LogicalType::VARCHAR, LogicalType::DATE, LogicalType::VARCHAR}) {
+	result->daily_input_types = prepared->GetTypes();
+	if (result->daily_input_types !=
+	    vector<LogicalType> {LogicalType::VARCHAR, LogicalType::DATE, LogicalType::VARCHAR}) {
 		Fail("daily_user_set", "bind", "qualified observation identity types changed");
 	}
 	types = {LogicalType::VARCHAR};
-	names = {"result_json"};
+	names = {result->daily_compile ? "plan_json" : "result_json"};
 	return std::move(result);
 }
 
@@ -2708,7 +2715,8 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 		    ",\"daily_user_set\":{\"enabled\":" + string(b.profile == OBSERVATION_PROFILE ? "true" : "false") +
 		    ",\"sql_function\":\"ossie_daily_users_json(VARCHAR,VARCHAR)\",\"mcp_example_registered\":false,"
 		    "\"request_schema\":\"ossie-daily-users-request-v1\","
-		    "\"result_schema\":\"ossie-daily-user-set-result-v1\",\"compile_supported\":false,\"plan_schema\":null,"
+		    "\"result_schema\":\"ossie-daily-user-set-result-v1\",\"compile_supported\":true,\"compile_function\":"
+		    "\"ossie_daily_users_compile(VARCHAR,VARCHAR)\",\"plan_schema\":\"ossie-daily-user-set-plan-v1\","
 		    "\"supported_concepts\":" +
 		    JSONStrings(b.profile == OBSERVATION_PROFILE ? vector<string> {b.derived} : vector<string> {}) +
 		    ",\"semantics\":\"every_calendar_day_exists_qualifying_observation\","
@@ -2723,6 +2731,7 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 		    ",\"product_decoded_utf8_bytes\":" + to_string(DAILY_PRODUCT_BYTES) +
 		    ",\"unique_user_date_pairs\":" + to_string(MAX_ROWS) + ",\"members\":" + to_string(MAX_ROWS) +
 		    ",\"result_json_utf8_bytes_including_metadata\":" + to_string(DAILY_RESULT_BYTES) +
+		    ",\"plan_json_utf8_bytes\":" + to_string(DAILY_RESULT_BYTES) +
 		    "},\"resource_error_code\":\"RESOURCE_LIMIT_EXCEEDED\",\"hard_execution_deadline\":false,"
 		    "\"peak_process_memory_bound\":false,\"outer_mcp_wire_byte_bound\":false,"
 		    "\"cross_rpc_snapshot_atomicity\":false,\"business_data_completeness\":false}";
@@ -2821,6 +2830,44 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
 	return std::move(result);
 }
 
+void DailyScopeJSON(DailyJSONWriter &json, const PopulationBind &data) {
+	auto &request = data.daily_request;
+	auto &b = *data.bundle;
+	json.Field("concept", data.concept);
+	json.Field("user_concept", b.user_concept);
+	json.Append(",\"request\":{\"start_date\":");
+	json.Quoted(request.start_text);
+	json.Field("end_date", request.end_text);
+	json.Append(",\"products\":{\"mode\":");
+	json.Quoted(request.all_products ? "all" : "subset");
+	if (!request.all_products) {
+		json.Append(",\"values\":[");
+		bool first = true;
+		for (auto &product : request.products) {
+			if (!first) {
+				json.Append(",");
+			}
+			first = false;
+			json.Quoted(product);
+		}
+		json.Append("]");
+	}
+	json.Append("}}");
+	json.Field("required_day_count", to_string(request.days));
+	json.Field("eligibility_semantics", "every_calendar_day_exists_qualifying_observation");
+	json.Append(",\"qualification_rule\":{\"concept\":");
+	json.Quoted(b.derived);
+	json.Field("declared_sql", b.original_rule);
+	json.Append("}");
+	for (auto &field :
+	     {std::make_pair("profile", b.profile), std::make_pair("snapshot_id", b.snapshot_id),
+	      std::make_pair("content_sha256", b.content_hash), std::make_pair("core_sha256", b.core_hash),
+	      std::make_pair("ontology_sha256", b.ontology_hash), std::make_pair("mapping_sha256", b.mapping_hash),
+	      std::make_pair("manifest_sha256", b.manifest_hash)}) {
+		json.Field(field.first, field.second);
+	}
+}
+
 string DailyResultJSON(ClientContext &context, const PopulationBind &data, QueryResult &query) {
 	auto &request = data.daily_request;
 	std::map<string, std::set<int32_t>, RawByteLess> seen;
@@ -2854,45 +2901,12 @@ string DailyResultJSON(ClientContext &context, const PopulationBind &data, Query
 		}
 	}
 	DailyBudget("members", members.size(), MAX_ROWS);
-	auto &b = *data.bundle;
 	ObserveDaily(context, PopulationDailyCheckpoint::BEFORE_ENCODE);
 	DailyJSONWriter json(context);
 	json.Append(
 	    "{\"schema_version\":\"ossie-daily-user-set-result-v1\",\"request_kind\":\"daily_users\",\"executed\":true");
-	json.Field("concept", data.concept);
-	json.Field("user_concept", b.user_concept);
-	json.Append(",\"request\":{\"start_date\":");
-	json.Quoted(request.start_text);
-	json.Field("end_date", request.end_text);
-	json.Append(",\"products\":{\"mode\":");
-	json.Quoted(request.all_products ? "all" : "subset");
-	if (!request.all_products) {
-		json.Append(",\"values\":[");
-		bool first = true;
-		for (auto &product : request.products) {
-			if (!first) {
-				json.Append(",");
-			}
-			first = false;
-			json.Quoted(product);
-		}
-		json.Append("]");
-	}
-	json.Append("}}");
-	json.Field("required_day_count", to_string(request.days));
+	DailyScopeJSON(json, data);
 	json.Field("member_count", to_string(members.size()));
-	json.Field("eligibility_semantics", "every_calendar_day_exists_qualifying_observation");
-	json.Append(",\"qualification_rule\":{\"concept\":");
-	json.Quoted(b.derived);
-	json.Field("declared_sql", b.original_rule);
-	json.Append("}");
-	for (auto &field :
-	     {std::make_pair("profile", b.profile), std::make_pair("snapshot_id", b.snapshot_id),
-	      std::make_pair("content_sha256", b.content_hash), std::make_pair("core_sha256", b.core_hash),
-	      std::make_pair("ontology_sha256", b.ontology_hash), std::make_pair("mapping_sha256", b.mapping_hash),
-	      std::make_pair("manifest_sha256", b.manifest_hash)}) {
-		json.Field(field.first, field.second);
-	}
 	json.Append(",\"paging\":false,\"truncated\":false,\"complete\":true,\"ordering\":\"raw UTF-8 byte "
 	            "ascending\",\"members\":[");
 	for (idx_t i = 0; i < members.size(); i++) {
@@ -2902,6 +2916,46 @@ string DailyResultJSON(ClientContext &context, const PopulationBind &data, Query
 		json.Quoted(members[i]);
 	}
 	json.Append("]}");
+	return json.Finish();
+}
+
+string DailyPlanJSON(ClientContext &context, const PopulationBind &data) {
+	DailyJSONWriter json(context, "plan_json_utf8_bytes");
+	json.Append("{\"schema_version\":\"ossie-daily-user-set-plan-v1\",\"request_kind\":\"daily_users\","
+	            "\"executed\":false,\"physical_plan\":false,\"final_output_binding\":false,"
+	            "\"input_projection_binding\":true,\"sql_replayable\":false,\"members_computed\":false");
+	DailyScopeJSON(json, data);
+	json.Field("phase", "bound qualified observation projection and explicit calendar User reduction");
+	json.Field("qualified_projection_sql", data.statement->ToString());
+	json.Append(",\"bound_identity\":[");
+	auto &b = *data.bundle;
+	for (idx_t i = 0; i < b.observation_identity.size(); i++) {
+		if (i) {
+			json.Append(",");
+		}
+		json.Append("{\"field\":");
+		json.Quoted(OriginalName(b, b.observation_identity[i]));
+		json.Field("role", i == 0 ? "user" : i == 1 ? "date" : "product");
+		json.Field("bound_type", data.daily_input_types[i].ToString());
+		json.Append("}");
+	}
+	json.Append("],\"operators\":[{\"operator\":\"qualified_observation_projection\",\"executor\":\"DuckDB "
+	            "AST\",\"qualification\":\"TRUE only\"},"
+	            "{\"operator\":\"inclusive_date_filter\",\"executor\":\"C++\",\"identity_ordinal\":2},"
+	            "{\"operator\":\"explicit_product_scope\",\"executor\":\"C++\",\"identity_ordinal\":3},"
+	            "{\"operator\":\"distinct_user_date\",\"executor\":\"C++\",\"identity_ordinals\":[1,2]},"
+	            "{\"operator\":\"date_count_equals_required_calendar_days\",\"executor\":\"C++\",\"required_count\":");
+	json.Quoted(to_string(data.daily_request.days));
+	json.Append("},{\"operator\":\"complete_members_order\",\"comparison\":\"raw UTF-8 byte ascending\"},"
+	            "{\"operator\":\"bounded_complete_JSON\",\"byte_limit\":");
+	json.Append(to_string(DAILY_RESULT_BYTES));
+	json.Append(",\"truncated\":false}],"
+	            "\"limitations\":[\"Projection SQL alone does not include the C++ scope and cross-day reduction\","
+	            "\"Internal frozen AST dependency prevents ordinary SQL replay\","
+	            "\"Compile does not calculate members, validate success result size or ensure execution completion\","
+	            "\"Separate calls can bind different snapshots after reload\"],\"plan_json_utf8_byte_limit\":");
+	json.Append(to_string(DAILY_RESULT_BYTES));
+	json.Append("}");
 	return json.Finish();
 }
 
@@ -3039,6 +3093,8 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 			                        Value(b.ontology_hash), Value(b.mapping_hash), Value(b.manifest_hash),
 			                        Value(b.original_source), Value::BIGINT(static_cast<int64_t>(b.rows))});
 		}
+	} else if (data.daily_compile) {
+		result->rows.push_back({Value(DailyPlanJSON(context, data))});
 	} else if (data.compile) {
 		auto &b = *data.bundle;
 		result->rows.push_back({Value(data.sql), Value(b.profile), Value(b.snapshot_id), Value(b.content_hash),
@@ -3089,7 +3145,7 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 		object = input.inputs[0].GetValue<string>();
 	}
 	return ErrorBoundary(object, "bind", [&]() {
-		if (name == "ossie_daily_users_json") {
+		if (name == "ossie_daily_users_json" || name == "ossie_daily_users_compile") {
 			return DailyBind(context, input, types, names);
 		}
 		if (name == "ossie_bundle_load") {
@@ -3160,6 +3216,15 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	    "256 bytes per product/16KiB request/1MiB complete inner result; resource refusal never truncates.",
 	    "SELECT * FROM ossie_daily_users_json('QualifiedObservation', "
 	    "'{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}}')");
+	RegisterDescribe(loader,
+	                 TableFunction("ossie_daily_users_compile", {LogicalType::VARCHAR, LogicalType::VARCHAR},
+	                               ScanBoundary, BindBoundary, InitBoundary),
+	                 "Explain the same bound daily User set request without execution. Plan names qualified AST "
+	                 "projection plus C++ date/product scope, distinct User/date and required calendar-day count, "
+	                 "raw UTF-8 member sorting and complete bounded encoding. No computed members, physical plan "
+	                 "or ordinary SQL replay guarantee; max1MiB complete inner plan JSON.",
+	                 "SELECT * FROM ossie_daily_users_compile('QualifiedObservation', "
+	                 "'{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}}')");
 	auto list = LogicalType::LIST(LogicalType::ANY);
 	auto traced = [](TableFunction function) {
 		function.named_parameters["include_trace"] = LogicalType::BOOLEAN;

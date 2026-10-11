@@ -53,6 +53,38 @@ effective backend/effort/usage/billing未知。统计误读JSON文件名和一�
 prepared/reload/取消恢复以及旧行为，同产物完整验收之前不声明能力已交付。
 真实模型/推送/main合并/发布/部署均未授权，凭据与既有raw不修改。
 
+### P1每日完整解释接口 checkpoint（2026-10-11）
+
+恢复goal时核对846a5cd、干净工作树及现计划，上一轮为代码/实际验收/本地提交的
+进展；完整P1仍active。下一已授权工作为每日专用解释：共享DailyBind及冻结输入
+类型预检，输出资格投影与显式C++日期/产品/跨日归约的完整语义pipeline，不运行
+Run/fetch、不返回已算成员或人数。新增独立plan-v1/plan预算，保留旧compile/三个
+profile/MCP与Agent拒绝；API2.2本地未发布增量收口，不能声称已对外发布。复用
+Advisor只读反证，Lead负责实施与独立控制。验证来源表删除/更新后compile不读源，
+请求/规则/trace与执行一致，prepared旧bundle及非法请求/预算边界；之后才接新MCP。
+原时间状态/历史关系业务问题尚未收到答复，依赖工作不默认实施，其他P1项保留。
+没有模型、推送/合并/发布。证据新增目录，不覆盖原首片raw。
+
+### P1每日逻辑解释本地完成（2026-10-11）
+
+[契约](population-daily-users.md)与[新证据](research/ossie-req-001/p1-daily-plan-controls/verification.json)
+绑定同产物新增ossie_daily_users_compile：共用DailyBind和scope/trace，实际预检类型、
+TRUE资格投影及七个有序逻辑步骤。无成员计算、非物理计划/不可普通SQL重放；
+内部配置/Prepare仍发生，不声明零SQL工作。plan自身1MiB完整编码预算与执行
+成功无关；member过大可compile成功。12用例全部请求/正式规则/日期/追溯一致，
+30检查/34预期拒绝，来源DROP仍可解释，prepared跨reload仍保留旧完整plan。
+原生254项threads4/1含观察器证明compile不进入执行前/编码前checkpoint和执行
+阳性控制；25SQL/959断言、98Bun/403expects、质量门禁、同SHA旧A1–A8/旧MCP、
+观察MCP43/38及四场景脚本模拟/重放/失败封存通过，真实模型0。
+
+首次plan上限实验被既有16KiB规则限制提前拒绝，原始stderr/stdout保留。按真实
+合法上限改验16KiB规则完整解释及+1loader拒绝/旧batch保持；没有放宽规则或
+声称精确1MiBplan边界实测。Advisor只读建议与Lead核查另记，requested Astra/high，
+effective backend/effort/usage/billing未知。原生mcp_example_registered=false不查询
+运行中服务，后续新工具必须实际tools/list/RPC验收。当前新增注册24/22。
+本工作包完成；完整P1仍active，下一授权为独立每日MCP/decoder/无模型演练与CI，
+其他时间/历史关系、派生关系约束、多事实/窗口仍必需；业务决策待答。无推送/模型。
+
 ### P1每日集合SQL首片本地完成（2026-10-11）
 
 [使用契约](population-daily-users.md)及[证据](research/ossie-req-001/p1-daily-sql-controls/verification.json)

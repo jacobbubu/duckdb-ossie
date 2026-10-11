@@ -50,13 +50,35 @@ internal/fatal/OOM继续原生传播，不冒充预算失败。代码有执行�
 
 能力发现 `daily_user_set` 单独声明SQL启用、实际唯一concept、结果schema、限制及
 未保证项。旧两个profileenabled=false，直接调用此SQL拒绝；User仍referent-only。
-**当前未接新MCP工具、专用compile/plan或Agent场景**，能力分别声明
-`mcp_example_registered=false`、`compile_supported=false`、`plan_schema=null`。
-旧compile解释对象/指标，不解释C++日期/产品/跨日归约，不能借其SQL冒充此操作。
+`ossie_daily_users_compile(concept, request_json)` 返回一行VARCHAR `plan_json`，
+schema为独立 `ossie-daily-user-set-plan-v1`。它共用相同请求校验和冻结bundle绑定，
+给出实际绑定的user/date/product类型、资格投影AST文本，以及有序逻辑步骤：TRUE资格、
+包含首尾的日期过滤、产品范围、去重(user,date)、日期数等于必需自然日数、原始字节排序、
+完整JSON预算。日期、规则、范围及追溯字段与执行出口一致。
+
+```sql
+SELECT plan_json FROM ossie_daily_users_compile(
+  'QualifiedObservation',
+  '{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}'
+);
+```
+
+这是绑定后的逻辑解释，不是物理计划。`executed=false`、`members_computed=false`；
+不运行资格投影或Fetch成员，但内部连接配置及Prepare绑定仍发生。
+`input_projection_binding=true`不等于最终输出绑定、资源充足或执行成功；成员过大时
+compile可成功而execute失败。投影SQL不包含C++归约，也依赖内部冻结AST，不能直接重放。
+plan完整JSON同样按增量编码限制在1,048,576 UTF-8字节内，超限以
+`daily_user_set.plan_json_utf8_bytes`资源错误拒绝。当前实测最大16KiB合法规则的完整解释；
+尝试用更长规则触发plan上限会先被既有loader拒绝，未宣称精确1MiB plan边界实测。
+
+能力声明 `compile_supported=true` 与独立plan_schema。旧compile继续解释对象/指标。
+**当前未接新MCP工具或Agent场景**；`mcp_example_registered=false`表示原生声明中
+未验证新工具注册，不能据此查询任意运行中服务的tools/list。
 现观察MCP/Agent每天场景仍拒绝，后续接入必须单独实际验收；本入口不是一般calendar、
 窗口、历史规则/as-of、多事实、非递归关系或完整P1。
 
 [已接受语义研究](research/ossie-req-001/multi-period-research/every-day/research.md)、
 [原设计](research/ossie-req-001/multi-period-research/every-day/interface-design/design.md)与
-[本地SQL增量证据](research/ossie-req-001/p1-daily-sql-controls/verification.json)分别保留。
+[本地SQL增量证据](research/ossie-req-001/p1-daily-sql-controls/verification.json)及
+[逻辑解释验证](research/ossie-req-001/p1-daily-plan-controls/verification.json)分别保留。
 本能力为项目接口，不宣称Ossie0.2/SQL2026规范新增了一种专用函数。

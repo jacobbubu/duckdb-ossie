@@ -1,0 +1,9 @@
+{
+  "failure": "Attempted 1MiB logical plan via rule whitespace was refused by existing 16KiB SQL/rule parser limit before plan encoding",
+  "raw": [
+    "failed-plan-padding.stderr",
+    "failed-plan-padding.stdout"
+  ],
+  "resolution": "Retain refusal, test exactly16KiB supported rule and16KiB+1 loader rejection; preserve old bundle; no limit relaxed",
+  "limitation": "Exact1MiB plan encoding boundary not experimentally reached; result encoding exact boundary remains verified separately"
+}

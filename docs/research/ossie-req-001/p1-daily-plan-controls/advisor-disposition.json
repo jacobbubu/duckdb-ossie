@@ -1,0 +1,30 @@
+{
+  "scope": "read-only bounded daily compile and proposed later MCP architecture advice",
+  "advisor": "/root/review_agent_acceptance",
+  "requested_model": "gpt-6-astra",
+  "requested_effort": "high",
+  "effective_backend": "unknown",
+  "effective_effort": "unknown",
+  "usage": "unknown",
+  "billing": "unknown",
+  "disposition": {
+    "accepted": [
+      "Shared DailyBind and dedicated logical pipeline; actual bound input types and shared limits",
+      "No member computation, no physical plan or ordinary SQL replay claim",
+      "Compile success independent of execution result-size success",
+      "Native registration declaration does not inspect running MCP tools/list",
+      "Later MCP must explicitly declare which native operations its toolset exposes"
+    ],
+    "verified": [
+      "12 scope/rule/trace compile-execute cases",
+      "Native execution/encoding observer is not reached by compile, positive execute control",
+      "Prepared compile retains old complete rule and trace across reload",
+      "Oversized execution members can have successful compile",
+      "Strict requests and escaped product scope; source table dropped"
+    ],
+    "pending": [
+      "New MCP schema enforcement and extra-argument behavior from actual upstream implementation",
+      "New two-tool MCP transport and dedicated no-model acceptance"
+    ]
+  }
+}
