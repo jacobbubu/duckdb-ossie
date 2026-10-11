@@ -131,6 +131,14 @@ jobs:
       - name: Verify complete daily three-valued states and adjacent comparisons
         run: bun --no-env-file scripts/verify_daily_states_artifact.ts downloaded/ossie.duckdb_extension quality-reports/daily-states
 
+      - name: Verify independent state MCP transport and strict complete carriers
+        run: |
+          env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL bun --no-env-file scripts/verify_daily_state_mcp.ts "$(command -v duckdb)" downloaded/ossie.duckdb_extension quality-reports/state-mcp.json
+
+      - name: Rehearse six state scenes and strictly replay sealed evidence without a model
+        run: |
+          env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL bun --no-env-file scripts/verify_daily_state_agent_offline.ts "$(command -v duckdb)" downloaded/ossie.duckdb_extension .local-agent-evidence/state-ci/run quality-reports/state-offline.json
+
       - name: Verify opt-in relation program loading and full-population constraints
         run: bun --no-env-file scripts/verify_relation_load_artifact.ts downloaded/ossie.duckdb_extension quality-reports/relation-load
 

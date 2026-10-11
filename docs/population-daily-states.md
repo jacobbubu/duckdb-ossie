@@ -3,8 +3,8 @@
 本接口复用 `daily-observation-population-v1` 的冻结观察与当前正式资格规则，
 专用 `state_api_version=1.0.0`。旧每日合格集合入口保持原行为。
 用户已接受[业务口径](research/ossie-req-001/p1-time-accepted/acceptance.json)；
-本工作包仅完成原生 SQL、逻辑解释与专用发现，新状态 MCP、严格调用方解码器、
-无模型演练及历史关系仍需实施，完整 P1 尚未完成。
+原生 SQL、逻辑解释、专用发现及独立状态 MCP、严格调用方解码、六场景无模型
+演练已完成本地工作包。历史关系及新增代码 Linux/tidy 仍需完成，完整 P1 尚未完成。
 
 ```sql
 SELECT result_json FROM ossie_daily_states_json(
@@ -37,7 +37,8 @@ schema 为 `ossie-daily-states-plan-v1`，绑定完整 User/DATE/product/BOOLEAN
 
 `ossie_daily_states_program()` 返回 `ossie-daily-states-program-v1`，声明三入口、
 实际冻结域计数、身份、口径、限制和拒绝项，`query_executed=false`。
-当前 `mcp_registered=false`，不能把 SQL 可用理解为服务已注册工具。
+`mcp_registered=false` 表示原生不会探测运行中的 MCP 注册表。下面独立服务的
+实际工具和资源由真实 tools/list 与 resources/list 验证。
 
 | 限制 | 定义 |
 | --- | --- |
@@ -57,3 +58,36 @@ carry-forward、历史有效期推断均不支持。旧 `ossie_daily_users_json`
 本地证据覆盖全部八种当天值集合、九种状态对、跨月/闰日、范围外用户、冻结重载、
 确定性阶段取消和恢复、10,000/9,999 对象与超限，以及精确 1 MiB 与多一字节拒绝。
 证据只覆盖当前 macOS ARM64 产物，新增代码的 Linux/tidy 和远端 CI 尚未复验。
+
+独立[状态服务](../examples/daily_state_server.sql)只注册 `population_daily_states`
+与 `population_daily_states_compile`，有 concepts、capabilities、state-program、
+state-surface 四个资源。它与旧每日集合服务分开，没有导入、重载、任意 SQL 或
+旧每日集合工具。操作员载入冻结数据，Agent 只有查询与解释能力。state-surface
+说明实际工具暴露；state-program 的元数据计数来自载入，不代表一次查询执行。
+
+固定上游 MCP 可能把对象参数转成字符串，并忽略未知外层参数，本地真实验证
+确认了这两种行为。因此调用方必须发送 concept/request_json 两个 String，
+全部范围放在 request_json 内；不能靠外层 products 实现筛选。共享 Agent 调用
+门禁拒绝未知或非字符串参数，内部 JSON 仍由原生严格校验。
+
+[专用解码器](../scripts/daily_state_result.ts)检查独立 schema/version、唯一解码键、
+完整字段、六项追溯、范围、完整矩形 User/day 日期网格、原始 UTF-8 排序、全部
+相邻比较、变化标记、计数及 User/day 统计单位。解释检查实际输入类型和明确算子，
+发现检查限制与拒绝项。外层 carrier 有本地 8 MiB 校验门禁，不是上游传输限制；
+内部完整 JSON 继续 1 MiB。结构通过不能证明状态计算正确，完整行另与独立观察
+fixture 计算对照。结果与解释要比较同一范围、规则和追溯；分次调用可能跨重载。
+
+[无模型入口](../scripts/verify_daily_state_agent_offline.ts)通过注入 Responses completion
+执行全部产品、产品 X、缺失日、阈值 20、空批次和只解释六个场景；共 17 次模拟
+completion、11 次真实 MCP 工具调用。每场最多 3 轮、2 次工具、120 秒、4096 输出
+token、131072 输入 UTF-8 字节，这是本地演练预算，不是模型实测需求。入口不读取
+provider 配置，没有真实调用分支。该演练证明工具链与支持边界，不能证明真实模型
+自主选工具或正确理解自然语言。
+
+原始证据只写入调用者提供的 Git 忽略私有归档，严格顺序重放核对当前源 hash、
+资源、请求、实际响应、公开 completion 投影、最终答案和独立完整行 oracle。
+解释场景不能输出计算结果；只引用匹配的执行证据才可回答。哈希证明本地字节
+对应，不证明提供商真实性或业务数据真实性。16 个重新封存的合成损坏记录拒绝，
+同时改错且结构合法的工具/答案仍被独立 oracle 拒绝；incomplete completion
+封存为失败，不能完整重放。[MCP 与演练证据](research/ossie-req-001/p1-daily-state-mcp-controls/review.md)
+保留失败及修复范围。CI 已加入两条命令，尚未运行远端。

@@ -1,0 +1,289 @@
+{
+  "passed": true,
+  "scope": "six scripted state integration scenes with actual MCP; not live Agent acceptance",
+  "real_model_requests": 0,
+  "provider_config_read": false,
+  "execution": {
+    "status": "complete",
+    "source_seal_sha256": "968682be00b825c23d8d09b405a4ffac4d776f3589f350222262f8f4eb4af3bf",
+    "simulated_completion_requests": 17,
+    "scenes": [
+      {
+        "scene": "all",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "state_count": "20",
+          "comparison_count": "10",
+          "unit": "User/day",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "product-X",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "state_count": "20",
+          "comparison_count": "10",
+          "unit": "User/day",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "missing-day",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "state_count": "30",
+          "comparison_count": "20",
+          "unit": "User/day",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "changed-rule",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "state_count": "20",
+          "comparison_count": "10",
+          "unit": "User/day",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "empty",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "state_count": "0",
+          "comparison_count": "0",
+          "unit": "User/day",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "compile-only",
+        "status": "complete",
+        "calls": 1,
+        "rounds": 2,
+        "evaluation": {
+          "status": "not_executed",
+          "computed": false
+        }
+      }
+    ]
+  },
+  "replay": {
+    "passed": true,
+    "mode": "simulated",
+    "source_seal_sha256": "968682be00b825c23d8d09b405a4ffac4d776f3589f350222262f8f4eb4af3bf",
+    "real_model_requests": 0,
+    "simulated_completion_requests": 17,
+    "scenes": [
+      {
+        "scene": "all",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "state_count": "20",
+          "comparison_count": "10",
+          "unit": "User/day",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "product-X",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "state_count": "20",
+          "comparison_count": "10",
+          "unit": "User/day",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "missing-day",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "state_count": "30",
+          "comparison_count": "20",
+          "unit": "User/day",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "changed-rule",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "state_count": "20",
+          "comparison_count": "10",
+          "unit": "User/day",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "empty",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "state_count": "0",
+          "comparison_count": "0",
+          "unit": "User/day",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "compile-only",
+        "status": "complete",
+        "calls": 1,
+        "rounds": 2,
+        "evaluation": {
+          "status": "not_executed",
+          "computed": false
+        }
+      }
+    ],
+    "limitations": "Exact ordered local byte correspondence and independent synthetic fixture result audit; no provider authenticity or model autonomy."
+  },
+  "refusals": [
+    {
+      "label": "wrong schema",
+      "source_seal_sha256": "75e64f5941a25187ee2c3713c96cd6b6c4a2c58f28a7ce375167c589b367ac3f",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "live mode",
+      "source_seal_sha256": "0644db836547460ff45cbc8f9ad782a20a1e4848cad726e7def930612b3aa483",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "source hash",
+      "source_seal_sha256": "85125f88b2f7ca7d7102746d625263fde9080c5ab64811801ccc7fcc2321509f",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "failed terminal",
+      "source_seal_sha256": "d5cef86f34d4665e891f9135e864805f34c9504d662bac1d14a1201a0a82e9f5",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "missing scene",
+      "source_seal_sha256": "884a789055076739685ffac0fd9630e6fd5dee7df97c7168b2f1e99eded421c1",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "missing context",
+      "source_seal_sha256": "419ab6be92ed9497b691de184bed40455da184708de9cfa2fff8de44f8854acb",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "changed question",
+      "source_seal_sha256": "b4affbed40538f4fda7327bcc4d9e73a34eb9eb05420bb9d21d06aac442da62c",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "changed setup",
+      "source_seal_sha256": "3211e7992dd59fa8a91de008a841d1e0da120e71500ba02619d98cb928eb74d9",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "wrong review",
+      "source_seal_sha256": "aa3dce82040407b103854b7e1bc02587bc05de25c0ae00a5b8d081032e91ac73",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "missing RPC response",
+      "source_seal_sha256": "183676560688bc13bb26804cdfb64412675d00fa3548131cd8e4b74263fc076d",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "RPC ID mismatch",
+      "source_seal_sha256": "fd004ae5e0204f88971173892de361b88405d63ada08ddac927e24e62af452a4",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "wrong tool evidence ID",
+      "source_seal_sha256": "2d375f6b07ab1a3121f45bdfa52e8fe9da9945bf3b2708cf9ad3b1b43f64c162",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "out of allowlist",
+      "source_seal_sha256": "04898227b230c305231827b3020eea76edbe275f71dba2db7d4db50a44cade2b",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "wrong argument",
+      "source_seal_sha256": "88b553b90f47ec17af0e876eb8d2e3c66bdc7959486c8f2a7553f4f3eec5aa20",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "extra trailing event",
+      "source_seal_sha256": "16e66b1948a343690940459469fb06b8a866596fdd181c032dd5cba8c5303578",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "forged completion projection",
+      "source_seal_sha256": "0e472b2b2db66ef20a0c17389fab511c045b728d043778d434dcc22ad93b55e9",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "jointly wrong structurally valid tool/answer",
+      "result": "independent complete row oracle refused"
+    },
+    {
+      "label": "incomplete completion",
+      "result": "failed sealed; complete replay refused",
+      "source_seal_sha256": "a9638b19f42c745009fff3524cb93ee1f734b9b4efd17320bc4038d8b030934f"
+    }
+  ],
+  "artifact_sha256": "352e96f2f0a3dca9704e2cbdac1d6f1f2a83276dd6991fdc5c6d50ae530032bc",
+  "source_hashes": {
+    "docs/research/ossie-req-001/multi-period-research/every-day/observations.csv": "3c0c4cc77140a84e01ec45d90e4386ffe01ac2a302ba5d79cb3ebc1152a2166f",
+    "examples/daily_state_server.sql": "2c5db2c1df662bc286aa28bd0dfc877ab4b38fc0ac3b750b30fd0b4d56a0fc0c",
+    "test/fixtures/population-observation/core.json": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+    "test/fixtures/population-observation/ontology.json": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e",
+    "test/fixtures/population-observation/ontology-20.json": "b6aca7da28e4f0d3a2e00c2dc238f2b620964492d30b26f1f12c807f789d76ec",
+    "test/fixtures/population-observation/mapping.json": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+    "test/fixtures/population-observation/bundle-10.json": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a",
+    "test/fixtures/population-observation/bundle-20.json": "b1c61aed4539201e40a3778f2f125fbb8372c562d6d419a4eb5b6d526aa8420b",
+    "scripts/daily_state_agent.ts": "fef6b221a5b619e7bef78caad21164edefa8fdcc702c2165d50946aeaf1fbad3",
+    "scripts/daily_state_mcp.ts": "0ddaadb76eaa223095b3c61df5c631574a790131cf62d098a9306a1d56c60d93",
+    "scripts/daily_state_result.ts": "dc8cd59f9b602bc8f7cf6ef5af597de89a5d18091c7fdaab45eecfdfa4820bcd",
+    "scripts/daily_state_oracle.ts": "e1c414ed193d4697433b754963ce0b40d2e759f406ce0e2a5c0231ca4f9a652d",
+    "scripts/daily_result.ts": "5eed49fe521bd5f2347c2b27d4fe2a505975b214f38889672800155cdf68b163",
+    "scripts/daily_mcp.ts": "9e84c7c2166046ad7d44f1fdfd35475ac17bb8445d866db0f14bb029807d2821",
+    "scripts/fact_result.ts": "84b6b023719cb0d031adb0341a506dc89f9d63e2385426e80a09c7126a036835",
+    "scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "scripts/observation_agent_archive.ts": "dee3890dc2351d71994b9bd17525ee327a92d143aa7f0ae36ff83ef3f0648571",
+    "scripts/observation_agent_replay.ts": "be43c6f495ccbdbb2914c820e10eab832fda23830da8daf8e8c3a0d805a9eb0d",
+    "scripts/observation_mcp.ts": "91c9f6c7d3e900a65a6b596fb0100a4d28f9fa94d852fb7a8054fbb26775e8eb",
+    "scripts/observation_evidence.ts": "4a58242be77cbad354bd597cdff530b5ffa5f1c95edab378b92800e89862d3a5",
+    "scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c"
+  }
+}

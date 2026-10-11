@@ -1,0 +1,186 @@
+{
+  "passed": true,
+  "scope": "state MCP complete transport and strict decoder; no Agent/model autonomy claim",
+  "fixture_sha256": "3c0c4cc77140a84e01ec45d90e4386ffe01ac2a302ba5d79cb3ebc1152a2166f",
+  "decoder_sha256": "dc8cd59f9b602bc8f7cf6ef5af597de89a5d18091c7fdaab45eecfdfa4820bcd",
+  "checks": [
+    "10/extended/all/2026-02-02: complete independent rows, program/plan binding",
+    "unknown outer parameter ignored; must place scope in request_json",
+    "upstream object-to-string coercion observed; caller guard remains Strings",
+    "10/extended/subset/2026-02-02: complete independent rows, program/plan binding",
+    "10/extended/subset/2026-02-02: complete independent rows, program/plan binding",
+    "10/extended/all/2026-01-31: complete independent rows, program/plan binding",
+    "10/empty/all/2026-02-02: complete independent rows, program/plan binding",
+    "10/empty/subset/2026-02-02: complete independent rows, program/plan binding",
+    "10/empty/subset/2026-02-02: complete independent rows, program/plan binding",
+    "10/empty/all/2026-01-31: complete independent rows, program/plan binding",
+    "20/extended/all/2026-02-02: complete independent rows, program/plan binding",
+    "20/extended/subset/2026-02-02: complete independent rows, program/plan binding",
+    "20/extended/subset/2026-02-02: complete independent rows, program/plan binding",
+    "20/extended/all/2026-01-31: complete independent rows, program/plan binding",
+    "20/empty/all/2026-02-02: complete independent rows, program/plan binding",
+    "20/empty/subset/2026-02-02: complete independent rows, program/plan binding",
+    "20/empty/subset/2026-02-02: complete independent rows, program/plan binding",
+    "20/empty/all/2026-01-31: complete independent rows, program/plan binding",
+    "MCP budget rejects both query/compile before expansion; complete single-day recovery3334 Users"
+  ],
+  "refusals": [
+    {
+      "name": "population_daily_states",
+      "label": "missing policy",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states",
+      "label": "wrong domain",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "name": "population_daily_states",
+      "label": "outside predecessor",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "name": "population_daily_states",
+      "label": "extra",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states",
+      "label": "bad date",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states",
+      "label": "numeric product",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states",
+      "label": "duplicate products",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states",
+      "label": "too many days",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "name": "population_daily_states_compile",
+      "label": "missing policy",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states_compile",
+      "label": "wrong domain",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "name": "population_daily_states_compile",
+      "label": "outside predecessor",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "name": "population_daily_states_compile",
+      "label": "extra",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states_compile",
+      "label": "bad date",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states_compile",
+      "label": "numeric product",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states_compile",
+      "label": "duplicate products",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states_compile",
+      "label": "too many days",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "name": "population_daily_users",
+      "label": "outside registry"
+    },
+    {
+      "name": "query",
+      "label": "outside registry"
+    },
+    {
+      "name": "execute",
+      "label": "outside registry"
+    },
+    {
+      "name": "population_objects",
+      "label": "outside registry"
+    },
+    {
+      "name": "ossie_bundle_load",
+      "label": "outside registry"
+    },
+    {
+      "name": "population_daily_states",
+      "label": "3334 Users/two days=10002 complete objects"
+    },
+    {
+      "name": "population_daily_states_compile",
+      "label": "3334 Users/two days=10002 complete objects"
+    }
+  ],
+  "damage": [
+    "wrong version",
+    "wrong schema",
+    "extra field",
+    "carry",
+    "domain",
+    "incomplete",
+    "bad hash",
+    "numeric count",
+    "unit",
+    "wrong totals",
+    "missing state",
+    "wrong calendar",
+    "wrong User",
+    "invalid state",
+    "surrogate identity",
+    "wrong change flag",
+    "missing unchanged pair",
+    "external predecessor",
+    "wrong changed count",
+    "request mismatch",
+    "duplicate decoded key",
+    "plan executed",
+    "plan wrong operators",
+    "plan missing BOOLEAN",
+    "plan fake domain count"
+  ],
+  "real_model_requests": 0,
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+    "extension_sha256": "352e96f2f0a3dca9704e2cbdac1d6f1f2a83276dd6991fdc5c6d50ae530032bc",
+    "server_sha256": "2c5db2c1df662bc286aa28bd0dfc877ab4b38fc0ac3b750b30fd0b4d56a0fc0c"
+  },
+  "raw_sha256": "a5ca0d85af3faf2be124fcb2fe9938ee8aa9494b0bb58ad6df7aacc53beab3df",
+  "source_sha256": {
+    "examples/daily_state_server.sql": "2c5db2c1df662bc286aa28bd0dfc877ab4b38fc0ac3b750b30fd0b4d56a0fc0c",
+    ".github/workflows/MainDistributionPipeline.yml": "c319d3906681506ddbd40714b48fbaafe2846b35d95d60379a986da1ba91c5ab",
+    "scripts/daily_state_result.ts": "dc8cd59f9b602bc8f7cf6ef5af597de89a5d18091c7fdaab45eecfdfa4820bcd",
+    "scripts/daily_state_mcp.ts": "0ddaadb76eaa223095b3c61df5c631574a790131cf62d098a9306a1d56c60d93",
+    "scripts/daily_state_oracle.ts": "e1c414ed193d4697433b754963ce0b40d2e759f406ce0e2a5c0231ca4f9a652d",
+    "scripts/daily_state_agent.ts": "fef6b221a5b619e7bef78caad21164edefa8fdcc702c2165d50946aeaf1fbad3",
+    "scripts/verify_daily_state_mcp.ts": "9871ec116e2000065389108f9fad80ab2bdec0f094d2ba86395378f6c3746571",
+    "scripts/verify_daily_state_agent_offline.ts": "45105598b178ed58604207c3c1b6fae7ebca0d8c29029ad78f3893c441f97700"
+  },
+  "private_manifest_sha256": "b91e11e726bed7f100385d7f1f2d6f551245c665ee34fb02cd1d151f426ad1b7"
+}

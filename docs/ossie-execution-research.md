@@ -4,8 +4,8 @@
 窗口的本地实现和全接口已通过，最新[Linux功能证据](research/ossie-req-001/p1-linux-functional/review.md)
 与[macOS功能/Linux tidy证据](research/ossie-req-001/p1-tidy-controls/review.md)分别保留。
 每日三值状态与历史关系的[业务口径已接受](research/ossie-req-001/p1-time-accepted/acceptance.json)。
-[每日状态 SQL/解释/发现](population-daily-states.md)已本地实施，新增状态 MCP/无模型
-及历史关系仍需完成；原候选研究保留历史待答记录，
+[每日状态 SQL/解释/发现及独立 MCP/无模型](population-daily-states.md)已本地实施与验证；
+历史关系和新增代码 Linux/tidy 仍需完成。原候选研究保留历史待答记录，
 整个P1未完成。当前未推提交没有远端CI结论；以下远端结果属于此前已推阶段。
 
 当前交付更新（2026-10-11）：开发分支e3a6f5f的跨平台/观察验收/无模型
@@ -1795,3 +1795,12 @@ OSSIE-REQ-001 完整scope审计checkpoint：精确805df8c干净，沿原需求�
 User域/请求内变化与有限历史/record_id/同目标来源保留、异目标全批冲突拒绝。
 原决策阻碍解除。3f34f2a干净恢复，先记录接受与固定schema核对，再状态原生/SQL；
 旧行为保护，历史及全接口随后。沿OSSIE-REQ-001与原计划，不新增backlog或推送。
+
+状态接口与无模型 checkpoint（2026-10-12）：沿 OSSIE-REQ-001 补齐独立二工具
+MCP/专用program与surface、严格carrier解码、六场景注入Responses与封存重放。
+[证据复核](research/ossie-req-001/p1-daily-state-mcp-controls/review.md)绑定原生352e96f2，
+19MCP检查/23拒绝恢复/25损坏，17模拟completion/11工具调用及18离线控制通过，
+138Bun/721和质量门禁通过。Cpp未改，复用上一工作包同产物原生/SQL/旧回归。
+状态全接口工作包完成不等于P1；历史实现及完整接口、新代码Linux/tidy和全五项
+统一审计仍必需。失败日志、私有原始seal和选择性派生报告绑定保留。不调用真实模型，
+不推送；goal已由用户恢复active，继续历史双源设计核对与实施。
