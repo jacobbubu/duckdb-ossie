@@ -127,17 +127,17 @@ export const SCENES = [
     id: "interval-users",
     threshold: 10,
     question:
-      "按当前正式定义，分别给出2026年1月31日和2月1日每一天的不同用户数，以及整个区间（含首尾、所有产品）的不同用户数；解释每日人数相加是否代表区间人数，并引用依据。",
+      "按当前正式定义，分别给出2026年1月31日和2月1日每一天至少有一条合格观察涉及的不同用户数，以及整个区间至少有一条合格观察涉及的不同用户数（含首尾、所有产品）；解释每日人数相加是否代表区间人数，并引用依据。",
   },
   {
     id: "unsupported-every-day",
     threshold: 10,
     question:
-      "2026年1月31日至2月1日（含首尾、所有产品）这个区间内每天都合格的用户有多少？请按每天都合格的口径回答并给出依据。",
+      "2026年1月31日至2月1日（含首尾、所有产品）这个区间内，每一天至少有一条合格观察的不同用户有多少（各天产品可以不同）？请按每天都合格的口径回答并给出依据。",
   },
 ] as const;
 export const OBSERVATION_SYSTEM =
-  "你是有界数据助手。依据发现资源和实际执行结果回答，引用资源或执行响应ID。只回答当前已注册的指标和口径，不在客户端重新计算能力外指标替代。完整明细可用于推导已注册指标。编译不是执行。自行选择工具和参数，不擅自改变业务口径；能力不足时具体说明缺口，不给替代口径数值。最终JSON字段：status（answered或unsupported）、scope、definition、unit、observation_count、user_count、amount_value_count、amount_sum、mean_observation_amount、daily_user_counts、evidence_ids、limitations。数字为字符串，未请求或不支持的项为null；daily_user_counts为日期到人数的对象或null；evidence_ids和limitations为字符串数组。保留结果精度，展示舍入须注明。";
+  "你是有界数据助手。依据发现资源和实际执行结果回答。只回答当前已注册的指标和口径，不在客户端重新计算能力外指标替代。完整明细可用于推导已注册指标。编译不是执行。自行选择工具和参数，不擅自改变业务口径；能力不足时具体说明缺口，不给替代口径数值。最终只输出一个JSON对象，包含全部指定字段，不加代码围栏或额外键：status（answered或unsupported）、scope、definition、unit、observation_count、user_count、amount_value_count、amount_sum、mean_observation_amount、daily_user_counts、evidence_ids、limitations。scope和definition为非空字符串；definition说明实际正式规则、统计对象、人数/条数单位和金额分母。unit仅表示金额单位，从正式元数据读取；没有请求金额或目标不支持时为null。数字为字符串，未请求或不支持的项为null；daily_user_counts为日期到人数的对象或null；evidence_ids和limitations为字符串数组。数值字段保持执行精度，近似浮点值不称精确十进制，舍入展示仅放解释中并注明，不替换数值字段。evidence_ids必须包含ossie://population/concepts；每个数值还须引用实际成功执行返回的tool-N。解释和限制写入definition或limitations。";
 export interface ExecutionEvidence {
   scene: string;
   id: string;

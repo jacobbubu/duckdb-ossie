@@ -31,6 +31,46 @@ effective backend/effort/usage/billing未知。统计误读JSON文件名和一�
 
 ## 范围与授权
 
+### 提示协议最小修订与无模型验证 checkpoint（2026-10-11）
+
+用户继续已审查方案，授权最小修订观察Agent的引用/单位/精度/JSON约定，
+明确每日合格观察用户和逐日存在的口径，并做无模型控制。基线873c040，
+沿OSSIE-REQ-001及既有审查，不扩大预算、不调用真实模型、不推送。
+仅改观察提示、必要回归控制和文档；旧两个profile/循环/生产代码保持。
+验证新上下文与机械门禁相符、格式/引用/单位/舍入反例、四隔离场景模拟
+Responses与实际MCP、离线重放/失败封存，以及来源hash。新证据另建目录，
+旧原件与公开衍生不改写；若回归需新synthetic fixture，明确其合成来源。
+
+### 提示协议修订与无模型验证完成（2026-10-11）
+
+观察system明确最终完整JSON/无围栏/额外键、concepts及实际tool-N引用、
+金额unit与人数unit=null、数值字段保持精度/解释可展示舍入。interval题
+明确合格观察的存在式用户数，every-day题明确每天至少一条且产品可不同；
+不注入oracle/阈值/预制工具参数，基准与改规则仍同题。门禁/预算/循环/
+旧profile/生产代码未改。[新验证记录](research/ossie-req-001/observation-prompt-controls/verification.json)
+绑定新source/system/题目hash、私有seal/文件及公开衍生hash。四隔离场景
+7次scripted完成、4次真实MCP工具调用，额外1次incomplete停止/封存/
+完整重放拒绝；真实模型请求0。新model-context与首请求实际instructions/
+question逐项一致。98项Bun/403 expects及typecheck/format/architecture
+通过；新增4项12断言核对JSON、引用、unit及舍入，归档单测以新公开
+模拟档案生成synthetic私有fixture。旧raw完整性通过/原seal不变，当前
+代码重放因source/fixture mismatch停止，不升级旧证据。
+
+记录核对首次把拒绝文案预计成source hash mismatch，实际source/fixture
+mismatch；第二次预计execution含scenes，实际只是mode/status/path/seal
+descriptor。修正检查器读取sealed summary，不改生产迁就假设；失败记录
+保留。两次检查失败后沿advisor-escalation复用原Advisor进行极窄只读
+证据口径建议，不新增功能或模型服务请求。Advisor最终回复基于Lead
+核验报告，未独立重读文件，不计为第二份实测；requested Astra/high、
+effective backend/effort/usage/billing未知。Lead实际核对的是
+execution.seal_sha256与verifyArchive.seal_sha256，不能沿用建议中的
+简写execution.seal作为真实字段。最终来源/公开/日志hash、链接和b012058e
+产物核对通过。
+
+当前授权最小修订和无模型工作包完成；下一必要事项是用户明确新四场景
+真实运行指示与候选预算。当前暂不调用真实模型仍有效。无新native/旧MCP/
+远端CI/tidy/推送声明，不扩通用P1或分页，旧实验不覆写。
+
 初始授权为基线研究、独立数据基准及最小执行设计。2026-10-09，用户对“本仓库本地实施、独立分支、先构建复核 feature 再补基础校验和最小单表执行”的第三项回答“没问题”，因此本地实现和测试已获授权；上游 PR 修改、推送、合并、发布或部署仍未授权。规范依据解释后，用户回复“好”，采用首阶段 YTD 阈值人口、active/paid 未验证、默认 SQL 分组与 NULL 行为、日历补齐另列显式能力。后续实现按此范围推进，不再重复询问。
 
 研究的问题：现有 `feat/ossie-spec-0.2` 能复用什么；固定规范究竟定义了哪些执行语义；DataBridge 示例的对象、粒度、单位和结果是什么；最小概念执行链路如何验收。

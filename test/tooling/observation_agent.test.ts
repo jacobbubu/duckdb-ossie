@@ -165,6 +165,87 @@ function answer(refs = ["q"]) {
   };
 }
 const claim = { evidence_id: "q", metric: "user_count" as const, value: "3" };
+test("answer protocol rejects fences, extra keys and empty required descriptions", () => {
+  const content = JSON.stringify(answer());
+  expect(
+    checkObservationAnswer(content, events([query()]), context).overall,
+  ).toBe("pending semantic review");
+  for (const invalid of [
+    "```json\n" + content + "\n```",
+    JSON.stringify({ ...answer(), extra: "unregistered field" }),
+    JSON.stringify({ ...answer(), scope: "" }),
+    JSON.stringify({ ...answer(), definition: " " }),
+  ])
+    expect(() =>
+      checkObservationAnswer(invalid, events([query()]), context),
+    ).toThrow();
+});
+test("formal concept and actual execution citations are separately required", () => {
+  for (const refs of [["q"], ["ossie://population/concepts"]])
+    expect(() =>
+      checkObservationAnswer(
+        JSON.stringify({ ...answer(), evidence_ids: refs }),
+        events([query()]),
+        context,
+      ),
+    ).toThrow();
+});
+test("unit is monetary USD for amount answers and null for count-only answers", () => {
+  expect(() =>
+    checkObservationAnswer(
+      JSON.stringify({ ...answer(), unit: "人" }),
+      events([query()]),
+      context,
+    ),
+  ).toThrow();
+  const e = objects("interval-users");
+  const counts = {
+    ...answer([e.id]),
+    ...Object.fromEntries(
+      METRICS.map((m) => [m, m === "user_count" ? "3" : null]),
+    ),
+    unit: null,
+    daily_user_counts: { "2026-01-31": "1", "2026-02-01": "3" },
+    definition:
+      "distinct Users with qualifying observations; people; daily counts overlap",
+  };
+  const ctx = { ...context, scene: e.scene };
+  expect(
+    checkObservationAnswer(JSON.stringify(counts), events([e]), ctx).overall,
+  ).toBe("pending semantic review");
+  expect(() =>
+    checkObservationAnswer(
+      JSON.stringify({ ...counts, unit: "人" }),
+      events([e]),
+      ctx,
+    ),
+  ).toThrow();
+});
+test("rounded display may explain but cannot replace the executed numeric field", () => {
+  const expected = aggregate(input.filter((r) => r.classification >= 20));
+  const e = mutate(query("q", "changed-rule"), (r) => {
+    r.rows = [METRICS.map((m) => expected[m])];
+  });
+  const ctx = { ...context, scene: e.scene, threshold: 20 };
+  const result = {
+    ...answer(),
+    ...expected,
+    limitations: [
+      "display rounded to 5.67 USD; numeric field keeps execution precision",
+    ],
+  };
+  expect(
+    checkObservationAnswer(JSON.stringify(result), events([e]), ctx)
+      .numerical_gate,
+  ).toBe("pass");
+  expect(() =>
+    checkObservationAnswer(
+      JSON.stringify({ ...result, mean_observation_amount: "5.67" }),
+      events([e]),
+      ctx,
+    ),
+  ).toThrow("wrong mean_observation_amount");
+});
 test("oracle distinguishes observation, User and nonnull denominators", () => {
   expect(aggregate(input.filter((r) => r.classification >= 10))).toEqual({
     observation_count: "6",

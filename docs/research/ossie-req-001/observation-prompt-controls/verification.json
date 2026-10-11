@@ -1,0 +1,180 @@
+{
+  "date": "2026-10-11",
+  "status": "minimal prompt alignment and no-model verification complete",
+  "base_head": "873c040",
+  "real_model_requests": 0,
+  "semantic_verdict": "pending; simulation is not real Agent acceptance",
+  "budget": {
+    "per_scene": {
+      "rounds": 8,
+      "calls": 12,
+      "milliseconds": 120000,
+      "outputTokens": 2048,
+      "inputBytes": 131072
+    },
+    "scenes": 4,
+    "maximum_model_requests": 32,
+    "maximum_tool_calls": 48,
+    "maximum_requested_output_tokens": 65536,
+    "maximum_input_bytes_per_request": 131072,
+    "monetary_ceiling": "unknown; not enforced",
+    "input_token_ceiling": "not enforced"
+  },
+  "budget_unchanged": true,
+  "system": "你是有界数据助手。依据发现资源和实际执行结果回答。只回答当前已注册的指标和口径，不在客户端重新计算能力外指标替代。完整明细可用于推导已注册指标。编译不是执行。自行选择工具和参数，不擅自改变业务口径；能力不足时具体说明缺口，不给替代口径数值。最终只输出一个JSON对象，包含全部指定字段，不加代码围栏或额外键：status（answered或unsupported）、scope、definition、unit、observation_count、user_count、amount_value_count、amount_sum、mean_observation_amount、daily_user_counts、evidence_ids、limitations。scope和definition为非空字符串；definition说明实际正式规则、统计对象、人数/条数单位和金额分母。unit仅表示金额单位，从正式元数据读取；没有请求金额或目标不支持时为null。数字为字符串，未请求或不支持的项为null；daily_user_counts为日期到人数的对象或null；evidence_ids和limitations为字符串数组。数值字段保持执行精度，近似浮点值不称精确十进制，舍入展示仅放解释中并注明，不替换数值字段。evidence_ids必须包含ossie://population/concepts；每个数值还须引用实际成功执行返回的tool-N。解释和限制写入definition或limitations。",
+  "system_sha256": "70be89a22bf334d6867551459ed53e7fce89586c1cee5dd6144a75192d98da97",
+  "scenes": [
+    {
+      "id": "baseline",
+      "threshold": 10,
+      "question": "按当前正式定义，2026年1月31日至2月1日（含首尾、所有产品）的合格观察有多少条、涉及多少不同用户？金额非空有多少条、总额和每条非空观察平均金额是多少？说明单位和分母并引用依据。",
+      "question_sha256": "cd4a74b857bc83f216e6a23a1afe0619e7c9264429580aaecca904b2b5db05dd"
+    },
+    {
+      "id": "changed-rule",
+      "threshold": 20,
+      "question": "按当前正式定义，2026年1月31日至2月1日（含首尾、所有产品）的合格观察有多少条、涉及多少不同用户？金额非空有多少条、总额和每条非空观察平均金额是多少？说明单位和分母并引用依据。",
+      "question_sha256": "cd4a74b857bc83f216e6a23a1afe0619e7c9264429580aaecca904b2b5db05dd"
+    },
+    {
+      "id": "interval-users",
+      "threshold": 10,
+      "question": "按当前正式定义，分别给出2026年1月31日和2月1日每一天至少有一条合格观察涉及的不同用户数，以及整个区间至少有一条合格观察涉及的不同用户数（含首尾、所有产品）；解释每日人数相加是否代表区间人数，并引用依据。",
+      "question_sha256": "f556fe1d43bf408e2882740195a6c2f568cc1d20ab1e86445c830a94db244206"
+    },
+    {
+      "id": "unsupported-every-day",
+      "threshold": 10,
+      "question": "2026年1月31日至2月1日（含首尾、所有产品）这个区间内，每一天至少有一条合格观察的不同用户有多少（各天产品可以不同）？请按每天都合格的口径回答并给出依据。",
+      "question_sha256": "116330d7dd2ea340f84856903e53810568962e5e3ff67a64e7b15033f254aeae"
+    }
+  ],
+  "checks": {
+    "bun_tests": 98,
+    "bun_expects": 403,
+    "new_protocol_tests": 4,
+    "new_protocol_expects": 12,
+    "typecheck": "pass",
+    "format": "pass",
+    "architecture": "pass",
+    "simulated_scenes": 4,
+    "complete_scripted_provider_completions": 7,
+    "actual_mcp_tool_calls": 4,
+    "incomplete_scripted_completions": 1,
+    "incomplete_control": "failure sealed and complete replay refused",
+    "old_archive_current_source_replay": "source/fixture mismatch refused",
+    "old_archive_integrity": "pass; seal unchanged",
+    "model_context": "exact current system/questions; only question/resources/system/tools keys"
+  },
+  "artifact_sha256": "b012058ed30639a899ad20efdff18a5cd637077408c4b65d570b40d87dbf8db3",
+  "source_hashes": {
+    "examples/observation_server.sql": "3b2b04eb1c81d5b43ddad8cc43d858992055ba5d9b7343b66429ca4c98fdc1c4",
+    "docs/research/ossie-req-001/multi-period-research/observations.csv": "bfd38a0130028fe5829aa45e40dce8ac12e228cc2cc61e2f08f293493764f441",
+    "scripts/observation_agent_contract.ts": "2e642fa0e8b7025fc509f6fd4ec519a916fa0589c3ed3b700064fadbb9c6eb78",
+    "scripts/observation_agent_run.ts": "2adc9e3db3c19a91eb00f12d3bafe3cd1f214f84275e93c5c615b085b5c0e9f9",
+    "scripts/observation_agent_replay.ts": "be43c6f495ccbdbb2914c820e10eab832fda23830da8daf8e8c3a0d805a9eb0d",
+    "scripts/observation_agent_archive.ts": "dee3890dc2351d71994b9bd17525ee327a92d143aa7f0ae36ff83ef3f0648571",
+    "scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "scripts/observation_mcp.ts": "7556921b82350a20ba5b1083fe02b1ed014e3cf1c35155add6eeb9c4a9fd11a1",
+    "scripts/observation_evidence.ts": "4a58242be77cbad354bd597cdff530b5ffa5f1c95edab378b92800e89862d3a5",
+    "scripts/population_result.ts": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+    "scripts/population_error.ts": "98b49043a72b3a63375aa293f1a0bc925854d755655c895e5b57c9add74a05ff",
+    "scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b",
+    "scripts/verify_observation_agent_offline.ts": "3375240da8ebf72f9ae07871857efaac32aa546b2b8d4ae613a221b5a64be052",
+    "test/tooling/observation_agent.test.ts": "49949adc7ecf19cd384014934294ded59f4247848fa67d85a2ffe39b0de53f92",
+    "test/tooling/observation_archive.test.ts": "a78e62f48162ac11d920ca6db6632594ff5e3fcb508055507ef5ffd192de68e8"
+  },
+  "public_evidence_hashes": {
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/changed-rule/setup.json": "c59204dcdae171f58957d10eae04b1175b761ed05459c58ca1c94b95fadf4d18",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/changed-rule/events.jsonl": "ad367526ad6d2a171c65610e70c7db959d7d4e5e0a3504477aff70d1a17d3178",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/changed-rule/review.json": "0088c89d8c745bda8324752e7ce131bcf308dd0170e5587654d9824dc450cc33",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/changed-rule/model-context.json": "7ab00306d7a644b35074e826e37e81e4942c3c78ee595ba172e7a83fef478f8f",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/unsupported-every-day/setup.json": "f03dbfd8516793ce3314e7ba7564ed971e18b3d8f178b133a50fe392fbdbe73d",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/unsupported-every-day/events.jsonl": "21259ac486d8bcdf4dea79fcfa592d87c3c5cb44f4f6b250087bee73f594de70",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/unsupported-every-day/review.json": "343efa0d9a92ca6b4afe4258d88d66cd99fef87ee6675a0c20322a7f41e404d8",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/unsupported-every-day/model-context.json": "2d9699a3a183ee1e47e92da99ac5ac51601ee8eeb933333d649c50eff6ce232e",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/summary.json": "3f50e3019c3ab39d5b2672e31f978148f1deae7d6aee0229db5f296993b86ca7",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/baseline/setup.json": "7537b2eee71df3752769d4ed2baca0317a4643fa0e1c332b944155ffc4671f33",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/baseline/events.jsonl": "f5f34b567417c318a192c17372f4c2b63eee3daab61249df2a050f93176e625a",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/baseline/review.json": "276ea74731018f2a9c18b6396aa9a18eeef7a366b4af6e50ecdd76b13431cee8",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/baseline/model-context.json": "c6c7010be3e4c603f3aa21e6f6d47c5b0d876fdd4830d50fb8d50d58ef6fce2a",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/interval-users/setup.json": "19ba52c35d03365c70d618fd443dbc92a743e3399b4236fb2ab76a14a5f99647",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/interval-users/events.jsonl": "6ba438366919885408023eecd1dbefd4555f56312742e0d2e734d3043d57a21a",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/interval-users/review.json": "0b8b820e5ef60af0be0f8fe11b12d4a1360020a713d29165c29463b2e321de4b",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/interval-users/model-context.json": "565b30fa8d1fe1627cbabb5ddb3109cbc1c8e84208a43189013d36f1b53bd04b",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/run.json": "a1e18ac0168f3a39105c6cb3b2c48aec303d17de5ea2e4dcaca4ce9a4419f301",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated/derivative.json": "5f356bfa8eeb901c9f39594f4ced2fc36508b3612c798ada287a9fbb77177192",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated-incomplete/summary.json": "4344690ed53b4d63fa0390c70380275f317ee8d5096fed9f9539a29a8ae83380",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated-incomplete/baseline/setup.json": "7537b2eee71df3752769d4ed2baca0317a4643fa0e1c332b944155ffc4671f33",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated-incomplete/baseline/events.jsonl": "42c5eb3b5607596c7204772f979726be5b6e99a959eeb6caba27f834f5bfa4f3",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated-incomplete/baseline/failure.json": "8dbd071411a65ed806c5fa2f15853a27a2f68141cc7a46ddc1c823bb9b15c970",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated-incomplete/baseline/model-context.json": "c6c7010be3e4c603f3aa21e6f6d47c5b0d876fdd4830d50fb8d50d58ef6fce2a",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated-incomplete/failure.json": "8dbd071411a65ed806c5fa2f15853a27a2f68141cc7a46ddc1c823bb9b15c970",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated-incomplete/run.json": "f0e8fc97443846c499780dc310415997cdbc8c0909f8f9b9e806f93c5525d663",
+    "docs/research/ossie-req-001/observation-prompt-controls/simulated-incomplete/derivative.json": "4e28c8c5b467c8188026439378a7da6c6b5c345daaf4c2eb05eeb4ff5d466b64",
+    "docs/research/ossie-req-001/observation-prompt-controls/offline-rehearsal.json": "d8b308cc1a1ea08d1a623eb12bdfd4111f8ea80e191ed6ec3d2882973a2b7de1"
+  },
+  "private_evidence": {
+    "complete": {
+      "path": ".local-agent-evidence/observation-prompt-20261011/complete",
+      "seal_sha256": "cdf38297648ea9bd9dba3350dfff2b3c4283c6ed747fcb488ee7e292dbcf67f4",
+      "files": {
+        "baseline/events.jsonl": "01dc4dcd72d7708e664bd55635442c18554c010b9e3e90d0dd5addd2fadd4723",
+        "baseline/model-context.json": "c6c7010be3e4c603f3aa21e6f6d47c5b0d876fdd4830d50fb8d50d58ef6fce2a",
+        "baseline/review.json": "276ea74731018f2a9c18b6396aa9a18eeef7a366b4af6e50ecdd76b13431cee8",
+        "baseline/setup.json": "7537b2eee71df3752769d4ed2baca0317a4643fa0e1c332b944155ffc4671f33",
+        "changed-rule/events.jsonl": "f836518b3e75e0cc1523fff047f2c76318af753901697694c2e96f544560ac43",
+        "changed-rule/model-context.json": "7ab00306d7a644b35074e826e37e81e4942c3c78ee595ba172e7a83fef478f8f",
+        "changed-rule/review.json": "0088c89d8c745bda8324752e7ce131bcf308dd0170e5587654d9824dc450cc33",
+        "changed-rule/setup.json": "c59204dcdae171f58957d10eae04b1175b761ed05459c58ca1c94b95fadf4d18",
+        "interval-users/events.jsonl": "e8d49bd30ba70cae6a760a4201b68bffdf470bc1010cc43d69b2bb17a9381b2b",
+        "interval-users/model-context.json": "565b30fa8d1fe1627cbabb5ddb3109cbc1c8e84208a43189013d36f1b53bd04b",
+        "interval-users/review.json": "0b8b820e5ef60af0be0f8fe11b12d4a1360020a713d29165c29463b2e321de4b",
+        "interval-users/setup.json": "19ba52c35d03365c70d618fd443dbc92a743e3399b4236fb2ab76a14a5f99647",
+        "run.json": "97edebee74d1341efc5405099eb6d871a9c9146408e042ef8e6191547afd19c5",
+        "summary.json": "3f50e3019c3ab39d5b2672e31f978148f1deae7d6aee0229db5f296993b86ca7",
+        "unsupported-every-day/events.jsonl": "ab699dca79a7ac06b65b0cc03d1730c1379afcc56a9eec04caccb4b671fb971d",
+        "unsupported-every-day/model-context.json": "2d9699a3a183ee1e47e92da99ac5ac51601ee8eeb933333d649c50eff6ce232e",
+        "unsupported-every-day/review.json": "343efa0d9a92ca6b4afe4258d88d66cd99fef87ee6675a0c20322a7f41e404d8",
+        "unsupported-every-day/setup.json": "f03dbfd8516793ce3314e7ba7564ed971e18b3d8f178b133a50fe392fbdbe73d"
+      }
+    },
+    "incomplete": {
+      "path": ".local-agent-evidence/observation-prompt-20261011/complete-incomplete",
+      "seal_sha256": "e48cc25b452991818e8dee158028abe2700fb6da4c3e3bdc6442a28619a903d0",
+      "files": {
+        "baseline/events.jsonl": "6374b3bed78debbf7a271696bd79ce9c5e43d659311e7c94c082d43ef704cee6",
+        "baseline/failure.json": "8dbd071411a65ed806c5fa2f15853a27a2f68141cc7a46ddc1c823bb9b15c970",
+        "baseline/model-context.json": "c6c7010be3e4c603f3aa21e6f6d47c5b0d876fdd4830d50fb8d50d58ef6fce2a",
+        "baseline/setup.json": "7537b2eee71df3752769d4ed2baca0317a4643fa0e1c332b944155ffc4671f33",
+        "failure.json": "8dbd071411a65ed806c5fa2f15853a27a2f68141cc7a46ddc1c823bb9b15c970",
+        "run.json": "ea94579a7ff59cd8bf47ca0d90d0e5b7cfde1b2bfa0e5784428fcfe6ca7a5bb9",
+        "summary.json": "4344690ed53b4d63fa0390c70380275f317ee8d5096fed9f9539a29a8ae83380"
+      }
+    },
+    "old_preserved": {
+      "path": ".local-agent-evidence/observation-agent-entry-20261011/delivery-complete",
+      "seal_sha256": "9d669c6d7b1e0829358b76e8d2ff71f41aca9243324ecedc776079933610663c"
+    },
+    "logs": {
+      ".local-agent-evidence/observation-prompt-20261011/tests.log": "0f3136f3c51606768755203e25c1b06807d5b4681ca9993f3fdb36582d034739",
+      ".local-agent-evidence/observation-prompt-20261011/typecheck.log": "4e8da542ccbffd70e1bacfda01f640a7a15c66d87fc2b7d4f58af694e973c17c",
+      ".local-agent-evidence/observation-prompt-20261011/format.log": "89b1264c8c3a787cd3a2b4de12aef0c722fff2f133072cc3b44269c35cd0c21c",
+      ".local-agent-evidence/observation-prompt-20261011/architecture.log": "a326465c0928cc610068e3276fe7263a34b3c83d5bf5e65043c8f5d604e20aa3",
+      ".local-agent-evidence/observation-prompt-20261011/offline.log": "57c259ab359a814e07869bf3d5446feb4ada57960080c9e21c9f32473c74eb78",
+      ".local-agent-evidence/observation-prompt-20261011/evidence-check.log": "96bafa973853ce60bd761ebfbf484a2e12814868e0c83da2cd10aa09d7624226"
+    }
+  },
+  "retained_verification_failures": [
+    "First receipt checker expected source hash mismatch; actual refusal is source/fixture mismatch. Corrected assertion pattern without production changes.",
+    "Second receipt checker expected report.execution.scenes; actual execution descriptor contains mode/status/path/seal. Read sealed summary.json for scene counts. Original failure log preserved."
+  ],
+  "limitations": [
+    "scripted oracle-derived completions; zero live requests",
+    "candidate token-only budget; no input-token or monetary ceiling",
+    "legacy production/interfaces unchanged; no new native/legacy-MCP/remote-CI/tidy claim",
+    "old archives not rebased or overwritten; new regression transcript explicitly synthetic",
+    "public files sanitized derivatives, not original network bytes",
+    "no push or release"
+  ]
+}

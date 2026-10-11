@@ -1,0 +1,21 @@
+{
+  "mode": "simulated",
+  "scene": "unsupported-every-day",
+  "final": {
+    "content": "{\"status\":\"unsupported\",\"scope\":\"2026-01-31 through 2026-02-01 inclusive; all products\",\"definition\":\"every-day User qualification is not registered; no existential replacement\",\"unit\":null,\"observation_count\":null,\"user_count\":null,\"amount_value_count\":null,\"amount_sum\":null,\"mean_observation_amount\":null,\"daily_user_counts\":null,\"evidence_ids\":[\"ossie://population/concepts\"],\"limitations\":[\"scripted test response with oracle-derived answer; not model autonomy or business acceptance\"]}",
+    "calls": 0,
+    "rounds": 1
+  },
+  "evaluation": {
+    "numerical_gate": "not applicable",
+    "semantic_review": "required: registered capability refusal; raw data may support client calculations",
+    "overall": "pending semantic review"
+  },
+  "semantic_verdict": "pending",
+  "manual_checks": [
+    "object/scope/unit/registered rule and denominators",
+    "actual response and column references",
+    "interval distinct is not sum of daily counts",
+    "registered capability refusal without replacement"
+  ]
+}

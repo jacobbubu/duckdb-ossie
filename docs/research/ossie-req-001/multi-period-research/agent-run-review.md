@@ -11,6 +11,11 @@
 范围沿[本地问题记录 OSSIE-REQ-001](../../../ossie-execution-research.md)，
 不创建第二实施清单。运行与归档合同见[运行说明](../../../agent-observation-run.md)。
 
+后续状态：用户在873c040审查后继续，已实施下面的最小协议和两题消歧，
+未改预算/门禁；[新版本无模型验证](../observation-prompt-controls/verification.json)
+另行绑定新源码/提示词/证据。以下保留原审查基线和当时的建议，不将旧
+模拟档案改写成新提示词通过记录。
+
 ## 四个场景及可以证明的内容
 
 实际用户题、system及来源文件哈希见[审查来源记录](agent-run-review-sources.json)。

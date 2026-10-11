@@ -26,7 +26,9 @@ complete, with 43 observation checks/38 refusals, same-artifact legacy MCP
 regression and 78 Bun tests. The live entry, ordered offline replay and private archive/export are locally
 complete with simulated rehearsal; real observation Agent acceptance remains
 unrun. [The prompt/budget/evidence review](docs/research/ossie-req-001/multi-period-research/agent-run-review.md)
-is complete; minimal prompt-contract alignment remains proposed and unimplemented.
+is complete; minimal prompt-contract alignment and no-model regression are now
+complete with 98 Bun tests and a fresh simulated rehearsal. The budget and gate
+are unchanged; old records retain their original prompt/source identity.
 No real observation model run is authorized. See [the live/replay guide](docs/agent-observation-run.md).
 See [the preparation guide](docs/agent-observation-acceptance.md). This local
 package does not authorize live model requests or delivery.
@@ -1211,3 +1213,23 @@ are linked in [the review](docs/research/ossie-req-001/multi-period-research/age
 Zero real model requests and no new MCP process/test run occurred. Next proposed
 package: minimal wording alignment and no-model regression, preserving old raw
 archives; any real four-scene run still requires explicit user direction.
+
+## Observation prompt alignment/no-model verification closure — 2026-10-11
+
+The user continued the reviewed package. The observation system now states the
+exact JSON/citation/unit/precision contract; two questions clarify existential
+qualifying observations and every-day qualification with possibly different
+products. Baseline/changed-rule still share the identical question. The gate,
+budget, shared loop, legacy profiles and production code are unchanged.
+[Verification](docs/research/ossie-req-001/observation-prompt-controls/verification.json)
+binds fresh contexts and prompt/source hashes, four simulated scenes with actual
+MCP, ordered replay, and a sealed incomplete refusal. Seven scripted completions
+and four MCP calls in the complete rehearsal plus one incomplete completion are
+not live model requests: the live count is zero. All 98 Bun tests/403 expects and
+quality gates pass; four new protocol controls cover JSON/citation/unit/precision.
+Old raw integrity remains valid; current-source replay refuses source drift.
+Two receipt-checker assumptions failed and were corrected against actual error
+text/summary structure, with failures retained separately from experiment results.
+The local work package is complete; next is explicit user direction for any live
+four-scene run. Token-only budget limitations and pending semantic review remain.
+No new native/legacy-MCP/remote CI/tidy/push/release claim is made.

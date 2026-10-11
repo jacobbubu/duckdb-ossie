@@ -33,7 +33,7 @@ const root = join(
 );
 const fixture = join(
   ROOT,
-  "docs/research/ossie-req-001/observation-agent-entry-controls/simulated",
+  "docs/research/ossie-req-001/observation-prompt-controls/simulated",
 );
 const descriptor = JSON.parse(
   readFileSync(join(fixture, "derivative.json"), "utf8"),
