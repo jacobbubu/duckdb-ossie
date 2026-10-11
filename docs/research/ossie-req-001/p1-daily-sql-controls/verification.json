@@ -146,7 +146,8 @@
     "architecture": "passed",
     "old_every_day_source_output_hashes_unchanged": 10,
     "known_private_config_marker_scan": "zero matches in new public evidence",
-    "contract_local_links_checked": 3
+    "contract_local_links_checked": 3,
+    "mutable_source_diff_whitespace": "passed for src/scripts/test/current plan and contract documents"
   },
   "not_achieved": [
     "daily dedicated compile/plan and MCP/Agent support",
@@ -160,7 +161,8 @@
     "1MiB only inner successful JSON, not outer wire/error/peak-memory/deadline",
     "Native checkpoints do not prove deterministic mid-execution or mid-encoding cancellation",
     "Synthetic bounded fixtures do not prove real business data completeness",
-    "No real model validation; current daily MCP tool unregistered"
+    "No real model validation; current daily MCP tool unregistered",
+    "Full diff whitespace check reports trailing blank separators in six preserved SQL stdout logs; raw bytes intentionally unchanged. This is not a passing full diff check."
   ],
   "next_authorized_action": "daily complete semantic explanation, MCP tool/decoder and no-model acceptance; broader P1 research continues; temporal decision-dependent implementation waits for answers",
   "pushed": false
