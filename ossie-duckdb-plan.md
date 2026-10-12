@@ -1927,3 +1927,14 @@ query/计算值；客户端严格参数门禁先于实际RPC。重放不打开�
 重封反例/前阶段源另保留，138Bun/723及质量通过，Cpp未改。现在历史SQL/compile/
 program/MCP/无模型齐备；下一新Cpp Linux/tidy和原五项P1统一审计/私有预检，
 goal active，不调用真实模型/推送。
+
+跨环境恢复 checkpoint（378a8dc 干净源）：上一轮历史接口为 progress，下一必要
+为当前新 C++ 的 Linux/tidy，再原五项逐项统一核对及私有历史预检。已建立独立
+detached clone，固定 DuckDB/ci-tools/fkYAML 三提交；沿用已有 Ubuntu24.04 ARM64
+toolchain image 89b3d0f09972，不新增 OS 版本。旧 Linux checkout/证据保留，新目录
+/tmp/ossie-p1-final-linux-20261012；复制其 Linux build/node_modules 缓存后由当前源码
+重新配置，不能把缓存或旧通过当新证据。没有挂载主工作目录/私有配置；当前
+container ossie-p1-final-tidy-20261012（6deecb38c69c）经 inspect 确认 running，已生成
+当前 tidy compile inventory，正式开始 src/ 扫描。按同一 live handle/容器观察，
+超时不重启；首轮诊断保留后修必要问题。随后独立 Linux 产物/native/SQL/全接口/
+六无模型验收仍必需。goal active，不调用模型/推送，未声称跨环境通过。
