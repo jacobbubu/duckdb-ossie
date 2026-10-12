@@ -1,0 +1,37 @@
+{
+  "scope": "full unique project src translation-unit clang-tidy18 scan using pinned config; Ubuntu24.04 ARM64; final diagnostics zero",
+  "source_base_commit": "378a8dcbc8e372402e10a5e09f49ee20e1551826",
+  "source_delta": "population.cpp braces and const-reference only",
+  "population_sha256": "353addd6488e89e3b241e3381f80b6f085631222ca609ee99b7d5184a4b5ba62",
+  "translation_units": [
+    "/workspace/src/compile/compile.cpp",
+    "/workspace/src/functions/compile.cpp",
+    "/workspace/src/functions/describe.cpp",
+    "/workspace/src/functions/load.cpp",
+    "/workspace/src/functions/query.cpp",
+    "/workspace/src/model/catalog.cpp",
+    "/workspace/src/model/dialect.cpp",
+    "/workspace/src/model/graph.cpp",
+    "/workspace/src/model/parser.cpp",
+    "/workspace/src/model/validate.cpp",
+    "/workspace/src/model/yaml.cpp",
+    "/workspace/src/ossie_extension.cpp",
+    "/workspace/src/population/fact_program.cpp",
+    "/workspace/src/population/history_program.cpp",
+    "/workspace/src/population/population.cpp",
+    "/workspace/src/population/relation_program.cpp"
+  ],
+  "unique_translation_units": 16,
+  "project_compile_commands": 35,
+  "clang_tidy_exit": 0,
+  "initial_unique_diagnostics": 105,
+  "initial_diagnostic_kinds": {
+    "readability-braces-around-statements": 104,
+    "performance-for-range-copy": 1
+  },
+  "fixits_applied": 210,
+  "remaining_project_diagnostics": 0,
+  "linux_functional_status": "running; not yet verified",
+  "real_model_requests": 0,
+  "pushed": false
+}

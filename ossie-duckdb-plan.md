@@ -1938,3 +1938,13 @@ container ossie-p1-final-tidy-20261012（6deecb38c69c）经 inspect 确认 runni
 当前 tidy compile inventory，正式开始 src/ 扫描。按同一 live handle/容器观察，
 超时不重启；首轮诊断保留后修必要问题。随后独立 Linux 产物/native/SQL/全接口/
 六无模型验收仍必需。goal active，不调用模型/推送，未声称跨环境通过。
+
+当前 tidy 修复收口：[证据](docs/research/ossie-req-001/p1-final-tidy-controls/review.md)
+首轮105唯一诊断（104braces/1range-copy）原件保留，独立副本210fixits及format11。
+字符串字面量组不变、非brace仅auto→const auto&；两个词法检查假设误报纠正，
+一只读Advisor核对控制流/宏/lifetime后Lead实测。Linux16唯一TU tidy exit0/project0，
+35命令含重复不算35TU。新mac622b4796七native/30SQL1079/138Bun723及质量、同
+SHA P0/全部专用接口/六MCP/六封存无模型通过。Linux功能container
+ossie-p1-final-functional-20261012（1d90cac48af7）inspect running，current-step build；
+固定独立源378a8dc+相同population SHA，旧镜像/caches不代替新证据。下一继续
+同容器功能build/native/SQL/all接口六无模型，再原五项统一审计与私有预检。

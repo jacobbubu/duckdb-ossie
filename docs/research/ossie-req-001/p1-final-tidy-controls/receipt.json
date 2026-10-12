@@ -1,0 +1,50 @@
+{
+  "scope": "current-state/history/window C++ quality and same macOS artifact full regressions; Linux functionality remains required",
+  "mac_artifact_sha256": "622b4796ea1caa42c1f241c5087eee7edc830262157be39f866414581a8fcd7a",
+  "population_sha256": "353addd6488e89e3b241e3381f80b6f085631222ca609ee99b7d5184a4b5ba62",
+  "private_manifest_sha256": "49127f60f6ab730c48b3e2569205d256a716b331e491591b1aee96ee41ed6b0a",
+  "private_files": 336,
+  "tidy": {
+    "unique_translation_units": 16,
+    "exit": 0,
+    "project_diagnostics": 0
+  },
+  "native": {
+    "state": 19,
+    "grain": 42,
+    "population_capture": 482,
+    "relation": 55,
+    "fact_capture": 264,
+    "fact_program": 95,
+    "history_index": 20474
+  },
+  "sql": {
+    "cases": 30,
+    "assertions": 1079
+  },
+  "bun": {
+    "tests": 138,
+    "expects": 723
+  },
+  "same_mac_artifact_regressions": [
+    "P0 A1-A8",
+    "all dedicated SQL/artifact/plan/discovery/stock controls",
+    "six MCP surfaces",
+    "six scripted sealed no-model suites"
+  ],
+  "quality": [
+    "TypeScript types/format",
+    "Cpp format11",
+    "architecture",
+    "diff check"
+  ],
+  "advisor": "reused one bounded read-only Advisor; braces and initializer-list const-reference lifetime reviewed; no behavior change found; requested Astra/high; effective backend/effort/usage/billing unknown",
+  "remaining": [
+    "current-source Linux artifact native/SQL/all interfaces/six no-model suites",
+    "original five-category P1 final audit and delivery reconciliation",
+    "outgoing private history precheck"
+  ],
+  "real_model_requests": 0,
+  "pushed": false,
+  "goal_complete": false
+}

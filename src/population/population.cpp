@@ -2340,27 +2340,33 @@ void HistoryCoreBudget(yyjson_val *core) {
 	idx_t bytes = 0;
 	for (auto dataset : Array(core, "datasets", true)) {
 		auto fields = Array(dataset, "fields", true);
-		if (fields.empty() || fields.size() > 256)
+		if (fields.empty() || fields.size() > 256) {
 			Fail("history", "capability", "bounded fields required");
-		for (auto field : fields)
+		}
+		for (auto field : fields) {
 			for (auto dialect : Array(Member(field, "expression"), "dialects", true)) {
 				auto sql = Text(dialect, "expression");
-				if (sql.size() > 16384 || sql.size() > 131072 - bytes)
+				if (sql.size() > 16384 || sql.size() > 131072 - bytes) {
 					Fail("history", "resource", "bounded field rules required");
+				}
 				bytes += sql.size();
-				if (Text(dialect, "dialect") != OSSIE_SQL_2026)
+				if (Text(dialect, "dialect") != OSSIE_SQL_2026) {
 					Fail("history", "capability", "OSSIE_SQL_2026 direct fields only");
+				}
 				auto parsed = Parser::ParseExpressionList(sql);
 				if (parsed.size() != 1 || !parsed[0]->GetAlias().empty() ||
-				    parsed[0]->GetExpressionClass() != ExpressionClass::COLUMN_REF)
+				    parsed[0]->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 					Fail("history", "capability", "one direct unaliased field before model lowering");
+				}
 			}
+		}
 	}
 }
 void HistoryDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yyjson_val *program) {
 	Keys(program, {"operator", "observation", "history", "relationship"}, "history program");
-	if (Text(program, "operator") != "history_at_observation")
+	if (Text(program, "operator") != "history_at_observation") {
 		Fail("history", "capability", "explicit history_at_observation operator required");
+	}
 	b.history_relationship = Text(program, "relationship");
 	for (auto name : {"observation", "history"}) {
 		auto config = Member(program, name);
@@ -2368,14 +2374,16 @@ void HistoryDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yy
 		HistorySource source;
 		source.dataset = Text(config, "dataset");
 		source.concept = Text(config, "concept");
-		if (!b.model.FindDataset(source.dataset))
+		if (!b.model.FindDataset(source.dataset)) {
 			Fail(source.dataset, "bind", "declared source required");
+		}
 		source.dataset = b.model.FindDataset(source.dataset)->name;
 		b.history_sources.push_back(std::move(source));
 	}
 	if (StringUtil::CIEquals(b.history_sources[0].dataset, b.history_sources[1].dataset) ||
-	    StringUtil::CIEquals(b.history_sources[0].concept, b.history_sources[1].concept))
+	    StringUtil::CIEquals(b.history_sources[0].concept, b.history_sources[1].concept)) {
 		Fail("history", "bind", "distinct datasets and roots required");
+	}
 	Keys(ontology, {"version", "name", "description", "ai_context", "ontology", "requires"}, "history ontology");
 	Version(ontology);
 	Empty(ontology, "requires", "ontology");
@@ -2387,16 +2395,20 @@ void HistoryDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yy
 		      "relationships"},
 		     "history concept");
 		if (builtins.count(Text(c, "concept")) || Text(c, "type") != "EntityType" ||
-		    !concepts.emplace(Text(c, "concept"), c).second)
+		    !concepts.emplace(Text(c, "concept"), c).second) {
 			Fail("history", "bind", "distinct EntityTypes required");
-		for (auto k : {"extends", "derived_by", "requires"})
+		}
+		for (auto k : {"extends", "derived_by", "requires"}) {
 			Empty(c, k, "history concept");
+		}
 	}
-	if (concepts.size() != 4)
+	if (concepts.size() != 4) {
 		Fail("history", "capability", "two roots, User and target referents required");
+	}
 	auto relation_map = [&](const string &concept) {
-		if (!concepts.count(concept))
+		if (!concepts.count(concept)) {
 			Fail(concept, "bind", "declared concept required");
+		}
 		case_insensitive_map_t<string> roles;
 		for (auto r : Array(concepts.at(concept), "relationships", true)) {
 			Keys(r,
@@ -2406,36 +2418,44 @@ void HistoryDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yy
 			Empty(r, "requires", "history relationship");
 			auto rr = Array(r, "roles", true);
 			auto name = Text(r, "name");
-			if (rr.size() != 1)
+			if (rr.size() != 1) {
 				Fail(name, "capability", "one target role required");
+			}
 			Keys(rr[0], {"concept"}, "history role");
 			if (Text(r, "multiplicity") != (name == "id" || name == "record_id" ? "OneToOne" : "ManyToOne") ||
-			    !roles.emplace(name, Text(rr[0], "concept")).second)
+			    !roles.emplace(name, Text(rr[0], "concept")).second) {
 				Fail(name, "capability", "declared multiplicity and distinct role names required");
-			for (auto verbal : Array(r, "verbalizes", true))
+			}
+			for (auto verbal : Array(r, "verbalizes", true)) {
 				ArrayText(verbal);
+			}
 		}
 		return roles;
 	};
 	auto obs_roles = relation_map(b.history_sources[0].concept),
 	     hist_roles = relation_map(b.history_sources[1].concept);
-	if (!obs_roles.count("user") || !obs_roles.count(b.history_relationship))
+	if (!obs_roles.count("user") || !obs_roles.count(b.history_relationship)) {
 		Fail("history", "bind", "user and generated relationship required");
+	}
 	b.user_concept = obs_roles.at("user");
 	b.history_target = obs_roles.at(b.history_relationship);
 	case_insensitive_set_t expected_concepts = {b.history_sources[0].concept, b.history_sources[1].concept,
 	                                            b.user_concept, b.history_target};
-	if (expected_concepts.size() != 4)
+	if (expected_concepts.size() != 4) {
 		Fail("history", "bind", "distinct typed roots/User/target required");
-	for (auto &c : concepts)
-		if (!expected_concepts.count(c.first))
+	}
+	for (auto &c : concepts) {
+		if (!expected_concepts.count(c.first)) {
 			Fail(c.first, "bind", "unexpected concept");
-	for (auto name : {b.user_concept, b.history_target}) {
+		}
+	}
+	for (const auto &name : {b.user_concept, b.history_target}) {
 		auto roles = relation_map(name);
 		auto ids = Array(concepts.at(name), "identify_by", true);
 		if (roles.size() != 1 || !roles.count("id") || roles.at("id") != "String" || ids.size() != 1 ||
-		    ArrayText(ids[0]) != "id")
+		    ArrayText(ids[0]) != "id") {
 			Fail(name, "identity", "single id OneToOne String referent required");
+		}
 	}
 	if (obs_roles != case_insensitive_map_t<string>({{"user", b.user_concept},
 	                                                 {"date", "Date"},
@@ -2445,8 +2465,9 @@ void HistoryDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yy
 	                                                  {"user", b.user_concept},
 	                                                  {"team", b.history_target},
 	                                                  {"starts", "Date"},
-	                                                  {"ends", "Date"}}))
+	                                                  {"ends", "Date"}})) {
 		Fail("history", "bind", "exact named and typed roles required");
+	}
 	Keys(mapping,
 	     {"version", "name", "description", "ontology_ref", "semantic_model_ref", "concept_mappings",
 	      "custom_extensions"},
@@ -2455,112 +2476,139 @@ void HistoryDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping, yy
 	Keys(Member(mapping, "ontology_ref"), {"name", "iri"}, "ontology reference");
 	Keys(Member(mapping, "semantic_model_ref"), {"name", "iri"}, "core reference");
 	if (Text(Member(mapping, "ontology_ref"), "name") != Text(ontology, "name") ||
-	    Text(Member(mapping, "semantic_model_ref"), "name") != b.model.name)
+	    Text(Member(mapping, "semantic_model_ref"), "name") != b.model.name) {
 		Fail("mapping", "bind", "matching document references required");
+	}
 	case_insensitive_map_t<yyjson_val *> mappings;
 	for (auto cm : Array(mapping, "concept_mappings", true)) {
 		Keys(cm, {"concept", "object_mappings", "link_mappings"}, "history concept mapping");
-		if (!mappings.emplace(Text(cm, "concept"), cm).second)
+		if (!mappings.emplace(Text(cm, "concept"), cm).second) {
 			Fail("mapping", "bind", "duplicate root mapping");
+		}
 	}
-	if (mappings.size() != 2)
+	if (mappings.size() != 2) {
 		Fail("mapping", "capability", "two source root mappings only");
+	}
 	for (idx_t s = 0; s < 2; s++) {
 		auto &src = b.history_sources[s];
 		auto &dataset = *b.model.FindDataset(src.dataset);
-		if (!mappings.count(src.concept))
+		if (!mappings.count(src.concept)) {
 			Fail(src.concept, "mapping", "source root mapping required");
-		for (auto &c : concepts)
-			if (StringUtil::CIEquals(dataset.name, c.first))
+		}
+		for (auto &c : concepts) {
+			if (StringUtil::CIEquals(dataset.name, c.first)) {
 				Fail(dataset.name, "bind", "dataset/concept namespaces must differ");
-		if (!dataset.unique_keys.empty())
+			}
+		}
+		if (!dataset.unique_keys.empty()) {
 			Fail(dataset.name, "capability", "only explicit primary key supported");
+		}
 		src.roles = s == 0 ? vector<string> {"user", "date", "product"}
 		                   : vector<string> {"record_id", "user", "team", "starts", "ends"};
 		vector<string> ids = s == 0 ? src.roles : vector<string> {"record_id"};
 		auto declared_ids = Array(concepts.at(src.concept), "identify_by", true);
-		if (declared_ids.size() != ids.size())
+		if (declared_ids.size() != ids.size()) {
 			Fail(src.concept, "identity", "full fixed source identity required");
-		for (idx_t i = 0; i < ids.size(); i++)
-			if (ArrayText(declared_ids[i]) != ids[i])
+		}
+		for (idx_t i = 0; i < ids.size(); i++) {
+			if (ArrayText(declared_ids[i]) != ids[i]) {
 				Fail(src.concept, "identity", "identity role order differs");
+			}
+		}
 		auto scalar = [&](yyjson_val *o) {
 			Keys(o, {"relationship", "expression"}, "scalar referent");
 			return FactLogicalField(dataset, Text(o, "expression"));
 		};
 		auto referent = [&](yyjson_val *o) {
 			auto refs = Array(o, "referent_mappings", true);
-			if (refs.size() != 1 || Text(refs[0], "relationship") != "id")
+			if (refs.size() != 1 || Text(refs[0], "relationship") != "id") {
 				Fail(src.concept, "mapping", "single declared id referent required");
+			}
 			return scalar(refs[0]);
 		};
 		auto identity = [&](yyjson_val *o) {
 			Keys(o, {"concept", "referent_mappings"}, "history root object");
-			if (Text(o, "concept") != src.concept)
+			if (Text(o, "concept") != src.concept) {
 				Fail(src.concept, "mapping", "root override refused");
+			}
 			auto refs = Array(o, "referent_mappings", true);
-			if (refs.size() != ids.size())
+			if (refs.size() != ids.size()) {
 				Fail(src.concept, "identity", "full root tuple required");
+			}
 			vector<string> fields;
 			for (idx_t i = 0; i < ids.size(); i++) {
-				if (Text(refs[i], "relationship") != ids[i])
+				if (Text(refs[i], "relationship") != ids[i]) {
 					Fail(src.concept, "identity", "referent order differs");
+				}
 				if (s == 0 && i == 0) {
 					Keys(refs[i], {"relationship", "referent_mappings"}, "User referent");
 					fields.push_back(referent(refs[i]));
-				} else
+				} else {
 					fields.push_back(scalar(refs[i]));
+				}
 			}
 			return fields;
 		};
 		auto cm = mappings.at(src.concept);
 		auto objs = Array(cm, "object_mappings", true), links = Array(cm, "link_mappings", true);
-		if (objs.size() != 1 || links.size() != 1)
+		if (objs.size() != 1 || links.size() != 1) {
 			Fail(src.concept, "mapping", "one full source object/link tree required");
+		}
 		Keys(links[0], {"object_mapping", "children"}, "history link tree");
 		auto id_fields = identity(objs[0]);
-		if (identity(Member(links[0], "object_mapping")) != id_fields)
+		if (identity(Member(links[0], "object_mapping")) != id_fields) {
 			Fail(src.concept, "identity", "object/link identities differ");
+		}
 		case_insensitive_map_t<string> fields;
 		for (auto link : Array(links[0], "children", true)) {
 			Keys(link, {"relationship", "object_mapping"}, "source link");
 			auto role = Text(link, "relationship");
 			auto expected = s == 0 ? obs_roles : hist_roles;
-			if (std::find(src.roles.begin(), src.roles.end(), role) == src.roles.end())
+			if (std::find(src.roles.begin(), src.roles.end(), role) == src.roles.end()) {
 				Fail(role, "mapping", "unknown/direct generated link refused");
+			}
 			auto o = Member(link, "object_mapping");
 			bool entity = role == "user" || role == "team";
 			Keys(o,
 			     entity ? std::initializer_list<const char *> {"concept", "referent_mappings"}
 			            : std::initializer_list<const char *> {"concept", "expression"},
 			     "mapped target");
-			if (Text(o, "concept") != expected.at(role))
+			if (Text(o, "concept") != expected.at(role)) {
 				Fail(role, "mapping", "declared typed target differs");
+			}
 			auto field = entity ? referent(o) : FactLogicalField(dataset, Text(o, "expression"));
-			if (!fields.emplace(role, field).second)
+			if (!fields.emplace(role, field).second) {
 				Fail(role, "mapping", "duplicate mapped role");
-			if (dataset.FindField(field)->datatype != (entity ? "String" : expected.at(role)))
+			}
+			if (dataset.FindField(field)->datatype != (entity ? "String" : expected.at(role))) {
 				Fail(field, "bind", "declared field datatype differs");
+			}
 		}
-		if (fields.size() != src.roles.size() || dataset.fields.size() != src.roles.size())
+		if (fields.size() != src.roles.size() || dataset.fields.size() != src.roles.size()) {
 			Fail(src.concept, "mapping", "every source role/field must be mapped");
+		}
 		case_insensitive_set_t physical;
 		for (auto &role : src.roles) {
 			auto f = fields.at(role);
 			auto column = FactPhysicalField(dataset, *dataset.FindField(f));
-			if (!physical.insert(column).second)
+			if (!physical.insert(column).second) {
 				Fail(role, "mapping", "distinct physical role columns required");
+			}
 			src.fields.push_back(f);
 		}
 		vector<string> expected_ids;
-		for (auto &id : ids)
+		for (auto &id : ids) {
 			expected_ids.push_back(fields.at(id));
-		if (id_fields != expected_ids || dataset.primary_key.size() != ids.size())
+		}
+		if (id_fields != expected_ids || dataset.primary_key.size() != ids.size()) {
 			Fail(src.concept, "identity", "mapped identity/physical key differs");
-		for (idx_t i = 0; i < ids.size(); i++)
+		}
+		for (idx_t i = 0; i < ids.size(); i++) {
 			if (!StringUtil::CIEquals(dataset.primary_key[i],
-			                          FactPhysicalField(dataset, *dataset.FindField(id_fields[i]))))
+			                          FactPhysicalField(dataset, *dataset.FindField(id_fields[i])))) {
 				Fail(src.concept, "identity", "primary key order differs");
+			}
+		}
 	}
 	b.root = b.history_sources[0].concept;
 }
@@ -2576,15 +2624,17 @@ void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 		    CaptureTable(context, source, *b.model.FindDataset(src.dataset), catalog, previous, MAX_BYTES - bytes);
 		bytes += capture.canonical.size();
 		captures.push_back(std::move(capture));
-		if (captures.size() == 1)
+		if (captures.size() == 1) {
 			ObserveLoad(context, PopulationLoadCheckpoint::AFTER_HISTORY_OBSERVATION_CAPTURE);
+		}
 	}
 	Run(context, source, "COMMIT");
 	std::vector<HistoryRecord> records;
 	string evidence = "ossie-frozen-history-v1:";
 	for (auto &v : {b.profile, b.manifest_hash, b.core_hash, b.ontology_hash, b.mapping_hash, b.history_relationship,
-	                b.user_concept, b.history_target})
+	                b.user_concept, b.history_target}) {
 		Frame(evidence, v);
+	}
 	for (idx_t s = 0; s < 2; s++) {
 		auto &capture = captures[s];
 		auto &src = b.history_sources[s];
@@ -2595,32 +2645,38 @@ void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 			auto type = (src.roles[i] == "date" || src.roles[i] == "starts" || src.roles[i] == "ends")
 			                ? LogicalType::DATE
 			                : LogicalType::VARCHAR;
-			if (capture.types[col] != type)
+			if (capture.types[col] != type) {
 				Fail(src.roles[i], "bind", "actual history role type differs from declared VARCHAR/DATE");
+			}
 			columns.push_back(col);
 		}
 		unordered_set<string> obs_keys;
 		for (auto &row : capture.rows) {
-			if (context.IsInterrupted())
+			if (context.IsInterrupted()) {
 				throw InterruptException();
+			}
 			string key;
 			for (idx_t i = 0; i < columns.size(); i++) {
 				auto &value = row[columns[i]];
 				bool date = src.roles[i] == "date" || src.roles[i] == "starts" || src.roles[i] == "ends";
 				if (value.IsNull() ||
-				    (date ? !Date::IsFinite(value.GetValue<date_t>()) : value.GetValue<string>().empty()))
+				    (date ? !Date::IsFinite(value.GetValue<date_t>()) : value.GetValue<string>().empty())) {
 					Fail(src.roles[i], "identity",
 					     "full capture requires nonnull/nonempty raw identity and finite DATE");
-				if (s == 0)
+				}
+				if (s == 0) {
 					Frame(key, date ? to_string(value.GetValue<date_t>().days) : value.GetValue<string>());
+				}
 			}
 			if (s == 0) {
-				if (!obs_keys.insert(key).second)
+				if (!obs_keys.insert(key).second) {
 					Fail(src.concept, "identity", "duplicate full observation tuple");
-			} else
+				}
+			} else {
 				records.push_back({row[columns[0]].GetValue<string>(), row[columns[1]].GetValue<string>(),
 				                   row[columns[2]].GetValue<string>(), row[columns[3]].GetValue<date_t>(),
 				                   row[columns[4]].GetValue<date_t>()});
+			}
 		}
 		auto child = make_shared_ptr<Bundle>();
 		child->owner = child;
@@ -2634,11 +2690,13 @@ void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 		DataChunk chunk;
 		chunk.Initialize(Allocator::Get(context), capture.types);
 		for (idx_t r = 0; r < capture.rows.size(); r++) {
-			if (context.IsInterrupted())
+			if (context.IsInterrupted()) {
 				throw InterruptException();
+			}
 			idx_t slot = r % STANDARD_VECTOR_SIZE;
-			for (idx_t c = 0; c < capture.types.size(); c++)
+			for (idx_t c = 0; c < capture.types.size(); c++) {
 				chunk.SetValue(c, slot, capture.rows[r][c]);
+			}
 			chunk.SetCardinality(slot + 1);
 			if (slot + 1 == STANDARD_VECTOR_SIZE || r + 1 == capture.rows.size()) {
 				child->collection->Append(chunk);
@@ -2651,14 +2709,16 @@ void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 		Frame(evidence, src.dataset);
 		Frame(evidence, src.concept);
 		Frame(evidence, child->content_hash);
-		for (auto &f : src.fields)
+		for (auto &f : src.fields) {
 			Frame(evidence, f);
+		}
 		b.history_children.push_back(std::move(child));
 	}
 	try {
 		b.history_index = make_uniq<HistoryIndex>(BuildHistoryIndex(records, [&] {
-			if (context.IsInterrupted())
+			if (context.IsInterrupted()) {
 				throw InterruptException();
+			}
 		}));
 	} catch (const HistoryValidationError &error) {
 		Fail("history", error.stage, error.what());
@@ -3577,11 +3637,13 @@ struct HistoryRequest {
 	std::set<string, RawByteLess> products;
 };
 HistoryRequest ParseHistoryRequest(const string &bytes) {
-	if (bytes.size() > DAILY_REQUEST_BYTES)
+	if (bytes.size() > DAILY_REQUEST_BYTES) {
 		Fail("history.request_json_utf8_bytes", "resource", "original complete request exceeds16KiB");
+	}
 	auto doc = yyjson_read(bytes.data(), bytes.size(), 0);
-	if (!doc)
+	if (!doc) {
 		Fail("history", "arguments", "strict JSON request required");
+	}
 	std::unique_ptr<yyjson_doc, decltype(&yyjson_doc_free)> owner(doc, yyjson_doc_free);
 	auto root = yyjson_doc_get_root(doc);
 	DailyKeys(root, {"dates", "products"});
@@ -3597,10 +3659,12 @@ HistoryRequest ParseHistoryRequest(const string &bytes) {
 		r.end_text = DailyString(yyjson_obj_get(dates, "end_date"), "end_date");
 		r.start = FiniteDisplayDate(r.start_text, "start_date");
 		r.end = FiniteDisplayDate(r.end_text, "end_date");
-		if (r.start > r.end)
+		if (r.start > r.end) {
 			Fail("history.dates", "arguments", "start_date must not exceed end_date");
-	} else
+		}
+	} else {
 		Fail("history.dates", "capability", "explicit all or finite inclusive range required");
+	}
 	auto products = yyjson_obj_get(root, "products");
 	DailyKeys(products, {"mode", "values"});
 	mode = DailyString(yyjson_obj_get(products, "mode"), "products.mode");
@@ -3609,21 +3673,26 @@ HistoryRequest ParseHistoryRequest(const string &bytes) {
 		r.all_products = true;
 	} else if (mode == "subset") {
 		auto values = yyjson_obj_get(products, "values");
-		if (!yyjson_is_arr(values) || !yyjson_get_len(values))
+		if (!yyjson_is_arr(values) || !yyjson_get_len(values)) {
 			Fail("products.values", "arguments", "nonempty raw string array required");
-		if (yyjson_get_len(values) > DAILY_MAX_PRODUCTS)
+		}
+		if (yyjson_get_len(values) > DAILY_MAX_PRODUCTS) {
 			Fail("history.products", "resource", "subset exceeds64 products");
+		}
 		size_t i, n;
 		yyjson_val *v;
 		yyjson_arr_foreach(values, i, n, v) {
 			auto product = DailyString(v, "product");
-			if (product.empty() || !r.products.insert(product).second)
+			if (product.empty() || !r.products.insert(product).second) {
 				Fail("products", "arguments", "nonempty distinct raw products required");
-			if (product.size() > DAILY_PRODUCT_BYTES)
+			}
+			if (product.size() > DAILY_PRODUCT_BYTES) {
 				Fail("history.products", "resource", "decoded product exceeds256 UTF8 bytes");
+			}
 		}
-	} else
+	} else {
 		Fail("history.products", "capability", "explicit all or subset required");
+	}
 	return r;
 }
 
@@ -5049,32 +5118,38 @@ string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
 
 void ObserveHistory(ClientContext &context, PopulationHistoryCheckpoint point) {
 	auto observer = context.registered_state->Get<PopulationHistoryObserver>(PopulationHistoryObserver::KEY);
-	if (observer)
+	if (observer) {
 		observer->Observe(point);
-	if (context.IsInterrupted())
+	}
+	if (context.IsInterrupted()) {
 		throw InterruptException();
+	}
 }
 unique_ptr<FunctionData> HistoryBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
                                      vector<string> &names) {
 	auto data = make_uniq<PopulationBind>();
 	data->bundle = Current(context);
 	auto &b = *data->bundle;
-	if (b.profile != HISTORY_PROFILE)
+	if (b.profile != HISTORY_PROFILE) {
 		Fail("history", "capability", "historical-observation profile required");
-	if (input.inputs[0].IsNull() || input.inputs[1].IsNull())
+	}
+	if (input.inputs[0].IsNull() || input.inputs[1].IsNull()) {
 		Fail("history", "arguments", "relationship and request_json required");
-	if (input.inputs[0].GetValue<string>() != b.history_relationship)
+	}
+	if (input.inputs[0].GetValue<string>() != b.history_relationship) {
 		Fail("history", "arguments", "exact declared historical relationship required");
+	}
 	data->history_query = true;
 	data->history_compile = input.table_function.name == "ossie_history_links_compile";
 	data->history_request = ParseHistoryRequest(input.inputs[1].GetValue<string>());
 	auto &child = *b.history_children[0];
 	auto &src = b.history_sources[0];
 	auto select = make_uniq<SelectNode>();
-	for (auto &field : src.fields)
+	for (auto &field : src.fields) {
 		select->select_list.push_back(make_uniq<ColumnRefExpression>(
 		    FactPhysicalField(*b.model.FindDataset(src.dataset), *b.model.FindDataset(src.dataset)->FindField(field)),
 		    src.dataset));
+	}
 	select->from_table = SnapshotTable(child);
 	select->from_table->external_dependency->AddDependency("ossie_program_parent",
 	                                                       make_shared_ptr<SnapshotDependency>(data->bundle));
@@ -5083,11 +5158,13 @@ unique_ptr<FunctionData> HistoryBind(ClientContext &context, TableFunctionBindIn
 	lock_guard<mutex> guard(b.query_lock);
 	auto engine = Engine(b);
 	auto prepared = engine->Prepare(data->statement->Copy());
-	if (prepared->HasError())
+	if (prepared->HasError()) {
 		NormalizeError(prepared->GetErrorObject(), "history", "bind", ExceptionType::INVALID_INPUT);
+	}
 	data->result_types = prepared->GetTypes();
-	if (data->result_types != vector<LogicalType> {LogicalType::VARCHAR, LogicalType::DATE, LogicalType::VARCHAR})
+	if (data->result_types != vector<LogicalType> {LogicalType::VARCHAR, LogicalType::DATE, LogicalType::VARCHAR}) {
 		Fail("history", "bind", "actual projection must be User/DATE/product VARCHAR/DATE/VARCHAR");
+	}
 	types = {LogicalType::VARCHAR};
 	names = {data->history_compile ? "plan_json" : "result_json"};
 	return std::move(data);
@@ -5105,8 +5182,9 @@ void HistoryMetadata(DailyJSONWriter &json, const Bundle &b) {
 	for (auto &f :
 	     {std::make_pair("snapshot_id", b.snapshot_id), std::make_pair("content_sha256", b.content_hash),
 	      std::make_pair("core_sha256", b.core_hash), std::make_pair("ontology_sha256", b.ontology_hash),
-	      std::make_pair("mapping_sha256", b.mapping_hash), std::make_pair("manifest_sha256", b.manifest_hash)})
+	      std::make_pair("mapping_sha256", b.mapping_hash), std::make_pair("manifest_sha256", b.manifest_hash)}) {
 		json.Field(f.first, f.second);
+	}
 	json.Field("observation_rows", to_string(b.inputs[0].rows));
 	json.Field("history_record_count", to_string(b.history_index->source_rows));
 	json.Field("index_segment_count", to_string(b.history_index->segment_count));
@@ -5133,8 +5211,9 @@ void HistoryScope(DailyJSONWriter &json, const PopulationBind &data) {
 		json.Append(",\"values\":[");
 		idx_t n = 0;
 		for (auto &p : r.products) {
-			if (n++)
+			if (n++) {
 				json.Append(",");
+			}
 			json.Quoted(p);
 		}
 		json.Append("]");
@@ -5175,48 +5254,62 @@ string HistoryQueryJSON(ClientContext &context, const PopulationBind &data) {
 		lock_guard<mutex> guard(b.query_lock);
 		auto engine = Engine(b);
 		auto query = Run(context, *engine, data.statement->Copy());
-		if (query->types != data.result_types)
+		if (query->types != data.result_types) {
 			Fail("history", "execute", "projection types changed");
-		while (auto chunk = query->Fetch())
+		}
+		while (auto chunk = query->Fetch()) {
 			for (idx_t row = 0; row < chunk->size(); row++) {
-				if (context.IsInterrupted())
+				if (context.IsInterrupted()) {
 					throw InterruptException();
-				if (++scanned > b.inputs[0].rows)
+				}
+				if (++scanned > b.inputs[0].rows) {
 					Fail("history", "execute", "projection exceeds captured observation count");
+				}
 				auto user = chunk->GetValue(0, row), date = chunk->GetValue(1, row), product = chunk->GetValue(2, row);
-				if (user.IsNull() || date.IsNull() || product.IsNull())
+				if (user.IsNull() || date.IsNull() || product.IsNull()) {
 					Fail("history", "execute", "frozen identity changed to NULL");
+				}
 				auto day = date.GetValue<date_t>();
 				auto item = product.GetValue<string>();
-				if ((!r.all_dates && (day < r.start || day > r.end)) || (!r.all_products && !r.products.count(item)))
+				if ((!r.all_dates && (day < r.start || day > r.end)) || (!r.all_products && !r.products.count(item))) {
 					continue;
+				}
 				auto id = user.GetValue<string>();
 				auto target = b.history_index->Find(id, day, [&] {
-					if (context.IsInterrupted())
+					if (context.IsInterrupted()) {
 						throw InterruptException();
+					}
 				});
 				if (target) {
-					if (links.size() >= MAX_ROWS)
+					if (links.size() >= MAX_ROWS) {
 						Fail("history.links", "resource", "complete link count exceeds10000");
+					}
 					links.push_back({id, item, target, day});
 				}
 			}
-		if (query->HasError())
+		}
+		if (query->HasError()) {
 			NormalizeError(query->GetErrorObject(), "history", "execute", ExceptionType::INVALID_INPUT);
+		}
 	}
-	if (scanned != b.inputs[0].rows)
+	if (scanned != b.inputs[0].rows) {
 		Fail("history", "execute", "full observation scan differs from frozen count");
+	}
 	ObserveHistory(context, PopulationHistoryCheckpoint::BEFORE_SORT);
 	HistoryByteLess less;
 	std::sort(links.begin(), links.end(), [&](const Link &a, const Link &c) {
-		if (context.IsInterrupted())
+		if (context.IsInterrupted()) {
 			throw InterruptException();
-		if (a.user != c.user)
+		}
+		if (a.user != c.user) {
 			return less(a.user, c.user);
-		if (a.date != c.date)
+		}
+		if (a.date != c.date) {
 			return a.date < c.date;
-		if (a.product != c.product)
+		}
+		if (a.product != c.product) {
 			return less(a.product, c.product);
+		}
 		return less(*a.target, *c.target);
 	});
 	ObserveHistory(context, PopulationHistoryCheckpoint::BEFORE_ENCODE);
@@ -5226,10 +5319,12 @@ string HistoryQueryJSON(ClientContext &context, const PopulationBind &data) {
 	            "encodings\":[\"raw-UTF8\",\"finite-date-text\",\"raw-UTF8\",\"raw-UTF8\"],\"ordering\":\"raw User "
 	            "bytes, DATE value, raw product bytes, raw target bytes ascending\",\"links\":[");
 	for (idx_t i = 0; i < links.size(); i++) {
-		if (context.IsInterrupted())
+		if (context.IsInterrupted()) {
 			throw InterruptException();
-		if (i)
+		}
+		if (i) {
 			json.Append(",");
+		}
 		auto &l = links[i];
 		json.Append("[");
 		json.Quoted(l.user);
@@ -5260,8 +5355,9 @@ string HistoryProgramJSON(ClientContext &context, const Bundle &b) {
 	for (auto &f :
 	     {std::make_pair("snapshot_id", b.snapshot_id), std::make_pair("content_sha256", b.content_hash),
 	      std::make_pair("core_sha256", b.core_hash), std::make_pair("ontology_sha256", b.ontology_hash),
-	      std::make_pair("mapping_sha256", b.mapping_hash), std::make_pair("manifest_sha256", b.manifest_hash)})
+	      std::make_pair("mapping_sha256", b.mapping_hash), std::make_pair("manifest_sha256", b.manifest_hash)}) {
 		json.Field(f.first, f.second);
+	}
 	json.Field("total_source_rows", to_string(b.rows));
 	json.Field("history_record_count", to_string(b.history_index->source_rows));
 	json.Field("index_segment_count", to_string(b.history_index->segment_count));
@@ -5274,8 +5370,9 @@ string HistoryProgramJSON(ClientContext &context, const Bundle &b) {
 	            "qualification; full history checked at load\"");
 	json.Append(",\"sources\":[");
 	for (idx_t s = 0; s < 2; s++) {
-		if (s)
+		if (s) {
 			json.Append(",");
+		}
 		auto &src = b.history_sources[s];
 		auto &child = *b.history_children[s];
 		json.Append("{");
@@ -5288,8 +5385,9 @@ string HistoryProgramJSON(ClientContext &context, const Bundle &b) {
 		json.Field("rows", to_string(b.inputs[s].rows));
 		json.Append(",\"roles\":[");
 		for (idx_t i = 0; i < src.roles.size(); i++) {
-			if (i)
+			if (i) {
 				json.Append(",");
+			}
 			json.Append("{\"role\":");
 			json.Quoted(src.roles[i]);
 			json.Field("field", src.fields[i]);
@@ -5297,11 +5395,14 @@ string HistoryProgramJSON(ClientContext &context, const Bundle &b) {
 			                                  *b.model.FindDataset(src.dataset)->FindField(src.fields[i]));
 			json.Field("physical_column", physical);
 			idx_t column = child.physical_names.size();
-			for (idx_t n = 0; n < child.physical_names.size(); n++)
-				if (StringUtil::CIEquals(child.physical_names[n], physical))
+			for (idx_t n = 0; n < child.physical_names.size(); n++) {
+				if (StringUtil::CIEquals(child.physical_names[n], physical)) {
 					column = n;
-			if (column == child.physical_names.size())
+				}
+			}
+			if (column == child.physical_names.size()) {
 				Fail(physical, "bind", "missing physical role");
+			}
 			json.Field("bound_type", child.collection->Types()[column].ToString());
 			json.Append("}");
 		}
@@ -5477,13 +5578,15 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 		object = input.inputs[0].GetValue<string>();
 	}
 	return ErrorBoundary(object, "bind", [&]() {
-		if (name == "ossie_history_links_json" || name == "ossie_history_links_compile")
+		if (name == "ossie_history_links_json" || name == "ossie_history_links_compile") {
 			return HistoryBind(context, input, types, names);
+		}
 		if (name == "ossie_history_program") {
 			auto result = make_uniq<PopulationBind>();
 			result->bundle = Current(context);
-			if (result->bundle->profile != HISTORY_PROFILE)
+			if (result->bundle->profile != HISTORY_PROFILE) {
 				Fail(name, "capability", "historical-observation profile required");
+			}
 			result->history_discovery = true;
 			types = {LogicalType::VARCHAR};
 			names = {"program_json"};
@@ -5646,7 +5749,7 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	    "profile and predicate as relation objects, with actual output types, target identity, dependencies and "
 	    "snapshot hashes; max1MiB complete JSON, no SQL replay or physical plan guarantee.",
 	    "SELECT * FROM ossie_relation_compile('audited_user')");
-	for (auto name : {"ossie_history_links_json", "ossie_history_links_compile"})
+	for (auto name : {"ossie_history_links_json", "ossie_history_links_compile"}) {
 		RegisterDescribe(
 		    loader,
 		    TableFunction(name, {LogicalType::VARCHAR, LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
@@ -5657,6 +5760,7 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 		    "inference.",
 		    string("SELECT * FROM ") + name +
 		        "('team_at_observation','{\"dates\":{\"mode\":\"all\"},\"products\":{\"mode\":\"all\"}}')");
+	}
 	RegisterDescribe(
 	    loader, TableFunction("ossie_history_program", {}, ScanBoundary, BindBoundary, InitBoundary),
 	    "Discover frozen typed history capture/index metadata and accepted finite validity policy; "
