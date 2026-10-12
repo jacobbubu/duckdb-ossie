@@ -1862,3 +1862,20 @@ history_program与加载启用，完整link/compile/MCP尚未实施；下一仍�
 历史门禁边界收口：拒绝检查移入持有同一captured父的LegacyCurrent，避免两次Current
 间并发切换。原生新增双向old/history发布gate，最终428检查通过；最终65321694
 产物重复同SHA旧回归，选择证据与原件绑定，旧SHA选择报告另保存。
+
+历史查询恢复checkpoint（5a0405c干净）：上一轮是progress。沿OSSIE-REQ-001实施
+ossie_history_links_json/compile(relationship,request_json)，显式dates all或canonical有限
+DATE range、products all/subset，筛观察而不改变已载入历史检查；原生输入投影绑定
+User/DATE/product，索引命中返回完整Observation→Target集合，缺口无link。compile
+不扫描/匹配/计数，保留绑定父/child AST依赖，计划与执行同scope/六hash。原始
+16KiB/64产品/256字节/完整1MiB预算沿固定设计，验证边界/独立完整枚举/取消/旧prepared。
+历史MCP/无模型、新产物全回归/Linux/tidy和全五项P1审计仍必需，不调用模型或推送。
+
+历史查询/解释切片完成：[新证据](docs/research/ossie-req-001/p1-history-links-controls/review.md)
+以d5185413完整逐记录核对links，7控制/28拒绝、10000完整身份、精确16KiB/1MiB
+边界及恢复通过。482原生捕获含四查询取消/旧prepared完整links和plan，其他六
+native、29SQL/1070、138Bun/723及质量通过；同产物P0/旧SQL/五MCP/五无模型
+复验通过。首次DATE文本极值/fixture参数/错误码/filter/runner参数失败原件保留，
+337私有文件绑定；旧加载SHA与状态不回写。当前query/compile启用、MCPfalse。
+下一必要为历史独立MCP/严格carrier/无模型；之后新代码Linux/tidy、五项统一验收
+与未推历史私有检查。goal active，此切片仅本地提交，不调用真实模型或推送。

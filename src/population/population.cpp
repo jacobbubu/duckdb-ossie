@@ -3563,6 +3563,77 @@ FactRequest ParseFactRequest(const string &bytes, const FactProgram &program, bo
 	return request;
 }
 
+struct HistoryRequest {
+	bool all_dates = false, all_products = false;
+	date_t start, end;
+	string start_text, end_text;
+	std::set<string, RawByteLess> products;
+};
+date_t HistoryDate(const string &text, const string &name) {
+	// DuckDB formats the isolated finite INT32_MIN day, but its text cast rejects it.
+	const date_t minimum(std::numeric_limits<int32_t>::min());
+	if (text == Date::ToString(minimum)) {
+		return minimum;
+	}
+	date_t value;
+	idx_t pos = 0;
+	bool special = false;
+	if (Date::TryConvertDate(text.data(), text.size(), pos, value, special, true) != DateCastResult::SUCCESS ||
+	    pos != text.size() || special || !Date::IsFinite(value) || Date::ToString(value) != text)
+		Fail(name, "arguments", "finite canonical DuckDB DATE text required, including BC/wide years");
+	return value;
+}
+HistoryRequest ParseHistoryRequest(const string &bytes) {
+	if (bytes.size() > DAILY_REQUEST_BYTES)
+		Fail("history.request_json_utf8_bytes", "resource", "original complete request exceeds16KiB");
+	auto doc = yyjson_read(bytes.data(), bytes.size(), 0);
+	if (!doc)
+		Fail("history", "arguments", "strict JSON request required");
+	std::unique_ptr<yyjson_doc, decltype(&yyjson_doc_free)> owner(doc, yyjson_doc_free);
+	auto root = yyjson_doc_get_root(doc);
+	DailyKeys(root, {"dates", "products"});
+	HistoryRequest r;
+	auto dates = yyjson_obj_get(root, "dates");
+	DailyKeys(dates, {"mode", "start_date", "end_date"});
+	auto mode = DailyString(yyjson_obj_get(dates, "mode"), "dates.mode");
+	if (mode == "all") {
+		DailyKeys(dates, {"mode"});
+		r.all_dates = true;
+	} else if (mode == "range") {
+		r.start_text = DailyString(yyjson_obj_get(dates, "start_date"), "start_date");
+		r.end_text = DailyString(yyjson_obj_get(dates, "end_date"), "end_date");
+		r.start = HistoryDate(r.start_text, "start_date");
+		r.end = HistoryDate(r.end_text, "end_date");
+		if (r.start > r.end)
+			Fail("history.dates", "arguments", "start_date must not exceed end_date");
+	} else
+		Fail("history.dates", "capability", "explicit all or finite inclusive range required");
+	auto products = yyjson_obj_get(root, "products");
+	DailyKeys(products, {"mode", "values"});
+	mode = DailyString(yyjson_obj_get(products, "mode"), "products.mode");
+	if (mode == "all") {
+		DailyKeys(products, {"mode"});
+		r.all_products = true;
+	} else if (mode == "subset") {
+		auto values = yyjson_obj_get(products, "values");
+		if (!yyjson_is_arr(values) || !yyjson_get_len(values))
+			Fail("products.values", "arguments", "nonempty raw string array required");
+		if (yyjson_get_len(values) > DAILY_MAX_PRODUCTS)
+			Fail("history.products", "resource", "subset exceeds64 products");
+		size_t i, n;
+		yyjson_val *v;
+		yyjson_arr_foreach(values, i, n, v) {
+			auto product = DailyString(v, "product");
+			if (product.empty() || !r.products.insert(product).second)
+				Fail("products", "arguments", "nonempty distinct raw products required");
+			if (product.size() > DAILY_PRODUCT_BYTES)
+				Fail("history.products", "resource", "decoded product exceeds256 UTF8 bytes");
+		}
+	} else
+		Fail("history.products", "capability", "explicit all or subset required");
+	return r;
+}
+
 struct PopulationBind : TableFunctionData {
 	shared_ptr<Bundle> bundle;
 	string sql;
@@ -3583,6 +3654,8 @@ struct PopulationBind : TableFunctionData {
 	bool fact_compile = false;
 	bool fact_discovery = false;
 	bool history_discovery = false;
+	bool history_query = false, history_compile = false;
+	HistoryRequest history_request;
 	FactRequest fact_request;
 	unique_ptr<SelectStatement> fact_domain_statement;
 	bool relation_discovery = false;
@@ -3620,7 +3693,7 @@ shared_ptr<Bundle> LegacyCurrent(ClientContext &context, const string &operation
 	}
 	if (bundle->profile == HISTORY_PROFILE) {
 		Fail(operation, "capability",
-		     "history profile currently exposes typed capture/index program only; query interfaces pending");
+		     "history profile requires dedicated link/compile/program interfaces; legacy single-root entry refused");
 	}
 	if (bundle->profile == FACT_PROFILE) {
 		Fail(operation, "capability",
@@ -4981,10 +5054,209 @@ string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
 	return w.Finish();
 }
 
+void ObserveHistory(ClientContext &context, PopulationHistoryCheckpoint point) {
+	auto observer = context.registered_state->Get<PopulationHistoryObserver>(PopulationHistoryObserver::KEY);
+	if (observer)
+		observer->Observe(point);
+	if (context.IsInterrupted())
+		throw InterruptException();
+}
+unique_ptr<FunctionData> HistoryBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
+                                     vector<string> &names) {
+	auto data = make_uniq<PopulationBind>();
+	data->bundle = Current(context);
+	auto &b = *data->bundle;
+	if (b.profile != HISTORY_PROFILE)
+		Fail("history", "capability", "historical-observation profile required");
+	if (input.inputs[0].IsNull() || input.inputs[1].IsNull())
+		Fail("history", "arguments", "relationship and request_json required");
+	if (input.inputs[0].GetValue<string>() != b.history_relationship)
+		Fail("history", "arguments", "exact declared historical relationship required");
+	data->history_query = true;
+	data->history_compile = input.table_function.name == "ossie_history_links_compile";
+	data->history_request = ParseHistoryRequest(input.inputs[1].GetValue<string>());
+	auto &child = *b.history_children[0];
+	auto &src = b.history_sources[0];
+	auto select = make_uniq<SelectNode>();
+	for (auto &field : src.fields)
+		select->select_list.push_back(make_uniq<ColumnRefExpression>(
+		    FactPhysicalField(*b.model.FindDataset(src.dataset), *b.model.FindDataset(src.dataset)->FindField(field)),
+		    src.dataset));
+	select->from_table = SnapshotTable(child);
+	select->from_table->external_dependency->AddDependency("ossie_program_parent",
+	                                                       make_shared_ptr<SnapshotDependency>(data->bundle));
+	data->statement = make_uniq<SelectStatement>();
+	data->statement->node = std::move(select);
+	lock_guard<mutex> guard(b.query_lock);
+	auto engine = Engine(b);
+	auto prepared = engine->Prepare(data->statement->Copy());
+	if (prepared->HasError())
+		NormalizeError(prepared->GetErrorObject(), "history", "bind", ExceptionType::INVALID_INPUT);
+	data->result_types = prepared->GetTypes();
+	if (data->result_types != vector<LogicalType> {LogicalType::VARCHAR, LogicalType::DATE, LogicalType::VARCHAR})
+		Fail("history", "bind", "actual projection must be User/DATE/product VARCHAR/DATE/VARCHAR");
+	types = {LogicalType::VARCHAR};
+	names = {data->history_compile ? "plan_json" : "result_json"};
+	return std::move(data);
+}
+void HistoryMetadata(DailyJSONWriter &json, const Bundle &b) {
+	json.Field("api_version", "1.0.0");
+	json.Field("profile", b.profile);
+	json.Field("operator", "history_at_observation");
+	json.Field("root_concept", b.root);
+	json.Field("relationship", b.history_relationship);
+	json.Field("user_concept", b.user_concept);
+	json.Field("target_concept", b.history_target);
+	json.Field("target_identity_relationship", "id");
+	json.Field("target_identity_bound_type", "VARCHAR");
+	for (auto &f :
+	     {std::make_pair("snapshot_id", b.snapshot_id), std::make_pair("content_sha256", b.content_hash),
+	      std::make_pair("core_sha256", b.core_hash), std::make_pair("ontology_sha256", b.ontology_hash),
+	      std::make_pair("mapping_sha256", b.mapping_hash), std::make_pair("manifest_sha256", b.manifest_hash)})
+		json.Field(f.first, f.second);
+	json.Field("observation_rows", to_string(b.inputs[0].rows));
+	json.Field("history_record_count", to_string(b.history_index->source_rows));
+	json.Field("index_segment_count", to_string(b.history_index->segment_count));
+	json.Append(",\"root_identity_relationships\":[\"user\",\"date\",\"product\"],\"root_identity_fields\":" +
+	            JSONStrings(b.history_sources[0].fields));
+	json.Append(",\"link_role_concepts\":" + JSONStrings({b.user_concept, "Date", "String", b.history_target}));
+	json.Field("validity", "finite DATE start<=observation_date<end; gaps produce no link");
+	json.Field("scope_semantics", "request filters captured observations only; full history validated at load; all "
+	                              "observations without qualification rule");
+	json.Field("source_identity", "record_id identifies source witnesses only, not output links");
+}
+void HistoryScope(DailyJSONWriter &json, const PopulationBind &data) {
+	HistoryMetadata(json, *data.bundle);
+	auto &r = data.history_request;
+	json.Append(",\"request\":{\"dates\":{\"mode\":");
+	json.Quoted(r.all_dates ? "all" : "range");
+	if (!r.all_dates) {
+		json.Field("start_date", r.start_text);
+		json.Field("end_date", r.end_text);
+	}
+	json.Append("},\"products\":{\"mode\":");
+	json.Quoted(r.all_products ? "all" : "subset");
+	if (!r.all_products) {
+		json.Append(",\"values\":[");
+		idx_t n = 0;
+		for (auto &p : r.products) {
+			if (n++)
+				json.Append(",");
+			json.Quoted(p);
+		}
+		json.Append("]");
+	}
+	json.Append("}}");
+}
+string HistoryQueryJSON(ClientContext &context, const PopulationBind &data) {
+	auto &b = *data.bundle;
+	auto &r = data.history_request;
+	DailyJSONWriter json(context, data.history_compile ? "plan_json_utf8_bytes" : "result_json_utf8_bytes", "history");
+	json.Append(data.history_compile ? "{\"schema_version\":\"ossie-history-links-plan-v1\",\"executed\":false"
+	                                 : "{\"schema_version\":\"ossie-history-links-result-v1\",\"executed\":true");
+	HistoryScope(json, data);
+	if (data.history_compile) {
+		json.Append(",\"links_computed\":false,\"physical_plan\":false,\"sql_replayable\":false,\"input_projection_"
+		            "binding\":true,\"input_types\":[\"VARCHAR\",\"DATE\",\"VARCHAR\"],\"projection_sql\":");
+		json.Quoted(data.statement->ToString());
+		json.Append(
+		    ",\"operators\":[\"frozen full observation projection\",\"explicit observation date/product "
+		    "scope\",\"immutable per-User interval binary lookup\",\"start inclusive and end exclusive; gap no "
+		    "link\",\"complete Observation to typed target set\",\"raw User/product/target bytes and DATE value "
+		    "ordering\",\"complete bounded "
+		    "JSON\"],\"limits\":{\"links\":10000,\"request_utf8_bytes\":16384,\"complete_json_utf8_bytes\":1048576},"
+		    "\"limitations\":[\"Compile binds projection but never scans or matches links\",\"Input and index counts "
+		    "are load metadata\",\"Rendered projection excludes C++ scope/index matching and cannot replay "
+		    "independently\",\"Compile does not guarantee execution completion or encoded result size\"]}");
+		return json.Finish();
+	}
+	struct Link {
+		string user, product;
+		const string *target;
+		date_t date;
+	};
+	vector<Link> links;
+	idx_t scanned = 0;
+	ObserveHistory(context, PopulationHistoryCheckpoint::BEFORE_EXECUTE);
+	{
+		lock_guard<mutex> guard(b.query_lock);
+		auto engine = Engine(b);
+		auto query = Run(context, *engine, data.statement->Copy());
+		if (query->types != data.result_types)
+			Fail("history", "execute", "projection types changed");
+		while (auto chunk = query->Fetch())
+			for (idx_t row = 0; row < chunk->size(); row++) {
+				if (context.IsInterrupted())
+					throw InterruptException();
+				if (++scanned > b.inputs[0].rows)
+					Fail("history", "execute", "projection exceeds captured observation count");
+				auto user = chunk->GetValue(0, row), date = chunk->GetValue(1, row), product = chunk->GetValue(2, row);
+				if (user.IsNull() || date.IsNull() || product.IsNull())
+					Fail("history", "execute", "frozen identity changed to NULL");
+				auto day = date.GetValue<date_t>();
+				auto item = product.GetValue<string>();
+				if ((!r.all_dates && (day < r.start || day > r.end)) || (!r.all_products && !r.products.count(item)))
+					continue;
+				auto id = user.GetValue<string>();
+				auto target = b.history_index->Find(id, day, [&] {
+					if (context.IsInterrupted())
+						throw InterruptException();
+				});
+				if (target) {
+					if (links.size() >= MAX_ROWS)
+						Fail("history.links", "resource", "complete link count exceeds10000");
+					links.push_back({id, item, target, day});
+				}
+			}
+		if (query->HasError())
+			NormalizeError(query->GetErrorObject(), "history", "execute", ExceptionType::INVALID_INPUT);
+	}
+	if (scanned != b.inputs[0].rows)
+		Fail("history", "execute", "full observation scan differs from frozen count");
+	ObserveHistory(context, PopulationHistoryCheckpoint::BEFORE_SORT);
+	HistoryByteLess less;
+	std::sort(links.begin(), links.end(), [&](const Link &a, const Link &c) {
+		if (context.IsInterrupted())
+			throw InterruptException();
+		if (a.user != c.user)
+			return less(a.user, c.user);
+		if (a.date != c.date)
+			return a.date < c.date;
+		if (a.product != c.product)
+			return less(a.product, c.product);
+		return less(*a.target, *c.target);
+	});
+	ObserveHistory(context, PopulationHistoryCheckpoint::BEFORE_ENCODE);
+	json.Field("link_count", to_string(links.size()));
+	json.Append(",\"complete\":true,\"paging\":false,\"truncated\":false,\"link_columns\":[\"user_id\",\"date\","
+	            "\"product\",\"target_id\"],\"link_types\":[\"VARCHAR\",\"DATE\",\"VARCHAR\",\"VARCHAR\"],\"link_"
+	            "encodings\":[\"raw-UTF8\",\"finite-date-text\",\"raw-UTF8\",\"raw-UTF8\"],\"ordering\":\"raw User "
+	            "bytes, DATE value, raw product bytes, raw target bytes ascending\",\"links\":[");
+	for (idx_t i = 0; i < links.size(); i++) {
+		if (context.IsInterrupted())
+			throw InterruptException();
+		if (i)
+			json.Append(",");
+		auto &l = links[i];
+		json.Append("[");
+		json.Quoted(l.user);
+		json.Append(",");
+		json.Quoted(Date::ToString(l.date));
+		json.Append(",");
+		json.Quoted(l.product);
+		json.Append(",");
+		json.Quoted(*l.target);
+		json.Append("]");
+	}
+	json.Append("]}");
+	ObserveHistory(context, PopulationHistoryCheckpoint::BEFORE_FINISH);
+	return json.Finish();
+}
+
 string HistoryProgramJSON(ClientContext &context, const Bundle &b) {
 	DailyJSONWriter json(context, "program_json_utf8_bytes", "history");
 	json.Append("{\"schema_version\":\"ossie-history-program-v1\",\"api_version\":\"1.0.0\",\"query_executed\":false,"
-	            "\"query_supported\":false,\"compile_supported\":false,\"mcp_registered\":false");
+	            "\"query_supported\":true,\"compile_supported\":true,\"mcp_registered\":false");
 	json.Field("profile", b.profile);
 	json.Field("operator", "history_at_observation");
 	json.Field("root_concept", b.root);
@@ -5001,6 +5273,12 @@ string HistoryProgramJSON(ClientContext &context, const Bundle &b) {
 	json.Field("history_record_count", to_string(b.history_index->source_rows));
 	json.Field("index_segment_count", to_string(b.history_index->segment_count));
 	json.Field("history_User_count", to_string(b.history_index->users.size()));
+	json.Append(",\"functions\":[\"ossie_history_program\",\"ossie_history_links_json\",\"ossie_history_links_"
+	            "compile\"],\"query_limits\":{\"links\":10000,\"request_utf8_bytes\":16384,\"subset_products\":64,"
+	            "\"product_utf8_bytes\":256,\"complete_json_utf8_bytes\":1048576},\"request_dates\":\"explicit all or "
+	            "inclusive finite canonical DuckDB DATE range; no calendar expansion\",\"request_products\":\"explicit "
+	            "all or nonempty raw subset\",\"scope_semantics\":\"filters observations only, all without "
+	            "qualification; full history checked at load\"");
 	json.Append(",\"sources\":[");
 	for (idx_t s = 0; s < 2; s++) {
 		if (s)
@@ -5061,6 +5339,8 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 			throw InterruptException();
 		}
 		PopulationState::Get(context).SetBundle(std::move(bundle));
+	} else if (data.history_query) {
+		result->rows.push_back({Value(HistoryQueryJSON(context, data))});
 	} else if (data.history_discovery) {
 		result->rows.push_back({Value(HistoryProgramJSON(context, *data.bundle))});
 	} else if (data.fact_discovery) {
@@ -5204,6 +5484,8 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 		object = input.inputs[0].GetValue<string>();
 	}
 	return ErrorBoundary(object, "bind", [&]() {
+		if (name == "ossie_history_links_json" || name == "ossie_history_links_compile")
+			return HistoryBind(context, input, types, names);
 		if (name == "ossie_history_program") {
 			auto result = make_uniq<PopulationBind>();
 			result->bundle = Current(context);
@@ -5371,11 +5653,23 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	    "profile and predicate as relation objects, with actual output types, target identity, dependencies and "
 	    "snapshot hashes; max1MiB complete JSON, no SQL replay or physical plan guarantee.",
 	    "SELECT * FROM ossie_relation_compile('audited_user')");
-	RegisterDescribe(loader, TableFunction("ossie_history_program", {}, ScanBoundary, BindBoundary, InitBoundary),
-	                 "Discover frozen typed history capture/index metadata and accepted finite validity policy; "
-	                 "query_executed=false. This implementation slice has no link/compile/MCP interfaces yet; load "
-	                 "metadata is not query counts.",
-	                 "SELECT * FROM ossie_history_program()");
+	for (auto name : {"ossie_history_links_json", "ossie_history_links_compile"})
+		RegisterDescribe(
+		    loader,
+		    TableFunction(name, {LogicalType::VARCHAR, LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+		    "Complete historical Observation-to-target links or nonexecuting logical plan. Explicit request_json dates "
+		    "all/range finite canonical DATE and products all/subset; scope filters observations only, full history "
+		    "validated at load. Half-open intervals and gaps, raw identity, no paging, 16KiB request/1MiB complete "
+		    "JSON. Compile never scans/matches; compare request and six hashes. No arbitrary SQL or qualification "
+		    "inference.",
+		    string("SELECT * FROM ") + name +
+		        "('team_at_observation','{\"dates\":{\"mode\":\"all\"},\"products\":{\"mode\":\"all\"}}')");
+	RegisterDescribe(
+	    loader, TableFunction("ossie_history_program", {}, ScanBoundary, BindBoundary, InitBoundary),
+	    "Discover frozen typed history capture/index metadata and accepted finite validity policy; "
+	    "query_executed=false. Dedicated link/compile SQL are available; native declaration does not probe MCP; load "
+	    "metadata is not query counts.",
+	    "SELECT * FROM ossie_history_program()");
 	RegisterDescribe(loader, TableFunction("ossie_relation_program", {}, ScanBoundary, BindBoundary, InitBoundary),
 	                 "Discover bound nonrecursive relationship declarations, typed root/User, dependencies and "
 	                 "full-population load constraint validation in observation-relation-program-v1. Frozen snapshot; "

@@ -1,0 +1,66 @@
+{
+  "scope": "historical SQL complete links and logical compile; local macOS ARM64; MCP/offline and Linux/tidy remain required",
+  "baseline_commit": "5a0405c742e630187722bcbaa8be86891abc1c1a",
+  "artifact_sha256": "d51854132706e00d5bd150d79ea55d25d22fe6cca0d2f2e9ce8cadb4421845bf",
+  "source_sha256": {
+    "src/population/population.cpp": "593aa9cb5536c6dc13d1dec0add0b324b8ca0d838b618b254b9fbe556d60ff53",
+    "src/include/ossie/population_testing.hpp": "60fc7fb0fe6a2c1b47c3216f291acdf4a304b9385aef5065832caebebc399bce",
+    "test/cpp/population_capture_test.cpp": "d8797058165ff5631100eb920391f9b0c0dc48dfc24fdbce0ab7697f01c96be9",
+    "scripts/verify_history_links_artifact.ts": "cfced6633341591c736c330dc14d771ef6bbfb08e115dfa1020be197c7343575",
+    "scripts/verify_history_load_artifact.ts": "a58d19f069810cb352a27974c34395ec24f0e7cc28092035173f091c2002a2da",
+    "test/sql/ossie_history_links.test": "eff68bc16cf32b1024b81621acc8efc2e947954d4769f847bb1d4337c2b0a14a",
+    "test/sql/ossie_function_metadata.test": "8c01523f4d3ce8a4bcf75fefa1f3736203621229b9c88663aa7906571e7add56",
+    ".github/workflows/MainDistributionPipeline.yml": "df617be9b3cf753227ad36dc48adfee9fda0f7839f12d5403e7dcaaa5d3a5adf"
+  },
+  "private_manifest_sha256": "fb0b01d8a63fd76a21ed79350ddcb4de473bbc58bccebfcf45b61fad0be0e15f",
+  "private_files": 337,
+  "native": {
+    "population_capture": 482,
+    "history_index": 20474,
+    "state_snapshot": 19,
+    "metric_grain": 42,
+    "relation_program": 55,
+    "fact_program": 90,
+    "fact_capture": 260
+  },
+  "sql": {
+    "cases": 29,
+    "assertions": 1070
+  },
+  "bun": {
+    "tests": 138,
+    "expects": 723
+  },
+  "quality": [
+    "TypeScript types/format",
+    "C++ format11",
+    "architecture",
+    "diff check"
+  ],
+  "same_artifact_regression": [
+    "P0 A1-A8",
+    "observation",
+    "daily users/states",
+    "relation load/objects",
+    "fact load/objects",
+    "finite DATE",
+    "fact stock CLI",
+    "observation/daily/state/relation/fact MCP",
+    "five legacy scripted Agent/sealed replay suites"
+  ],
+  "failures_retained": [
+    "stock DATE text parser rejects finite INT32_MIN; fixture switched to epoch arithmetic; request parser handles exact canonical minimum",
+    "first epoch fixture rewrite missed formatted parameters",
+    "SQL unknown relationship expected wrong error code; corrected to INVALID_REQUEST",
+    "first SQL filter matched no cases; excluded from evidence",
+    "first native driver omitted required project root; fact capture needed trailing slash; excluded from evidence"
+  ],
+  "remaining": [
+    "historical MCP/strict decoder/Agent offline",
+    "new code Linux/tidy",
+    "full five-category P1 reconciliation and private outgoing history check"
+  ],
+  "real_model_requests": 0,
+  "goal_complete": false,
+  "pushed": false
+}

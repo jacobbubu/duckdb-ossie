@@ -1,0 +1,1253 @@
+{
+  "passed": true,
+  "scope": "historical SQL/plan complete synthetic oracle; MCP/offline/Linux/tidy remain required",
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "d51854132706e00d5bd150d79ea55d25d22fe6cca0d2f2e9ce8cadb4421845bf",
+  "checks": [
+    "complete independent links, duplicate same-target witnesses set-dedup, two products, start/end, gaps, case/NUL/wide/BC/min DATE; bound plans same scope/trace",
+    "original16KiB request accepted; +1 refused before parsing",
+    "prepared complete links and plan retain old parent across reload and both table drops; fresh snapshot changes",
+    "complete10000 full link identities, not count-only",
+    "exact complete1MiB including escaped metadata/scope and+1 rejection, recovery",
+    "large target referenced in immutable index, not duplicated across link materialization",
+    "empty source/link result with full provenance"
+  ],
+  "refusals": [
+    {
+      "label": "ossie_history_links_json:missing dates",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_json:extra field",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_json:duplicate decoded key",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_json:unknown date mode",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "label": "ossie_history_links_json:infinity",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_json:noncanonical date",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_json:reversed range",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_json:product number",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_json:empty subset",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_json:duplicate products",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_json:65products",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "ossie_history_links_json:257bytes",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "ossie_history_links_json:16385bytes",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "ossie_history_links_compile:missing dates",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_compile:extra field",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_compile:duplicate decoded key",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_compile:unknown date mode",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "label": "ossie_history_links_compile:infinity",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_compile:noncanonical date",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_compile:reversed range",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_compile:product number",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_compile:empty subset",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_compile:duplicate products",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "ossie_history_links_compile:65products",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "ossie_history_links_compile:257bytes",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "ossie_history_links_compile:16385bytes",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "complete1MiB+1 bytes",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "label": "large shared target rejects bounded JSON without join bag",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    }
+  ],
+  "cases": [
+    {
+      "request": {
+        "dates": {
+          "mode": "all"
+        },
+        "products": {
+          "mode": "all"
+        }
+      },
+      "plan": {
+        "schema_version": "ossie-history-links-plan-v1",
+        "executed": false,
+        "api_version": "1.0.0",
+        "profile": "historical-observation-relation-v1",
+        "operator": "history_at_observation",
+        "root_concept": "DailyObservation",
+        "relationship": "team_at_observation",
+        "user_concept": "User",
+        "target_concept": "Team",
+        "target_identity_relationship": "id",
+        "target_identity_bound_type": "VARCHAR",
+        "snapshot_id": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6:1",
+        "content_sha256": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6",
+        "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+        "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+        "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+        "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+        "observation_rows": "14",
+        "history_record_count": "11",
+        "index_segment_count": "10",
+        "root_identity_relationships": [
+          "user",
+          "date",
+          "product"
+        ],
+        "root_identity_fields": [
+          "user_id",
+          "ds",
+          "product"
+        ],
+        "link_role_concepts": [
+          "User",
+          "Date",
+          "String",
+          "Team"
+        ],
+        "validity": "finite DATE start<=observation_date<end; gaps produce no link",
+        "scope_semantics": "request filters captured observations only; full history validated at load; all observations without qualification rule",
+        "source_identity": "record_id identifies source witnesses only, not output links",
+        "request": {
+          "dates": {
+            "mode": "all"
+          },
+          "products": {
+            "mode": "all"
+          }
+        },
+        "links_computed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "input_projection_binding": true,
+        "input_types": [
+          "VARCHAR",
+          "DATE",
+          "VARCHAR"
+        ],
+        "projection_sql": "SELECT observations.user_id, observations.ds, observations.product FROM \"system\".main._ossie_snapshot_rows() AS observations",
+        "operators": [
+          "frozen full observation projection",
+          "explicit observation date/product scope",
+          "immutable per-User interval binary lookup",
+          "start inclusive and end exclusive; gap no link",
+          "complete Observation to typed target set",
+          "raw User/product/target bytes and DATE value ordering",
+          "complete bounded JSON"
+        ],
+        "limits": {
+          "links": 10000,
+          "request_utf8_bytes": 16384,
+          "complete_json_utf8_bytes": 1048576
+        },
+        "limitations": [
+          "Compile binds projection but never scans or matches links",
+          "Input and index counts are load metadata",
+          "Rendered projection excludes C++ scope/index matching and cannot replay independently",
+          "Compile does not guarantee execution completion or encoded result size"
+        ]
+      },
+      "result": {
+        "schema_version": "ossie-history-links-result-v1",
+        "executed": true,
+        "api_version": "1.0.0",
+        "profile": "historical-observation-relation-v1",
+        "operator": "history_at_observation",
+        "root_concept": "DailyObservation",
+        "relationship": "team_at_observation",
+        "user_concept": "User",
+        "target_concept": "Team",
+        "target_identity_relationship": "id",
+        "target_identity_bound_type": "VARCHAR",
+        "snapshot_id": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6:1",
+        "content_sha256": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6",
+        "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+        "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+        "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+        "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+        "observation_rows": "14",
+        "history_record_count": "11",
+        "index_segment_count": "10",
+        "root_identity_relationships": [
+          "user",
+          "date",
+          "product"
+        ],
+        "root_identity_fields": [
+          "user_id",
+          "ds",
+          "product"
+        ],
+        "link_role_concepts": [
+          "User",
+          "Date",
+          "String",
+          "Team"
+        ],
+        "validity": "finite DATE start<=observation_date<end; gaps produce no link",
+        "scope_semantics": "request filters captured observations only; full history validated at load; all observations without qualification rule",
+        "source_identity": "record_id identifies source witnesses only, not output links",
+        "request": {
+          "dates": {
+            "mode": "all"
+          },
+          "products": {
+            "mode": "all"
+          }
+        },
+        "link_count": "12",
+        "complete": true,
+        "paging": false,
+        "truncated": false,
+        "link_columns": [
+          "user_id",
+          "date",
+          "product",
+          "target_id"
+        ],
+        "link_types": [
+          "VARCHAR",
+          "DATE",
+          "VARCHAR",
+          "VARCHAR"
+        ],
+        "link_encodings": [
+          "raw-UTF8",
+          "finite-date-text",
+          "raw-UTF8",
+          "raw-UTF8"
+        ],
+        "ordering": "raw User bytes, DATE value, raw product bytes, raw target bytes ascending",
+        "links": [
+          [
+            "BC",
+            "0001-01-01 (BC)",
+            "X",
+            "B"
+          ],
+          [
+            "U",
+            "2024-02-29",
+            "X",
+            "U"
+          ],
+          [
+            "min",
+            "5877642-06-23 (BC)",
+            "X",
+            "M"
+          ],
+          [
+            "nul\u0000id",
+            "2024-02-29",
+            "X",
+            "nul\u0000id"
+          ],
+          [
+            "q\"\\\n",
+            "2024-02-29",
+            "X",
+            "q\"\\\n"
+          ],
+          [
+            "u",
+            "2024-02-28",
+            "X",
+            "T"
+          ],
+          [
+            "u",
+            "2024-02-29",
+            "X",
+            "T"
+          ],
+          [
+            "u",
+            "2024-02-29",
+            "Y",
+            "T"
+          ],
+          [
+            "u",
+            "2024-03-01",
+            "X",
+            "V"
+          ],
+          [
+            "u",
+            "2024-03-03",
+            "X",
+            "T"
+          ],
+          [
+            "wide",
+            "10000-01-01",
+            "X",
+            "W"
+          ],
+          [
+            "汉字",
+            "2024-02-29",
+            "X",
+            "汉字"
+          ]
+        ]
+      },
+      "independent_links": [
+        [
+          "BC",
+          "0001-01-01 (BC)",
+          "X",
+          "B"
+        ],
+        [
+          "U",
+          "2024-02-29",
+          "X",
+          "U"
+        ],
+        [
+          "min",
+          "5877642-06-23 (BC)",
+          "X",
+          "M"
+        ],
+        [
+          "nul\u0000id",
+          "2024-02-29",
+          "X",
+          "nul\u0000id"
+        ],
+        [
+          "q\"\\\n",
+          "2024-02-29",
+          "X",
+          "q\"\\\n"
+        ],
+        [
+          "u",
+          "2024-02-28",
+          "X",
+          "T"
+        ],
+        [
+          "u",
+          "2024-02-29",
+          "X",
+          "T"
+        ],
+        [
+          "u",
+          "2024-02-29",
+          "Y",
+          "T"
+        ],
+        [
+          "u",
+          "2024-03-01",
+          "X",
+          "V"
+        ],
+        [
+          "u",
+          "2024-03-03",
+          "X",
+          "T"
+        ],
+        [
+          "wide",
+          "10000-01-01",
+          "X",
+          "W"
+        ],
+        [
+          "汉字",
+          "2024-02-29",
+          "X",
+          "汉字"
+        ]
+      ]
+    },
+    {
+      "request": {
+        "dates": {
+          "mode": "range",
+          "start_date": "2024-02-29",
+          "end_date": "2024-03-01"
+        },
+        "products": {
+          "mode": "subset",
+          "values": [
+            "Y",
+            "X"
+          ]
+        }
+      },
+      "plan": {
+        "schema_version": "ossie-history-links-plan-v1",
+        "executed": false,
+        "api_version": "1.0.0",
+        "profile": "historical-observation-relation-v1",
+        "operator": "history_at_observation",
+        "root_concept": "DailyObservation",
+        "relationship": "team_at_observation",
+        "user_concept": "User",
+        "target_concept": "Team",
+        "target_identity_relationship": "id",
+        "target_identity_bound_type": "VARCHAR",
+        "snapshot_id": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6:1",
+        "content_sha256": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6",
+        "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+        "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+        "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+        "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+        "observation_rows": "14",
+        "history_record_count": "11",
+        "index_segment_count": "10",
+        "root_identity_relationships": [
+          "user",
+          "date",
+          "product"
+        ],
+        "root_identity_fields": [
+          "user_id",
+          "ds",
+          "product"
+        ],
+        "link_role_concepts": [
+          "User",
+          "Date",
+          "String",
+          "Team"
+        ],
+        "validity": "finite DATE start<=observation_date<end; gaps produce no link",
+        "scope_semantics": "request filters captured observations only; full history validated at load; all observations without qualification rule",
+        "source_identity": "record_id identifies source witnesses only, not output links",
+        "request": {
+          "dates": {
+            "mode": "range",
+            "start_date": "2024-02-29",
+            "end_date": "2024-03-01"
+          },
+          "products": {
+            "mode": "subset",
+            "values": [
+              "X",
+              "Y"
+            ]
+          }
+        },
+        "links_computed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "input_projection_binding": true,
+        "input_types": [
+          "VARCHAR",
+          "DATE",
+          "VARCHAR"
+        ],
+        "projection_sql": "SELECT observations.user_id, observations.ds, observations.product FROM \"system\".main._ossie_snapshot_rows() AS observations",
+        "operators": [
+          "frozen full observation projection",
+          "explicit observation date/product scope",
+          "immutable per-User interval binary lookup",
+          "start inclusive and end exclusive; gap no link",
+          "complete Observation to typed target set",
+          "raw User/product/target bytes and DATE value ordering",
+          "complete bounded JSON"
+        ],
+        "limits": {
+          "links": 10000,
+          "request_utf8_bytes": 16384,
+          "complete_json_utf8_bytes": 1048576
+        },
+        "limitations": [
+          "Compile binds projection but never scans or matches links",
+          "Input and index counts are load metadata",
+          "Rendered projection excludes C++ scope/index matching and cannot replay independently",
+          "Compile does not guarantee execution completion or encoded result size"
+        ]
+      },
+      "result": {
+        "schema_version": "ossie-history-links-result-v1",
+        "executed": true,
+        "api_version": "1.0.0",
+        "profile": "historical-observation-relation-v1",
+        "operator": "history_at_observation",
+        "root_concept": "DailyObservation",
+        "relationship": "team_at_observation",
+        "user_concept": "User",
+        "target_concept": "Team",
+        "target_identity_relationship": "id",
+        "target_identity_bound_type": "VARCHAR",
+        "snapshot_id": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6:1",
+        "content_sha256": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6",
+        "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+        "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+        "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+        "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+        "observation_rows": "14",
+        "history_record_count": "11",
+        "index_segment_count": "10",
+        "root_identity_relationships": [
+          "user",
+          "date",
+          "product"
+        ],
+        "root_identity_fields": [
+          "user_id",
+          "ds",
+          "product"
+        ],
+        "link_role_concepts": [
+          "User",
+          "Date",
+          "String",
+          "Team"
+        ],
+        "validity": "finite DATE start<=observation_date<end; gaps produce no link",
+        "scope_semantics": "request filters captured observations only; full history validated at load; all observations without qualification rule",
+        "source_identity": "record_id identifies source witnesses only, not output links",
+        "request": {
+          "dates": {
+            "mode": "range",
+            "start_date": "2024-02-29",
+            "end_date": "2024-03-01"
+          },
+          "products": {
+            "mode": "subset",
+            "values": [
+              "X",
+              "Y"
+            ]
+          }
+        },
+        "link_count": "7",
+        "complete": true,
+        "paging": false,
+        "truncated": false,
+        "link_columns": [
+          "user_id",
+          "date",
+          "product",
+          "target_id"
+        ],
+        "link_types": [
+          "VARCHAR",
+          "DATE",
+          "VARCHAR",
+          "VARCHAR"
+        ],
+        "link_encodings": [
+          "raw-UTF8",
+          "finite-date-text",
+          "raw-UTF8",
+          "raw-UTF8"
+        ],
+        "ordering": "raw User bytes, DATE value, raw product bytes, raw target bytes ascending",
+        "links": [
+          [
+            "U",
+            "2024-02-29",
+            "X",
+            "U"
+          ],
+          [
+            "nul\u0000id",
+            "2024-02-29",
+            "X",
+            "nul\u0000id"
+          ],
+          [
+            "q\"\\\n",
+            "2024-02-29",
+            "X",
+            "q\"\\\n"
+          ],
+          [
+            "u",
+            "2024-02-29",
+            "X",
+            "T"
+          ],
+          [
+            "u",
+            "2024-02-29",
+            "Y",
+            "T"
+          ],
+          [
+            "u",
+            "2024-03-01",
+            "X",
+            "V"
+          ],
+          [
+            "汉字",
+            "2024-02-29",
+            "X",
+            "汉字"
+          ]
+        ]
+      },
+      "independent_links": [
+        [
+          "U",
+          "2024-02-29",
+          "X",
+          "U"
+        ],
+        [
+          "nul\u0000id",
+          "2024-02-29",
+          "X",
+          "nul\u0000id"
+        ],
+        [
+          "q\"\\\n",
+          "2024-02-29",
+          "X",
+          "q\"\\\n"
+        ],
+        [
+          "u",
+          "2024-02-29",
+          "X",
+          "T"
+        ],
+        [
+          "u",
+          "2024-02-29",
+          "Y",
+          "T"
+        ],
+        [
+          "u",
+          "2024-03-01",
+          "X",
+          "V"
+        ],
+        [
+          "汉字",
+          "2024-02-29",
+          "X",
+          "汉字"
+        ]
+      ]
+    },
+    {
+      "request": {
+        "dates": {
+          "mode": "all"
+        },
+        "products": {
+          "mode": "subset",
+          "values": [
+            "absent"
+          ]
+        }
+      },
+      "plan": {
+        "schema_version": "ossie-history-links-plan-v1",
+        "executed": false,
+        "api_version": "1.0.0",
+        "profile": "historical-observation-relation-v1",
+        "operator": "history_at_observation",
+        "root_concept": "DailyObservation",
+        "relationship": "team_at_observation",
+        "user_concept": "User",
+        "target_concept": "Team",
+        "target_identity_relationship": "id",
+        "target_identity_bound_type": "VARCHAR",
+        "snapshot_id": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6:1",
+        "content_sha256": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6",
+        "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+        "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+        "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+        "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+        "observation_rows": "14",
+        "history_record_count": "11",
+        "index_segment_count": "10",
+        "root_identity_relationships": [
+          "user",
+          "date",
+          "product"
+        ],
+        "root_identity_fields": [
+          "user_id",
+          "ds",
+          "product"
+        ],
+        "link_role_concepts": [
+          "User",
+          "Date",
+          "String",
+          "Team"
+        ],
+        "validity": "finite DATE start<=observation_date<end; gaps produce no link",
+        "scope_semantics": "request filters captured observations only; full history validated at load; all observations without qualification rule",
+        "source_identity": "record_id identifies source witnesses only, not output links",
+        "request": {
+          "dates": {
+            "mode": "all"
+          },
+          "products": {
+            "mode": "subset",
+            "values": [
+              "absent"
+            ]
+          }
+        },
+        "links_computed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "input_projection_binding": true,
+        "input_types": [
+          "VARCHAR",
+          "DATE",
+          "VARCHAR"
+        ],
+        "projection_sql": "SELECT observations.user_id, observations.ds, observations.product FROM \"system\".main._ossie_snapshot_rows() AS observations",
+        "operators": [
+          "frozen full observation projection",
+          "explicit observation date/product scope",
+          "immutable per-User interval binary lookup",
+          "start inclusive and end exclusive; gap no link",
+          "complete Observation to typed target set",
+          "raw User/product/target bytes and DATE value ordering",
+          "complete bounded JSON"
+        ],
+        "limits": {
+          "links": 10000,
+          "request_utf8_bytes": 16384,
+          "complete_json_utf8_bytes": 1048576
+        },
+        "limitations": [
+          "Compile binds projection but never scans or matches links",
+          "Input and index counts are load metadata",
+          "Rendered projection excludes C++ scope/index matching and cannot replay independently",
+          "Compile does not guarantee execution completion or encoded result size"
+        ]
+      },
+      "result": {
+        "schema_version": "ossie-history-links-result-v1",
+        "executed": true,
+        "api_version": "1.0.0",
+        "profile": "historical-observation-relation-v1",
+        "operator": "history_at_observation",
+        "root_concept": "DailyObservation",
+        "relationship": "team_at_observation",
+        "user_concept": "User",
+        "target_concept": "Team",
+        "target_identity_relationship": "id",
+        "target_identity_bound_type": "VARCHAR",
+        "snapshot_id": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6:1",
+        "content_sha256": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6",
+        "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+        "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+        "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+        "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+        "observation_rows": "14",
+        "history_record_count": "11",
+        "index_segment_count": "10",
+        "root_identity_relationships": [
+          "user",
+          "date",
+          "product"
+        ],
+        "root_identity_fields": [
+          "user_id",
+          "ds",
+          "product"
+        ],
+        "link_role_concepts": [
+          "User",
+          "Date",
+          "String",
+          "Team"
+        ],
+        "validity": "finite DATE start<=observation_date<end; gaps produce no link",
+        "scope_semantics": "request filters captured observations only; full history validated at load; all observations without qualification rule",
+        "source_identity": "record_id identifies source witnesses only, not output links",
+        "request": {
+          "dates": {
+            "mode": "all"
+          },
+          "products": {
+            "mode": "subset",
+            "values": [
+              "absent"
+            ]
+          }
+        },
+        "link_count": "0",
+        "complete": true,
+        "paging": false,
+        "truncated": false,
+        "link_columns": [
+          "user_id",
+          "date",
+          "product",
+          "target_id"
+        ],
+        "link_types": [
+          "VARCHAR",
+          "DATE",
+          "VARCHAR",
+          "VARCHAR"
+        ],
+        "link_encodings": [
+          "raw-UTF8",
+          "finite-date-text",
+          "raw-UTF8",
+          "raw-UTF8"
+        ],
+        "ordering": "raw User bytes, DATE value, raw product bytes, raw target bytes ascending",
+        "links": []
+      },
+      "independent_links": []
+    },
+    {
+      "request": {
+        "dates": {
+          "mode": "range",
+          "start_date": "5877642-06-23 (BC)",
+          "end_date": "5877642-06-23 (BC)"
+        },
+        "products": {
+          "mode": "all"
+        }
+      },
+      "plan": {
+        "schema_version": "ossie-history-links-plan-v1",
+        "executed": false,
+        "api_version": "1.0.0",
+        "profile": "historical-observation-relation-v1",
+        "operator": "history_at_observation",
+        "root_concept": "DailyObservation",
+        "relationship": "team_at_observation",
+        "user_concept": "User",
+        "target_concept": "Team",
+        "target_identity_relationship": "id",
+        "target_identity_bound_type": "VARCHAR",
+        "snapshot_id": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6:1",
+        "content_sha256": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6",
+        "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+        "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+        "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+        "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+        "observation_rows": "14",
+        "history_record_count": "11",
+        "index_segment_count": "10",
+        "root_identity_relationships": [
+          "user",
+          "date",
+          "product"
+        ],
+        "root_identity_fields": [
+          "user_id",
+          "ds",
+          "product"
+        ],
+        "link_role_concepts": [
+          "User",
+          "Date",
+          "String",
+          "Team"
+        ],
+        "validity": "finite DATE start<=observation_date<end; gaps produce no link",
+        "scope_semantics": "request filters captured observations only; full history validated at load; all observations without qualification rule",
+        "source_identity": "record_id identifies source witnesses only, not output links",
+        "request": {
+          "dates": {
+            "mode": "range",
+            "start_date": "5877642-06-23 (BC)",
+            "end_date": "5877642-06-23 (BC)"
+          },
+          "products": {
+            "mode": "all"
+          }
+        },
+        "links_computed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "input_projection_binding": true,
+        "input_types": [
+          "VARCHAR",
+          "DATE",
+          "VARCHAR"
+        ],
+        "projection_sql": "SELECT observations.user_id, observations.ds, observations.product FROM \"system\".main._ossie_snapshot_rows() AS observations",
+        "operators": [
+          "frozen full observation projection",
+          "explicit observation date/product scope",
+          "immutable per-User interval binary lookup",
+          "start inclusive and end exclusive; gap no link",
+          "complete Observation to typed target set",
+          "raw User/product/target bytes and DATE value ordering",
+          "complete bounded JSON"
+        ],
+        "limits": {
+          "links": 10000,
+          "request_utf8_bytes": 16384,
+          "complete_json_utf8_bytes": 1048576
+        },
+        "limitations": [
+          "Compile binds projection but never scans or matches links",
+          "Input and index counts are load metadata",
+          "Rendered projection excludes C++ scope/index matching and cannot replay independently",
+          "Compile does not guarantee execution completion or encoded result size"
+        ]
+      },
+      "result": {
+        "schema_version": "ossie-history-links-result-v1",
+        "executed": true,
+        "api_version": "1.0.0",
+        "profile": "historical-observation-relation-v1",
+        "operator": "history_at_observation",
+        "root_concept": "DailyObservation",
+        "relationship": "team_at_observation",
+        "user_concept": "User",
+        "target_concept": "Team",
+        "target_identity_relationship": "id",
+        "target_identity_bound_type": "VARCHAR",
+        "snapshot_id": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6:1",
+        "content_sha256": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6",
+        "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+        "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+        "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+        "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+        "observation_rows": "14",
+        "history_record_count": "11",
+        "index_segment_count": "10",
+        "root_identity_relationships": [
+          "user",
+          "date",
+          "product"
+        ],
+        "root_identity_fields": [
+          "user_id",
+          "ds",
+          "product"
+        ],
+        "link_role_concepts": [
+          "User",
+          "Date",
+          "String",
+          "Team"
+        ],
+        "validity": "finite DATE start<=observation_date<end; gaps produce no link",
+        "scope_semantics": "request filters captured observations only; full history validated at load; all observations without qualification rule",
+        "source_identity": "record_id identifies source witnesses only, not output links",
+        "request": {
+          "dates": {
+            "mode": "range",
+            "start_date": "5877642-06-23 (BC)",
+            "end_date": "5877642-06-23 (BC)"
+          },
+          "products": {
+            "mode": "all"
+          }
+        },
+        "link_count": "1",
+        "complete": true,
+        "paging": false,
+        "truncated": false,
+        "link_columns": [
+          "user_id",
+          "date",
+          "product",
+          "target_id"
+        ],
+        "link_types": [
+          "VARCHAR",
+          "DATE",
+          "VARCHAR",
+          "VARCHAR"
+        ],
+        "link_encodings": [
+          "raw-UTF8",
+          "finite-date-text",
+          "raw-UTF8",
+          "raw-UTF8"
+        ],
+        "ordering": "raw User bytes, DATE value, raw product bytes, raw target bytes ascending",
+        "links": [
+          [
+            "min",
+            "5877642-06-23 (BC)",
+            "X",
+            "M"
+          ]
+        ]
+      },
+      "independent_links": [
+        [
+          "min",
+          "5877642-06-23 (BC)",
+          "X",
+          "M"
+        ]
+      ]
+    },
+    {
+      "request": {
+        "dates": {
+          "mode": "range",
+          "start_date": "9999-12-31",
+          "end_date": "10000-01-02"
+        },
+        "products": {
+          "mode": "all"
+        }
+      },
+      "plan": {
+        "schema_version": "ossie-history-links-plan-v1",
+        "executed": false,
+        "api_version": "1.0.0",
+        "profile": "historical-observation-relation-v1",
+        "operator": "history_at_observation",
+        "root_concept": "DailyObservation",
+        "relationship": "team_at_observation",
+        "user_concept": "User",
+        "target_concept": "Team",
+        "target_identity_relationship": "id",
+        "target_identity_bound_type": "VARCHAR",
+        "snapshot_id": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6:1",
+        "content_sha256": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6",
+        "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+        "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+        "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+        "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+        "observation_rows": "14",
+        "history_record_count": "11",
+        "index_segment_count": "10",
+        "root_identity_relationships": [
+          "user",
+          "date",
+          "product"
+        ],
+        "root_identity_fields": [
+          "user_id",
+          "ds",
+          "product"
+        ],
+        "link_role_concepts": [
+          "User",
+          "Date",
+          "String",
+          "Team"
+        ],
+        "validity": "finite DATE start<=observation_date<end; gaps produce no link",
+        "scope_semantics": "request filters captured observations only; full history validated at load; all observations without qualification rule",
+        "source_identity": "record_id identifies source witnesses only, not output links",
+        "request": {
+          "dates": {
+            "mode": "range",
+            "start_date": "9999-12-31",
+            "end_date": "10000-01-02"
+          },
+          "products": {
+            "mode": "all"
+          }
+        },
+        "links_computed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "input_projection_binding": true,
+        "input_types": [
+          "VARCHAR",
+          "DATE",
+          "VARCHAR"
+        ],
+        "projection_sql": "SELECT observations.user_id, observations.ds, observations.product FROM \"system\".main._ossie_snapshot_rows() AS observations",
+        "operators": [
+          "frozen full observation projection",
+          "explicit observation date/product scope",
+          "immutable per-User interval binary lookup",
+          "start inclusive and end exclusive; gap no link",
+          "complete Observation to typed target set",
+          "raw User/product/target bytes and DATE value ordering",
+          "complete bounded JSON"
+        ],
+        "limits": {
+          "links": 10000,
+          "request_utf8_bytes": 16384,
+          "complete_json_utf8_bytes": 1048576
+        },
+        "limitations": [
+          "Compile binds projection but never scans or matches links",
+          "Input and index counts are load metadata",
+          "Rendered projection excludes C++ scope/index matching and cannot replay independently",
+          "Compile does not guarantee execution completion or encoded result size"
+        ]
+      },
+      "result": {
+        "schema_version": "ossie-history-links-result-v1",
+        "executed": true,
+        "api_version": "1.0.0",
+        "profile": "historical-observation-relation-v1",
+        "operator": "history_at_observation",
+        "root_concept": "DailyObservation",
+        "relationship": "team_at_observation",
+        "user_concept": "User",
+        "target_concept": "Team",
+        "target_identity_relationship": "id",
+        "target_identity_bound_type": "VARCHAR",
+        "snapshot_id": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6:1",
+        "content_sha256": "ddce988b6c31f4ae506272f05a019a6811f92ff403ccac3832b93be540062ca6",
+        "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+        "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+        "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+        "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+        "observation_rows": "14",
+        "history_record_count": "11",
+        "index_segment_count": "10",
+        "root_identity_relationships": [
+          "user",
+          "date",
+          "product"
+        ],
+        "root_identity_fields": [
+          "user_id",
+          "ds",
+          "product"
+        ],
+        "link_role_concepts": [
+          "User",
+          "Date",
+          "String",
+          "Team"
+        ],
+        "validity": "finite DATE start<=observation_date<end; gaps produce no link",
+        "scope_semantics": "request filters captured observations only; full history validated at load; all observations without qualification rule",
+        "source_identity": "record_id identifies source witnesses only, not output links",
+        "request": {
+          "dates": {
+            "mode": "range",
+            "start_date": "9999-12-31",
+            "end_date": "10000-01-02"
+          },
+          "products": {
+            "mode": "all"
+          }
+        },
+        "link_count": "1",
+        "complete": true,
+        "paging": false,
+        "truncated": false,
+        "link_columns": [
+          "user_id",
+          "date",
+          "product",
+          "target_id"
+        ],
+        "link_types": [
+          "VARCHAR",
+          "DATE",
+          "VARCHAR",
+          "VARCHAR"
+        ],
+        "link_encodings": [
+          "raw-UTF8",
+          "finite-date-text",
+          "raw-UTF8",
+          "raw-UTF8"
+        ],
+        "ordering": "raw User bytes, DATE value, raw product bytes, raw target bytes ascending",
+        "links": [
+          [
+            "wide",
+            "10000-01-01",
+            "X",
+            "W"
+          ]
+        ]
+      },
+      "independent_links": [
+        [
+          "wide",
+          "10000-01-01",
+          "X",
+          "W"
+        ]
+      ]
+    }
+  ],
+  "source_sha256": {
+    "scripts/verify_history_links_artifact.ts": "cfced6633341591c736c330dc14d771ef6bbfb08e115dfa1020be197c7343575"
+  },
+  "real_model_requests": 0
+}

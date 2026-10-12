@@ -23,7 +23,7 @@ OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckD
 | `daily-observation-population-v1` | 固定五个观察聚合形状；正式资格为分类整数与整数阈值比较；每日集合做自然日见证归约；专用状态 SQL 保留 BOOLEAN/NULL 后归约全部 User/day 与请求内相邻比较，独立 MCP/无模型已本地验证 | 每日归约不是 SQL 窗口；没有历史有效期；新增代码 Linux/tidy 未复验 |
 | `observation-relation-program-v1` | 声明的同根 User 关系调用、正向非递归 DAG、有限整数条件和显式 NULL 约束 | 关系调用是 ontology typed 语法，不能当普通 SQL UDF；没有任意聚合/窗口 |
 | `multi-fact-user-program-v1` | 两个事实分别按 User 归约后组合；另有同源 User/date 行窗口 | 不支持原始事实连接后聚合、跨来源窗口、比率或任意 SQL 请求 |
-| `historical-observation-relation-v1` | 只接受直接物理字段与明确 typed 角色，完整有限 DATE 双源捕获/索引及 program 元数据；时间匹配是项目算子 | 未执行通用 ontology derived_by，非空未执行规则拒绝；历史 link/compile/MCP 尚未实现 |
+| `historical-observation-relation-v1` | 直接物理字段与明确 typed 角色，完整有限 DATE 双源捕获/索引、program、完整历史 links 与只绑定投影的逻辑 compile；时间匹配是项目算子 | 未执行通用 ontology derived_by，非空未执行规则拒绝；历史 MCP/无模型与新代码 Linux/tidy 尚待验收 |
 
 ## P1 相关形状
 
@@ -42,7 +42,7 @@ OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckD
 | `SUM ... OVER`；规范窗口聚合 REQUIRED | 同源 User/date，明确 `ROWS BETWEEN n PRECEDING AND CURRENT ROW`，n为0..366字面整数 | n0/366执行通过；n367、RANGE、UNBOUNDED、FOLLOWING、倒序、产品粒度来源拒绝。先全部捕获计算窗口，后过滤显示日期；2月1日前值200、两行和250 |
 | `LEAD`、`FIRST_VALUE`、排名及其他窗口；规范 REQUIRED | 没有新增允许位置 | native直接实测 LEAD/FIRST_VALUE/ROW_NUMBER/AVG窗口拒绝；其余排名与NTH/LAST等未逐项实测，不以共用拒绝分支冒充每项证据 |
 | 日期/类型、自然日集合 | daily 请求为真实公历0001..9999、首尾包含、最多366自然日；fact/relation为完整有限 DuckDB DATE canonical文本、支持 BC/宽年份 | DATE 身份不截 TIMESTAMP、不猜时区；fact显示范围不补日。daily缺见证不能证明真实不合格；两个接口日期域有意不同 |
-| 历史有效期、每日三值状态变化 | 仍为 P1 必需待完成工作 | 两项业务口径待确认。已有 LAG/ROWS 不替代每日状态归约、半开有效期、重叠/缺口处理或相应接口验收 |
+| 历史有效期、每日三值状态变化 | 已接受口径：每日三值归约与相邻自然日比较全接口本地通过；历史半开区间匹配/重叠拒绝/缺口/完整 links 与逻辑 compile 本地通过 | 历史 MCP/无模型、新代码 Linux/tidy 与整体 P1 验收仍必需；已有 LAG/ROWS 不替代这些验收 |
 
 窗口采用已验证 AST 副本直接嵌入捕获来源，不把 DuckDB 窗口 ToString 诊断
 文本重新解析成执行树。系统函数明确绑定 `system.main`；诊断文本可能省略
@@ -81,7 +81,7 @@ SQL全套包含SQL2026、标量、每日、关系、多事实；native分别验�
 [八场景无模型演练](research/ossie-req-001/p1-fact-agent-controls/review.md)。
 原始证据与当时源码绑定，后续复验不能覆盖原始报告。
 
-P1 尚需每日状态与历史关系口径及实现、相应对象/解释/发现/MCP验收、最终同产物
+P1 尚需历史 MCP/无模型、状态与历史新代码 Linux/tidy、最终同产物
 全套质量检查与待推历史私有信息审计。本地命令通过不证明远端跨平台/tidy已运行；
 无模型演练不证明模型自主选择。完整P1的验收范围保持原需求与现有计划。
 

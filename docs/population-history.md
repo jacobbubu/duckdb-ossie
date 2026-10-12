@@ -1,9 +1,9 @@
-# 历史关系双源加载与索引
+# 历史关系双源加载、查询与解释
 
-`historical-observation-relation-v1` 已实现 typed 双源加载、完整历史校验、冻结索引与
-`ossie_history_program()`。当前尚无历史 link 查询、compile 或 MCP 接口；program
-明确 `query_supported=false`、`compile_supported=false`、`mcp_registered=false`，
-加载成功不等于历史查询验收完成。完整 P1 仍需后续实施与跨环境验收。
+`historical-observation-relation-v1` 已实现 typed 双源加载、完整历史校验、冻结索引、
+`ossie_history_program()`、`ossie_history_links_json()` 与 `ossie_history_links_compile()`。
+program 明确 `query_supported=true`、`compile_supported=true`、`mcp_registered=false`。
+历史 MCP 与无模型演练尚未实施，完整 P1 仍需后续实施与跨环境验收。
 
 [fixture](../test/fixtures/population-history-program/bundle.json) 有两份数据集：
 观察实体按 User/DATE/product 标识，历史实体按全局 record_id 标识。User 与 Team
@@ -25,6 +25,10 @@ INSERT INTO observations VALUES ('u', DATE '2024-02-29', 'X');
 INSERT INTO history VALUES ('a', 'u', 'T', DATE '2024-02-28', DATE '2024-03-01');
 CALL ossie_bundle_load('test/fixtures/population-history-program/bundle.json');
 SELECT program_json FROM ossie_history_program();
+SELECT result_json FROM ossie_history_links_json(
+  'team_at_observation', '{"dates":{"mode":"all"},"products":{"mode":"all"}}');
+SELECT plan_json FROM ossie_history_links_compile(
+  'team_at_observation', '{"dates":{"mode":"all"},"products":{"mode":"all"}}');
 ```
 
 同一源事务捕获两个不同的已提交 native 表，TEMP/view/external/generated/collated
@@ -43,14 +47,32 @@ INT32_MIN 日，不缩为四位年份。有效期 `[start,end)`，起点包含�
 完整历史中同 User 的不同目标区间重叠拒绝整批，包含没有观察的 User；查询不能
 过滤隐藏冲突。不同 ID 的同目标重叠保留原始捕获，派生索引合并连续覆盖并保留
 缺口。原始 collection/hash 不被索引替换。父 hash 绑定双源及定义，索引段数最多
-历史行数，查找不构造观察×历史 bag。完整 link 去重及查询执行仍待下一切片。
+历史行数，查找不构造观察×历史 bag。查询返回完整 `[User,DATE,product,target]`
+关系集合；不同 record_id 的同目标重叠只产生一条完整 link，缺口不产生 link。
+
+查询日期支持 `{"mode":"all"}` 或 `{"mode":"range","start_date":"2024-02-28",
+"end_date":"2024-03-01"}`，范围两端包含，日期须为有限 DATE 的规范文本。产品支持
+all 或 `{"mode":"subset","values":["X"]}`，最多 64 个不同非空值，每值最多 256
+UTF-8 字节。日期/产品只筛观察，不筛掉已载入的历史冲突；不根据前日观察补行。
+原始 request_json 最多 16 KiB，重复/未知字段与 SQL NULL 拒绝。完整结果最多
+10,000 links、1 MiB UTF-8，字节含转义、元数据与请求范围；超限整体报错，不分页、
+不截断。按原始 User 字节、DATE 值、产品与目标字节排序。
+
+compile 只绑定冻结观察的 VARCHAR/DATE/VARCHAR 投影，不扫描来源、查找目标或
+计算 link 数；输出逻辑算子、限制及与查询一致的范围/六项追踪值，不是物理计划
+或可重放 SQL。计划 JSON 同样限 1 MiB。program 的源行数、历史 record 数及 index
+段数不能替代查询的 link 数。
 
 候选全部成功后才原子替换父快照。第二源失败、冲突、超限或两处确定性取消均
 保留旧状态；并发修改两表在一个事务提交不会令本次双捕获混合新旧。prepared 的
-program 保留旧父，重载及删两表后仍可读取旧元数据；该证明不能外推为尚未实现的
-历史 link 执行正确或所有引用释放后的无泄漏证明。私有 binary Engine 不改调用者
+program、links 与 compile 保留旧父，重载及删两表后仍可读取原先完整结果/计划；
+取消查询后可恢复。这些证明不代表所有引用释放后的无泄漏证明。私有 binary Engine 不改调用者
 设置。旧五 profile 保持原行为；新 profile 的旧通用人口入口明确拒绝，不给错误声明。
 
 [加载与生命周期证据](research/ossie-req-001/p1-history-load-controls/review.md)包含两源
 各 10,000 行完整载入/各自多一行拒绝、失败保留、原生取消、同事务及 prepared 控制。
 当前仅 macOS ARM64 本地通过；新代码 Linux/tidy、远端 CI 和完整 P1 尚未完成。
+
+[查询与解释证据](research/ossie-req-001/p1-history-links-controls/review.md)另以新产物
+核对逐记录枚举的完整关系、有限日期极值、10,000 完整 links、精确字节预算及
+prepared/原生取消。旧加载报告保留当时的 SHA 和接口状态，不改写历史证据。

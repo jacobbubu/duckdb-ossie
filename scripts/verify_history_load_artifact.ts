@@ -1,4 +1,4 @@
-/** Real typed double capture/index and failed replacement controls; links not implemented yet. */
+/** Real typed double capture/index and failed replacement controls; links checked separately. */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { Database, ROOT, digest, assert } from "./artifact_helpers.ts";
@@ -82,8 +82,8 @@ try {
   const initial = await program();
   assert(
     initial.query_executed === false &&
-      initial.query_supported === false &&
-      initial.compile_supported === false &&
+      initial.query_supported === true &&
+      initial.compile_supported === true &&
       initial.mcp_registered === false,
   );
   assert.equal(initial.total_source_rows, "5");

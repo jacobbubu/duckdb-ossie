@@ -618,6 +618,16 @@ void RelationBindControls(const string &root, int threads) {
 }
 
 } // namespace
+class HistoryObserver : public PopulationHistoryObserver {
+public:
+	explicit HistoryObserver(std::function<void(PopulationHistoryCheckpoint)> action) : action(std::move(action)) {
+	}
+	void Observe(PopulationHistoryCheckpoint point) override {
+		action(point);
+	}
+	std::function<void(PopulationHistoryCheckpoint)> action;
+};
+
 void HistoryControls(const string &root, int threads) {
 	DuckDB database(nullptr);
 	Connection loader(database), writer(database), reader(database);
@@ -634,9 +644,40 @@ void HistoryControls(const string &root, int threads) {
 	Query(loader, load);
 	auto before = Scalar(reader, program);
 	const auto original_program = before;
-	Check(before.find("\"query_supported\":false") != string::npos, "history honest unsupported query declaration");
+	Check(before.find("\"query_supported\":true") != string::npos, "history honest supported query declaration");
 	auto prepared = reader.Prepare(program);
 	Check(!prepared->HasError(), "history program prepared parent bind");
+	const string links_sql = "SELECT result_json FROM "
+	                         "ossie_history_links_json('team_at_observation','{\"dates\":{\"mode\":\"all\"},"
+	                         "\"products\":{\"mode\":\"all\"}}')";
+	const string plan_sql = StringUtil::Replace(StringUtil::Replace(links_sql, "result_json", "plan_json"),
+	                                            "ossie_history_links_json", "ossie_history_links_compile");
+	int probes = 0;
+	reader.context->registered_state->Insert(
+	    PopulationHistoryObserver::KEY,
+	    make_shared_ptr<HistoryObserver>([&](PopulationHistoryCheckpoint) { probes++; }));
+	auto original_plan = Scalar(reader, plan_sql);
+	Check(probes == 0, "history compile does not scan/match/encode result");
+	auto original_links = Scalar(reader, links_sql);
+	Check(probes == 4, "history actual execution reaches four checkpoints");
+	Check(original_links.find("\"links\":[[\"u\",\"2024-02-28\",\"X\",\"T\"]]") != string::npos,
+	      "history native full link identity");
+	reader.context->registered_state->Remove(PopulationHistoryObserver::KEY);
+	auto prepared_links = reader.Prepare(links_sql), prepared_plan = reader.Prepare(plan_sql);
+	Check(!prepared_links->HasError() && !prepared_plan->HasError(), "history links/plan prepared binding");
+	for (auto point : {PopulationHistoryCheckpoint::BEFORE_EXECUTE, PopulationHistoryCheckpoint::BEFORE_SORT,
+	                   PopulationHistoryCheckpoint::BEFORE_ENCODE, PopulationHistoryCheckpoint::BEFORE_FINISH}) {
+		reader.context->registered_state->Insert(PopulationHistoryObserver::KEY,
+		                                         make_shared_ptr<HistoryObserver>([&](PopulationHistoryCheckpoint at) {
+			                                         if (at == point)
+				                                         reader.Interrupt();
+		                                         }));
+		auto cancelled = reader.Query(links_sql);
+		reader.context->registered_state->Remove(PopulationHistoryObserver::KEY);
+		Check(cancelled->HasError() && cancelled->GetErrorObject().Type() == ExceptionType::INTERRUPT,
+		      "history native execute interrupt preserved");
+		Check(Scalar(reader, links_sql) == original_links, "history interrupted execution recovery same parent");
+	}
 	for (auto point :
 	     {PopulationLoadCheckpoint::AFTER_HISTORY_OBSERVATION_CAPTURE, PopulationLoadCheckpoint::BEFORE_PUBLISH}) {
 		Attempt attempt(loader, load, point);
@@ -722,6 +763,18 @@ void HistoryControls(const string &root, int threads) {
 	Check(!saved_chunk->GetValue(0, 0).IsNull() && saved_chunk->GetValue(0, 0).ToString() == original_program,
 	      "old prepared parent metadata survives reload exactly");
 	Check(!saved->Fetch() && !saved->HasError(), "history prepared stream exhausted without error");
+	for (auto item :
+	     {std::make_pair(prepared_links.get(), original_links), std::make_pair(prepared_plan.get(), original_plan)}) {
+		auto old_result = item.first->Execute();
+		Check(!old_result->HasError(), "history prepared links/plan after both source drops");
+		auto old_chunk = old_result->Fetch();
+		Check(old_chunk && old_chunk->size() == 1 && old_chunk->ColumnCount() == 1 &&
+		          !old_chunk->GetValue(0, 0).IsNull() && old_chunk->GetValue(0, 0).ToString() == item.second,
+		      "history prepared complete links/plan exactly retains old parent");
+		Check(!old_result->Fetch() && !old_result->HasError(), "history prepared links/plan stream exhausted");
+	}
+	Check(Scalar(reader, links_sql) != original_links && Scalar(reader, plan_sql) != original_plan,
+	      "history fresh links/plan binds new parent after reload/drop");
 	Check(Scalar(reader, program) != original_program, "current history parent differs from old prepared metadata");
 	Check(Scalar(reader, "SELECT current_setting('default_collation')") == "nocase",
 	      "private history engine does not mutate caller collation");

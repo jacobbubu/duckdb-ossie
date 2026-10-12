@@ -1805,3 +1805,11 @@ MCP/专用program与surface、严格carrier解码、六场景注入Responses与�
 状态全接口工作包完成不等于P1；历史实现及完整接口、新代码Linux/tidy和全五项
 统一审计仍必需。失败日志、私有原始seal和选择性派生报告绑定保留。不调用真实模型，
 不推送；goal已由用户恢复active，继续历史双源设计核对与实施。
+
+历史 SQL 查询/解释工作包（2026-10-12）：[完整关系证据](research/ossie-req-001/p1-history-links-controls/review.md)
+绑定 d5185413，逐记录枚举核对全部 links、半开边界/缺口/重复来源、有限 DATE
+极值及完整 10,000 条身份。7 控制/28 拒绝，16 KiB 请求和完整 1 MiB 响应边界、
+旧 prepared 父及四阶段原生取消恢复通过。482 捕获检查与其余六原生、29 SQL/
+1070、138 Bun/723、质量及同产物旧 SQL/MCP/五组无模型通过。337 私有原件
+保留失败。当前历史 query/compile 支持、MCP 未注册；下一为历史 MCP/严格解码/
+无模型演练，再新代码 Linux/tidy 和全五项 P1 统一审计。无模型调用或推送。
