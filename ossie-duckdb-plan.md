@@ -1,5 +1,26 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 facts discovery research delivery — 2026-10-13
+
+[发现契约研究](docs/research/ossie-req-001/p1-fact-discovery-research/proposal.md)
+本地完成：推荐String接口保持、两users工具完整构造语法摘要＋共享静态资源，
+区分实际program绑定/结构schema/谓词数值语义。6通用假想示例、8错误结构、
+16/17及63/65边界离线通过预期；6语义反例和空/NUL门禁差异记录，66来源及
+原失败seal/17原件保持。Advisor只读一轮，原源码/上下文/额度不改，未读配置/
+新MCP/compile/模型或推送。下一候选是最小发现声明实施＋无模型验证，需
+另行授权；假想指标未加入pilot，不宣称原生执行或真实成功。子模块Git路径
+缺口仍待后续原生工作处理；三题真实验收仍未完成。
+
+## P1 facts discovery research checkpoint — 2026-10-13
+
+用户授权仅研究 facts MCP 集合JSON完整发现声明和与本题答案无关的通用
+示例，不实现、不再调用模型。沿OSSIE-REQ-001，复用46d2b20失败原件与源码，
+核对原生/客户端/结果校验和实际发现，比较描述/共享资源/对象API方案；
+形成候选契约、结构草案/示例及纯离线验证，保留结构/语义/计算证明边界。
+一轮只读Advisor反证，Lead验证；原预算/运行代码/旧seal不改，不推送。
+Git普通status因duckdb子模块路径失效，使用ignore-submodules只核父仓；
+本轮不构建或修复，后续原生工作前仍需处理该环境缺口。
+
 ## P1 facts one-shot delivery — 2026-10-12
 
 [facts一次真实验收](docs/research/ossie-req-001/p1-agent-live-facts-once/review.md)

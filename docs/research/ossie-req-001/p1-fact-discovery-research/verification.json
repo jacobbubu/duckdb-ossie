@@ -1,0 +1,61 @@
+{
+  "schema": "ossie-facts-discovery-research-delivery-v1",
+  "date": "2026-10-13",
+  "baseline": "46d2b20",
+  "scope": "research and documentation drafts only",
+  "production_code_changed": false,
+  "model_requests": 0,
+  "real_configuration_read": false,
+  "native_compile_or_new_mcp_sessions": 0,
+  "source_files_bound_and_unchanged": 66,
+  "previous_runtime_sources_verified": 62,
+  "original_raw_and_review_files_preserved": 17,
+  "original_failure_seal_sha256": "c9071a08bdf694c8b11710408bc3c2c3bacdd50edc20b1c9e145844e48118287",
+  "draft_examples": 6,
+  "structural_negatives": 8,
+  "budget_controls": 4,
+  "semantic_boundary_examples": 6,
+  "schema_meta_validation": "AJV2020 strict compile passed",
+  "generic_examples_answer_independence": "Hypothetical metrics/thresholds only; bounded marker check passed; no rows/results/answers; not executable on current pilot",
+  "local_links_checked": 328,
+  "bounded_private_marker_scan": "new public files/changed parent documents passed; no actual key/config read; not universal detection",
+  "private_manifest_sha256": "411b3934f3cd600446c93aa66a216ba091395d40dd43cfa45bd080dc06268d79",
+  "advisor": {
+    "requested_role": "advisor",
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "rounds": 1,
+    "scope": "read-only discovery architecture and evidence; no writes or model requests",
+    "decision": "shared contract resource plus construction-complete grammar in both tool descriptions; preserve String/native semantics",
+    "lead_verified": [
+      "native quoted/alias/NUL predicate refusals",
+      "predicate can use unprojected regular metric",
+      "root-inclusive16 depth parity",
+      "63/65 full-binary node edge",
+      "exact resource/program carrier consumers require explicit adaptation",
+      "nested trees supported despite existing recursion refusal wording"
+    ],
+    "model_success_prediction": "not established"
+  },
+  "environment_gap": "ordinary git status fails on stale duckdb submodule Git path; parent-only status/diff use ignore-submodules=all; no repair/build in research",
+  "research_files_sha256": {
+    "docs/research/ossie-req-001/p1-fact-discovery-research/contract-candidate.json": "f2bc887cf7441165375670ee051f7838689d0e8c8bba6b835a2e67d044f4e0cb",
+    "docs/research/ossie-req-001/p1-fact-discovery-research/generic-examples.json": "ed0e665c1dd0533383e90f78acc047ff185f2eec052bd3333a7df5dd20e7f7af",
+    "docs/research/ossie-req-001/p1-fact-discovery-research/inner-request.schema.json": "502682685eea25180eeb481d453103b02ac995f8606717c73e405b7a4f7855cc",
+    "docs/research/ossie-req-001/p1-fact-discovery-research/official-sources.json": "486d027d83990ce37ea7172da66c4327052107ee3a254ad535ca895c8ed8cb9c",
+    "docs/research/ossie-req-001/p1-fact-discovery-research/proposal.md": "0b6f5383bf8fa38ba5b8979f17ca6c9cc6e87c432048346aeee8d621ae5251fa",
+    "docs/research/ossie-req-001/p1-fact-discovery-research/validation.json": "ba21bc989f18ae4d4ac53049b169b2d062f1057e0030928ad0a2c07a71edf3b7"
+  },
+  "checks_not_run": [
+    "new actual resource registration or context generation",
+    "hypothetical native program compile/execution",
+    "real model retry",
+    "full Bun/native/tidy suite",
+    "remote CI/push"
+  ],
+  "next_authorized_action": "research delivery only; implementation and real-model retry not authorized"
+}

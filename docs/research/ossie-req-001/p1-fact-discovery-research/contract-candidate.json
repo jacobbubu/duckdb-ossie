@@ -1,0 +1,30 @@
+{
+  "schema_version": "ossie-fact-users-request-contract-draft-v1",
+  "status": "research only; URI not registered; no native or MCP implementation",
+  "candidate_uri": "ossie://facts/request-contract",
+  "applies_to": [
+    "population_fact_users",
+    "population_fact_users_compile"
+  ],
+  "transport": {
+    "request_json": "String containing one strict JSON object, not an object argument and not a second JSON-encoded string",
+    "outer_boundary": "Existing MCP backend ignores extra outer keys; current Agent requires exact outer fields. Do not claim backend behavior changed."
+  },
+  "inner_schema_file": "inner-request.schema.json",
+  "semantic_constraints": {
+    "metrics": "1..32 declared regular names, case-insensitive identity, no case duplicates; unknown/window names rejected; request-name UTF8 bytes<=128",
+    "predicate": "One unaliased SQL comparison: a single unqualified, unquoted declared regular metric on the left, exact nonNULL numeric constant on the right; comparison kinds equality, inequality, >, >=, <, <= (examples use = and <>; no exhaustive lexical spelling claim). Native Expression rejects double quotes, NUL, aliases and multiple expressions; binding checks numeric type/scale/range. Count requires an integral constant representable as BIGINT. Currency accepts integral or DECIMAL, decimal scale<=2 and exact DECIMAL(38,2) representation; DOUBLE rejected. No metric-to-metric, field/window reference, arithmetic/composite Boolean predicate, function/cast expression or NULL constant. Metric may be absent from selected output metrics. Unary sign/exponent spellings are not promised without parser verification.",
+    "sets": "Each atomic predicate becomes a TRUE member set within common row-presence domain. NULL/UNKNOWN/FALSE are not atomic members. Intersection/union combine sets; difference is left minus right TRUE members, order-sensitive; all denotes the complete common domain. No nullable NOT substitution.",
+    "strict_json": "Unknown and duplicate inner object fields rejected, required fields explicit, operation case-sensitive, request strings cannot contain NUL",
+    "limits": {
+      "request_json_utf8_bytes": 16384,
+      "cohort_nodes_including_root_and_leaves": 64,
+      "cohort_depth_root_is_one": 16
+    },
+    "schema_limits": "Structural JSON Schema alone does not enforce duplicate raw JSON keys, UTF8 byte budgets, node/depth totals, case-fold name uniqueness, declared metric membership, predicate parsing or numeric binding.",
+    "nested_vs_recursive": "Bounded nested binary JSON trees are supported. Named/self-referential recursion is not expressible by this contract. Clarify the current discovery refusal wording recursive cohorts rather than falsely forbidding nesting."
+  },
+  "examples_file": "generic-examples.json",
+  "snapshot_binding": "Contract version/hash identifies static grammar; actual program six bindings identify frozen runtime/data; they are distinct. Discovery client should validate applicability and freeze both in context/replay, not silently infer compatibility.",
+  "version_scope": "No project API version or MCP protocol upgrade proposed here."
+}

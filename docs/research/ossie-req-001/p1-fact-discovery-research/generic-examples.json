@@ -1,0 +1,162 @@
+{
+  "status": "research draft; no actual snapshot metric or answer",
+  "hypothetical_program": {
+    "order_count": {
+      "unit": "count:Order:user_id",
+      "bound_type": "BIGINT"
+    },
+    "refund_count": {
+      "unit": "count:Refund:user_id",
+      "bound_type": "BIGINT"
+    }
+  },
+  "use": "These names are not declared by the current pilot. Adapt only to actual program-declared regular metrics. No input rows, member sets, counts or calculated answers are supplied. Examples illustrate grammar; not directly executable on the current snapshot.",
+  "examples": [
+    {
+      "id": "all",
+      "inner_request": {
+        "domain": "common",
+        "input_scope": "entire_capture",
+        "metrics": [
+          "order_count"
+        ],
+        "cohort": {
+          "operation": "all"
+        }
+      },
+      "outer_arguments": {
+        "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"all\"}}"
+      }
+    },
+    {
+      "id": "predicate",
+      "inner_request": {
+        "domain": "common",
+        "input_scope": "entire_capture",
+        "metrics": [
+          "order_count"
+        ],
+        "cohort": {
+          "operation": "predicate",
+          "predicate": "order_count>=7"
+        }
+      },
+      "outer_arguments": {
+        "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"order_count>=7\"}}"
+      }
+    },
+    {
+      "id": "intersection",
+      "inner_request": {
+        "domain": "common",
+        "input_scope": "entire_capture",
+        "metrics": [
+          "order_count"
+        ],
+        "cohort": {
+          "operation": "intersection",
+          "children": [
+            {
+              "operation": "predicate",
+              "predicate": "order_count>=7"
+            },
+            {
+              "operation": "predicate",
+              "predicate": "refund_count>2"
+            }
+          ]
+        }
+      },
+      "outer_arguments": {
+        "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"intersection\",\"children\":[{\"operation\":\"predicate\",\"predicate\":\"order_count>=7\"},{\"operation\":\"predicate\",\"predicate\":\"refund_count>2\"}]}}"
+      }
+    },
+    {
+      "id": "union",
+      "inner_request": {
+        "domain": "common",
+        "input_scope": "entire_capture",
+        "metrics": [
+          "order_count"
+        ],
+        "cohort": {
+          "operation": "union",
+          "children": [
+            {
+              "operation": "predicate",
+              "predicate": "order_count>=7"
+            },
+            {
+              "operation": "predicate",
+              "predicate": "refund_count>2"
+            }
+          ]
+        }
+      },
+      "outer_arguments": {
+        "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"union\",\"children\":[{\"operation\":\"predicate\",\"predicate\":\"order_count>=7\"},{\"operation\":\"predicate\",\"predicate\":\"refund_count>2\"}]}}"
+      }
+    },
+    {
+      "id": "difference",
+      "inner_request": {
+        "domain": "common",
+        "input_scope": "entire_capture",
+        "metrics": [
+          "order_count"
+        ],
+        "cohort": {
+          "operation": "difference",
+          "children": [
+            {
+              "operation": "predicate",
+              "predicate": "order_count>=7"
+            },
+            {
+              "operation": "predicate",
+              "predicate": "refund_count>2"
+            }
+          ]
+        }
+      },
+      "outer_arguments": {
+        "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"difference\",\"children\":[{\"operation\":\"predicate\",\"predicate\":\"order_count>=7\"},{\"operation\":\"predicate\",\"predicate\":\"refund_count>2\"}]}}"
+      }
+    },
+    {
+      "id": "nested",
+      "inner_request": {
+        "domain": "common",
+        "input_scope": "entire_capture",
+        "metrics": [
+          "order_count"
+        ],
+        "cohort": {
+          "operation": "union",
+          "children": [
+            {
+              "operation": "intersection",
+              "children": [
+                {
+                  "operation": "predicate",
+                  "predicate": "order_count>=7"
+                },
+                {
+                  "operation": "predicate",
+                  "predicate": "refund_count>2"
+                }
+              ]
+            },
+            {
+              "operation": "predicate",
+              "predicate": "order_count=1"
+            }
+          ]
+        }
+      },
+      "outer_arguments": {
+        "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"union\",\"children\":[{\"operation\":\"intersection\",\"children\":[{\"operation\":\"predicate\",\"predicate\":\"order_count>=7\"},{\"operation\":\"predicate\",\"predicate\":\"refund_count>2\"}]},{\"operation\":\"predicate\",\"predicate\":\"order_count=1\"}]}}"
+      }
+    }
+  ]
+}

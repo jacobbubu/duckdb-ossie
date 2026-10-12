@@ -1,0 +1,18 @@
+{
+  "retrieved": "2026-10-13",
+  "sources": [
+    {
+      "url": "https://modelcontextprotocol.io/specification/2024-11-05/server/tools",
+      "claim": "Existing protocol tool definitions have description and inputSchema; schema validates exposed outer arguments, which remain a String here."
+    },
+    {
+      "url": "https://modelcontextprotocol.io/specification/2024-11-05/server/resources",
+      "claim": "Resources are application-driven and retrievable via list/read; URI availability does not guarantee host inclusion in model context."
+    },
+    {
+      "url": "https://json-schema.org/draft/2020-12/json-schema-validation",
+      "claim": "Content vocabulary keywords are annotations, not assertions; string content is not automatically decoded/validated by default."
+    }
+  ],
+  "later_protocol_reviewed": "2025-11-25 tools/resources reviewed for comparison, not used to claim current 2024-11-05 backend support or change protocol."
+}

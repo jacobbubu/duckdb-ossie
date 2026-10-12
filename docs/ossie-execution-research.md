@@ -1,5 +1,23 @@
 # OSSIE-REQ-001 本体执行基线研究
 
+### facts集合JSON发现合同研究完成（2026-10-13）
+
+[候选及分层验证](research/ossie-req-001/p1-fact-discovery-research/proposal.md)
+建议保持String，两users工具完整构造摘要与共享独立资源，原生语义/实际
+program仍权威；资源不自动等于模型上下文，contentSchema不自动验证内层。
+6假想计数示例、8错误分支、4预算边界离线核对，6语义反例/空NUL门禁差异
+记录；66来源和原失败seal/17文件保持。一轮Advisor反证后Lead核源码，
+没有实现/compile/新MCP/配置读取/模型或推送。下一候选最小声明实施与无模型
+验证，需另行授权；子模块路径失效仅记录，当前父仓检查忽略子模块，未修复。
+
+### facts集合JSON发现合同研究 checkpoint（2026-10-13）
+
+用户授权研究完整声明与通用示例，暂不实现/模型调用。沿本issue和原失败
+记录，固定46d2b20核对原生/客户端/发现信息，参考官方MCP既有协议版本与
+JSON Schema，比较放置方式及通用字段样例。研究草案不注册新资源/工具、
+不更改模型上下文或校验；一轮Advisor只读反证，Lead离线核对并封存来源。
+子模块Git路径失效作为环境缺口记录，父仓状态忽略子模块，不修复或构建。
+
 ### P1 facts 单次真实验收完成：未通过（2026-10-12）
 
 [失败边界与发现信息缺口](research/ossie-req-001/p1-agent-live-facts-once/review.md)：
