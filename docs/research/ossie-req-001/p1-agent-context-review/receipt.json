@@ -1,0 +1,431 @@
+{
+  "schema": "ossie-p1-context-review-v1",
+  "date": "2026-10-12",
+  "baseline": "f7eec83",
+  "scope": "sealed prepare/simulation review only",
+  "real_model_requests": 0,
+  "new_mcp_sessions": 0,
+  "provider_config_read": false,
+  "original_files_preserved": 312,
+  "original_manifest_sha256": "df2a852fc5bd689a5d5fe9e396770ec9fbf86cd3da6d859aadc97f181ca1347a",
+  "archives": {
+    "prepare": {
+      "seal_sha256": "4166d748dd453bfaa0189251b4e326a1efb6bdd861b398fd8d87929743f983d8",
+      "files_verified": 11,
+      "source_files_verified": 56
+    },
+    "positive": {
+      "seal_sha256": "87da5528ec9078c9cd453034d4d7f20bbf79124c46949fb86ca2a726a0ae9f12",
+      "files_verified": 14,
+      "source_files_verified": 56
+    }
+  },
+  "scenes": [
+    {
+      "scene": "facts",
+      "context_sha256": "ab94eb11aed9d273ea672aea79d3847c0e9457e30ea71e81c255c6e0443b32bf",
+      "events_sha256": "981b68f376a1358c19e075db913c1aa7b5c80b9f482d926988aa29a264ab6a00",
+      "context_matches_prepared": true,
+      "first_body_exact_discovery_and_prompts": true,
+      "continuation_exact_tool_response": true,
+      "requests": [
+        {
+          "round": 1,
+          "utf8_bytes": 13428,
+          "serialized_body_sha256": "a0231c2b74543d52003c8b16408721b2f2141e95ee75f5d062df02c8fa58e2ba",
+          "input_types": [
+            "system",
+            "user"
+          ],
+          "store": true,
+          "truncation": "disabled",
+          "max_output_tokens": 4096,
+          "strict": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "previous_response_reference": "absent"
+        },
+        {
+          "round": 2,
+          "utf8_bytes": 8886,
+          "serialized_body_sha256": "47cc963f59baba17e562b28089eef47de6677f64f194d8045b3a10390bb4259d",
+          "input_types": [
+            "function_call_output"
+          ],
+          "store": true,
+          "truncation": "disabled",
+          "max_output_tokens": 4096,
+          "strict": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "previous_response_reference": "same-scene prior simulated response"
+        }
+      ],
+      "resources": [
+        {
+          "uri": "ossie://facts/program",
+          "rows": 1,
+          "fields": [
+            "program_json"
+          ],
+          "json_utf8_bytes": 5964
+        },
+        {
+          "uri": "ossie://facts/surface",
+          "rows": 1,
+          "fields": [
+            "schema_version",
+            "tools_json",
+            "generic_objects_tool",
+            "reload_tool",
+            "arbitrary_sql_tool",
+            "argument_boundary"
+          ],
+          "json_utf8_bytes": 363
+        }
+      ],
+      "discovered_tools": [
+        "population_fact_windows_compile",
+        "population_fact_windows",
+        "population_fact_users_compile",
+        "population_fact_users"
+      ],
+      "native_inner_result_utf8_bytes": 1807,
+      "final_answer_utf8_bytes": 2160,
+      "tool_output_utf8_bytes": 2580,
+      "simulated_responses": [
+        {
+          "bytes": 601,
+          "truncated": false
+        },
+        {
+          "bytes": 2619,
+          "truncated": false
+        }
+      ],
+      "actual_mcp_tool_calls": 1,
+      "discovery_rpc": 5,
+      "usage_interpretation": "synthetic zeros; no token measurement",
+      "mechanical_status": "mechanical_pass",
+      "review": "scripted_pass"
+    },
+    {
+      "scene": "states",
+      "context_sha256": "cb186d772b74478cd5e5021a5ee1d5424ac02ed92dc3b8e25a4afbe955d9e208",
+      "events_sha256": "22c178e5c9b9a7a0117e4ca87de3cf2048e210b832127592230ea072e101f08a",
+      "context_matches_prepared": true,
+      "first_body_exact_discovery_and_prompts": true,
+      "continuation_exact_tool_response": true,
+      "requests": [
+        {
+          "round": 1,
+          "utf8_bytes": 16901,
+          "serialized_body_sha256": "57a2a8fc339a67ee0dedeaca11bc285cd5e769e884d9b15aeb28906172b679e6",
+          "input_types": [
+            "system",
+            "user"
+          ],
+          "store": true,
+          "truncation": "disabled",
+          "max_output_tokens": 4096,
+          "strict": [
+            false,
+            false
+          ],
+          "previous_response_reference": "absent"
+        },
+        {
+          "round": 2,
+          "utf8_bytes": 11616,
+          "serialized_body_sha256": "500836d8dad9f0d00961c9be7236f71a081846450a05decbeadb6d08852951cd",
+          "input_types": [
+            "function_call_output"
+          ],
+          "store": true,
+          "truncation": "disabled",
+          "max_output_tokens": 4096,
+          "strict": [
+            false,
+            false
+          ],
+          "previous_response_reference": "same-scene prior simulated response"
+        }
+      ],
+      "resources": [
+        {
+          "uri": "ossie://population/capabilities",
+          "rows": 1,
+          "fields": [
+            "api_version",
+            "discovery_schema",
+            "plan_schema",
+            "ossie_spec_version",
+            "capabilities_json",
+            "profile",
+            "snapshot_id",
+            "content_sha256",
+            "core_sha256",
+            "ontology_sha256",
+            "mapping_sha256",
+            "manifest_sha256"
+          ],
+          "json_utf8_bytes": 4667
+        },
+        {
+          "uri": "ossie://population/concepts",
+          "rows": 3,
+          "fields": [
+            "concept",
+            "parent",
+            "derived_by",
+            "identity_components_json",
+            "referenced_entity_identity_json",
+            "objects_queryable",
+            "metrics_queryable",
+            "captured_observation_rows",
+            "captured_user_count",
+            "profile",
+            "source",
+            "snapshot_id",
+            "content_sha256",
+            "core_sha256",
+            "ontology_sha256",
+            "mapping_sha256",
+            "manifest_sha256"
+          ],
+          "json_utf8_bytes": 3963
+        },
+        {
+          "uri": "ossie://population/state-program",
+          "rows": 1,
+          "fields": [
+            "program_json"
+          ],
+          "json_utf8_bytes": 1994
+        },
+        {
+          "uri": "ossie://population/state-surface",
+          "rows": 1,
+          "fields": [
+            "schema_version",
+            "tools_json",
+            "reload_tool",
+            "arbitrary_sql_tool",
+            "argument_boundary"
+          ],
+          "json_utf8_bytes": 320
+        }
+      ],
+      "discovered_tools": [
+        "population_daily_states_compile",
+        "population_daily_states"
+      ],
+      "native_inner_result_utf8_bytes": 3633,
+      "final_answer_utf8_bytes": 4058,
+      "tool_output_utf8_bytes": 5432,
+      "simulated_responses": [
+        {
+          "bytes": 563,
+          "truncated": false
+        },
+        {
+          "bytes": 4860,
+          "truncated": false
+        }
+      ],
+      "actual_mcp_tool_calls": 1,
+      "discovery_rpc": 7,
+      "usage_interpretation": "synthetic zeros; no token measurement",
+      "mechanical_status": "mechanical_pass",
+      "review": "scripted_pass"
+    },
+    {
+      "scene": "history",
+      "context_sha256": "9d3ad77167018d19ae39cbf7571ced00e5734a666abaf5f1da6e32d0e723c3e4",
+      "events_sha256": "41acb27ab03e62c523a27edf8669e0c8f3618137a7bde1d580f548298539284f",
+      "context_matches_prepared": true,
+      "first_body_exact_discovery_and_prompts": true,
+      "continuation_exact_tool_response": true,
+      "requests": [
+        {
+          "round": 1,
+          "utf8_bytes": 8964,
+          "serialized_body_sha256": "f28316dcf7622cb529452ac0297f2ea6f0493c3c54c62c45aaeabe2b41bae69c",
+          "input_types": [
+            "system",
+            "user"
+          ],
+          "store": true,
+          "truncation": "disabled",
+          "max_output_tokens": 4096,
+          "strict": [
+            false,
+            false
+          ],
+          "previous_response_reference": "absent"
+        },
+        {
+          "round": 2,
+          "utf8_bytes": 7955,
+          "serialized_body_sha256": "23ff3b43f53667c9b32e6bfb6d5d6fd7afae3ddf2283a1f6db5120fda16c31b5",
+          "input_types": [
+            "function_call_output"
+          ],
+          "store": true,
+          "truncation": "disabled",
+          "max_output_tokens": 4096,
+          "strict": [
+            false,
+            false
+          ],
+          "previous_response_reference": "same-scene prior simulated response"
+        }
+      ],
+      "resources": [
+        {
+          "uri": "ossie://population/history-program",
+          "rows": 1,
+          "fields": [
+            "program_json"
+          ],
+          "json_utf8_bytes": 3489
+        },
+        {
+          "uri": "ossie://population/history-surface",
+          "rows": 1,
+          "fields": [
+            "schema_version",
+            "tools_json",
+            "reload_tool",
+            "arbitrary_sql_tool",
+            "argument_boundary"
+          ],
+          "json_utf8_bytes": 318
+        }
+      ],
+      "discovered_tools": [
+        "population_history_links_compile",
+        "population_history_links"
+      ],
+      "native_inner_result_utf8_bytes": 2079,
+      "final_answer_utf8_bytes": 2456,
+      "tool_output_utf8_bytes": 2954,
+      "simulated_responses": [
+        {
+          "bytes": 522,
+          "truncated": false
+        },
+        {
+          "bytes": 2951,
+          "truncated": false
+        }
+      ],
+      "actual_mcp_tool_calls": 1,
+      "discovery_rpc": 5,
+      "usage_interpretation": "synthetic zeros; no token measurement",
+      "mechanical_status": "mechanical_pass",
+      "review": "scripted_pass"
+    }
+  ],
+  "review_source_hashes": {
+    "bun.lock": "385e417275cb365adc54c7d5818968e72fdfeff0256735074578b46fba47e449",
+    "docs/research/ossie-req-001/ci-p1-209180a-controls/final-state.json": "0367edf01f934a132d3a0d479b0c0f233e2a74d15b0c93c77a1c2a3c0004dbb9",
+    "docs/research/ossie-req-001/multi-period-research/every-day/observations.csv": "3c0c4cc77140a84e01ec45d90e4386ffe01ac2a302ba5d79cb3ebc1152a2166f",
+    "docs/research/ossie-req-001/p1-agent-live-research/independent-answers.json": "ab2014f7f8037289d0c9eb8b080144b4fb4021e86059c0e4af76055dafe2579d",
+    "docs/research/ossie-req-001/p1-agent-live-research/prompts.json": "6a4c0fec5faeee09f210b666729cfe98ced36bebfc39739c5b6de9ca5e2ec6ba",
+    "docs/research/ossie-req-001/p1-time-accepted/acceptance.json": "07d425bac8309c5bccc3491c812a020335a50456162f1698d4a8c0e2bf7e370b",
+    "examples/daily_state_server.sql": "2c5db2c1df662bc286aa28bd0dfc877ab4b38fc0ac3b750b30fd0b4d56a0fc0c",
+    "examples/fact_server.sql": "0c4379c68f1588645a498cf88c2fad2e606615b50728b193652c887af2bf3cd8",
+    "examples/history_server.sql": "7d9a56ba4abb85208b143fe361a5cb4c8786d2845be848932234d9e1bbeb2c23",
+    "package.json": "fdff69e38146416c8a4c36d85c9259f105c8ed6bbd54eeebdbcc55b2db0042fa",
+    "scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c",
+    "scripts/daily_mcp.ts": "9e84c7c2166046ad7d44f1fdfd35475ac17bb8445d866db0f14bb029807d2821",
+    "scripts/daily_result.ts": "5eed49fe521bd5f2347c2b27d4fe2a505975b214f38889672800155cdf68b163",
+    "scripts/daily_state_agent.ts": "fef6b221a5b619e7bef78caad21164edefa8fdcc702c2165d50946aeaf1fbad3",
+    "scripts/daily_state_mcp.ts": "0ddaadb76eaa223095b3c61df5c631574a790131cf62d098a9306a1d56c60d93",
+    "scripts/daily_state_oracle.ts": "e1c414ed193d4697433b754963ce0b40d2e759f406ce0e2a5c0231ca4f9a652d",
+    "scripts/daily_state_result.ts": "dc8cd59f9b602bc8f7cf6ef5af597de89a5d18091c7fdaab45eecfdfa4820bcd",
+    "scripts/fact_agent_contract.ts": "9e4ffa057f25726170a0b1f06da3b6ab8d5e720bdad739be2155552095cac491",
+    "scripts/fact_agent_rehearsal.ts": "4ad63c31cbcaea53f08e6e175e3c29abace0223ded31e337bc0914a39a2958aa",
+    "scripts/fact_agent_replay.ts": "64d761d1b2e19b03dbad65734cda7fd6f49abdccae5abd0d42a7181015d77930",
+    "scripts/fact_mcp.ts": "2ca43aede14287da9d6612cd8cb44bccd1fa6acbcaa215711d6c2be952c6147b",
+    "scripts/fact_oracle.ts": "79a1112f673dffc389236718b23d75c7cdcc046d44d7ed3cf54b826d052e4263",
+    "scripts/fact_result.ts": "84b6b023719cb0d031adb0341a506dc89f9d63e2385426e80a09c7126a036835",
+    "scripts/history_agent.ts": "457f50a69c2448f4e7a26e58bd6bae236de131b1b888876f7b49be9c930d4873",
+    "scripts/history_mcp.ts": "7928ec3dde5e0fb006cea54f2dbe242668fdcaf822696ecc1e315b73eb3317d7",
+    "scripts/history_oracle.ts": "60e699e1da8067c5ede236d444d634d6bda7f8f90141c9e1136b9ea1cd1d820d",
+    "scripts/history_result.ts": "cc3b1f3727e057d581a54adbdc1db0289299587467740d7a988accd7b65eacd1",
+    "scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b",
+    "scripts/observation_agent_archive.ts": "dee3890dc2351d71994b9bd17525ee327a92d143aa7f0ae36ff83ef3f0648571",
+    "scripts/observation_agent_contract.ts": "2e642fa0e8b7025fc509f6fd4ec519a916fa0589c3ed3b700064fadbb9c6eb78",
+    "scripts/observation_agent_replay.ts": "be43c6f495ccbdbb2914c820e10eab832fda23830da8daf8e8c3a0d805a9eb0d",
+    "scripts/observation_agent_run.ts": "2adc9e3db3c19a91eb00f12d3bafe3cd1f214f84275e93c5c615b085b5c0e9f9",
+    "scripts/observation_evidence.ts": "4a58242be77cbad354bd597cdff530b5ffa5f1c95edab378b92800e89862d3a5",
+    "scripts/observation_mcp.ts": "91c9f6c7d3e900a65a6b596fb0100a4d28f9fa94d852fb7a8054fbb26775e8eb",
+    "scripts/p1_agent.ts": "a860d9d876fa2c02a075e6a98d46fb4aed1f63e25a0296c6241dfa5a99e2d275",
+    "scripts/p1_agent_contract.ts": "fdf06a792bef17d0e017c1fd5ca74eb68f377843cdb84169d865652e38473ad8",
+    "scripts/p1_agent_json.ts": "87669b20cbef5775e6fd10a79d10be2bd48302171a85ccdd5dcffa52df2c1d1f",
+    "scripts/p1_agent_replay.ts": "7fcfb4a86984b00981f5ae518a2b2c2081bc07184b240a4796777876b680327d",
+    "scripts/p1_agent_simulation.ts": "a8199047cae330528ca5d64b458a129b6b47f3bb964b351c1f6bc1bb7e624712",
+    "scripts/population_result.ts": "6e2dda209e27f41d8391d060d41f6b7e16f181de4afce5ee28c26012533479a2",
+    "scripts/relation_result.ts": "d263e74d9dd9e43bf08358269b3f4823aafa15169c0f9efbf1c749d3c4593eb0",
+    "test/fixtures/population-fact-program/bundle.json": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+    "test/fixtures/population-fact-program/core.json": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+    "test/fixtures/population-fact-program/mapping.json": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+    "test/fixtures/population-fact-program/ontology.json": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+    "test/fixtures/population-fact-program/rows.sql": "78df68efcb6e2d5226d76d888aa91bea36f20e6e244df8038398538e3a17ef4d",
+    "test/fixtures/population-history-program/bundle.json": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+    "test/fixtures/population-history-program/core.json": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+    "test/fixtures/population-history-program/mapping.json": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+    "test/fixtures/population-history-program/ontology.json": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+    "test/fixtures/population-history-program/rows.sql": "542649dc837bd866dde401aafd60e2d1447b4fda81090014edc81d147e708ec1",
+    "test/fixtures/population-observation/bundle-10.json": "0312910a9560a0b3ec25f24b7efdfb16f0a887ea1173790e9ce9b260c78b908a",
+    "test/fixtures/population-observation/core.json": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+    "test/fixtures/population-observation/mapping.json": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+    "test/fixtures/population-observation/ontology.json": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e"
+  },
+  "limits": {
+    "rounds": 4,
+    "calls": 3,
+    "milliseconds": 180000,
+    "outputTokens": 4096,
+    "inputBytes": 131072,
+    "inbound_bytes": 2097152
+  },
+  "limit_interpretation": {
+    "max_request_attempts": 12,
+    "max_tool_calls": 9,
+    "requested_total_output_token_allowance": 49152,
+    "token_sufficiency": "unknown; byte counts are not tokens",
+    "fees": "no monetary ceiling",
+    "cleanup": "separate 30s windows for close/work; optional fault callback has another; no overall cleanup deadline",
+    "runtime_preflight": "outside scene deadline",
+    "retention": "compatible service unverified"
+  },
+  "official_sources": [
+    {
+      "url": "https://developers.openai.com/api/docs/guides/reasoning",
+      "opened": "2026-10-12",
+      "claims": [
+        "output cap includes reasoning/visible/non-visible tokens",
+        "incomplete may incur costs without visible output"
+      ]
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/conversation-state",
+      "opened": "2026-10-12",
+      "claims": [
+        "continued previous inputs remain billed",
+        "official default response storage 30 days; compatible service unknown"
+      ]
+    }
+  ],
+  "audit_script_sha256": "a6f8af7802030c46e9c5242979c8f2e989acf3b978c999bf7d95e6b304a50dde"
+}

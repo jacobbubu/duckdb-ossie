@@ -1,5 +1,24 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 actual context review delivery — 2026-10-12
+
+[实际审阅](docs/research/ossie-req-001/p1-agent-context-review/review.md)本地完成：
+六份出站body无隐藏答案/模板，最大16,901字节；原312文件与两seal/56来源
+保持，纯离线重放通过。真实token充分性/费用/留存仍未知；状态资源操作边界、
+真实响应归档投影与清理合同待修订，公开P1摘要白名单已设计而未实现。
+仅文档表述修正，不改代码/提示词/预算。下一建议获得上述最小离线保护的
+实施授权，再决定真实入口与运行；本轮无模型/新MCP/配置读取/推送。
+原完整P1实现及28控制完成保持，此包不冒充真实Agent验收。
+
+## P1 actual context review checkpoint — 2026-10-12
+
+恢复f7eec83干净工作树，当前授权仅审阅三个场景实际上下文、预算与公开范围。
+沿[OSSIE-REQ-001](docs/ossie-execution-research.md)核对封存prepare/positive轨迹、
+当前来源及六份出站字节，形成hash绑定审阅；复用一轮只读Advisor。
+不改运行代码/提示/预算，不运行新MCP、模型或配置读取，不推送。
+既有P1实现完成与28项离线控制保留；真实入口/输出预算充分性/公开摘要合同
+尚需明确，不以模拟成功代替真实模型验收。本轮结束更新结论与下一建议。
+
 ## P1 three-scene offline entry implementation — 2026-10-12
 
 三个场景prepare、模拟演练和纯离线重放工作包已本地完成，见[使用说明](docs/agent-p1-offline.md)

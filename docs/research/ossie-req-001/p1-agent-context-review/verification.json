@@ -1,0 +1,49 @@
+{
+  "schema": "ossie-p1-context-review-verification-v1",
+  "date": "2026-10-12",
+  "scope": "documentation and offline recorded-evidence checks only",
+  "source_baseline": "f7eec83",
+  "real_model_requests": 0,
+  "new_mcp_sessions": 0,
+  "provider_config_read": false,
+  "original_files_preserved": 312,
+  "current_source_hashes_verified": 56,
+  "local_links_checked": 316,
+  "private_marker_scan": "new documents and added diff lines only; bounded listed patterns pass; historical text retained; no universal secret certificate",
+  "diff_check": "pass",
+  "offline_replays": {
+    "prepare": {
+      "status": "complete",
+      "report_sha256": "1a1ecd72a8eff3ed5b38e22bdf29e01280822657cc9d16a146835886d930f6cd",
+      "source_seal_sha256": "4166d748dd453bfaa0189251b4e326a1efb6bdd861b398fd8d87929743f983d8"
+    },
+    "positive": {
+      "status": "complete",
+      "report_sha256": "a22f65f76a223f92ea4f37a258b01947cbb92a1ee3bb90bf83107aadb16ea884",
+      "source_seal_sha256": "87da5528ec9078c9cd453034d4d7f20bbf79124c46949fb86ca2a726a0ae9f12"
+    }
+  },
+  "reviewed_files": {
+    "ossie-duckdb-plan.md": "c6e7bf328e7cebfca7142e8c179743649cfdb4e30aebbaeb8b4528c818f342ec",
+    "docs/ossie-execution-research.md": "d9ae140fbcd5315466f897884470ca5ecc897f95b4f0f6319315e51eef870565",
+    "docs/agent-p1-offline.md": "b68e430b532b3c7bf620c588e8b907d3a31e6c19b156b36d0b6f7e64316265e3",
+    "docs/research/ossie-req-001/p1-agent-context-review/review.md": "1839050a4c1d7e2e7280d3fe7a4267c1b0d6106f40713c5159f72df17191859d",
+    "docs/research/ossie-req-001/p1-agent-context-review/receipt.json": "3de58c378065a25f5b696d2c4625aa280803763b7cf96694e22cfb95f8ae385a"
+  },
+  "advisor": {
+    "rounds": 1,
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown"
+  },
+  "retained_audit_failures": [
+    "first audit expected unwrapped tool response; corrected to evidence_id/mcp_response wrapper; original product trace unchanged",
+    "initial marker scan included historical absolute paths in issue record; limited delivery scan to new files/added lines; historical text unchanged"
+  ],
+  "production_sources_changed": false,
+  "tests": "no new suite run: documentation-only; prior 149 Bun/28 offline controls retained at f7eec83",
+  "push": false
+}
