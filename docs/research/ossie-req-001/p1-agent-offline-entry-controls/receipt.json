@@ -1,0 +1,194 @@
+{
+  "scope": "three-scene prepare/simulation/offline replay local implementation and full failure controls; no live Agent acceptance",
+  "baseline": "d864b4e",
+  "passed": true,
+  "source_sha256": {
+    "scripts/p1_agent.ts": "a860d9d876fa2c02a075e6a98d46fb4aed1f63e25a0296c6241dfa5a99e2d275",
+    "scripts/p1_agent_contract.ts": "fdf06a792bef17d0e017c1fd5ca74eb68f377843cdb84169d865652e38473ad8",
+    "scripts/p1_agent_json.ts": "87669b20cbef5775e6fd10a79d10be2bd48302171a85ccdd5dcffa52df2c1d1f",
+    "scripts/p1_agent_simulation.ts": "a8199047cae330528ca5d64b458a129b6b47f3bb964b351c1f6bc1bb7e624712",
+    "scripts/p1_agent_replay.ts": "7fcfb4a86984b00981f5ae518a2b2c2081bc07184b240a4796777876b680327d",
+    "scripts/verify_p1_agent_offline.ts": "5f08455f4574041dc4f1434b0e2ebec12851882fc9a25581c55e79f193f47512",
+    "test/tooling/p1_agent.test.ts": "29721267ecd94061d8a2e30bff045dc99815081b926989c115afc2b3a3385d13",
+    ".github/workflows/MainDistributionPipeline.yml": "a74b8cad03a1e39a072afe20ecf7716fb37c34ddbdc4bbd7ddafcab19cf5bf90"
+  },
+  "artifact_sha256": "98b0aeba1f97f2e61d8570be43c671e3270d9ffe36120b15d5e6908ab82dab3a",
+  "platform": "macOS ARM64 actual stock CLI",
+  "runtime": {
+    "duckdb": "1.5.6",
+    "source_id": "069cc9f9b5",
+    "bun": "1.3.11"
+  },
+  "per_scene": {
+    "facts": {
+      "simulated_requests": 2,
+      "actual_tools": 1,
+      "maximum_outbound_body_bytes": 13428
+    },
+    "states": {
+      "simulated_requests": 2,
+      "actual_tools": 1,
+      "maximum_outbound_body_bytes": 16901
+    },
+    "history": {
+      "simulated_requests": 2,
+      "actual_tools": 1,
+      "maximum_outbound_body_bytes": 8964
+    }
+  },
+  "total": {
+    "simulated_requests": 6,
+    "actual_tools": 3
+  },
+  "controls": [
+    {
+      "name": "positive+prepare sealed replay has zero fetch and subprocess",
+      "passed": true
+    },
+    {
+      "name": "facts valid wrong scope reaches real MCP unchanged then fails task audit",
+      "passed": true
+    },
+    {
+      "name": "states valid wrong scope reaches real MCP unchanged then fails task audit",
+      "passed": true
+    },
+    {
+      "name": "history valid wrong scope reaches real MCP unchanged then fails task audit",
+      "passed": true
+    },
+    {
+      "name": "duplicate-outer sealed failure/pending stops subsequent scenes and replays",
+      "passed": true
+    },
+    {
+      "name": "inbound-limit sealed failure/pending stops subsequent scenes and replays",
+      "passed": true
+    },
+    {
+      "name": "incomplete sealed failure/pending stops subsequent scenes and replays",
+      "passed": true
+    },
+    {
+      "name": "round-limit sealed failure/pending stops subsequent scenes and replays",
+      "passed": true
+    },
+    {
+      "name": "call-limit sealed failure/pending stops subsequent scenes and replays",
+      "passed": true
+    },
+    {
+      "name": "outbound-limit sealed failure/pending stops subsequent scenes and replays",
+      "passed": true
+    },
+    {
+      "name": "model-declared-failure sealed failure/pending stops subsequent scenes and replays",
+      "passed": true
+    },
+    {
+      "name": "review-pending sealed failure/pending stops subsequent scenes and replays",
+      "passed": true
+    },
+    {
+      "name": "review-fail sealed failure/pending stops subsequent scenes and replays",
+      "passed": true
+    },
+    {
+      "name": "cleanup failure is sealed, cannot continue or pass",
+      "passed": true
+    },
+    {
+      "name": "deadline closes scene, late simulator cannot write to sealed archive, diagnostic replay",
+      "passed": true
+    },
+    {
+      "name": "discovery failure preserved before context and no model/tool calls",
+      "passed": true
+    },
+    {
+      "name": "limited semantically equal predicate spelling allowed without parameter rewriting",
+      "passed": true
+    },
+    {
+      "name": "runtime preflight failure sealed before any scene, diagnostic only",
+      "passed": true
+    },
+    {
+      "name": "context-oracle-injection re-sealed forgery rejected",
+      "passed": true
+    },
+    {
+      "name": "serialized-outbound-change re-sealed forgery rejected",
+      "passed": true
+    },
+    {
+      "name": "coordinated-wrong-amount re-sealed forgery rejected",
+      "passed": true
+    },
+    {
+      "name": "coordinated-concept-name re-sealed forgery rejected",
+      "passed": true
+    },
+    {
+      "name": "coordinated-relationship-name re-sealed forgery rejected",
+      "passed": true
+    },
+    {
+      "name": "discovery-resource-list-replaced re-sealed forgery rejected",
+      "passed": true
+    },
+    {
+      "name": "inbound-budget-increase re-sealed forgery rejected",
+      "passed": true
+    },
+    {
+      "name": "event-after-deadline re-sealed forgery rejected",
+      "passed": true
+    },
+    {
+      "name": "missing-last-scene re-sealed forgery rejected",
+      "passed": true
+    },
+    {
+      "name": "source-hash-change re-sealed forgery rejected",
+      "passed": true
+    }
+  ],
+  "native_result_boundaries": "1MiB inner JSON; 8MiB outer decoder; 128KiB actual outbound body; 2MiB streamed provider body; no RAM or billing cap claim",
+  "quality": {
+    "bun_tests": 149,
+    "bun_expects": 743,
+    "typecheck": "pass",
+    "format": "pass",
+    "architecture": "pass",
+    "diff": "pass"
+  },
+  "private_manifest_sha256": "df2a852fc5bd689a5d5fe9e396770ec9fbf86cd3da6d859aadc97f181ca1347a",
+  "private_files": 312,
+  "integration_report_sha256": "40e7d1f691a6c64775c5a7f9ad683625584583705beef91171191371015a66bf",
+  "quality_log_sha256": "695c73ee5ecb479c6c567791be2d7063b9003a6bcef0d27765e844cb34a4878d",
+  "context_proof": "first exact body from fixed prompts+actual discovery, continuation from actual ordered RPC/tool results; oracle only in simulator templates and post-loop evaluator",
+  "replay_scope": "same current source inventory and caller artifact SHA; actual Session discovery revalidated offline; zero observed fetch/spawn/spawnSync; partial/startup/cleanup/deadline records diagnostic only",
+  "retained_failure_paths": [
+    "p1-entry-first-rehearse",
+    "p1-entry-second-rehearse",
+    "p1-entry-third-rehearse",
+    "p1-entry-controls-first"
+  ],
+  "advisor": {
+    "requested": "Astra/high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "review": "one bounded read-only round; four substantive findings addressed with targeted controls"
+  },
+  "ci": "new verifier configured in both artifact-load jobs; not pushed/run for this increment",
+  "remaining": [
+    "inspect actual outbound contexts, budget and evidence export scope before live entry/call authorization"
+  ],
+  "real_model_requests": 0,
+  "provider_config_read": false,
+  "cpp_changed": false,
+  "pushed": false
+}

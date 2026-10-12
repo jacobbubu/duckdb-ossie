@@ -1,5 +1,18 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 three-scene offline entry implementation — 2026-10-12
+
+三个场景prepare、模拟演练和纯离线重放工作包已本地完成，见[使用说明](docs/agent-p1-offline.md)
+及[当前证据](docs/research/ossie-req-001/p1-agent-offline-entry-controls/review.md)。
+同98b0aeba产物三场景6模拟响应/3实际MCP调用完整oracle通过，28控制及149Bun/743expects、
+格式/类型/架构通过。合法错scope原样执行、任务审阅后判错；精确上下文/serialized body
+证明未夹带预期答案，重放禁止fetch/Node spawn/spawnSync时调用均0。四项Advisor风险
+以发现合同/名称对应、终止收束、字节前缀及目标篡改控制补齐；开发失败原件不改。
+新CI命令已配置双平台产物任务，本包未推送/远端运行；C++/旧演练合同未改。
+当前仅本地实现/验证/提交，无真实入口/模型调用/配置读取。下一先审实际上下文、
+预算充分性及公开范围，再单独授权真实入口/运行；分页、通用Agent与发布不扩。
+以下研究候选是实施前历史范围，不覆盖本更新。
+
 ## P1 minimum live Agent research — 2026-10-12
 
 三场景研究包已本地完成，见[候选方案](docs/research/ossie-req-001/p1-agent-live-research/proposal.md)
