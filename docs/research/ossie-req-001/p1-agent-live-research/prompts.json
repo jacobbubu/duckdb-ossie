@@ -1,0 +1,40 @@
+{
+  "schema": "ossie-p1-live-research-prompts-v1",
+  "status": "candidate; not sent to any model",
+  "system": "你正在使用一个隔离的只读人口MCP服务。根据实际发现的工具与资源确定概念/关系、正式规则、单位、粒度及支持范围，自行选择工具并构造查询；request_json须为String，其余参数须符合实际schema。不能使用任意SQL、导入、重载或外部工具。compile只解释，不证明执行结果或成员数量。正常回答必须引用实际成功执行tool-N，完整保留所引执行的内层结果envelope、精确字符串、NULL、原始身份及绑定；不得用自行重算替换结果。最终只输出一个JSON对象，无围栏或额外字段：正常回答包含status=\"answered\"、scene、本次执行的完整result、非空中文definition、evidence_ids和非空字符串数组limitations；definition说明实际范围、正式规则与统计对象。若未取得满足问题的执行证据，则只返回status=\"failed\"、scene、非空reason、evidence_ids和limitations，不伪造result；无可用证据时evidence_ids=[]合法，失败引用只能指向真实已有事件。不得把合成样本视为真实业务总体、不得声称模型可靠率或未验证的支持能力。公开推理说明只需口径与证据，不要求私有思维过程。",
+  "scenes": [
+    {
+      "id": "facts",
+      "question": "本次scene=facts。按当前正式定义，查询两份冻结事实共同拥有的用户。排除其中“累计成本严格大于50美元”为TRUE的成员；成本未知者不按“超过50”排除。给出保留用户的完整income（收入）、expense（成本）、balance（差额），并说明筛选前共同用户数和筛选后人数。使用全部捕获数据，保持NULL与金额精度；各来源按自己的粒度归约后再组合。请说明实际规则、单位和执行证据。"
+    },
+    {
+      "id": "states",
+      "question": "本次scene=states。按当前正式资格规则，查询2026-01-31至2026-02-02（含首尾）、仅产品X的全部每日三值状态和请求内相邻自然日比较，包含未变化的比较与统计。用户域取整个冻结观察输入中的用户，日期/产品只筛观察，不缩小用户域；缺失观察不延续前日状态。请解释TRUE/FALSE/UNKNOWN口径，并给出实际规则和执行证据。"
+    },
+    {
+      "id": "history",
+      "question": "本次scene=history。查询2024-02-29至2024-03-03（含首尾）、仅产品X的观察对应历史团队，返回完整(User,DATE,product,Team)关系集合与数量。按当前声明的有限半开有效期[start,end)匹配；缺口无链接，不延续或猜测关系。同目标的不同record_id见证不重复完整关系；保留大小写、Unicode和控制字符身份。请说明范围、关系依据与执行证据。"
+    }
+  ],
+  "budget": {
+    "rounds_per_scene": 4,
+    "tool_calls_per_scene": 3,
+    "max_output_tokens_per_request": 4096,
+    "outbound_bytes_per_request": 131072,
+    "inbound_provider_bytes_per_response": 2097152,
+    "scene_deadline_ms": 180000,
+    "cleanup_wait_ms": 30000,
+    "maximum_request_attempts": 12,
+    "maximum_tool_calls": 9,
+    "monetary_ceiling": "not enforced",
+    "input_token_ceiling": "not enforced",
+    "discovery_rpc_by_scene": {
+      "facts": 5,
+      "states": 7,
+      "history": 5
+    },
+    "initialized_notifications_per_scene": 1
+  },
+  "real_model_requests": 0,
+  "provider_config_read": false
+}

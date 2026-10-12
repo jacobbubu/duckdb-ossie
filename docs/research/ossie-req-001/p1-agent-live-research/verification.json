@@ -1,0 +1,65 @@
+{
+  "scope": "three-scene research package; offline independent data and source/link/prompt checks only",
+  "status": "research complete; candidate not implemented or live tested",
+  "baseline": "9dd795624bc47b64a1d091c3e9dcf65c9312db28",
+  "files_sha256": {
+    "proposal.md": "7e1c094fac777de0a1c3ccc2d03a8c768dfe10e2e743aaeea6ba27205968f8d2",
+    "prompts.json": "6a4c0fec5faeee09f210b666729cfe98ced36bebfc39739c5b6de9ca5e2ec6ba",
+    "independent-answers.json": "ab2014f7f8037289d0c9eb8b080144b4fb4021e86059c0e4af76055dafe2579d",
+    "source-hashes.json": "f5f32f84acc373f17a4a0437db8e3466522e783738508915ab96eea771a65154",
+    "official-sources.json": "3bb50af97caa4da4a6995409f74e785437d8d52e9f3dfeaa97b51312918bb98d",
+    "advisor-review.md": "6035f23b19e937db069d99b5f56b6f93d17e694f7bbf510603211ea4908abd8c"
+  },
+  "fixed_spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "fixed_sources_checked": 21,
+  "current_sources_checked": 38,
+  "local_links_checked": 304,
+  "answers": {
+    "fact_members": 2,
+    "common_domain": 3,
+    "state_users": 10,
+    "state_rows": 30,
+    "adjacent_pairs": 20,
+    "changed_pairs": 10,
+    "state_totals": {
+      "TRUE": 12,
+      "FALSE": 1,
+      "UNKNOWN": 17
+    },
+    "history_links": 7
+  },
+  "budget": {
+    "model_attempts": 12,
+    "tools_calls": 9,
+    "max_output_tokens_per_request": 4096,
+    "maximum_output_request_allowance": 49152,
+    "discovery_requests": 17,
+    "initialized_notifications": 3
+  },
+  "advisor": {
+    "reused": "/root/review_agent_acceptance",
+    "role": "Advisor",
+    "requested": "Astra/high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "scope": "one bounded read-only round; no writes/child agents/service calls"
+  },
+  "prior_document_commit_ci": {
+    "run_id": 38202969452,
+    "conclusion": "success",
+    "jobs": 17,
+    "boundary": "9dd7956 only; does not cover this new research commit"
+  },
+  "remaining_necessities": [
+    "new prepare/simulation/replay adapters and controls require implementation authorization",
+    "inspect actual outbound context and full serialized-byte limits",
+    "separate authorization and explicit no-monetary-hard-limit decision before live calls"
+  ],
+  "real_model_requests": 0,
+  "provider_config_read": false,
+  "mcp_started": false,
+  "runtime_code_changed": false,
+  "pushed": false
+}

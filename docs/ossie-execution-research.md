@@ -1856,3 +1856,21 @@ Cpp未改复用上一同SHA全回归。下一新Cpp Linux/tidy、原五项统一
 完整616步构建/七native/SQL/全接口/六无模型，40阶段全部exit0。542私有源/日志/
 报告/二进制及3301原始封存文件由清单绑定；旧平台报告未覆盖。不替代远端CI，
 也不当goal完成。下一原五项逐条统一审计、文档状态/支持拒绝边界和历史私有预检。
+
+### P1 三场景真实Agent最小验收方案研究（2026-10-12）
+
+用户授权研究提示词、独立答案、调用预算与证据范围，暂不调用模型。沿本issue，
+实现基线9dd7956；现事实/状态/历史入口仅模拟，固定scene参数检查不能直接
+冒充自主工具选择。核对既有source/oracle/接口/档案与旧真实观察入口，形成
+有限首次试验候选，模型与oracle隔离、预算和服务留存未知均需明确。
+研究只新增文档及hash绑定的离线答案，不改运行代码、不读取私有配置或推送。
+
+三场景研究工作包本地完成：[候选方案](research/ossie-req-001/p1-agent-live-research/proposal.md)、
+[逐成员独立答案](research/ossie-req-001/p1-agent-live-research/independent-answers.json)与
+[来源/验证](research/ossie-req-001/p1-agent-live-research/verification.json)分别绑定问题、
+真实调用候选预算与证据边界。Advisor一轮静态反证后区分native/外层/出站大小、
+固定scene校验与事后oracle、失败/pending停止及无证据空引用。额外成本>80反例
+说明成员一致不等于口径一致；真实运行还需scope语义核对。没有实现/模型请求或
+推送，下一先实施prepare/simulation/replay适配与无模型控制，需用户另行授权。
+验收记录9dd7956已推，新run38202969452的17项全部成功；这属于原P1交付，
+不覆盖本研究提交。

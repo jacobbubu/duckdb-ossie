@@ -1,0 +1,555 @@
+{
+  "schema": "ossie-p1-live-research-oracle-v1",
+  "scope": "verification-only independently enumerated expected data; never send this file or expected requests to provider",
+  "fact": {
+    "request": {
+      "domain": "common",
+      "input_scope": "entire_capture",
+      "metrics": [
+        "income",
+        "expense",
+        "balance"
+      ],
+      "cohort": {
+        "operation": "difference",
+        "children": [
+          {
+            "operation": "all"
+          },
+          {
+            "operation": "predicate",
+            "predicate": "expense>50"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "rows": [
+        [
+          "B",
+          "80.00",
+          "30.00",
+          "50.00"
+        ],
+        [
+          "C",
+          null,
+          null,
+          null
+        ]
+      ],
+      "common_user_count": "3",
+      "selected_user_count": "2"
+    },
+    "proof": "A income375/cost85 excluded; B80/30/50 retained; C all NULL retained; D/E not common; no ratio requested"
+  },
+  "state": {
+    "request": {
+      "start_date": "2026-01-31",
+      "end_date": "2026-02-02",
+      "products": {
+        "mode": "subset",
+        "values": [
+          "X"
+        ]
+      },
+      "user_domain": "captured_users",
+      "transitions": "within_request_days"
+    },
+    "threshold": 10,
+    "expected": {
+      "by_user": [
+        {
+          "user": "A",
+          "states": [
+            "FALSE",
+            "TRUE",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "user": "B",
+          "states": [
+            "TRUE",
+            "TRUE",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "user": "C",
+          "states": [
+            "UNKNOWN",
+            "TRUE",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "user": "D",
+          "states": [
+            "UNKNOWN",
+            "UNKNOWN",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "user": "E",
+          "states": [
+            "TRUE",
+            "UNKNOWN",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "user": "F",
+          "states": [
+            "TRUE",
+            "TRUE",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "user": "G",
+          "states": [
+            "TRUE",
+            "UNKNOWN",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "user": "H",
+          "states": [
+            "TRUE",
+            "TRUE",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "user": "J",
+          "states": [
+            "UNKNOWN",
+            "UNKNOWN",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "user": "K",
+          "states": [
+            "TRUE",
+            "TRUE",
+            "UNKNOWN"
+          ]
+        }
+      ],
+      "states": [
+        [
+          "A",
+          "2026-01-31",
+          "FALSE"
+        ],
+        [
+          "A",
+          "2026-02-01",
+          "TRUE"
+        ],
+        [
+          "A",
+          "2026-02-02",
+          "UNKNOWN"
+        ],
+        [
+          "B",
+          "2026-01-31",
+          "TRUE"
+        ],
+        [
+          "B",
+          "2026-02-01",
+          "TRUE"
+        ],
+        [
+          "B",
+          "2026-02-02",
+          "UNKNOWN"
+        ],
+        [
+          "C",
+          "2026-01-31",
+          "UNKNOWN"
+        ],
+        [
+          "C",
+          "2026-02-01",
+          "TRUE"
+        ],
+        [
+          "C",
+          "2026-02-02",
+          "UNKNOWN"
+        ],
+        [
+          "D",
+          "2026-01-31",
+          "UNKNOWN"
+        ],
+        [
+          "D",
+          "2026-02-01",
+          "UNKNOWN"
+        ],
+        [
+          "D",
+          "2026-02-02",
+          "UNKNOWN"
+        ],
+        [
+          "E",
+          "2026-01-31",
+          "TRUE"
+        ],
+        [
+          "E",
+          "2026-02-01",
+          "UNKNOWN"
+        ],
+        [
+          "E",
+          "2026-02-02",
+          "UNKNOWN"
+        ],
+        [
+          "F",
+          "2026-01-31",
+          "TRUE"
+        ],
+        [
+          "F",
+          "2026-02-01",
+          "TRUE"
+        ],
+        [
+          "F",
+          "2026-02-02",
+          "UNKNOWN"
+        ],
+        [
+          "G",
+          "2026-01-31",
+          "TRUE"
+        ],
+        [
+          "G",
+          "2026-02-01",
+          "UNKNOWN"
+        ],
+        [
+          "G",
+          "2026-02-02",
+          "UNKNOWN"
+        ],
+        [
+          "H",
+          "2026-01-31",
+          "TRUE"
+        ],
+        [
+          "H",
+          "2026-02-01",
+          "TRUE"
+        ],
+        [
+          "H",
+          "2026-02-02",
+          "UNKNOWN"
+        ],
+        [
+          "J",
+          "2026-01-31",
+          "UNKNOWN"
+        ],
+        [
+          "J",
+          "2026-02-01",
+          "UNKNOWN"
+        ],
+        [
+          "J",
+          "2026-02-02",
+          "UNKNOWN"
+        ],
+        [
+          "K",
+          "2026-01-31",
+          "TRUE"
+        ],
+        [
+          "K",
+          "2026-02-01",
+          "TRUE"
+        ],
+        [
+          "K",
+          "2026-02-02",
+          "UNKNOWN"
+        ]
+      ],
+      "comparisons": [
+        [
+          "A",
+          "2026-01-31",
+          "2026-02-01",
+          "FALSE",
+          "TRUE",
+          true
+        ],
+        [
+          "A",
+          "2026-02-01",
+          "2026-02-02",
+          "TRUE",
+          "UNKNOWN",
+          true
+        ],
+        [
+          "B",
+          "2026-01-31",
+          "2026-02-01",
+          "TRUE",
+          "TRUE",
+          false
+        ],
+        [
+          "B",
+          "2026-02-01",
+          "2026-02-02",
+          "TRUE",
+          "UNKNOWN",
+          true
+        ],
+        [
+          "C",
+          "2026-01-31",
+          "2026-02-01",
+          "UNKNOWN",
+          "TRUE",
+          true
+        ],
+        [
+          "C",
+          "2026-02-01",
+          "2026-02-02",
+          "TRUE",
+          "UNKNOWN",
+          true
+        ],
+        [
+          "D",
+          "2026-01-31",
+          "2026-02-01",
+          "UNKNOWN",
+          "UNKNOWN",
+          false
+        ],
+        [
+          "D",
+          "2026-02-01",
+          "2026-02-02",
+          "UNKNOWN",
+          "UNKNOWN",
+          false
+        ],
+        [
+          "E",
+          "2026-01-31",
+          "2026-02-01",
+          "TRUE",
+          "UNKNOWN",
+          true
+        ],
+        [
+          "E",
+          "2026-02-01",
+          "2026-02-02",
+          "UNKNOWN",
+          "UNKNOWN",
+          false
+        ],
+        [
+          "F",
+          "2026-01-31",
+          "2026-02-01",
+          "TRUE",
+          "TRUE",
+          false
+        ],
+        [
+          "F",
+          "2026-02-01",
+          "2026-02-02",
+          "TRUE",
+          "UNKNOWN",
+          true
+        ],
+        [
+          "G",
+          "2026-01-31",
+          "2026-02-01",
+          "TRUE",
+          "UNKNOWN",
+          true
+        ],
+        [
+          "G",
+          "2026-02-01",
+          "2026-02-02",
+          "UNKNOWN",
+          "UNKNOWN",
+          false
+        ],
+        [
+          "H",
+          "2026-01-31",
+          "2026-02-01",
+          "TRUE",
+          "TRUE",
+          false
+        ],
+        [
+          "H",
+          "2026-02-01",
+          "2026-02-02",
+          "TRUE",
+          "UNKNOWN",
+          true
+        ],
+        [
+          "J",
+          "2026-01-31",
+          "2026-02-01",
+          "UNKNOWN",
+          "UNKNOWN",
+          false
+        ],
+        [
+          "J",
+          "2026-02-01",
+          "2026-02-02",
+          "UNKNOWN",
+          "UNKNOWN",
+          false
+        ],
+        [
+          "K",
+          "2026-01-31",
+          "2026-02-01",
+          "TRUE",
+          "TRUE",
+          false
+        ],
+        [
+          "K",
+          "2026-02-01",
+          "2026-02-02",
+          "TRUE",
+          "UNKNOWN",
+          true
+        ]
+      ],
+      "user_count": "10",
+      "day_count": "3",
+      "state_count": "30",
+      "comparison_count": "20",
+      "changed_count": "10",
+      "per_day": [
+        {
+          "date": "2026-01-31",
+          "TRUE": "6",
+          "FALSE": "1",
+          "UNKNOWN": "3"
+        },
+        {
+          "date": "2026-02-01",
+          "TRUE": "6",
+          "FALSE": "0",
+          "UNKNOWN": "4"
+        },
+        {
+          "date": "2026-02-02",
+          "TRUE": "0",
+          "FALSE": "0",
+          "UNKNOWN": "10"
+        }
+      ],
+      "combined_object_count": "50",
+      "state_totals": {
+        "unit": "User/day",
+        "TRUE": "12",
+        "FALSE": "1",
+        "UNKNOWN": "17"
+      }
+    },
+    "proof": "full capture has10Users including out-of-scopeJ and product-Y-onlyD; missing day not carry; H amount NULL is separate from classification"
+  },
+  "history": {
+    "request": {
+      "dates": {
+        "mode": "range",
+        "start_date": "2024-02-29",
+        "end_date": "2024-03-03"
+      },
+      "products": {
+        "mode": "subset",
+        "values": [
+          "X"
+        ]
+      }
+    },
+    "expected_links": [
+      [
+        "A",
+        "2024-02-29",
+        "X",
+        "T"
+      ],
+      [
+        "A",
+        "2024-03-01",
+        "X",
+        "V"
+      ],
+      [
+        "A",
+        "2024-03-03",
+        "X",
+        "T"
+      ],
+      [
+        "B",
+        "2024-02-29",
+        "X",
+        "T"
+      ],
+      [
+        "N\u0000U",
+        "2024-02-29",
+        "X",
+        "T\u0000M"
+      ],
+      [
+        "a",
+        "2024-02-29",
+        "X",
+        "t"
+      ],
+      [
+        "界",
+        "2024-02-29",
+        "X",
+        "队"
+      ]
+    ],
+    "link_count": "7",
+    "proof": "A Feb29 T one link despite two records; Mar1 V; Mar2 gap; Mar3 T; X only; absent no witness; raw byte identities retained"
+  },
+  "real_model_requests": 0,
+  "provider_config_read": false
+}

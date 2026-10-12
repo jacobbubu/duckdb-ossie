@@ -1,5 +1,19 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 minimum live Agent research — 2026-10-12
+
+三场景研究包已本地完成，见[候选方案](docs/research/ossie-req-001/p1-agent-live-research/proposal.md)
+及[离线验证](docs/research/ossie-req-001/p1-agent-live-research/verification.json)：人工完整答案
+与独立helpers一致，38份源码/fixture与21固定来源核对，一轮Advisor反证落实。
+候选每场景4请求/3调用/4096输出tokens，三场景12请求/9调用，金额硬上限未设；
+提示词不含oracle，实际查询scope与数值/解释分别审阅。1MiB内层、8MiB外层
+及128KiB再序列化出站预算区分；外层重复键/2MiB入站保护明确待实施。
+本次仅研究文档、提示词和离线答案，不改运行代码、不启动MCP、读.env_test、
+调用真实模型或推送。下一必要是获得新prepare/simulation/replay适配与反例
+控制的实施授权，再审实际上下文/预算，最后单独授权真实运行。分页和发布不扩。
+验收记录9dd7956已按用户指示推送，其新CI run38202969452共17项全通过，
+不将该结果称为本研究新commit的远端CI。原P1实现完成结论保持。
+
 ## P1 branch delivery verification — 2026-10-12
 
 用户授权的209180a分支推送与新CI检查已完成，

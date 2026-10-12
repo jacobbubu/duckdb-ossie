@@ -1,0 +1,32 @@
+{
+  "retrieved_date": "2026-10-12",
+  "scope": "official OpenAI contract research only; compatible service behavior not verified",
+  "sources": [
+    {
+      "title": "Reasoning models: controlling costs",
+      "url": "https://developers.openai.com/api/docs/guides/reasoning",
+      "opened": true,
+      "supported_claims": ["max_output_tokens bounds generated visible and reasoning tokens", "incomplete can occur before visible output while input/reasoning costs accrue"],
+      "boundary": "4096 is this project's candidate cap, not a documented sufficiency guarantee"
+    },
+    {
+      "title": "Conversation state",
+      "url": "https://developers.openai.com/api/docs/guides/conversation-state",
+      "opened": true,
+      "supported_claims": ["previous_response_id continues context and prior input remains metered", "store:false controls default response object storage; alternative local history requires output continuation"],
+      "boundary": "no compatible gateway retention, pricing or continuation verification"
+    },
+    {
+      "title": "Function calling: strict mode",
+      "url": "https://developers.openai.com/api/docs/guides/function-calling",
+      "opened": true,
+      "supported_claims": ["strict mode requires additionalProperties:false and all properties required", "explicit strict:false opts out"],
+      "boundary": "does not establish exact deployed schema or compatible service support"
+    }
+  ],
+  "retrieval_failures_retained": [
+    {"url":"https://developers.openai.com/api/reference/resources/responses/methods/create","outcome":"web retrieval exceeded content size"}
+  ],
+  "model_requests": 0,
+  "private_configuration_read": false
+}
