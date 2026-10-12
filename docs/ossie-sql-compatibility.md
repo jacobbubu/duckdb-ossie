@@ -23,6 +23,7 @@ OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckD
 | `daily-observation-population-v1` | 固定五个观察聚合形状；正式资格为分类整数与整数阈值比较；每日集合做自然日见证归约；专用状态 SQL 保留 BOOLEAN/NULL 后归约全部 User/day 与请求内相邻比较，独立 MCP/无模型已本地验证 | 每日归约不是 SQL 窗口；没有历史有效期；新增代码 Linux/tidy 未复验 |
 | `observation-relation-program-v1` | 声明的同根 User 关系调用、正向非递归 DAG、有限整数条件和显式 NULL 约束 | 关系调用是 ontology typed 语法，不能当普通 SQL UDF；没有任意聚合/窗口 |
 | `multi-fact-user-program-v1` | 两个事实分别按 User 归约后组合；另有同源 User/date 行窗口 | 不支持原始事实连接后聚合、跨来源窗口、比率或任意 SQL 请求 |
+| `historical-observation-relation-v1` | 只接受直接物理字段与明确 typed 角色，完整有限 DATE 双源捕获/索引及 program 元数据；时间匹配是项目算子 | 未执行通用 ontology derived_by，非空未执行规则拒绝；历史 link/compile/MCP 尚未实现 |
 
 ## P1 相关形状
 

@@ -1,0 +1,60 @@
+{
+  "scope": "typed double capture/index/program and parent metadata lifecycle; history links/compile/MCP not implemented",
+  "baseline_commit": "560ce8d36a6d8899f0d7fee2c29d3bc1c60decd4",
+  "artifact_sha256": "65321694903bb90173776c6e6ed9a272b20de96e9ff596f972c663c6f2fdcdfa",
+  "source_sha256": {
+    "src/population/population.cpp": "08a251b62c7b9abf6eb8b341440f0e68d1db662545a241130f85186db4e2c6b9",
+    "src/include/ossie/population_testing.hpp": "8dcfe4a79f8fb27a82bc315c931e2451b06e09c6b995a98cf6d4d601f5ccfba1",
+    "test/cpp/population_capture_test.cpp": "3a9cd17dd50c6304ce6774f585de94f2185825be6c7aa7fb33ade4d3b488114e",
+    "scripts/verify_history_load_artifact.ts": "539f8581d682ece0ce69a5f439babb246169256825c376c536f0992d98d20894",
+    "test/sql/ossie_function_metadata.test": "3f775e97bb7d6e318d2f0a6c0b7e4958a1f894ccbff03f31676255fec05c2044",
+    ".github/workflows/MainDistributionPipeline.yml": "89e38349b7bcaead777bd216a055b4b44cb8cee433860534d28f47249fec437b"
+  },
+  "private_manifest_sha256": "329832181164ed2b2a71882d49ab291f6b5ed9446f394217af02d031d09b63df",
+  "native_capture_checks": 428,
+  "sql": {
+    "cases": 28,
+    "assertions": 1049
+  },
+  "bun": {
+    "tests": 138,
+    "expects": 723
+  },
+  "quality": [
+    "Cpp format11",
+    "TypeScript types/format",
+    "Cpp architecture",
+    "diff check"
+  ],
+  "legacy_same_artifact": [
+    "complete scoped P0 A1-A8",
+    "observation",
+    "daily users",
+    "daily states",
+    "relation load/objects",
+    "fact load/objects"
+  ],
+  "failures_retained": [
+    "compiler lambda subscript double bracket syntax",
+    "verifier expected wrong existing error codes",
+    "native test GetValue base API compiler error",
+    "native test materialized cast on stream INTERNAL error",
+    "stale native/SQL run after failed test build; not used as final evidence",
+    "first selected evidence before reserved-builtin guard kept separately; current artifact regression repeated"
+  ],
+  "advisor": "one bounded read-only round: Fetch shape/drain and exact prepare-time parent, applied; requested Astra/high; effective backend/effort/usage/billing unknown",
+  "remaining": [
+    "history complete link result and compile",
+    "complete ontology/reference rejection and resource controls",
+    "history MCP/decoder/offline",
+    "new artifact all MCP/offline regression",
+    "new code Linux/tidy and full P1 audit"
+  ],
+  "goal_complete": false,
+  "real_model_requests": 0,
+  "pushed": false,
+  "controls_added": [
+    "history legacy rejection uses the same captured parent, avoiding separate Current reads",
+    "two-direction concurrent old/history legacy binding gate at threads4/1"
+  ]
+}

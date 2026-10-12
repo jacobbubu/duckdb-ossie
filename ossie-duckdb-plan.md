@@ -1841,3 +1841,24 @@ schema与映射承载再native，原件/索引分离、全历史冲突先检查�
 下一必要为typed双源绑定/完整捕获与原子父发布，再完整link/compile/program和
 MCP/无模型；新产物全回归/Linux/tidy/五项统一验收保留。goal保持active，未推送，
 不调用真实模型。未用算法检查数代替历史SQL/生命周期验收。
+
+历史加载恢复checkpoint（560ce8d干净）：接独立core/ontology/mapping角色校验、实际类型
+与完整双源冻结、区间索引和原子发布。先只暴露history_program的已载入声明，旧通用
+人口入口在新profile明确拒绝；完整history结果/解释接下个必要步骤，不能伪报可查询。
+验证失败替换保留旧状态、无观察冲突/重复ID、源空域/实际类型及载入计数/索引。
+
+历史加载/发布切片完成：[契约](docs/population-history.md)和[绑定证据](docs/research/ossie-req-001/p1-history-load-controls/review.md)
+以最终65321694产物验证typed双源、源完整身份/类型、全历史冲突、指数覆盖与只读
+program；4控制/13拒绝，包括每来源10000合计20000和各10001整体拒绝。native428
+threads4/1证明两处原生取消保留旧父、同事务并发不混合、prepared metadata精确
+保留并耗尽流、两源drop后仍可访问；不冒充旧link执行/GC证明。28SQL/1049、
+138Bun/723、类型/格式/架构及同SHA旧P0/观察/每日状态/关系/多事实artifact通过。
+首轮lambda/错误码预期/getter及stale测试失败原件保存，Fetch修复经过只读Advisor
+反证和Lead重跑。新增builtin实体保护后重编译复验，前一选择证据不改。当前仅
+history_program与加载启用，完整link/compile/MCP尚未实施；下一仍为这些必需
+接口、严格拒绝/预算及无模型、新SHA全MCP/offline/其他native回归、Linux/tidy和
+全P1五项审计。goal active，仅本地提交，无真实模型/推送/合并/发布。
+
+历史门禁边界收口：拒绝检查移入持有同一captured父的LegacyCurrent，避免两次Current
+间并发切换。原生新增双向old/history发布gate，最终428检查通过；最终65321694
+产物重复同SHA旧回归，选择证据与原件绑定，旧SHA选择报告另保存。

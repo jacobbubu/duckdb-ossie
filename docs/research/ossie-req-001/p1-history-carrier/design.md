@@ -2,8 +2,9 @@
 
 已接受的有限有效期、全批异目标冲突和来源身份政策落实为独立
 `historical-observation-relation-v1` 的固定承载设计。三份文件通过固定离线 schema，
-见 [fixed-schema.json](fixed-schema.json)；这仅证明文件结构接受，原生绑定、历史
-执行及所有接口仍未实现。沿 OSSIE-REQ-001 和现计划推进，不另建 backlog。
+见 [fixed-schema.json](fixed-schema.json)；这仅证明文件结构接受。随后
+[typed 双源加载/索引/program](../../../population-history.md)已本地实施与验证，
+历史 link/compile/MCP 仍需实现。沿 OSSIE-REQ-001 和现计划推进，不另建 backlog。
 
 ## 类型、来源与算子
 

@@ -618,6 +618,115 @@ void RelationBindControls(const string &root, int threads) {
 }
 
 } // namespace
+void HistoryControls(const string &root, int threads) {
+	DuckDB database(nullptr);
+	Connection loader(database), writer(database), reader(database);
+	Query(reader, "SET threads=" + to_string(threads));
+	Query(writer, "CREATE TABLE observations(user_id VARCHAR,ds DATE,product VARCHAR,observation_id VARCHAR DEFAULT "
+	              "'o',amount_usd DECIMAL(18,2) DEFAULT 1.00,classification_value INTEGER DEFAULT 10)");
+	Query(writer, "CREATE TABLE history(record_id VARCHAR,user_id VARCHAR,team_id VARCHAR,starts DATE,ends DATE)");
+	Query(writer, "INSERT INTO observations(user_id,ds,product) VALUES ('u',DATE '2024-02-28','X')");
+	Query(writer, "INSERT INTO history VALUES ('a','u','T',DATE '2024-02-28',DATE '2024-03-01')");
+	auto load =
+	    "CALL ossie_bundle_load(" + Literal(root + "test/fixtures/population-history-program/bundle.json") + ")";
+	const string program = "SELECT program_json FROM ossie_history_program()";
+	Query(writer, "SET GLOBAL default_collation='nocase'");
+	Query(loader, load);
+	auto before = Scalar(reader, program);
+	const auto original_program = before;
+	Check(before.find("\"query_supported\":false") != string::npos, "history honest unsupported query declaration");
+	auto prepared = reader.Prepare(program);
+	Check(!prepared->HasError(), "history program prepared parent bind");
+	for (auto point :
+	     {PopulationLoadCheckpoint::AFTER_HISTORY_OBSERVATION_CAPTURE, PopulationLoadCheckpoint::BEFORE_PUBLISH}) {
+		Attempt attempt(loader, load, point);
+		attempt.gate.Wait();
+		Check(Scalar(reader, program) == before, "history blocked load not published");
+		loader.Interrupt();
+		attempt.Finish();
+		Check(attempt.result && attempt.result->HasError(), "history interrupt error");
+		Check(attempt.result->GetErrorObject().Type() == ExceptionType::INTERRUPT,
+		      "history native interrupt classification");
+		Check(Scalar(reader, program) == before, "history cancelled replacement preserves parent");
+		Query(loader, load);
+		before = Scalar(reader, program);
+	}
+	const string hash =
+	    "SELECT regexp_extract(program_json,'\"content_sha256\":\"([^\"]+)\"',1) FROM ossie_history_program()";
+	auto original_hash = Scalar(reader, hash);
+	{
+		Attempt attempt(loader, load, PopulationLoadCheckpoint::AFTER_HISTORY_OBSERVATION_CAPTURE);
+		attempt.gate.Wait();
+		Query(writer, "BEGIN TRANSACTION");
+		Query(writer, "UPDATE observations SET product='Y'");
+		Query(writer, "UPDATE history SET team_id='NEW'");
+		Query(writer, "COMMIT");
+		attempt.Finish();
+		Check(attempt.result && !attempt.result->HasError(), "history coherent concurrent load finishes");
+		Check(Scalar(reader, hash) == original_hash, "both sources share old transaction snapshot");
+	}
+	Query(loader, load);
+	Check(Scalar(reader, hash) != original_hash, "explicit history reload sees both committed changes");
+	auto old_load =
+	    "CALL ossie_bundle_load(" + Literal(root + "test/fixtures/population-observation/bundle-10.json") + ")";
+	for (bool old_first : {true, false}) {
+		Query(loader, old_first ? old_load : load);
+		Gate gate;
+		reader.context->registered_state->Insert(PopulationLegacyBindObserver::KEY,
+		                                         make_shared_ptr<LegacyBindObserver>(gate));
+		unique_ptr<MaterializedQueryResult> result;
+		std::exception_ptr failure;
+		std::thread worker([&] {
+			try {
+				result = reader.Query("SELECT count(*) FROM ossie_objects('QualifiedObservation',[])");
+			} catch (...) {
+				failure = std::current_exception();
+			}
+		});
+		try {
+			gate.Wait();
+			Query(loader, old_first ? load : old_load);
+			gate.Release();
+			worker.join();
+			reader.context->registered_state->Remove(PopulationLegacyBindObserver::KEY);
+		} catch (...) {
+			gate.Release();
+			if (worker.joinable())
+				worker.join();
+			reader.context->registered_state->Remove(PopulationLegacyBindObserver::KEY);
+			throw;
+		}
+		if (failure)
+			std::rethrow_exception(failure);
+		if (old_first) {
+			Check(result && !result->HasError() && result->GetValue(0, 0).GetValue<int64_t>() == 1,
+			      "legacy binding keeps captured old population through history publication");
+			auto fresh = reader.Query("SELECT * FROM ossie_population_capabilities()");
+			Check(fresh->HasError() && fresh->GetError().find("UNSUPPORTED_CAPABILITY") != string::npos,
+			      "fresh legacy discovery rejects history safely");
+		} else {
+			Check(result && result->HasError() && result->GetError().find("UNSUPPORTED_CAPABILITY") != string::npos,
+			      "captured history remains rejected after old-profile publication");
+			Check(Scalar(reader, "SELECT count(*) FROM ossie_objects('QualifiedObservation',[])") == "1",
+			      "fresh legacy query recovers on old population");
+		}
+	}
+	Query(loader, load);
+	Query(writer, "DROP TABLE history");
+	Query(writer, "DROP TABLE observations");
+	auto saved = prepared->Execute();
+	Check(!saved->HasError(), "prepared history program after both drops");
+	auto saved_chunk = saved->Fetch();
+	Check(saved_chunk && saved_chunk->size() == 1 && saved_chunk->ColumnCount() == 1,
+	      "history prepared result is one complete metadata row");
+	Check(!saved_chunk->GetValue(0, 0).IsNull() && saved_chunk->GetValue(0, 0).ToString() == original_program,
+	      "old prepared parent metadata survives reload exactly");
+	Check(!saved->Fetch() && !saved->HasError(), "history prepared stream exhausted without error");
+	Check(Scalar(reader, program) != original_program, "current history parent differs from old prepared metadata");
+	Check(Scalar(reader, "SELECT current_setting('default_collation')") == "nocase",
+	      "private history engine does not mutate caller collation");
+}
+
 int main(int argc, char **argv) {
 	try {
 		if (argc != 2)
@@ -631,6 +740,8 @@ int main(int argc, char **argv) {
 		ObservationControls(root, 1);
 		RelationBindControls(root, 4);
 		RelationBindControls(root, 1);
+		HistoryControls(root, 4);
+		HistoryControls(root, 1);
 		std::cout
 		    << "PASS: " << checks
 		    << " checks; deterministic production capture, capture/prepublish cancel, callback failure; threads=4/1\n";

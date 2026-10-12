@@ -5,7 +5,8 @@
 与[macOS功能/Linux tidy证据](research/ossie-req-001/p1-tidy-controls/review.md)分别保留。
 每日三值状态与历史关系的[业务口径已接受](research/ossie-req-001/p1-time-accepted/acceptance.json)。
 [每日状态 SQL/解释/发现及独立 MCP/无模型](population-daily-states.md)已本地实施与验证；
-历史关系和新增代码 Linux/tidy 仍需完成。原候选研究保留历史待答记录，
+历史[双源加载/索引与 program](population-history.md)已本地验证，link/compile/MCP
+及新增代码 Linux/tidy 仍需完成。原候选研究保留历史待答记录，
 整个P1未完成。当前未推提交没有远端CI结论；以下远端结果属于此前已推阶段。
 
 当前交付更新（2026-10-11）：开发分支e3a6f5f的跨平台/观察验收/无模型

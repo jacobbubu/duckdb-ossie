@@ -15,7 +15,7 @@ vector<std::function<bool()>> PopulationFactLifetimeForTesting(ClientContext &co
 // Internal native-test seam. No SQL/environment switch and no mutable population access.
 // Install before starting a query; remove only after its execution thread has joined.
 // Callbacks must not reenter the caller's Connection or ClientContext.
-enum class PopulationLoadCheckpoint : uint8_t { AFTER_FACT_CAPTURE, BEFORE_PUBLISH };
+enum class PopulationLoadCheckpoint : uint8_t { AFTER_FACT_CAPTURE, BEFORE_PUBLISH, AFTER_HISTORY_OBSERVATION_CAPTURE };
 class PopulationLoadObserver : public ClientContextState {
 public:
 	static constexpr const char *KEY = "ossie_population_load_observer";

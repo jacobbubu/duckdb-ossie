@@ -142,6 +142,9 @@ jobs:
       - name: Verify opt-in relation program loading and full-population constraints
         run: bun --no-env-file scripts/verify_relation_load_artifact.ts downloaded/ossie.duckdb_extension quality-reports/relation-load
 
+      - name: Verify typed historical double capture, full-history rejection and source budgets
+        run: bun --no-env-file scripts/verify_history_load_artifact.ts downloaded/ossie.duckdb_extension quality-reports/history-load
+
       - name: Verify complete relation links and logical compile against the same artifact
         run: bun --no-env-file scripts/verify_relation_objects_artifact.ts downloaded/ossie.duckdb_extension quality-reports/relation-objects
 

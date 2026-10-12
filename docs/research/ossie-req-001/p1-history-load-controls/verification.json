@@ -1,0 +1,298 @@
+{
+  "passed": true,
+  "scope": "historical typed double capture/index and program only; query/compile/MCP/lifecycle cancellation still required",
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "65321694903bb90173776c6e6ed9a272b20de96e9ff596f972c663c6f2fdcdfa",
+  "checks": [
+    "actual named source roles/types, original source rows and merged index counts, nonexecuting honest program",
+    "empty sources loaded after failures with new parent binding",
+    "full finite DATE source including INT32_MIN, beyond JS calendar",
+    "complete10000 rows in each source, total20000; raw records distinct from merged index"
+  ],
+  "refusals": [
+    {
+      "label": "whole-history conflict for User with no observations",
+      "code": "CONSTRAINT_VIOLATION"
+    },
+    {
+      "label": "identical duplicate global record_id",
+      "code": "IDENTITY_VIOLATION"
+    },
+    {
+      "label": "empty interval",
+      "code": "CONSTRAINT_VIOLATION"
+    },
+    {
+      "label": "duplicate complete observation tuple",
+      "code": "IDENTITY_VIOLATION"
+    },
+    {
+      "label": "typed target differs despite same scalar string identity",
+      "code": "MAPPING_INVALID"
+    },
+    {
+      "label": "unexecuted ontology rule not ignored",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "label": "undeclared operator",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "label": "builtin scalar cannot be redeclared as target EntityType",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "second source missing preserves old whole parent",
+      "code": "SNAPSHOT_REJECTED"
+    },
+    {
+      "label": "actual date type wrong before tuple reads",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "label": "legacy generic capabilities refused on unsupported new profile",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "label": "first source10001 rows no truncation",
+      "code": "SNAPSHOT_REJECTED"
+    },
+    {
+      "label": "second source10001 rows no partial publication",
+      "code": "SNAPSHOT_REJECTED"
+    }
+  ],
+  "initial": {
+    "schema_version": "ossie-history-program-v1",
+    "api_version": "1.0.0",
+    "query_executed": false,
+    "query_supported": false,
+    "compile_supported": false,
+    "mcp_registered": false,
+    "profile": "historical-observation-relation-v1",
+    "operator": "history_at_observation",
+    "root_concept": "DailyObservation",
+    "relationship": "team_at_observation",
+    "user_concept": "User",
+    "target_concept": "Team",
+    "target_identity_relationship": "id",
+    "snapshot_id": "38a99ce374353d86a0d1de7c9458b64fcdf233396fb16588e4a27c8af49a049a:1",
+    "content_sha256": "38a99ce374353d86a0d1de7c9458b64fcdf233396fb16588e4a27c8af49a049a",
+    "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+    "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+    "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+    "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+    "total_source_rows": "5",
+    "history_record_count": "3",
+    "index_segment_count": "2",
+    "history_User_count": "1",
+    "sources": [
+      {
+        "dataset": "observations",
+        "concept": "DailyObservation",
+        "source": "memory.main.observations",
+        "content_sha256": "06535b4b6bd5f79c57c9d1afe20bb614d4cd63b8d4ea90620b3057b31b2f5d54",
+        "rows": "2",
+        "roles": [
+          {
+            "role": "user",
+            "field": "user_id",
+            "physical_column": "user_id",
+            "bound_type": "VARCHAR"
+          },
+          {
+            "role": "date",
+            "field": "ds",
+            "physical_column": "ds",
+            "bound_type": "DATE"
+          },
+          {
+            "role": "product",
+            "field": "product",
+            "physical_column": "product",
+            "bound_type": "VARCHAR"
+          }
+        ]
+      },
+      {
+        "dataset": "history",
+        "concept": "MembershipRecord",
+        "source": "memory.main.history",
+        "content_sha256": "b4e66e77ef3750182332827837c35b8c517e056a30809ba7a2790899eada3c5a",
+        "rows": "3",
+        "roles": [
+          {
+            "role": "record_id",
+            "field": "record_id",
+            "physical_column": "record_id",
+            "bound_type": "VARCHAR"
+          },
+          {
+            "role": "user",
+            "field": "user_id",
+            "physical_column": "user_id",
+            "bound_type": "VARCHAR"
+          },
+          {
+            "role": "team",
+            "field": "team_id",
+            "physical_column": "team_id",
+            "bound_type": "VARCHAR"
+          },
+          {
+            "role": "starts",
+            "field": "starts",
+            "physical_column": "starts",
+            "bound_type": "DATE"
+          },
+          {
+            "role": "ends",
+            "field": "ends",
+            "physical_column": "ends",
+            "bound_type": "DATE"
+          }
+        ]
+      }
+    ],
+    "limits": {
+      "rows_per_source": 10000,
+      "combined_source_rows": 20000,
+      "physical_columns_per_source": 256,
+      "combined_canonical_bytes": 16777216,
+      "index_segments": 10000,
+      "complete_json_utf8_bytes": 1048576
+    },
+    "validity": "finite DuckDB DATE [start,end), start<end",
+    "conflict": "whole-history same User different-target overlap rejects entire load",
+    "source_identity": "global raw record_id, duplicates rejected",
+    "same_target_overlap": "distinct sources retained; derived coverage merged without gaps",
+    "link_identity": [
+      "User",
+      "DATE",
+      "product",
+      "target_id"
+    ],
+    "load_metadata_not_query_counts": true
+  },
+  "empty": {
+    "schema_version": "ossie-history-program-v1",
+    "api_version": "1.0.0",
+    "query_executed": false,
+    "query_supported": false,
+    "compile_supported": false,
+    "mcp_registered": false,
+    "profile": "historical-observation-relation-v1",
+    "operator": "history_at_observation",
+    "root_concept": "DailyObservation",
+    "relationship": "team_at_observation",
+    "user_concept": "User",
+    "target_concept": "Team",
+    "target_identity_relationship": "id",
+    "snapshot_id": "a8a4ec077bbb47fbe92e4c2b823107bc0bc6cf8ba4b212d10ccc9467cad3733a:2",
+    "content_sha256": "a8a4ec077bbb47fbe92e4c2b823107bc0bc6cf8ba4b212d10ccc9467cad3733a",
+    "core_sha256": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+    "ontology_sha256": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+    "mapping_sha256": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+    "manifest_sha256": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+    "total_source_rows": "0",
+    "history_record_count": "0",
+    "index_segment_count": "0",
+    "history_User_count": "0",
+    "sources": [
+      {
+        "dataset": "observations",
+        "concept": "DailyObservation",
+        "source": "memory.main.observations",
+        "content_sha256": "a04fdd59d25faa25a7c0b4e9e6c214145dce2308f02cf05fae196309528666a4",
+        "rows": "0",
+        "roles": [
+          {
+            "role": "user",
+            "field": "user_id",
+            "physical_column": "user_id",
+            "bound_type": "VARCHAR"
+          },
+          {
+            "role": "date",
+            "field": "ds",
+            "physical_column": "ds",
+            "bound_type": "DATE"
+          },
+          {
+            "role": "product",
+            "field": "product",
+            "physical_column": "product",
+            "bound_type": "VARCHAR"
+          }
+        ]
+      },
+      {
+        "dataset": "history",
+        "concept": "MembershipRecord",
+        "source": "memory.main.history",
+        "content_sha256": "177f1f4413b83bcfcf8fe7c4a77953b63abfac301299ce7067ad380b5a5d1775",
+        "rows": "0",
+        "roles": [
+          {
+            "role": "record_id",
+            "field": "record_id",
+            "physical_column": "record_id",
+            "bound_type": "VARCHAR"
+          },
+          {
+            "role": "user",
+            "field": "user_id",
+            "physical_column": "user_id",
+            "bound_type": "VARCHAR"
+          },
+          {
+            "role": "team",
+            "field": "team_id",
+            "physical_column": "team_id",
+            "bound_type": "VARCHAR"
+          },
+          {
+            "role": "starts",
+            "field": "starts",
+            "physical_column": "starts",
+            "bound_type": "DATE"
+          },
+          {
+            "role": "ends",
+            "field": "ends",
+            "physical_column": "ends",
+            "bound_type": "DATE"
+          }
+        ]
+      }
+    ],
+    "limits": {
+      "rows_per_source": 10000,
+      "combined_source_rows": 20000,
+      "physical_columns_per_source": 256,
+      "combined_canonical_bytes": 16777216,
+      "index_segments": 10000,
+      "complete_json_utf8_bytes": 1048576
+    },
+    "validity": "finite DuckDB DATE [start,end), start<end",
+    "conflict": "whole-history same User different-target overlap rejects entire load",
+    "source_identity": "global raw record_id, duplicates rejected",
+    "same_target_overlap": "distinct sources retained; derived coverage merged without gaps",
+    "link_identity": [
+      "User",
+      "DATE",
+      "product",
+      "target_id"
+    ],
+    "load_metadata_not_query_counts": true
+  },
+  "source_sha256": {
+    "scripts/verify_history_load_artifact.ts": "539f8581d682ece0ce69a5f439babb246169256825c376c536f0992d98d20894"
+  },
+  "real_model_requests": 0
+}
