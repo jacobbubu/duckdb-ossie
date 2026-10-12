@@ -4,7 +4,7 @@
 专用 `state_api_version=1.0.0`。旧每日合格集合入口保持原行为。
 用户已接受[业务口径](research/ossie-req-001/p1-time-accepted/acceptance.json)；
 原生 SQL、逻辑解释、专用发现及独立状态 MCP、严格调用方解码、六场景无模型
-演练已完成本地工作包。历史关系及新增代码 Linux/tidy 仍需完成，完整 P1 尚未完成。
+演练已完成本地工作包。历史关系全接口及新增代码 Linux/tidy 已有本地双平台证据；完整 P1 的统一审计仍需完成。
 
 ```sql
 SELECT result_json FROM ossie_daily_states_json(
@@ -57,7 +57,7 @@ schema 为 `ossie-daily-states-plan-v1`，绑定完整 User/DATE/product/BOOLEAN
 carry-forward、历史有效期推断均不支持。旧 `ossie_daily_users_json` 拒绝新状态请求字段。
 本地证据覆盖全部八种当天值集合、九种状态对、跨月/闰日、范围外用户、冻结重载、
 确定性阶段取消和恢复、10,000/9,999 对象与超限，以及精确 1 MiB 与多一字节拒绝。
-证据只覆盖当前 macOS ARM64 产物，新增代码的 Linux/tidy 和远端 CI 尚未复验。
+原状态报告保留当时 macOS ARM64 产物；后续[当前双平台功能与 tidy](research/ossie-req-001/p1-final-linux-functional/review.md)已复验新增代码，远端 CI 未运行。
 
 独立[状态服务](../examples/daily_state_server.sql)只注册 `population_daily_states`
 与 `population_daily_states_compile`，有 concepts、capabilities、state-program、

@@ -8,7 +8,7 @@ OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckD
 [原始表达式文档](research/ossie-req-001/sources/apache-ossie/core-spec/expression_language.md)。
 其聚合、条件、类型转换、排名/偏移/聚合窗口章节包含 REQUIRED 项；P1 的目标
 是覆盖原需求第5节用例实际需要的函数，继续公开未支持项。兼容矩阵不是删减
-尚未完成的状态变化、历史关系或整体验收要求。
+状态变化、历史关系或整体验收要求。
 
 这里分开三层证据：固定文档定义语言；解析/绑定门禁决定允许的 AST 和位置；
 实际执行及独立完整行/精确金额对照证明有限场景结果。声明或解析成功不替代
@@ -20,10 +20,10 @@ OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckD
 | --- | --- | --- |
 | 通用 core `ossie_query` / `ossie_compile` | 字段/指标使用选中的 OSSIE_SQL_2026 或 ANSI_SQL；过滤器有独立函数开关和 lowering | 通用 core 方言转换不是各人口 profile 的白名单；普通窗口位置没有本页新增验收 |
 | `gaap-scalar-population-v1` | 已声明标量概念/指标，严格人口表达式 AST；保护除法、NULL、规则/请求范围 | 不能自由访问数据集、任意函数、窗口或子查询 |
-| `daily-observation-population-v1` | 固定五个观察聚合形状；正式资格为分类整数与整数阈值比较；每日集合做自然日见证归约；专用状态 SQL 保留 BOOLEAN/NULL 后归约全部 User/day 与请求内相邻比较，独立 MCP/无模型已本地验证 | 每日归约不是 SQL 窗口；没有历史有效期；新增代码 Linux/tidy 未复验 |
+| `daily-observation-population-v1` | 固定五个观察聚合形状；正式资格为分类整数与整数阈值比较；每日集合做自然日见证归约；专用状态 SQL 保留 BOOLEAN/NULL 后归约全部 User/day 与请求内相邻比较，独立 MCP/无模型已本地验证 | 每日归约不是 SQL 窗口；没有历史有效期；当前双平台/tidy 已复验 |
 | `observation-relation-program-v1` | 声明的同根 User 关系调用、正向非递归 DAG、有限整数条件和显式 NULL 约束 | 关系调用是 ontology typed 语法，不能当普通 SQL UDF；没有任意聚合/窗口 |
 | `multi-fact-user-program-v1` | 两个事实分别按 User 归约后组合；另有同源 User/date 行窗口 | 不支持原始事实连接后聚合、跨来源窗口、比率或任意 SQL 请求 |
-| `historical-observation-relation-v1` | 直接物理字段与明确 typed 角色，完整有限 DATE 双源捕获/索引、program、完整历史 links、只绑定投影的逻辑 compile、独立 MCP 与七场景无模型重放；时间匹配是项目算子 | 未执行通用 ontology derived_by，非空未执行规则拒绝；新代码 Linux/tidy 尚待验收，无模型不证明自主模型能力 |
+| `historical-observation-relation-v1` | 直接物理字段与明确 typed 角色，完整有限 DATE 双源捕获/索引、program、完整历史 links、只绑定投影的逻辑 compile、独立 MCP 与七场景无模型重放；时间匹配是项目算子 | 未执行通用 ontology derived_by，非空未执行规则拒绝；当前双平台/tidy 已复验，最终统一审计保留；无模型不证明自主模型能力 |
 
 ## P1 相关形状
 
@@ -42,7 +42,7 @@ OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckD
 | `SUM ... OVER`；规范窗口聚合 REQUIRED | 同源 User/date，明确 `ROWS BETWEEN n PRECEDING AND CURRENT ROW`，n为0..366字面整数 | n0/366执行通过；n367、RANGE、UNBOUNDED、FOLLOWING、倒序、产品粒度来源拒绝。先全部捕获计算窗口，后过滤显示日期；2月1日前值200、两行和250 |
 | `LEAD`、`FIRST_VALUE`、排名及其他窗口；规范 REQUIRED | 没有新增允许位置 | native直接实测 LEAD/FIRST_VALUE/ROW_NUMBER/AVG窗口拒绝；其余排名与NTH/LAST等未逐项实测，不以共用拒绝分支冒充每项证据 |
 | 日期/类型、自然日集合 | daily 请求为真实公历0001..9999、首尾包含、最多366自然日；fact/relation为完整有限 DuckDB DATE canonical文本、支持 BC/宽年份 | DATE 身份不截 TIMESTAMP、不猜时区；fact显示范围不补日。daily缺见证不能证明真实不合格；两个接口日期域有意不同 |
-| 历史有效期、每日三值状态变化 | 已接受口径：每日三值归约与相邻自然日比较全接口本地通过；历史半开区间匹配/重叠拒绝/缺口/完整 links、逻辑 compile、MCP 与无模型本地通过 | 新代码 Linux/tidy 与整体 P1 验收仍必需；已有 LAG/ROWS 不替代这些验收 |
+| 历史有效期、每日三值状态变化 | 已接受口径：每日三值归约与相邻自然日比较全接口本地通过；历史半开区间匹配/重叠拒绝/缺口/完整 links、逻辑 compile、MCP 与无模型本地通过 | 当前双平台/tidy 已复验，整体 P1 统一审计仍必需；已有 LAG/ROWS 不替代这些验收 |
 
 窗口采用已验证 AST 副本直接嵌入捕获来源，不把 DuckDB 窗口 ToString 诊断
 文本重新解析成执行树。系统函数明确绑定 `system.main`；诊断文本可能省略
@@ -81,8 +81,8 @@ SQL全套包含SQL2026、标量、每日、关系、多事实；native分别验�
 [八场景无模型演练](research/ossie-req-001/p1-fact-agent-controls/review.md)。
 原始证据与当时源码绑定，后续复验不能覆盖原始报告。
 
-P1 尚需状态与历史新代码 Linux/tidy、最终同产物
-全套质量检查与待推历史私有信息审计。本地命令通过不证明远端跨平台/tidy已运行；
+P1 的当前双平台全接口回归与新代码 tidy 已通过；尚需原五项统一审计、交付状态
+核对与待推历史私有信息审计。本地命令通过不证明远端跨平台/tidy已运行；
 无模型演练不证明模型自主选择。完整P1的验收范围保持原需求与现有计划。
 
 [有限窗口显示边界修复](research/ossie-req-001/p1-finite-window-controls/review.md)

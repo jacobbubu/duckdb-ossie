@@ -25,9 +25,10 @@ have dedicated interfaces, as does the [every-day User set](docs/population-dail
 Their bounded SQL, independent MCP and scripted Agent/replay interfaces are locally
 verified on macOS ARM64 and Ubuntu ARM64. The accepted daily and historical policies
 now have [daily three-valued state SQL, logical plans, discovery and independent MCP/replay](docs/population-daily-states.md)
-verified locally on macOS ARM64. [Historical typed capture/index, full links and logical plans](docs/population-history.md)
-and dedicated MCP/scripted Agent replay are implemented locally; new-code Linux/tidy
-verification and full P1 acceptance remain required.
+verified locally on macOS ARM64 and Ubuntu ARM64. [Historical typed capture/index, full links and logical plans](docs/population-history.md)
+and dedicated MCP/scripted Agent replay are verified on both local platforms, with
+[current-source Linux functionality and tidy](docs/research/ossie-req-001/p1-final-linux-functional/review.md).
+The final requirement and delivery audit remains; full P1 acceptance is pending.
 These local P1 results do not imply remote CI has run.
 See the [bounded implementation record](docs/ossie-execution-research.md)
 and [current delivery status](ossie-duckdb-plan.md#current-delivery-checkpoint--2026-10-11)
