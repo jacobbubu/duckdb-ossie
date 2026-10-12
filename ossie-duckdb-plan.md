@@ -1879,3 +1879,18 @@ native、29SQL/1070、138Bun/723及质量通过；同产物P0/旧SQL/五MCP/五�
 337私有文件绑定；旧加载SHA与状态不回写。当前query/compile启用、MCPfalse。
 下一必要为历史独立MCP/严格carrier/无模型；之后新代码Linux/tidy、五项统一验收
 与未推历史私有检查。goal active，此切片仅本地提交，不调用真实模型或推送。
+
+历史 MCP 恢复 checkpoint（e39359e 干净）：上一轮为 progress，SQL/compile 的完整
+接口契约已冻结。沿 OSSIE-REQ-001 接独立二工具及 history-program/surface 资源，
+原生 mcp_registered=false 不冒充探测运行中的 registry；实际 tools/list 验证暴露。
+严格完整 carrier 校验 request、类型、全排序/唯一身份/功能性、六 hash、来源计数
+及逻辑计划，逐记录 oracle 独立证明成员。验证损坏/重复字段/超限、上游外层参数
+忽略与对象转字符串实际行为，随后封存无模型循环；不新增 SQL 语言或模型调用。
+
+历史 MCP 切片完成：[证据](docs/research/ossie-req-001/p1-history-mcp-controls/review.md)
+以同 d5185413 实际 stock stdio 二工具/二资源完成15检查/24拒绝/28损坏与恢复；
+来源对应和独立匹配分开，MCP完整10000身份比较。program原生mcpfalse不冒充
+registry探测，actual tools/list证明暴露；外层参数忽略/object转换如实声明。Cpp
+未改，上一同SHA原生/SQL/旧全接口复验继续适用；138Bun/723及质量通过。原始
+会话/失败清单保留。下一历史无模型Agent/严格重放，之后新Cpp Linux/tidy与五项
+审计/未推历史私有检查；goal active，不调用真实模型/推送。

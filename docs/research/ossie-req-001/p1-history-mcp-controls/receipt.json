@@ -1,0 +1,43 @@
+{
+  "baseline_commit": "e39359e693b7ead617b46a9359a600882db81318",
+  "scope": "history independent MCP resources/two tools/strict complete carriers; C++ unchanged",
+  "artifact_sha256": "d51854132706e00d5bd150d79ea55d25d22fe6cca0d2f2e9ce8cadb4421845bf",
+  "source_sha256": {
+    "scripts/history_result.ts": "cc3b1f3727e057d581a54adbdc1db0289299587467740d7a988accd7b65eacd1",
+    "scripts/history_mcp.ts": "7928ec3dde5e0fb006cea54f2dbe242668fdcaf822696ecc1e315b73eb3317d7",
+    "scripts/history_oracle.ts": "60e699e1da8067c5ede236d444d634d6bda7f8f90141c9e1136b9ea1cd1d820d",
+    "scripts/verify_history_mcp.ts": "b995719a5ea98514ca33788792fca8e2980f0a87a8a92a00f50db32c55285b8d",
+    "examples/history_server.sql": "7d9a56ba4abb85208b143fe361a5cb4c8786d2845be848932234d9e1bbeb2c23",
+    "test/fixtures/population-history-program/rows.sql": "542649dc837bd866dde401aafd60e2d1447b4fda81090014edc81d147e708ec1",
+    ".github/workflows/MainDistributionPipeline.yml": "5de0ad6a02e0812ed36dadb13784cd585937d3079522c0c5178af06b1f68c5b1"
+  },
+  "private_manifest_sha256": "e92d63deda606e7e51aded768f6ccf03a84b7ab756bd41354a2b3b91b5a68f4b",
+  "private_files": 25,
+  "mcp_checks": 15,
+  "mcp_refusals": 24,
+  "decoder_damage": 28,
+  "complete_mcp_links": 10000,
+  "legacy_evidence": "../p1-history-links-controls/receipt.json",
+  "same_artifact_prior_native_sql_legacy": true,
+  "bun": {
+    "tests": 138,
+    "expects": 723
+  },
+  "quality": [
+    "TypeScript types/format",
+    "Cpp architecture",
+    "diff check"
+  ],
+  "failures_retained": [
+    "TypeScript assertion declaration annotation/role inference",
+    "client DuckDBDateValue.toString uses astronomical year0; source correspondence now uses native DATE::VARCHAR"
+  ],
+  "remaining": [
+    "historical Agent scripted loop and strict sealed replay",
+    "new C++ Linux/tidy",
+    "full five-category P1 completion audit and outgoing private precheck"
+  ],
+  "real_model_requests": 0,
+  "goal_complete": false,
+  "pushed": false
+}

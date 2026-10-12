@@ -148,6 +148,10 @@ jobs:
       - name: Verify complete historical links, logical compile and response budgets
         run: bun --no-env-file scripts/verify_history_links_artifact.ts downloaded/ossie.duckdb_extension quality-reports/history-links
 
+      - name: Verify historical MCP full identities and strict carriers without a model
+        run: |
+          env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL bun --no-env-file scripts/verify_history_mcp.ts "$(command -v duckdb)" downloaded/ossie.duckdb_extension quality-reports/history-mcp.json
+
       - name: Verify complete relation links and logical compile against the same artifact
         run: bun --no-env-file scripts/verify_relation_objects_artifact.ts downloaded/ossie.duckdb_extension quality-reports/relation-objects
 

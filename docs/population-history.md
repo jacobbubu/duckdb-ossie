@@ -3,7 +3,7 @@
 `historical-observation-relation-v1` 已实现 typed 双源加载、完整历史校验、冻结索引、
 `ossie_history_program()`、`ossie_history_links_json()` 与 `ossie_history_links_compile()`。
 program 明确 `query_supported=true`、`compile_supported=true`、`mcp_registered=false`。
-历史 MCP 与无模型演练尚未实施，完整 P1 仍需后续实施与跨环境验收。
+历史独立 MCP 已本地验证，无模型演练尚未实施，完整 P1 仍需后续实施与跨环境验收。
 
 [fixture](../test/fixtures/population-history-program/bundle.json) 有两份数据集：
 观察实体按 User/DATE/product 标识，历史实体按全局 record_id 标识。User 与 Team
@@ -76,3 +76,17 @@ program、links 与 compile 保留旧父，重载及删两表后仍可读取原�
 [查询与解释证据](research/ossie-req-001/p1-history-links-controls/review.md)另以新产物
 核对逐记录枚举的完整关系、有限日期极值、10,000 完整 links、精确字节预算及
 prepared/原生取消。旧加载报告保留当时的 SHA 和接口状态，不改写历史证据。
+
+独立 [MCP 示例](../examples/history_server.sql) 由操作者加载两来源，再公布两个只读
+工具 `population_history_links` / `population_history_links_compile`，外层参数为 String
+`relationship` 与 String `request_json`，范围只放在 request_json 中。只有
+`ossie://population/history-program` 和 `ossie://population/history-surface` 两项资源；
+前者公布原生角色、身份、来源计数与限制，后者说明实际工具范围。原生 program
+的 mcp_registered=false 不是运行中 registry 探测；实际 tools/list 才证明工具暴露。
+不公布旧通用概念/人口工具或任意 SQL、加载/重载工具。
+
+固定上游 MCP 实测忽略未知外层参数，并可把 object 参数转 String；辅助调用者
+发送 String，不把这两个行为伪称原生严格参数契约。内部 request 与完整返回值仍
+按本 profile 严格校验。[MCP 证据](research/ossie-req-001/p1-history-mcp-controls/review.md)
+包含完整 10,000 link 身份、超限拒绝恢复、28 项损坏 carrier，以及与原始观察/历史
+记录对应的独立逐记录匹配。结构合法不证明关系成员正确，无模型演练仍待完成。

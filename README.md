@@ -26,7 +26,7 @@ Their bounded SQL, independent MCP and scripted Agent/replay interfaces are loca
 verified on macOS ARM64 and Ubuntu ARM64. The accepted daily and historical policies
 now have [daily three-valued state SQL, logical plans, discovery and independent MCP/replay](docs/population-daily-states.md)
 verified locally on macOS ARM64. [Historical typed capture/index, full links and logical plans](docs/population-history.md)
-are implemented locally; historical MCP/replay interfaces and new-code Linux/tidy
+and dedicated MCP are implemented locally; historical Agent/replay and new-code Linux/tidy
 verification remain required. Full P1 acceptance is pending.
 These local P1 results do not imply remote CI has run.
 See the [bounded implementation record](docs/ossie-execution-research.md)

@@ -1,0 +1,31 @@
+-- Independent historical surface. Operator captures sources; Agent receives two read-only tools.
+INSTALL ossie FROM community;
+LOAD ossie;
+INSTALL duckdb_mcp FROM community;
+LOAD duckdb_mcp;
+-- BEGIN OPERATOR SETUP
+CREATE TABLE observations(user_id VARCHAR, ds DATE, product VARCHAR);
+CREATE TABLE history(record_id VARCHAR,user_id VARCHAR,team_id VARCHAR,starts DATE,ends DATE);
+.read test/fixtures/population-history-program/rows.sql
+CALL ossie_bundle_load('test/fixtures/population-history-program/bundle.json');
+-- END OPERATOR SETUP
+PRAGMA mcp_publish_query('SELECT * FROM ossie_history_program()', 'ossie://population/history-program','json',0);
+PRAGMA mcp_publish_query(
+ 'SELECT ''ossie-history-mcp-surface-v1'' AS schema_version, ''["population_history_links","population_history_links_compile"]'' AS tools_json, false AS reload_tool, false AS arbitrary_sql_tool, ''scope only inside request_json; unknown outer arguments ignored; upstream may coerce objects; clients send Strings'' AS argument_boundary',
+ 'ossie://population/history-surface','json',0
+);
+PRAGMA mcp_publish_tool(
+ 'population_history_links',
+ 'Return the complete frozen Observation to typed target link set. Discover history-program and exact relationship first. Project operator history_at_observation uses finite DATE [start,end); gaps produce no link. Same-target overlapping record_id witnesses give one complete link; whole-history different-target overlap and duplicate record_id reject load, including unobserved Users. request_json exactly dates and products. Dates explicit all or inclusive canonical finite DuckDB DATE range, including BC/wide years; no calendar expansion or carry. Products explicit all or nonempty subset max64 unique raw strings/max256 UTF-8 bytes each. Filters affect observations only, not history validation. Request max16KiB, complete links max10000, complete internal JSON max1MiB including metadata and escaping. No paging or truncation. Parse one result_json carrier as ossie-history-links-result-v1/api_version1.0.0, four roles User/DATE/product/target, integer-text counts. Source/index counts are load metadata, not query counts. Compare scope, role concepts and six hashes. Unknown outer arguments are ignored; upstream may coerce values; clients send Strings. No qualification, registry, generic derived_by, load/reload or arbitrary SQL tools.',
+ 'SELECT * FROM ossie_history_links_json($relationship,$request_json)',
+ '{"relationship":{"type":"string"},"request_json":{"type":"string"}}',
+ '["relationship","request_json"]','json'
+);
+PRAGMA mcp_publish_tool(
+ 'population_history_links_compile',
+ 'Explain the same historical scope without scanning observations, matching targets or computing link counts. Parse one plan_json carrier as ossie-history-links-plan-v1/api_version1.0.0. Actual frozen input projection is VARCHAR/DATE/VARCHAR. Index and source counts are load metadata; plan is logical, not physical or independently replayable SQL, and does not guarantee execution-result size/completion. Same exact request and budgets as population_history_links. Compare request, concepts and six hashes across calls; separate calls can bind different snapshots if operator reloads. Unknown outer arguments are ignored; upstream may coerce values; clients send Strings. Two historical tools only, without load/reload or arbitrary SQL.',
+ 'SELECT * FROM ossie_history_links_compile($relationship,$request_json)',
+ '{"relationship":{"type":"string"},"request_json":{"type":"string"}}',
+ '["relationship","request_json"]','json'
+);
+PRAGMA mcp_server_start('stdio','localhost',0,'{"enable_execute_tool":false,"enable_query_tool":false,"enable_export_tool":false,"enable_describe_tool":false,"enable_list_tables_tool":false,"enable_database_info_tool":false}');

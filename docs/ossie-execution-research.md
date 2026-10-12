@@ -1813,3 +1813,10 @@ MCP/专用program与surface、严格carrier解码、六场景注入Responses与�
 1070、138 Bun/723、质量及同产物旧 SQL/MCP/五组无模型通过。337 私有原件
 保留失败。当前历史 query/compile 支持、MCP 未注册；下一为历史 MCP/严格解码/
 无模型演练，再新代码 Linux/tidy 和全五项 P1 统一审计。无模型调用或推送。
+
+历史 MCP 工作包：[证据及限制](research/ossie-req-001/p1-history-mcp-controls/review.md)
+以同 d5185413 实际 stdio 验证独立二工具/二资源、15 检查/24 拒绝/28 损坏。
+来源对应与逐记录枚举分开，完整 10000 link 身份比较；内层超限拒绝与恢复、
+上游外层忽略/转换如实记录。Cpp 未改，复用上一同 SHA 原生/SQL/旧全接口证据；
+138 Bun/723 及质量通过。历史 Agent 无模型封存重放、新 C++ Linux/tidy 及五项
+统一审计仍必需，goal active，无模型/推送。SDK BC 文本差异失败原件保留。

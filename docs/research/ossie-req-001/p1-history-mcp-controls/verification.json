@@ -1,0 +1,177 @@
+{
+  "passed": true,
+  "scope": "history MCP complete independent synthetic links and strict decoder; no Agent/model autonomy claim",
+  "fixture_sha256": "542649dc837bd866dde401aafd60e2d1447b4fda81090014edc81d147e708ec1",
+  "decoder_sha256": "cc3b1f3727e057d581a54adbdc1db0289299587467740d7a988accd7b65eacd1",
+  "checks": [
+    "actual fixture rows correspond to independent source arrays, including raw NUL/DATE minimum",
+    "extended/all/all: complete independent members and binding",
+    "outer unknown scope ignored; all scope must be in request_json",
+    "actual upstream object-to-string coercion; supported callers send Strings",
+    "extended/range/all: complete independent members and binding",
+    "extended/all/subset: complete independent members and binding",
+    "extended/all/subset: complete independent members and binding",
+    "extended/range/all: complete independent members and binding",
+    "empty/all/all: complete independent members and binding",
+    "empty/range/all: complete independent members and binding",
+    "empty/all/subset: complete independent members and binding",
+    "empty/all/subset: complete independent members and binding",
+    "empty/range/all: complete independent members and binding",
+    "plan binds despite execution byte limit; smaller empty scope recovers",
+    "actual MCP complete10000 four-role identities, not count-only; same program/plan binding"
+  ],
+  "refusals": [
+    {
+      "name": "population_history_links",
+      "label": "missing dates",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links",
+      "label": "extra",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links",
+      "label": "date mode",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "name": "population_history_links",
+      "label": "numeric product",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links",
+      "label": "duplicate product",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links",
+      "label": "infinity",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links",
+      "label": "oversize request",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "name": "population_history_links",
+      "label": "decoded duplicate",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links_compile",
+      "label": "missing dates",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links_compile",
+      "label": "extra",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links_compile",
+      "label": "date mode",
+      "code": "UNSUPPORTED_CAPABILITY"
+    },
+    {
+      "name": "population_history_links_compile",
+      "label": "numeric product",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links_compile",
+      "label": "duplicate product",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links_compile",
+      "label": "infinity",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_history_links_compile",
+      "label": "oversize request",
+      "code": "RESOURCE_LIMIT_EXCEEDED"
+    },
+    {
+      "name": "population_history_links_compile",
+      "label": "decoded duplicate",
+      "code": "INVALID_REQUEST"
+    },
+    {
+      "name": "population_daily_states",
+      "label": "outside registry"
+    },
+    {
+      "name": "population_relation_links",
+      "label": "outside registry"
+    },
+    {
+      "name": "query",
+      "label": "outside registry"
+    },
+    {
+      "name": "execute",
+      "label": "outside registry"
+    },
+    {
+      "name": "ossie_bundle_load",
+      "label": "outside registry"
+    },
+    {
+      "name": "population_history_links",
+      "label": "wrong relationship"
+    },
+    {
+      "name": "population_history_links_compile",
+      "label": "wrong relationship"
+    },
+    {
+      "label": "1000 links/large target complete JSON exceeds1MiB"
+    }
+  ],
+  "damage": [
+    "wrong schema",
+    "wrong version",
+    "wrong type",
+    "extra",
+    "bad hash",
+    "incomplete",
+    "truncated",
+    "numeric count",
+    "missing link",
+    "duplicate link",
+    "functional conflict",
+    "wrong order",
+    "infinity",
+    "surrogate",
+    "scope violation",
+    "bad role concepts",
+    "index exceeds source",
+    "duplicate decoded key",
+    "plan executed",
+    "plan computed",
+    "plan wrong operators",
+    "plan missing DATE",
+    "plan bad limits",
+    "program wrong source count",
+    "program false support",
+    "program wrong role",
+    "program wrong actual type",
+    "program fake MCP probe"
+  ],
+  "real_model_requests": 0,
+  "runtime": {
+    "version": "v1.5.6",
+    "source_id": "069cc9f9b5",
+    "extension_version": "6f9c4ba",
+    "cli_sha256": "7d15b2aaf6be05212ada5f99fe79e0b83e63b7ed91e7e422c0b925278e9e0c39",
+    "mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+    "extension_sha256": "d51854132706e00d5bd150d79ea55d25d22fe6cca0d2f2e9ce8cadb4421845bf",
+    "server_sha256": "7d9a56ba4abb85208b143fe361a5cb4c8786d2845be848932234d9e1bbeb2c23"
+  },
+  "evidence_scope": "selected claims from immutable actual MCP events; raw sessions privately retained; synthetic data, no model autonomy"
+}
