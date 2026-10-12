@@ -170,3 +170,17 @@ test("bounded provider JSON rejects duplicate envelope fields", async () => {
     ),
   ).rejects.toThrow("duplicate");
 });
+
+test("state operation notice preserves resources and does not alter other prompts", () => {
+  const d = {
+    tools,
+    rows: { "ossie://population/capabilities": [{ sparse: true }] },
+    program: {},
+    binding: {},
+  };
+  const states = context("states", d);
+  expect(states.system).toContain("每日状态查询以state-program");
+  expect(states.system).toContain("不代表本次tools/list注册状态");
+  expect(states.resources).toEqual(d.rows);
+  expect(context("facts", d).system).not.toContain("操作适用范围");
+});

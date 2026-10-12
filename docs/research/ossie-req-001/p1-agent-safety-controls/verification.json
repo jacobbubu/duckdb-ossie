@@ -1,0 +1,16 @@
+{
+  "schema": "ossie-p1-safety-final-check-v1",
+  "source_files_verified": 59,
+  "historical_private_files_preserved": 312,
+  "new_private_files_hash_bound": 1412,
+  "local_links_checked": 318,
+  "new_source_and_docs_marker_scan": "bounded listed patterns pass; not a universal secret certificate",
+  "source_claims": "no new native/tidy or remote CI claim",
+  "public_summary_schema": "exact key allowlist and semantic_acceptance not_proven",
+  "diff_check": "pass",
+  "hashes": {
+    "docs/research/ossie-req-001/p1-agent-safety-controls/receipt.json": "cff85dbd5adf3a12fffc2bd236d51d73feafbc9c28c81a4c47012482611f61e9",
+    "docs/research/ossie-req-001/p1-agent-safety-controls/review.md": "bffd9e7114186483f8eb3bf9490c071ebe05689ab83ea53208fe18681873f86a",
+    "docs/research/ossie-req-001/p1-agent-safety-controls/summary-example.json": "36045f6db0fb34cec9fe1c961d54a5302352a17fd97d8badf2658d85798dcb93"
+  }
+}

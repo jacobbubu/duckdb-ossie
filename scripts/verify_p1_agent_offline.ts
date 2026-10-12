@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import { exportP1Summary } from "./p1_agent_public.ts";
 import childProcess from "node:child_process";
 import { spyOn } from "bun:test";
 /** Actual stock MCP integration and re-sealed adversarial replay controls; model requests zero. */
@@ -388,6 +390,168 @@ export async function verifyP1Offline(
     else await assert.rejects(() => replayP1(target, sha));
     controls.push({ name: name + " re-sealed forgery rejected", passed: true });
   }
+  const sentinel = "PRIVATE_PROJECTION_SENTINEL";
+  const script = scriptedSimulation();
+  const projected = await run("response-projection", {
+    simulate: async (scene, body, events) => {
+      const raw = JSON.parse(await script(scene, body, events));
+      raw.metadata = { secret: sentinel };
+      raw.usage.extra = sentinel;
+      raw.output.unshift({
+        type: "reasoning",
+        summary: [{ text: sentinel }],
+        encrypted_content: sentinel,
+      });
+      return JSON.stringify(raw);
+    },
+  });
+  assert(projected.status === "complete");
+  assert(
+    (await replayP1(join(out, "response-projection"), sha)).status ===
+      "complete",
+  );
+  for (const scene of ["facts", "states", "history"]) {
+    const ev = readFileSync(
+      join(out, "response-projection", scene, "events.jsonl"),
+      "utf8",
+    )
+      .trim()
+      .split("\n")
+      .map((v) => JSON.parse(v));
+    assert(
+      ev
+        .filter((e) => e.kind === "provider_response")
+        .every((e) => !JSON.stringify(e).includes(sentinel)),
+    );
+    assert(
+      ev
+        .filter((e) => e.kind === "simulation_response")
+        .every((e) => e.recording_scope.startsWith("synthetic_only")),
+    );
+  }
+  controls.push({
+    name: "reasoning and metadata stripped before recorded completions; synthetic-only raw replays",
+    passed: true,
+  });
+  const publicFile = join(out, "public-summary.json");
+  const exported = await exportP1Summary(
+    join(out, "positive"),
+    publicFile,
+    sha,
+  );
+  const publicText = readFileSync(publicFile, "utf8");
+  assert(digest(publicFile) === exported.summary_sha256);
+  const publicValue = JSON.parse(publicText);
+  assert(
+    publicValue.scenes.length === 3 &&
+      publicValue.scenes.every(
+        (v: JsonObject) =>
+          v.tool_calls === 1 && v.semantic_acceptance === "not_proven",
+      ),
+  );
+  for (const marker of [
+    "result_json",
+    "definition",
+    "serialized_body",
+    "simulated-p1",
+    "provider_response",
+    "install_path",
+  ])
+    assert(!publicText.includes(marker));
+  await assert.rejects(() =>
+    exportP1Summary(join(out, "positive"), publicFile, sha),
+  );
+  await assert.rejects(() =>
+    exportP1Summary(
+      join(out, "positive"),
+      join(out, "positive", "export.json"),
+      sha,
+    ),
+  );
+  fs.symlinkSync(join(out, "positive"), join(out, "summary-symlink"));
+  await assert.rejects(() =>
+    exportP1Summary(
+      join(out, "positive"),
+      join(out, "summary-symlink", "export.json"),
+      sha,
+    ),
+  );
+  controls.push({
+    name: "public summary exact fixed fields, no business/raw fields, no overwrite/source/symlink writes",
+    passed: true,
+  });
+  const metadataTarget = join(out, "metadata-extra");
+  const metadataArchive = PrivateArchive.create(metadataTarget);
+  for (const file of Object.keys(original.files)) {
+    const raw = readFileSync(join(out, "positive", file), "utf8");
+    if (file.endsWith(".jsonl")) {
+      const scene = file.split("/")[0];
+      metadataArchive.startEvents(scene);
+      for (const line of raw.trim().split("\n"))
+        metadataArchive.record(scene, JSON.parse(line));
+    } else {
+      const value = JSON.parse(raw);
+      if (["run.json", "summary.json"].includes(file)) {
+        value.extra = {
+          reason: sentinel,
+          provider: sentinel,
+          results: sentinel,
+        };
+      }
+      metadataArchive.save(file, value);
+    }
+  }
+  metadataArchive.seal();
+  const metadataFile = join(out, "metadata-summary.json");
+  await exportP1Summary(metadataTarget, metadataFile, sha);
+  assert(!readFileSync(metadataFile, "utf8").includes(sentinel));
+  await assert.rejects(
+    () =>
+      exportP1Summary(
+        join(out, "tamper-coordinated-wrong-amount"),
+        join(out, "forged-summary.json"),
+        sha,
+      ),
+    /independent fact oracle mismatch/,
+  );
+  assert(!existsSync(join(out, "forged-summary.json")));
+  controls.push({
+    name: "public export drops re-sealed free metadata and rejects coordinated semantic forgery",
+    passed: true,
+  });
+  const startupFile = join(out, "startup-summary.json");
+  await exportP1Summary(join(out, "startup-failure"), startupFile, sha);
+  assert(
+    JSON.parse(readFileSync(startupFile, "utf8")).correspondence ===
+      "startup_diagnostic_only",
+  );
+  controls.push({
+    name: "startup export is diagnostic only, no runtime/execution proof",
+    passed: true,
+  });
+  const changingTarget = join(out, "changing-source");
+  fs.cpSync(join(out, "positive"), changingTarget, { recursive: true });
+  const pendingExport = exportP1Summary(
+    changingTarget,
+    join(out, "changed-source-summary.json"),
+    sha,
+  );
+  const changedRun = join(changingTarget, "run.json");
+  const oldRun = readFileSync(changedRun, "utf8");
+  writeFileSync(
+    changedRun,
+    JSON.stringify({ ...JSON.parse(oldRun), extra: sentinel }),
+  );
+  assert(readFileSync(changedRun, "utf8") !== oldRun);
+  await assert.rejects(
+    () => pendingExport,
+    /archive byte hash mismatch|source snapshot changed/,
+  );
+  assert(!existsSync(join(out, "changed-source-summary.json")));
+  controls.push({
+    name: "source copy changed during asynchronous export is rejected; no output written (not a filesystem race guarantee)",
+    passed: true,
+  });
   assert(
     verifyArchive(join(out, "positive")).seal_sha256 === original.seal_sha256,
   );

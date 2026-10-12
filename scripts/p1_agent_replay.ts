@@ -1,3 +1,4 @@
+import { CLEANUP_POLICY, p1ResponseBoundary } from "./p1_agent_safety.ts";
 import { p1JSON as factJSON } from "./p1_agent_json.ts";
 /** Offline only: recorded transport and completions, no server/config/provider access. */
 import assert from "node:assert/strict";
@@ -21,7 +22,7 @@ import {
   fixtureDefinition,
   type Scene,
 } from "./p1_agent_contract.ts";
-import { boundedResponse, DEFINITIONS } from "./p1_agent_simulation.ts";
+import { DEFINITIONS } from "./p1_agent_simulation.ts";
 import { FactSession } from "./fact_mcp.ts";
 import { StateSession } from "./daily_state_mcp.ts";
 import { HistorySession } from "./history_mcp.ts";
@@ -53,10 +54,11 @@ export async function replayP1(path: string, artifactSha: string) {
     "current source inventory mismatch",
   );
   assert.deepEqual(run.scenes, SCENES);
+  assert.deepEqual(run.cleanup_policy, CLEANUP_POLICY);
   const limits = run.limits as typeof LIMITS;
   for (const key of Object.keys(LIMITS) as (keyof typeof LIMITS)[])
     assert(
-      Number.isFinite(limits[key]) &&
+      Number.isInteger(limits[key]) &&
         limits[key] >= 0 &&
         limits[key] <= LIMITS[key],
     );
@@ -259,7 +261,9 @@ export async function replayP1(path: string, artifactSha: string) {
         }
         const input = take("simulation_response");
         assert(
-          typeof input.body === "string" &&
+          input.recording_scope ===
+            "synthetic_only; never raw real Responses" &&
+            typeof input.body === "string" &&
             typeof input.truncated === "boolean" &&
             input.encoding === "base64",
         );
@@ -270,7 +274,7 @@ export async function replayP1(path: string, artifactSha: string) {
         );
         if (input.truncated)
           assert(bytes.length === Number(run.inbound_bytes) + 1);
-        return boundedResponse(
+        return p1ResponseBoundary(
           new Response(bytes),
           Number(run.inbound_bytes),
           init!.signal as AbortSignal,

@@ -32,7 +32,7 @@ bun --no-env-file scripts/verify_p1_agent_offline.ts \
 
 ## 运行与独立评估
 
-模型上下文仅由[已审提示词](research/ossie-req-001/p1-agent-live-research/prompts.json)、实际发现的工具schema和资源构造。首次出站body精确对应这些字段，续接只带真实工具返回；重放重新走同一发现合同并核对全部serialized_body。原始数据行、oracle文件和预期调用模板不进入模型上下文。模拟响应生成器会读取评估侧的预期请求作为测试模板；这是模拟，不能称模型自行选择成功。
+状态instructions追加固定操作适用范围说明：以state-program/state-surface和专用工具合同为准，通用观察资源不覆盖状态合同。发现原文不改。模型上下文由[已审提示词](research/ossie-req-001/p1-agent-live-research/prompts.json)、实际发现的工具schema和资源构造。首次出站body精确对应这些字段，续接只带真实工具返回；重放重新走同一发现合同并核对全部serialized_body。原始数据行、oracle文件和预期调用模板不进入模型上下文。模拟响应生成器会读取评估侧的预期请求作为测试模板；这是模拟，不能称模型自行选择成功。
 
 运行校验不比较隐藏任务scope。合法的成本>80、错误结束日期等会原样到达MCP，完整返回后才在任务scope/独立答案审阅中判错。不会补正确参数、替换结果或把oracle差异反馈给模拟器。数字碰巧相同也不能通过，例如>80同样选B/C却不是要求的>50。金额/成员/状态/历史链接和请求口径分别检查；只接受有限的指标顺序、大小写/空白及50.00等已声明等价形式，不宣称任意表达式等价证明。
 
@@ -42,12 +42,24 @@ bun --no-env-file scripts/verify_p1_agent_offline.ts \
 
 ## 预算、停止和记录
 
-每场景最多4个模型请求尝试、3个工具调用；三场景至多12/9。输出请求参数4096 tokens，单个出站body128KiB、投影前入站响应体2MiB。入站按实际UTF-8字节流读取、到限即取消；只保存准确字节前缀（base64）及截断标记。JSON采用线性重复键检查，避免大字符串令旧token正则失效。内层native结果1MiB与外层carrier8MiB不是出站预算，完整转义后body仍可能先超128KiB；不截断后宣称通过。实际tokens、金额、服务端续接与留存未测，不能据此声称费用硬上限或真实预算充分。
+每场景最多4个模型请求尝试、3个工具调用；三场景至多12/9。输出请求参数4096 tokens，单个出站body128KiB、投影前入站响应体2MiB。入站按实际UTF-8字节流读取、到限即取消；模拟raw仅保存准确字节前缀（base64）、截断标记及synthetic_only标签；显式Response保护层在投影前校验并重建白名单，真实响应不得沿用raw归档。JSON采用线性重复键检查，避免大字符串令旧token正则失效。内层native结果1MiB与外层carrier8MiB不是出站预算，完整转义后body仍可能先超128KiB；不截断后宣称通过。实际tokens、金额、服务端续接与留存未测，不能据此声称费用硬上限或真实预算充分。
 
-场景180秒含服务setup/discovery/loop及评估前检查；共享固定运行时元数据预检在场景前，失败另封存diagnostic。发现请求固定5/7/5，通知各1次，不自动重试。超时关闭活动MCP、取消等待并等待work收束；迟到模拟响应不能再写业务事件。close与work收束分别最多等待30秒，可选测试callback另有30秒窗口，没有清理总计30秒的保证；失败单独封存并停止后续。同步文件读写、运行时预检、进程调度和任意外部测试callback不是硬实时或RAM上界保证。
+场景180秒含服务setup/discovery/loop及评估前检查；共享固定运行时元数据预检在场景前，失败另封存diagnostic。发现请求固定5/7/5，通知各1次，不自动重试。超时关闭活动MCP、取消等待并等待work收束；迟到模拟响应不能再写业务事件。固定cleanup_policy随run封存并重放核对；close与work收束分别最多主动等待30秒（两个窗口60秒），可选测试callback另有30秒窗口（三个窗口90秒），首清理失败停止后续，没有总计30秒或硬实时的保证；失败单独封存并停止后续。同步文件读写、运行时预检、进程调度和任意外部测试callback不是硬实时或RAM上界保证。
 
 协议失败、task_failed、incomplete、预算失败或清理异常均保留；pending也暂停后续场景。默认模拟器的固定解释仅标scripted_pass，mechanical_pass仍带真实语义审阅pending，不等同人工模型验收。无成功证据的failed回答允许空引用。prepare/rehearse返回failed或pending时退出非零；replay可对失败记录返回正常诊断结果，必须读取status，退出成功不能表示原试验通过。
 
-私有档案保存实际发现、setup/context、原始arguments、RPC/工具/公开Responses事件、完整最终回答、评估、失败/清理和seal。startup/discovery失败只有诊断轨迹，不虚构完整执行；部分发现响应可缺失，但不能当成功发现。hash证明记录完整及当前来源对应，不证明外部真实性、私有续接状态、真实业务数据或模型可靠率。没有新增公开会话导出或真实模型入口；公开证据只含审查后的摘要和hash。
+私有档案保存实际发现、setup/context、原始arguments、RPC/工具/公开Responses事件、完整最终回答、评估、失败/清理和seal。startup/discovery失败只有诊断轨迹，不虚构完整执行；部分发现响应可缺失，但不能当成功发现。hash证明记录完整及当前来源对应，不证明外部真实性、私有续接状态、真实业务数据或模型可靠率。没有真实模型入口或完整会话公开导出。公开P1摘要先验证seal/当前来源和离线重放，逐项绑定原字节，仅派生固定状态/计数/预算/hash，不复制业务结果、自由错误文本、路径或provider标识；全部semantic_acceptance=not_proven。未知metadata即使重封存也不导出。
 
-[本地实施验证](research/ossie-req-001/p1-agent-offline-entry-controls/review.md)记录当前产物、28项控制、质量与原始失败。[实际上下文/预算/公开范围审阅](research/ossie-req-001/p1-agent-context-review/review.md)已完成，明确状态资源适用范围及真实响应归档仍需修订；下一步建议先获授权实施这些离线保护，再决定真实运行入口；当前授权仍不允许真实模型调用、推送、合并或发布。
+[本地实施验证](research/ossie-req-001/p1-agent-offline-entry-controls/review.md)记录当前产物、28项控制、质量与原始失败。[实际上下文/预算/公开范围审阅](research/ossie-req-001/p1-agent-context-review/review.md)已完成，相关保护已在本轮落实；下一步建议另行实施真实入口接线并先无模型验证；当前授权仍不允许真实模型调用、推送、合并或发布。
+
+## 公开摘要衍生入口
+
+```sh
+bun --no-env-file scripts/p1_agent_public.ts \
+  --source .local-agent-evidence/p1-new-rehearsal \
+  --artifact-sha CALLER_VERIFIED_SHA256 --out /tmp/p1-new-summary.json
+```
+
+仅创建新文件，拒绝覆盖、源目录内写入或路径各级符号链接。输出是摘要衍生物，不能声称包含原始wire或可公开重放；startup失败仅为诊断。不会访问模型、启动MCP或读配置。源码改变会拒绝旧档案，必须保留旧raw并重新产生当前来源的新证据，不能改旧hash绕过。
+
+[四项保护验收](research/ossie-req-001/p1-agent-safety-controls/review.md)已在本地完成，含当前33项离线控制与针对性安全回归。下一建议是单独实现真实入口接线并先无模型验证；当前仍不允许真实模型调用或推送。

@@ -1,3 +1,8 @@
+import {
+  CLEANUP_POLICY,
+  cleanupSteps,
+  p1ResponseBoundary,
+} from "./p1_agent_safety.ts";
 import { digest } from "./artifact_helpers.ts";
 import { existsSync } from "node:fs";
 /** Prepare + simulated orchestration only. There is deliberately no --run/live branch. */
@@ -29,7 +34,6 @@ import {
 } from "./p1_agent_contract.ts";
 import {
   scriptedSimulation,
-  boundedResponse,
   abortable,
   DEFINITIONS,
   type Simulation,
@@ -60,7 +64,7 @@ export async function executeP1(options: {
   const limits = options.limits ?? LIMITS;
   for (const k of Object.keys(LIMITS) as (keyof typeof LIMITS)[])
     assert(
-      Number.isFinite(limits[k]) && limits[k] >= 0 && limits[k] <= LIMITS[k],
+      Number.isInteger(limits[k]) && limits[k] >= 0 && limits[k] <= LIMITS[k],
     );
   assert(
     Number.isInteger(options.inboundBytes ?? INBOUND_BYTES) &&
@@ -91,6 +95,7 @@ export async function executeP1(options: {
       provider_config_read: false,
       model: "simulated-p1",
       limits,
+      cleanup_policy: CLEANUP_POLICY,
       inbound_bytes: options.inboundBytes ?? INBOUND_BYTES,
       scenes: SCENES,
       source_hashes: sourceHashes(),
@@ -117,6 +122,7 @@ export async function executeP1(options: {
     real_model_requests: 0,
     provider_config_read: false,
     limits,
+    cleanup_policy: CLEANUP_POLICY,
     inbound_bytes: options.inboundBytes ?? INBOUND_BYTES,
     source_hashes: sourceHashes(),
     runtimes,
@@ -185,6 +191,7 @@ export async function executeP1(options: {
             assert(acceptEvents, "scene terminated");
             record({
               kind: "simulation_response",
+              recording_scope: "synthetic_only; never raw real Responses",
               encoding: "base64",
               body: Buffer.from(raw)
                 .subarray(0, (options.inboundBytes ?? INBOUND_BYTES) + 1)
@@ -193,7 +200,7 @@ export async function executeP1(options: {
                 Buffer.byteLength(raw) >
                 (options.inboundBytes ?? INBOUND_BYTES) + 1,
             });
-            return boundedResponse(
+            return p1ResponseBoundary(
               new Response(raw),
               options.inboundBytes ?? INBOUND_BYTES,
               init!.signal as AbortSignal,
@@ -304,14 +311,11 @@ export async function executeP1(options: {
     } finally {
       acceptEvents = false;
       try {
-        if (active)
-          await beforeDeadline(Date.now() + 30000, () => active!.close());
-        if (options.cleanupFault)
-          await beforeDeadline(Date.now() + 30000, options.cleanupFault);
-        if (work)
-          await beforeDeadline(Date.now() + 30000, async () => {
-            await work!.catch(() => undefined);
-          });
+        const steps: (() => Promise<unknown>)[] = [];
+        if (active) steps.push(() => active!.close());
+        if (options.cleanupFault) steps.push(options.cleanupFault);
+        if (work) steps.push(() => work!.catch(() => undefined));
+        await cleanupSteps(steps);
       } catch (error) {
         status = "failed";
         const failure = {

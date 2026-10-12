@@ -1,5 +1,24 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 context and evidence protection delivery — 2026-10-12
+
+[四保护验收](docs/research/ossie-req-001/p1-agent-safety-controls/review.md)本地完成：
+状态专用操作说明、投影前入站限制/响应白名单/固定诊断、重放后hash绑定的
+公开摘要、逐步清理合同已落实。当前同产物33控制和157Bun/774expects、
+格式/类型/架构通过；旧312原件不变，首次失败与中间成功记录保留。
+原完整P1交付保持；本包没有真实入口/配置读取/模型调用/推送。下一建议另行
+授权真实入口配置与保护接线并先无模型验证；真实预算充分性/服务能力和费用
+留存仍未知，通用Agent/分页/发布不扩。下方checkpoint为实施前状态。
+
+## P1 context and evidence protection implementation — 2026-10-12
+
+恢复841a3a5；用户已授权上轮四项最小保护实施及无模型验证。沿原issue补
+状态操作说明、投影前字节保护/响应字段白名单、重放后公开摘要、逐步骤清理
+合同与针对性控制。Lead所有权；只读Advisor一轮反证，无委派实施。
+新source/new私有证据不覆盖旧raw；不改业务查询口径或调用额度，不实现真实
+CLI/配置读取，不调用模型或推送。完成需新同产物模拟/重放、保护反例与
+格式/类型/回归证据；真实入口、真实预算充分性与发布仍为后续需要。
+
 ## P1 actual context review delivery — 2026-10-12
 
 [实际审阅](docs/research/ossie-req-001/p1-agent-context-review/review.md)本地完成：

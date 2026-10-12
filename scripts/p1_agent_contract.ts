@@ -1,3 +1,4 @@
+import { STATE_SCOPE_NOTICE } from "./p1_agent_safety.ts";
 import { p1JSON as factJSON } from "./p1_agent_json.ts";
 /** Task evaluation is separate from runtime argument validation and model context. */
 import assert from "node:assert/strict";
@@ -57,7 +58,8 @@ export function context(scene: Scene, d: Discovery) {
   const p = prompts();
   const item = (p.scenes as JsonObject[]).find((v) => v.id === scene)!;
   return {
-    system: String(p.system),
+    system:
+      String(p.system) + (scene === "states" ? "\n" + STATE_SCOPE_NOTICE : ""),
     question: String(item.question),
     tools: d.tools,
     resources: d.rows,
@@ -337,6 +339,8 @@ export function sourceHashes() {
     "scripts/p1_agent_simulation.ts",
     "scripts/p1_agent_contract.ts",
     "scripts/p1_agent_replay.ts",
+    "scripts/p1_agent_public.ts",
+    "scripts/verify_p1_agent_offline.ts",
     "package.json",
     "bun.lock",
     RESEARCH + "prompts.json",
