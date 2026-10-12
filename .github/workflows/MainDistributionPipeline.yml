@@ -152,6 +152,10 @@ jobs:
         run: |
           env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL bun --no-env-file scripts/verify_history_mcp.ts "$(command -v duckdb)" downloaded/ossie.duckdb_extension quality-reports/history-mcp.json
 
+      - name: Rehearse seven history scenes and strictly replay sealed evidence without a model
+        run: |
+          env -u OPENAI_API_KEY -u OPENAI_BASE_URL -u OPENAI_MODEL bun --no-env-file scripts/verify_history_agent_offline.ts "$(command -v duckdb)" downloaded/ossie.duckdb_extension .local-agent-evidence/history-ci/run quality-reports/history-offline.json
+
       - name: Verify complete relation links and logical compile against the same artifact
         run: bun --no-env-file scripts/verify_relation_objects_artifact.ts downloaded/ossie.duckdb_extension quality-reports/relation-objects
 

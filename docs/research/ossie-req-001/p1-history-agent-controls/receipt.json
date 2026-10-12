@@ -1,0 +1,39 @@
+{
+  "baseline_commit": "5ba2d52b62932a43b40386df25bd42b4637a49aa",
+  "scope": "seven scripted history scenes/actual MCP/sealed hermetic offline replay; C++ unchanged; no live model acceptance",
+  "artifact_sha256": "e04ff401f37318a92d381f5454ff47c6683d8c52288db8d7d3348eb5b2cf9e71",
+  "source_sha256": {
+    "scripts/history_agent.ts": "457f50a69c2448f4e7a26e58bd6bae236de131b1b888876f7b49be9c930d4873",
+    "scripts/verify_history_agent_offline.ts": "175d5588f2e33f5d4865aca3872a85d97ce734d18c5110224dee51ef1083795b",
+    ".github/workflows/MainDistributionPipeline.yml": "b06cae9df94d5dbd49f04ec9cfdc062d5f841dd3cfd0d2ea40002372543bbdc5"
+  },
+  "private_manifest_sha256": "5574743de88f0bc6bd0d3d9932f248bb6dc9358ddd0d6e9b40165e9aef0e550f",
+  "private_selected_files": 31,
+  "private_final_raw_files": 699,
+  "scenes": 7,
+  "simulated_completion_requests": 20,
+  "actual_tool_calls": 13,
+  "negative_controls": 29,
+  "offline_network_requests": 0,
+  "offline_subprocess_starts": 0,
+  "artifact_identity_checked": true,
+  "same_artifact_native_sql_legacy": "../p1-finite-window-controls/receipt.json",
+  "bun": {
+    "tests": 138,
+    "expects": 723
+  },
+  "quality": [
+    "TypeScript types/format",
+    "Cpp architecture",
+    "diff check"
+  ],
+  "remaining": [
+    "new C++ Linux/tidy",
+    "full five-category P1 verification and delivery reconciliation",
+    "outgoing private history precheck"
+  ],
+  "provider_config_read": false,
+  "real_model_requests": 0,
+  "goal_complete": false,
+  "pushed": false
+}

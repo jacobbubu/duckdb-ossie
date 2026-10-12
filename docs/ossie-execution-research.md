@@ -1834,3 +1834,12 @@ fact MCP 37/48、fact program95/捕获264通过；其余原生、30SQL/1079、13
 及质量、同产物全部旧SQL/MCP/五无模型与历史MCP复验通过。旧wide样本恢复，
 新增独立finite-minimum，未改历史证据。下一历史Agent/严格重放，再新代码Linux/
 tidy与完整五项审计；goal active，不调用模型或推送。
+
+历史无模型工作包：[证据与边界](research/ossie-req-001/p1-history-agent-controls/review.md)
+绑定同 e04ff401，以七场景/20 模拟响应/13 实际工具调用完整核对 scope、声明、
+源计数/定义 hash/六追踪及逐记录 oracle；只解释无 query/计算值。29 负控制含
+重封伪造、wrong runtime/产物、缺记录、外内重复字段、错范围/关系与只解释越权，
+调用者门禁在实际工具 RPC 前拒绝；共同伪造但结构合法的答案/工具由 oracle 拒绝。
+完整重放在阻断 fetch/Node spawn 环境通过、seal不变。138Bun/723及质量通过，
+Cpp未改复用上一同SHA全回归。下一新Cpp Linux/tidy、原五项统一审计和私有预检，
+不能把此工作包当goal完成，无真实模型或推送。

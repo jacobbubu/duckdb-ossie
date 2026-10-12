@@ -1,0 +1,360 @@
+{
+  "passed": true,
+  "scope": "seven scripted history integration scenes with actual MCP; not live Agent acceptance",
+  "real_model_requests": 0,
+  "provider_config_read": false,
+  "offline_network_requests": 0,
+  "offline_subprocess_starts": 0,
+  "execution": {
+    "status": "complete",
+    "source_seal_sha256": "1e9338313f3e1f9e5190b3f1b5daaa1dce77b18fe23e6871fba09cd314d78caa",
+    "simulated_completion_requests": 20,
+    "scenes": [
+      {
+        "scene": "all",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "12",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "date-range",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "8",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "product-Y",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "1",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "gap",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "0",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "minimum",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "1",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "empty",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "0",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "compile-only",
+        "status": "complete",
+        "calls": 1,
+        "rounds": 2,
+        "evaluation": {
+          "status": "not_executed",
+          "computed": false
+        }
+      }
+    ]
+  },
+  "replay": {
+    "passed": true,
+    "mode": "simulated",
+    "source_seal_sha256": "1e9338313f3e1f9e5190b3f1b5daaa1dce77b18fe23e6871fba09cd314d78caa",
+    "real_model_requests": 0,
+    "simulated_completion_requests": 20,
+    "artifact_identity_checked": true,
+    "scenes": [
+      {
+        "scene": "all",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "12",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "date-range",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "8",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "product-Y",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "1",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "gap",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "0",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "minimum",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "1",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "empty",
+        "status": "complete",
+        "calls": 2,
+        "rounds": 3,
+        "evaluation": {
+          "status": "answered",
+          "link_count": "0",
+          "unit": "Observation/target link",
+          "independent_rows_verified": true
+        }
+      },
+      {
+        "scene": "compile-only",
+        "status": "complete",
+        "calls": 1,
+        "rounds": 2,
+        "evaluation": {
+          "status": "not_executed",
+          "computed": false
+        }
+      }
+    ],
+    "limitations": "Exact ordered local byte correspondence and independent synthetic fixture result audit; no provider authenticity or model autonomy."
+  },
+  "refusals": [
+    {
+      "label": "wrong schema",
+      "source_seal_sha256": "d2ee220454e69e985bd7630d475dfe972d7cae67279ac05801a8b52526375171",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "live mode",
+      "source_seal_sha256": "e068cdfec92bb25ae59dc1665c432fec46358c18ebd0f1b210aa0b4b4c37e61e",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "wrong artifact identity",
+      "source_seal_sha256": "5627a35b1f5179d06c9a5a8528a0a796ddf187ce9b810483bed012d92607522f",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "wrong runtime server hash",
+      "source_seal_sha256": "604a81206212aaf2632de1fa68bcf789228a59a3dd74a862389a3dfd97d65cab",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "missing runtime",
+      "source_seal_sha256": "3e53b05871dcba578004d68fc53ac3e6733080aa57ff0783fa05a4e9ca72cad7",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "source hash",
+      "source_seal_sha256": "46306c626b87ba119abd7e087c07a2171e5ccf7f65ef415cbf927f02a8e58091",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "failed terminal",
+      "source_seal_sha256": "0550113406f249399ec6c8fada83f9c9d7628e017f68f724882872cabd8c331e",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "missing scene",
+      "source_seal_sha256": "a0006ca1242751ef7683d0835e467871d4daf0ef061be5043ebf855f8abb6d57",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "missing context",
+      "source_seal_sha256": "2ad959fcc35f1f75cfb75cf15bec17036e0dc413203374d6992ee23f59a54988",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "changed question",
+      "source_seal_sha256": "fcd4b1a7a5d3a38843af1d6d5e70761d0da7643c873adb21a56a02f7ec770e3f",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "changed setup",
+      "source_seal_sha256": "97ccd0f7c1771f74e4710f4da9b7804790be53705f2e923a932b8b1b39fd5d3c",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "wrong review",
+      "source_seal_sha256": "da663f05bf8f6791d5c3b2aff934df50fc3c4c0aec17bc85ea7bce5401248883",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "missing RPC response",
+      "source_seal_sha256": "6772c0bb770ba3de4065800cf61dd6264b85eb24bbf4e09c30e162cd27c8c383",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "RPC ID mismatch",
+      "source_seal_sha256": "499925060f7a06a22e26d6d1b3ae82bcfa6c40422cac4aedac72393da4615d1a",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "wrong tool evidence ID",
+      "source_seal_sha256": "c6180719760344c8d8ba93ff3006032e49138813f7e67dae5ca02984fd1984e4",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "out of allowlist",
+      "source_seal_sha256": "5de7b1e034c4226c32d807130267aed07c42dbc78718556238557e0146440a5a",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "wrong argument",
+      "source_seal_sha256": "fc0a0084e1a62c8e67f5c976c4892337323601301d5cad921c4dbed7a7fd4b0f",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "extra trailing event",
+      "source_seal_sha256": "d71d039fa78bb3a30a2e8bacb35a52ce565bc99465b097a00b071bdbc71df763",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "forged completion projection",
+      "source_seal_sha256": "81940ce39bdd8509497f86877f886472a76cb69e2503484ac217d0048ef91659",
+      "result": "refused re-sealed synthetic control"
+    },
+    {
+      "label": "joint wrong target",
+      "result": "independent complete member oracle refused; structural decoder passed"
+    },
+    {
+      "label": "joint missing member",
+      "result": "independent complete member oracle refused; structural decoder passed"
+    },
+    {
+      "label": "incomplete completion",
+      "result": "failed sealed; complete replay refused",
+      "source_seal_sha256": "6b82fa271080aba6ba97a3736428ef3fff096ce54ae2ed07f61795b57a4f551e"
+    },
+    {
+      "label": "unknown outer argument",
+      "result": "caller refused before actual tool RPC; failed seal cannot pass complete replay",
+      "source_seal_sha256": "813c1263f4deca9e2781c2212fef9625837fc7458419c2db415f68cdb733b0b6"
+    },
+    {
+      "label": "object request instead of String",
+      "result": "caller refused before actual tool RPC; failed seal cannot pass complete replay",
+      "source_seal_sha256": "a86ca6ba6e8ed26e9e78f61cc1f2dda97d84092b97b744038aaa3758bbe05360"
+    },
+    {
+      "label": "duplicate decoded outer key",
+      "result": "caller refused before actual tool RPC; failed seal cannot pass complete replay",
+      "source_seal_sha256": "d4af49e291a30ace2365330a6488da4815c8cd43af43c2c4aad0608132e58bc6"
+    },
+    {
+      "label": "duplicate decoded inner key",
+      "result": "caller refused before actual tool RPC; failed seal cannot pass complete replay",
+      "source_seal_sha256": "8ee172a6aae9c00ae9e0893110bc6dd5a6a2fc24058389146d9e8e298bd220d2"
+    },
+    {
+      "label": "different scene scope",
+      "result": "caller refused before actual tool RPC; failed seal cannot pass complete replay",
+      "source_seal_sha256": "a0263a154f0c33e5f0bdc3556452d51637e77d5abdf8b0eaf09fbe0ab156d00c"
+    },
+    {
+      "label": "wrong declared relationship",
+      "result": "caller refused before actual tool RPC; failed seal cannot pass complete replay",
+      "source_seal_sha256": "70515c975d814424ca8db40a36c5bf88f78084d58f17ceea221728e9977b64a3"
+    },
+    {
+      "label": "compile-only execution",
+      "result": "caller refused before actual tool RPC; failed seal cannot pass complete replay",
+      "source_seal_sha256": "55fcf02b9c1fdf528e34b7bf4d9c90744260befef7d0b892f2d55d39d651162d"
+    }
+  ],
+  "artifact_sha256": "e04ff401f37318a92d381f5454ff47c6683d8c52288db8d7d3348eb5b2cf9e71",
+  "source_hashes": {
+    "test/fixtures/population-history-program/rows.sql": "542649dc837bd866dde401aafd60e2d1447b4fda81090014edc81d147e708ec1",
+    "examples/history_server.sql": "7d9a56ba4abb85208b143fe361a5cb4c8786d2845be848932234d9e1bbeb2c23",
+    "test/fixtures/population-history-program/core.json": "c032b8d52fcb97a5dada5b562fc9043e5dffa6dbc4c7fcae61de2b186161e0f4",
+    "test/fixtures/population-history-program/ontology.json": "71037bdaf63d9727225187ee1465db0298930bbf170540aba4d5a72d7e4c57aa",
+    "test/fixtures/population-history-program/mapping.json": "b3c984b5ea9b22221b927f41ccffea5ae6975bea9c42313d78bfc3dff4d93c36",
+    "test/fixtures/population-history-program/bundle.json": "5bad352c6b0415e0b49815582878dcff433d91e00d1019370e5c5fc9413a6b8a",
+    "scripts/history_agent.ts": "457f50a69c2448f4e7a26e58bd6bae236de131b1b888876f7b49be9c930d4873",
+    "scripts/history_mcp.ts": "7928ec3dde5e0fb006cea54f2dbe242668fdcaf822696ecc1e315b73eb3317d7",
+    "scripts/history_result.ts": "cc3b1f3727e057d581a54adbdc1db0289299587467740d7a988accd7b65eacd1",
+    "scripts/history_oracle.ts": "60e699e1da8067c5ede236d444d634d6bda7f8f90141c9e1136b9ea1cd1d820d",
+    "scripts/relation_result.ts": "d263e74d9dd9e43bf08358269b3f4823aafa15169c0f9efbf1c749d3c4593eb0",
+    "scripts/daily_state_result.ts": "dc8cd59f9b602bc8f7cf6ef5af597de89a5d18091c7fdaab45eecfdfa4820bcd",
+    "scripts/daily_result.ts": "5eed49fe521bd5f2347c2b27d4fe2a505975b214f38889672800155cdf68b163",
+    "scripts/daily_mcp.ts": "9e84c7c2166046ad7d44f1fdfd35475ac17bb8445d866db0f14bb029807d2821",
+    "scripts/fact_result.ts": "84b6b023719cb0d031adb0341a506dc89f9d63e2385426e80a09c7126a036835",
+    "scripts/agent_loop.ts": "d5b2926a55225c405e4620ee4030de8d7a79eb0ec1fd6021c0533a9cf7461c3c",
+    "scripts/observation_agent_archive.ts": "dee3890dc2351d71994b9bd17525ee327a92d143aa7f0ae36ff83ef3f0648571",
+    "scripts/observation_agent_replay.ts": "be43c6f495ccbdbb2914c820e10eab832fda23830da8daf8e8c3a0d805a9eb0d",
+    "scripts/observation_mcp.ts": "91c9f6c7d3e900a65a6b596fb0100a4d28f9fa94d852fb7a8054fbb26775e8eb",
+    "scripts/observation_evidence.ts": "4a58242be77cbad354bd597cdff530b5ffa5f1c95edab378b92800e89862d3a5",
+    "scripts/mcp_check.ts": "2a1003ee34cd176361dbb676cf14ed4eef7d432caa3453a545f4b5544915648b",
+    "scripts/artifact_helpers.ts": "950d857669ad99694df8fe9d24a9b7352a169448fae5b6731ac26eaf843cea9c"
+  }
+}

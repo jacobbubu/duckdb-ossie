@@ -3,7 +3,7 @@
 `historical-observation-relation-v1` 已实现 typed 双源加载、完整历史校验、冻结索引、
 `ossie_history_program()`、`ossie_history_links_json()` 与 `ossie_history_links_compile()`。
 program 明确 `query_supported=true`、`compile_supported=true`、`mcp_registered=false`。
-历史独立 MCP 已本地验证，无模型演练尚未实施，完整 P1 仍需后续实施与跨环境验收。
+历史独立 MCP 与七场景无模型演练/严格重放已本地验证，完整 P1 仍需跨环境及统一验收。
 
 [fixture](../test/fixtures/population-history-program/bundle.json) 有两份数据集：
 观察实体按 User/DATE/product 标识，历史实体按全局 record_id 标识。User 与 Team
@@ -89,4 +89,19 @@ prepared/原生取消。旧加载报告保留当时的 SHA 和接口状态，不
 发送 String，不把这两个行为伪称原生严格参数契约。内部 request 与完整返回值仍
 按本 profile 严格校验。[MCP 证据](research/ossie-req-001/p1-history-mcp-controls/review.md)
 包含完整 10,000 link 身份、超限拒绝恢复、28 项损坏 carrier，以及与原始观察/历史
-记录对应的独立逐记录匹配。结构合法不证明关系成员正确，无模型演练仍待完成。
+记录对应的独立逐记录匹配。结构合法不证明关系成员正确。
+
+[历史无模型演练](research/ossie-req-001/p1-history-agent-controls/review.md)覆盖全部观察、
+日期范围、产品 Y、缺口、最小有限日期、空来源及只解释。执行场景最多三轮/两
+工具调用，只解释最多两轮/一次 compile，实际没有查询。模拟 Responses 来自注入
+回调，工具使用真实 stock MCP；旁路逐记录 oracle 不放进模型可见上下文。
+验证最终回答与实际完整查询、请求、来源计数、定义及六 hash 对应；不代表模型
+自主规划、真实业务结论或来源完整性。
+
+运行与校验入口为 `scripts/verify_history_agent_offline.ts CLI ARTIFACT PRIVATE_OUT OUT_JSON`，
+私人原件必须在未跟踪的 `.local-agent-evidence` 内；默认不读模型配置、不调用模型。
+封存后 `replayHistory(path, expectedArtifactSha)` 严格消费全部有序记录，重算来源/定义
+对应和最终成员；可绑定调用者指定产物 SHA。离线不启动 MCP/子进程或 fetch，不打开
+归档中的安装路径，也不执行归档代码。缺记录、改范围、错误证据 ID、重封伪造、
+只解释伪装查询、结构合法但语义错误等拒绝；完整源 seal 保持不变。新 C++ Linux/
+tidy、整体 P1 及待推历史私有检查仍需完成。

@@ -1910,3 +1910,20 @@ FactDisplayDate 仍直接依赖会拒绝 INT32_MIN canonical 文本的固定 Duc
 capture264、其他五native、30SQL/1079、138Bun/723及质量通过。同新SHA全部旧
 SQL/MCP/五无模型与history load/links/MCP复验通过。新Cpp Linux/tidy仍需补，
 下一history Agent无模型与严格重放，再五项统一审计/私有预检；goal active。
+
+历史 Agent 恢复 checkpoint（5ba2d52 干净，上一轮为 progress）：沿 OSSIE-REQ-001
+复用既有 Responses 投影、实际 stock stdio MCP、私有封存与有序离线 replay。
+七场景覆盖全观察、日期范围、产品 Y、缺口、有限最小日期、空来源及只解释。
+每执行场景最多3轮/2工具调用；只解释不执行、不返回计算值。请求/完整关系、
+声明和六 hash 逐一对应，逐记录 oracle 只用于旁路验收，不给模拟响应推理提示。
+验证重封伪造、缺记录、越权参数与仅计划伪装执行；仍不读私有配置/调用模型。
+之后新 C++ Linux/tidy、全五项需求收口与待推历史预检继续保留。
+
+历史 Agent 无模型工作包完成：[证据](docs/research/ossie-req-001/p1-history-agent-controls/review.md)
+绑定同e04ff401，七场景20模拟响应/13真实工具调用，29负控制及hermetic replay
+通过；完整成员独立逐记录oracle，source定义/计数及scope/六hash对应。只解释无
+query/计算值；客户端严格参数门禁先于实际RPC。重放不打开归档安装路径或执行
+归档代码，支持caller指定artifact SHA；fetch/Node spawn观察0、seal不变。原件/
+重封反例/前阶段源另保留，138Bun/723及质量通过，Cpp未改。现在历史SQL/compile/
+program/MCP/无模型齐备；下一新Cpp Linux/tidy和原五项P1统一审计/私有预检，
+goal active，不调用真实模型/推送。
