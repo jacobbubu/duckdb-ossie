@@ -1948,3 +1948,12 @@ SHA P0/全部专用接口/六MCP/六封存无模型通过。Linux功能container
 ossie-p1-final-functional-20261012（1d90cac48af7）inspect running，current-step build；
 固定独立源378a8dc+相同population SHA，旧镜像/caches不代替新证据。下一继续
 同容器功能build/native/SQL/all接口六无模型，再原五项统一审计与私有预检。
+
+当前Linux功能完成：[证据](docs/research/ossie-req-001/p1-final-linux-functional/review.md)
+container1d90cac48af7经inspect terminal exit0、current-step complete；40阶段exit0。
+Linux71c1ccb9七native/30SQL1079/138Bun723、P0与专用接口、六MCP/六封存无模型
+通过，含history10000完整身份/七场景29负控；616步独立构建不以缓存代替结果。
+逐receipt源hash与独立clone完全相同，Lead3437cc8相对378a8dc的实现差异仅同SHA
+population.cpp质量补丁；542私有文件与3301raw封存绑定，Linux二进制另存不随
+build覆盖。Mac622b4796/Tidy16TU0诊断一并完整。剩余原五项最终统一审计、文档/
+支持拒绝边界对齐、未推历史私有预检；goal active，无真实模型/推送。

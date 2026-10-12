@@ -1843,3 +1843,12 @@ tidy与完整五项审计；goal active，不调用模型或推送。
 完整重放在阻断 fetch/Node spawn 环境通过、seal不变。138Bun/723及质量通过，
 Cpp未改复用上一同SHA全回归。下一新Cpp Linux/tidy、原五项统一审计和私有预检，
 不能把此工作包当goal完成，无真实模型或推送。
+
+当前跨环境工作包收口：[16TU tidy 与 macOS 同产物回归](research/ossie-req-001/p1-final-tidy-controls/review.md)
+绑定mac622b4796，首轮104braces/1range-copy保留，210fixits后Linux tidy0诊断。
+一只读Advisor审控制流/lifetime，Lead完成七native/30SQL1079/138Bun723及六MCP/
+六无模型复验。[当前 Linux 功能](research/ossie-req-001/p1-final-linux-functional/review.md)
+绑定71c1ccb9，固定独立源378a8dc+精确同SHA质量补丁与Lead3437cc8实现一致，
+完整616步构建/七native/SQL/全接口/六无模型，40阶段全部exit0。542私有源/日志/
+报告/二进制及3301原始封存文件由清单绑定；旧平台报告未覆盖。不替代远端CI，
+也不当goal完成。下一原五项逐条统一审计、文档状态/支持拒绝边界和历史私有预检。
