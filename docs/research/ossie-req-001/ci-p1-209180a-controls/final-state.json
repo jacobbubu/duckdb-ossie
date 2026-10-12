@@ -1,0 +1,421 @@
+{
+  "scope": "exact 209180a branch push and new-run cross-platform/tidy/product acceptance",
+  "repository": "jacobbubu/duckdb-ossie",
+  "branch": "codex/ossie-execution",
+  "remote_verified_head": "209180ad959feea0908d0cf5ee26d7419372694c",
+  "run_id": 38195621160,
+  "run_url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38195621160",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 114637473167,
+      "name": "Project quality controls",
+      "conclusion": "success",
+      "test_steps": []
+    },
+    {
+      "id": 114637473289,
+      "name": "Code Quality Check / Format Check",
+      "conclusion": "success",
+      "test_steps": []
+    },
+    {
+      "id": 114637473316,
+      "name": "Code Quality Check / Tidy Check",
+      "conclusion": "success",
+      "test_steps": []
+    },
+    {
+      "id": 114637473320,
+      "name": "Build extension binaries / Generate matrix",
+      "conclusion": "success",
+      "test_steps": []
+    },
+    {
+      "id": 114637496214,
+      "name": "Build extension binaries / Linux (linux_amd64, ubuntu-24.04, x64-linux-release, x64-linux-release, true, false)",
+      "conclusion": "success",
+      "test_steps": [
+        {
+          "name": "Test extension (inside docker)",
+          "conclusion": "success"
+        },
+        {
+          "name": "Test extension (outside docker)",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 114637496216,
+      "name": "Build extension binaries / Linux (linux_arm64, ubuntu-24.04-arm, arm64-linux-release, arm64-linux-release, false, false)",
+      "conclusion": "success",
+      "test_steps": [
+        {
+          "name": "Test extension (inside docker)",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Test extension (outside docker)",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "id": 114638837465,
+      "name": "Build extension binaries / Windows (windows_amd64, windows-latest, x64-windows-static-release, x64-windows-static-release, t...",
+      "conclusion": "success",
+      "test_steps": [
+        {
+          "name": "Test extension",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 114638837508,
+      "name": "Build extension binaries / MacOS (osx_arm64, macos-15, arm64, arm64-osx-release, arm64-osx-release, true, false)",
+      "conclusion": "success",
+      "test_steps": [
+        {
+          "name": "Test Extension",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 114638837536,
+      "name": "Build extension binaries / DuckDB-Wasm (wasm_mvp, wasm32-emscripten, x64-linux, true, false)",
+      "conclusion": "success",
+      "test_steps": []
+    },
+    {
+      "id": 114638837546,
+      "name": "Build extension binaries / Windows (windows_amd64_mingw, windows-latest, x64-mingw-static, x64-mingw-static, true, false)",
+      "conclusion": "success",
+      "test_steps": [
+        {
+          "name": "Test extension",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 114638837554,
+      "name": "Build extension binaries / DuckDB-Wasm (wasm_threads, wasm32-emscripten, x64-linux, false, false)",
+      "conclusion": "success",
+      "test_steps": []
+    },
+    {
+      "id": 114638837565,
+      "name": "Build extension binaries / MacOS (osx_amd64, macos-15, x86_64, x64-osx-release, arm64-osx-release, false, false)",
+      "conclusion": "success",
+      "test_steps": [
+        {
+          "name": "Test Extension",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "id": 114638837585,
+      "name": "Build extension binaries / DuckDB-Wasm (wasm_eh, wasm32-emscripten, x64-linux, false, false)",
+      "conclusion": "success",
+      "test_steps": []
+    },
+    {
+      "id": 114640987248,
+      "name": "Load built artifact (osx_arm64)",
+      "conclusion": "success",
+      "test_steps": []
+    },
+    {
+      "id": 114640987252,
+      "name": "Load built artifact (linux_amd64)",
+      "conclusion": "success",
+      "test_steps": []
+    },
+    {
+      "id": 114640987328,
+      "name": "MCP round trip",
+      "conclusion": "success",
+      "test_steps": []
+    },
+    {
+      "id": 114641285420,
+      "name": "CI gate",
+      "conclusion": "success",
+      "test_steps": []
+    }
+  ],
+  "artifact_sha256": {
+    "artifact-linux-amd64": "9ade682db9f3e100555dc4ec79e069a58391a2a8c6a07b0348038f3b9b548f63",
+    "artifact-mac-arm64": "98b0aeba1f97f2e61d8570be43c671e3270d9ffe36120b15d5e6908ab82dab3a"
+  },
+  "reports_checked": 46,
+  "report_sha256": [
+    {
+      "platform": "linux-amd64",
+      "file": "daily-users.json",
+      "sha256": "24faa1cf9b4faa286f3bca580265fcdd333d7e8bff6ddc651bb39e197c8f0b2e"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "daily-states/verification.json",
+      "sha256": "ddd2cb0f7ba348ab8259d380a21db52b5cc65ad0739d4ef6e9e747a59ac47f41"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "relation-load/verification.json",
+      "sha256": "92bf2c341f9f42306b0ac7a0f561c3d1b5076b0271c0040ffdba6408f5c60fa6"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "relation-objects/verification.json",
+      "sha256": "7a7293576671957487d581478c1a7114f76d5d8b678e44e787f4ff6a71f485a3"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "finite-dates/verification.json",
+      "sha256": "97438b3effa51cb783e0996987c3b3de38a85dc99ac5b47252ec6edea173151f"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "fact-load/verification.json",
+      "sha256": "61379ec99731f9b1353ee674df2866743c8e1c0a4688a1dbe784f79bc5ee131c"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "fact-objects/verification.json",
+      "sha256": "46c866e0b572252e8bbe725f886d652c9a0dbe563cb0baa0132f92b7848da52a"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "fact-stock/verification.json",
+      "sha256": "ff5de350fb0637fa241c89115949e4fbfcbf9e4fd3fefa372cde5e06be160f7e"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "history-load/verification.json",
+      "sha256": "556143b1113c19deb522f0c4b34de7062854c4c757c540a3368293f9506a7a69"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "history-links/verification.json",
+      "sha256": "72f75a3a2ce3f2c24a4f6c98e1e6db0bc0efe61964d97347367bcc0ccb52c948"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "acceptance.json",
+      "sha256": "cf4eb56dea1237049de3b69dcbf461057f54c351af61c1a17268e185da919044"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "daily-mcp.json",
+      "sha256": "ec6122fb0b79a4add101b205ff47f749e9db08dda62c470911e67320d0e14791"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "state-mcp.json",
+      "sha256": "701ed2b5745dd0dc81683e2bee9aeb93c2b8ffd06d588067e1bb301ddb869fa7"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "history-mcp.json",
+      "sha256": "5011680f303559cd4cbe560405d8c118d89bda3114db927307bd9014f5b7fa90"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "relation-mcp.json",
+      "sha256": "4374c941bf3722431a0ae1a61116170f62305c5a451ad84f7ac011b8dbbe6e8c"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "fact-mcp/verification.json",
+      "sha256": "9399711680cc7d7029c1f9241f17451816982f46761328213b4d2957338b42b0"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "observation/mcp.json",
+      "sha256": "57b84c6c01f4cfb33c534d1e8ceaaf86a0b8a257d0a781a349d2239c8f6143b0"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "daily-offline.json",
+      "sha256": "902edf8da34fba96c7833cafbb96d77577b03811d7bc4af5414af190db3788cd"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "state-offline.json",
+      "sha256": "678ba09768b9945c78aaff700606cc04c98ee2fe3db46fdc3b0bde322c290462"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "history-offline.json",
+      "sha256": "5bd598711ee589119b3068aead4fe01d9d5892598d492c8d5ad2fee6fe2b2635"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "relation-offline.json",
+      "sha256": "d7fbb2d87cb174cac9e717fbfa1c2a4bee883fb4c5d0ea7dc42bf194ad56f8a2"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "fact-offline.json",
+      "sha256": "a79598d67c5da76e91d768eb475b033ee62ee78b33fca736c4ae1e0b9cdb6afe"
+    },
+    {
+      "platform": "linux-amd64",
+      "file": "observation/offline.json",
+      "sha256": "0d4aa9f40eb11b34273ac450ee5376139297015cec1af420da30214ab81320ea"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "daily-users.json",
+      "sha256": "0b626f9941b8df270dfba67a86b308109b2a65a6b6efba6ca3e2806fe0919743"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "daily-states/verification.json",
+      "sha256": "4ff8566afd8931986266516039a30311246fa59814cf20b7edc0a018c244bb23"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "relation-load/verification.json",
+      "sha256": "cdda2d8af1ae55a049517d8ab276bddfa6849271a05cbe158c3b0d77ae7c1480"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "relation-objects/verification.json",
+      "sha256": "636b281ec6c4d25b9a98ba5a59bc6161adb4d847740c3a65922c476d56b84be3"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "finite-dates/verification.json",
+      "sha256": "26762cc11620b524a5f875eab96eaf7c9d3e971b54a7dde89864eb4fb52bd850"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "fact-load/verification.json",
+      "sha256": "b24df9c29397b521a11b6da40abcac201e759a50d03db187b5438612c21e3e01"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "fact-objects/verification.json",
+      "sha256": "c756c140a4be7629268251da5b64140e7ca01fd20bc049116d5188d4a46f0772"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "fact-stock/verification.json",
+      "sha256": "9e12a3371969a52c139baf1685bd05f30bcb66d956910dde63c9a1eb8fc3de43"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "history-load/verification.json",
+      "sha256": "1427ffe5d19ee9da6aed956ecabd04ff59ab5bcfbd81f7df47dc762fb7d87120"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "history-links/verification.json",
+      "sha256": "634275b2ca0f14dca2fea78aca97ab163c1614c80bfbcbca30c49c36221dcb0b"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "acceptance.json",
+      "sha256": "9a037c43526c30631e3a104746f11c29311505f5fb206c083c69f3535e76f2ea"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "daily-mcp.json",
+      "sha256": "aaeb54fc08d30755a3e4ac0044cc22e93db958b2fde78d644f939410f2020879"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "state-mcp.json",
+      "sha256": "c0a4f99a4347d582014bef4614fcb1dbed236b671e55b1f7fdbaee45741ee7f7"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "history-mcp.json",
+      "sha256": "cdd8ae90f44a7e61fbc25ce4c5ecaeaa71c239702854d4c5b9f089daac655b77"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "relation-mcp.json",
+      "sha256": "230af31a3296ba3eb808a4cc974261ddc9d6360c63fd37479a7f3af7b8a9dab7"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "fact-mcp/verification.json",
+      "sha256": "24002961174c328c85052c61debada918287f77f781e291a7428e99650993892"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "observation/mcp.json",
+      "sha256": "ce7b0b327a7c501cca532c98d3da33c4d49150e4ef494286c2ac36911534e27f"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "daily-offline.json",
+      "sha256": "22659a8180483901e81b638fcb984c6a4ee293f7742093833c63d54e74590aa2"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "state-offline.json",
+      "sha256": "5a34b3c4953c5eb41e1af1541ec779bd601d9b70b70e1a7fc0b2a7c6b738d50e"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "history-offline.json",
+      "sha256": "bf6b6001add7348b93b209a88cab27ca408301a363958f2f5fd63b503c20426a"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "relation-offline.json",
+      "sha256": "53533cd3f0ed98b97cac40a142729c9e8632cdd8aea340d7b18d097122aba26c"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "fact-offline.json",
+      "sha256": "39e7245dd6c8fa931a7bc043d4044638b5628ed241caa3d42793b19ab887291a"
+    },
+    {
+      "platform": "mac-arm64",
+      "file": "observation/offline.json",
+      "sha256": "57ffbbd3abf7d94c774e832d5ce385bcd36c27b102b4eb3b084e0a8310d5d176"
+    }
+  ],
+  "sql": {
+    "cases": 30,
+    "assertions": 1079,
+    "executed_on": [
+      "Linux AMD64",
+      "macOS ARM64",
+      "Windows MSVC",
+      "Windows MinGW"
+    ]
+  },
+  "bun": {
+    "tests": 138,
+    "expects": 723
+  },
+  "bounded_p0": "A1-A8 passed on both downloaded artifacts",
+  "mcp": "six dedicated surfaces and old P0/core; same artifact per platform",
+  "agent": "six scripted no-model integrations/replays per platform; no autonomous model acceptance",
+  "tidy": "remote Tidy Check successful; earlier local full16TU scan separately retained",
+  "boundaries": [
+    "Linux ARM64 and macOS AMD64 jobs build only; their SQL test steps skipped by upstream matrix",
+    "Wasm jobs success does not prove native MCP portability",
+    "seven standalone native runners are local evidence, not asserted as CI runner execution",
+    "Registry check tests published artifacts separately and is not this pushed code"
+  ],
+  "private_manifest_sha256": "33d1436bb21c8335977f039100c584984ce2e8317381654edfcea8f7ec1af833",
+  "private_files": 589,
+  "failures_this_run": [],
+  "real_model_requests": 0,
+  "provider_config_read": false,
+  "pushed": true,
+  "merged": false,
+  "published": false
+}

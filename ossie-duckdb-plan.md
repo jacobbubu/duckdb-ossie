@@ -1,5 +1,16 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 branch delivery verification — 2026-10-12
+
+用户授权的209180a分支推送与新CI检查已完成，
+[本次运行](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38195621160)17项全部成功，
+[任务与实际产物证据](docs/research/ossie-req-001/ci-p1-209180a-controls/review.md)
+记录30SQL/1079、138Bun/723、两平台全接口/MCP/无模型及format/tidy结果。
+两份下载产物与46份关键报告对应检查通过；无失败或重跑。GitHub Issues禁用，
+沿OSSIE-REQ-001记录。已验证远端tip为209180a，本交付记录另做本地提交。
+本次必要工作没有剩余；不授权真实模型、main合并、部署或发布。以下本地阶段
+的“未推送/无远端CI”属于推送前记录，不覆盖本次结论；原证据不改。
+
 ## P1 local delivery — 2026-10-12
 
 完整P1本地实现/验收已完成，取代“暂不实现”。启动基线baeb866，
