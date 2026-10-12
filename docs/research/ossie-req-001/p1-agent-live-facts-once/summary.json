@@ -1,0 +1,54 @@
+{
+  "schema": "ossie-p1-public-summary-v2",
+  "derived": true,
+  "mode": "live",
+  "status": "failed",
+  "correspondence": "recorded_diagnostic_or_execution",
+  "real_model_requests": 1,
+  "request_count_interpretation": "Client transport attempts in live mode; backend execution and billing unverified",
+  "semantic_acceptance": "not_proven",
+  "source_seal_sha256": "c9071a08bdf694c8b11710408bc3c2c3bacdd50edc20b1c9e145844e48118287",
+  "artifact_sha256": "98b0aeba1f97f2e61d8570be43c671e3270d9ffe36120b15d5e6908ab82dab3a",
+  "source_inventory_sha256": "c72b20c3d592d3c8665b9b9c4dffe57532cd68450afc2f25bd342cce81542dbb",
+  "limits": {
+    "rounds": 4,
+    "calls": 3,
+    "milliseconds": 180000,
+    "output_tokens": 4096,
+    "outbound_bytes": 131072,
+    "inbound_bytes": 2097152
+  },
+  "cleanup_policy": {
+    "schema": "ossie-p1-cleanup-policy-v1",
+    "timing": "separate sequential waits",
+    "step_wait_ms": 30000,
+    "normal_steps": [
+      "close",
+      "work"
+    ],
+    "optional_test_step": "cleanupFault between close and work",
+    "maximum_normal_requested_wait_ms": 60000,
+    "maximum_test_requested_wait_ms": 90000,
+    "stop_on_first_failure": true,
+    "hard_realtime": false
+  },
+  "scenes": [
+    {
+      "scene": "facts",
+      "status": "failed",
+      "cleanup_failed": false,
+      "constructed_requests": 1,
+      "transport_attempts": 1,
+      "received_responses": 1,
+      "projected_responses": 1,
+      "tool_calls": 0,
+      "maximum_outbound_utf8_bytes": 13431,
+      "semantic_acceptance": "not_proven"
+    }
+  ],
+  "limitations": [
+    "Synthetic fixture; rehearsal responses injected; live mode does not prove backend execution",
+    "No model autonomy, provider authenticity, real business completeness, token sufficiency or billing proof",
+    "Summary is not the original wire or a public replay archive"
+  ]
+}

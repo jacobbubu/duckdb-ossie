@@ -1,5 +1,23 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 facts one-shot delivery — 2026-10-12
+
+[facts一次真实验收](docs/research/ossie-req-001/p1-agent-live-facts-once/review.md)
+已停止且未通过：1请求/HTTP200/1接受投影，1编译提议内层集合结构不合约，
+派发前拒绝；工具意图/RPC/解码/最终答案均0。原failed/seal不改，离线重放
+与直接参数校验复现，实际上下文/出站来源核对，隐藏答案未入输入，预算未改。
+发现资源仅披露集合语义、未披露内层JSON字段语法；不能把失败仅归因模型或
+宣称计算口径已验收。下一建议研究发现合同，实施/重试需另行授权；不继续
+history/states，不推送。本题工作包完成，三题真实验收仍未完成。
+
+## P1 facts one-shot checkpoint — 2026-10-12
+
+用户明确授权 facts 一次，使用已核对本地配置和既定预算，结束后审阅答案/
+口径/调用证据并停下。沿 OSSIE-REQ-001，仅运行私有新路径 facts 候选；
+预检 CLI/扩展 hash 和目录未占用，不改提示词/额度、不重试、不进入其他题。
+原 pending/seal 保留，重放及语义审阅另存 hash 绑定衍生记录，公开仅摘要边界
+与限定结论。失败也封存并停下；不推送、不以单题pilot当整体P1真实验收完成。
+
 ## P1 live prerequisites delivery — 2026-10-12
 
 [前置核对](docs/research/ossie-req-001/p1-agent-live-prerequisites/review.md)本地完成：

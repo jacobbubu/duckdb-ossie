@@ -1,0 +1,39 @@
+{
+  "schema": "ossie-p1-facts-once-verification-v1",
+  "date": "2026-10-12",
+  "baseline": "7909d7d",
+  "source_seal_sha256": "c9071a08bdf694c8b11710408bc3c2c3bacdd50edc20b1c9e145844e48118287",
+  "production_sources_changed": false,
+  "actual_real_client_requests": 1,
+  "additional_requests_during_review": 0,
+  "retries": 0,
+  "other_scenes_run": false,
+  "replay_consistent_failed_trace": true,
+  "exact_parameter_rejection_reproduced": true,
+  "model_visible_context_grammar_keyword_check": "operation/children/predicate absent across both resource JSON strings and descriptions",
+  "actual_outbound_matches_discovery_and_authorized_prompt": true,
+  "hidden_oracle_not_in_input": true,
+  "source_files_verified": 62,
+  "original_private_files_preserved": 2315,
+  "maximum_outbound_utf8_bytes": 13431,
+  "original_budget_preserved": true,
+  "local_links_checked": 321,
+  "public_marker_scan": {
+    "schema": "ossie-p1-prerequisite-public-scan-v1",
+    "files_checked": 5,
+    "credential_literal_absent": true,
+    "selected_endpoint_and_model_absent": true,
+    "bounded_key_pattern_scan": true,
+    "diff_check": true,
+    "provider_requests": 0,
+    "scope": "bounded candidate documents only; not universal secret detection"
+  },
+  "private_manifest_sha256": "2cdc96e9420759cdd948a94a788fe549de718fe3e51a3052ee8353cd098ff85b",
+  "raw_and_review_private_files_bound": 17,
+  "review_files_sha256": {
+    "docs/research/ossie-req-001/p1-agent-live-facts-once/review.md": "32511ce91034b3fd354904f3b616dcb031beb69ddf57012ce0cc338d2b5270c1",
+    "docs/research/ossie-req-001/p1-agent-live-facts-once/receipt.json": "704c68414a3f0529fa270434b5171f606694e00c237ef84d8bbcbb7d6fb59b23",
+    "docs/research/ossie-req-001/p1-agent-live-facts-once/summary.json": "5b4838e8dc34efec618af9aff71771e71b08393aae7317a838c9e56cf5eff115"
+  },
+  "verification_scope": "one authorized live attempt; targeted sealed replay/validator/context/source/links/privacy checks; no new full test suite/native/tidy/remote CI; no model retry; usage and service identifiers private"
+}
