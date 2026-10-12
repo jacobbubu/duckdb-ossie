@@ -1902,3 +1902,11 @@ FactDisplayDate 仍直接依赖会拒绝 INT32_MIN canonical 文本的固定 Duc
 源码/请求/错误保留。这是已有 P1 范围的必要修复，优先补共享有限日期解析与
 原生/实际结果/计划/decoder/MCP 边界对照，不能只改文档缩小日期域；随后继续
 历史无模型及新 C++ Linux/tidy/五项审计，不扩展业务语义或调用模型。
+
+有限 DATE 窗口必要修复完成：[证据](docs/research/ossie-req-001/p1-finite-window-controls/review.md)
+绑定 e04ff401，shared finite parser 与 typed DATE Between AST 保留孤立 INT32_MIN。
+第一轮仅修参数后执行仍失败，原件保留；旧wide样本不改，新finite-minimum独立。
+五日期完整窗口/计划/decoder、十无限/越界拒绝、fact MCP37/48、program95/
+capture264、其他五native、30SQL/1079、138Bun/723及质量通过。同新SHA全部旧
+SQL/MCP/五无模型与history load/links/MCP复验通过。新Cpp Linux/tidy仍需补，
+下一history Agent无模型与严格重放，再五项统一审计/私有预检；goal active。

@@ -1,0 +1,1137 @@
+{
+  "scope": "finite DATE relation identities and fact display/window/plan/decoder correspondence; not generic historical execution",
+  "engine": [
+    "v1.5.6",
+    "069cc9f9b5",
+    "Variegata"
+  ],
+  "artifact_sha256": "e04ff401f37318a92d381f5454ff47c6683d8c52288db8d7d3348eb5b2cf9e71",
+  "source_sha256": {
+    "scripts/verify_finite_dates_artifact.ts": "6a494e26653fb75a2095cb52ea8e1aced16577c8bb2956707b1123b32cf859ec",
+    "scripts/relation_result.ts": "d263e74d9dd9e43bf08358269b3f4823aafa15169c0f9efbf1c749d3c4593eb0"
+  },
+  "actual": [
+    [
+      "5877642-06-23 (BC)",
+      true,
+      "-2147483648"
+    ],
+    [
+      "5877642-06-25 (BC)",
+      true,
+      "-2147483646"
+    ],
+    [
+      "271822-04-20 (BC)",
+      true,
+      "-100000000"
+    ],
+    [
+      "1970-01-01",
+      true,
+      "0"
+    ],
+    [
+      "5881580-07-10",
+      true,
+      "2147483646"
+    ]
+  ],
+  "result": {
+    "schema_version": "ossie-relation-result-v1",
+    "profile": "observation-relation-program-v1",
+    "relationship": "audited_user",
+    "root_concept": "DailyObservation",
+    "target_concept": "User",
+    "target_identity_relationship": "id",
+    "target_identity_field": "user_id",
+    "target_identity_bound_type": "VARCHAR",
+    "snapshot_id": "a064d6b24ce95a006887c5bf71ed022307bfbac985a89e7cb0c862760bbc7614:1",
+    "content_sha256": "a064d6b24ce95a006887c5bf71ed022307bfbac985a89e7cb0c862760bbc7614",
+    "core_sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77",
+    "ontology_sha256": "978f5fdc70c370fa04a10d0e61fdee53113559f6121c0243cc1fb3ff81f490ab",
+    "mapping_sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228",
+    "manifest_sha256": "00eb0111e28960804225c55ef6b3aa31366bef1178a64efbf06af9cd9bf352bd",
+    "root_identity_fields": [
+      "user_id",
+      "ds",
+      "product"
+    ],
+    "root_identity_bound_types": [
+      "VARCHAR",
+      "DATE",
+      "VARCHAR"
+    ],
+    "scope": "entire captured root population; selected relationship predicate only",
+    "qualification": "TRUE only",
+    "load_constraints_validated": true,
+    "dependencies": [
+      "qualified_user"
+    ],
+    "derived_by": [
+      "DailyObservation.qualified_user(User)"
+    ],
+    "bound_predicate": "(((observations.classification_value >= 10) AND (observations.user_id IS NOT NULL)) IS NOT DISTINCT FROM true)",
+    "ordering": "source User raw UTF-8 bytes, DATE chronological, product raw UTF-8 bytes, target User raw UTF-8 bytes",
+    "paging": false,
+    "truncated": false,
+    "json_byte_limit": 1048576,
+    "executed": true,
+    "members_computed": true,
+    "links": [
+      [
+        "u",
+        "5877642-06-23 (BC)",
+        "p0",
+        "u"
+      ],
+      [
+        "u",
+        "5877642-06-25 (BC)",
+        "p1",
+        "u"
+      ],
+      [
+        "u",
+        "271822-04-20 (BC)",
+        "p2",
+        "u"
+      ],
+      [
+        "u",
+        "1970-01-01",
+        "p3",
+        "u"
+      ],
+      [
+        "u",
+        "5881580-07-10",
+        "p4",
+        "u"
+      ]
+    ],
+    "link_count": "5"
+  },
+  "expected_days": [
+    -2147483648,
+    -2147483646,
+    -100000000,
+    0,
+    2147483646
+  ],
+  "passed": true,
+  "fact_windows": [
+    {
+      "request": {
+        "input_scope": "entire_capture",
+        "windows": [
+          "previous",
+          "rolling"
+        ],
+        "display": {
+          "mode": "date_range",
+          "start_date": "5877642-06-23 (BC)",
+          "end_date": "5877642-06-23 (BC)"
+        }
+      },
+      "result": {
+        "schema_version": "ossie-fact-windows-result-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8:2",
+        "content_sha256": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "request": {
+          "input_scope": "entire_capture",
+          "windows": [
+            "previous",
+            "rolling"
+          ],
+          "display": {
+            "mode": "date_range",
+            "start_date": "5877642-06-23 (BC)",
+            "end_date": "5877642-06-23 (BC)"
+          }
+        },
+        "selected": [
+          "previous",
+          "rolling"
+        ],
+        "input_scope": "entire_capture",
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "previous",
+            "bound_type": "DECIMAL(18,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          },
+          {
+            "ordinal": 4,
+            "name": "rolling",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          }
+        ],
+        "paging": false,
+        "truncated": false,
+        "json_byte_limit": 1048576,
+        "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+        "dataset": "revenue",
+        "source_concept": "RevenueObservation",
+        "source_captured_rows": "5",
+        "source_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "output_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "display_stage": "after whole capture window computation",
+        "executed": true,
+        "members_computed": true,
+        "counts_computed": true,
+        "row_count": "1",
+        "rows": [
+          [
+            "u",
+            "5877642-06-23 (BC)",
+            null,
+            "1.01"
+          ]
+        ]
+      },
+      "plan": {
+        "schema_version": "ossie-fact-windows-plan-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8:2",
+        "content_sha256": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "request": {
+          "input_scope": "entire_capture",
+          "windows": [
+            "previous",
+            "rolling"
+          ],
+          "display": {
+            "mode": "date_range",
+            "start_date": "5877642-06-23 (BC)",
+            "end_date": "5877642-06-23 (BC)"
+          }
+        },
+        "selected": [
+          "previous",
+          "rolling"
+        ],
+        "input_scope": "entire_capture",
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "previous",
+            "bound_type": "DECIMAL(18,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          },
+          {
+            "ordinal": 4,
+            "name": "rolling",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          }
+        ],
+        "paging": false,
+        "truncated": false,
+        "json_byte_limit": 1048576,
+        "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+        "dataset": "revenue",
+        "source_concept": "RevenueObservation",
+        "source_captured_rows": "5",
+        "source_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "output_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "display_stage": "after whole capture window computation",
+        "executed": false,
+        "members_computed": false,
+        "counts_computed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed WHERE (observed.ds BETWEEN '5877642-06-23 (BC)'::DATE AND '5877642-06-23 (BC)'::DATE) ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+        "operators": [
+          "frozen single-source User/date projection",
+          "whole capture window computation",
+          "display DATE filtering",
+          "raw identity sorting",
+          "complete bounded encoding"
+        ]
+      },
+      "expected": [
+        [
+          "u",
+          "5877642-06-23 (BC)",
+          null,
+          "1.01"
+        ]
+      ]
+    },
+    {
+      "request": {
+        "input_scope": "entire_capture",
+        "windows": [
+          "previous",
+          "rolling"
+        ],
+        "display": {
+          "mode": "date_range",
+          "start_date": "5877642-06-25 (BC)",
+          "end_date": "5877642-06-25 (BC)"
+        }
+      },
+      "result": {
+        "schema_version": "ossie-fact-windows-result-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8:2",
+        "content_sha256": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "request": {
+          "input_scope": "entire_capture",
+          "windows": [
+            "previous",
+            "rolling"
+          ],
+          "display": {
+            "mode": "date_range",
+            "start_date": "5877642-06-25 (BC)",
+            "end_date": "5877642-06-25 (BC)"
+          }
+        },
+        "selected": [
+          "previous",
+          "rolling"
+        ],
+        "input_scope": "entire_capture",
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "previous",
+            "bound_type": "DECIMAL(18,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          },
+          {
+            "ordinal": 4,
+            "name": "rolling",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          }
+        ],
+        "paging": false,
+        "truncated": false,
+        "json_byte_limit": 1048576,
+        "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+        "dataset": "revenue",
+        "source_concept": "RevenueObservation",
+        "source_captured_rows": "5",
+        "source_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "output_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "display_stage": "after whole capture window computation",
+        "executed": true,
+        "members_computed": true,
+        "counts_computed": true,
+        "row_count": "1",
+        "rows": [
+          [
+            "u",
+            "5877642-06-25 (BC)",
+            "1.01",
+            "3.02"
+          ]
+        ]
+      },
+      "plan": {
+        "schema_version": "ossie-fact-windows-plan-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8:2",
+        "content_sha256": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "request": {
+          "input_scope": "entire_capture",
+          "windows": [
+            "previous",
+            "rolling"
+          ],
+          "display": {
+            "mode": "date_range",
+            "start_date": "5877642-06-25 (BC)",
+            "end_date": "5877642-06-25 (BC)"
+          }
+        },
+        "selected": [
+          "previous",
+          "rolling"
+        ],
+        "input_scope": "entire_capture",
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "previous",
+            "bound_type": "DECIMAL(18,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          },
+          {
+            "ordinal": 4,
+            "name": "rolling",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          }
+        ],
+        "paging": false,
+        "truncated": false,
+        "json_byte_limit": 1048576,
+        "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+        "dataset": "revenue",
+        "source_concept": "RevenueObservation",
+        "source_captured_rows": "5",
+        "source_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "output_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "display_stage": "after whole capture window computation",
+        "executed": false,
+        "members_computed": false,
+        "counts_computed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed WHERE (observed.ds BETWEEN '5877642-06-25 (BC)'::DATE AND '5877642-06-25 (BC)'::DATE) ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+        "operators": [
+          "frozen single-source User/date projection",
+          "whole capture window computation",
+          "display DATE filtering",
+          "raw identity sorting",
+          "complete bounded encoding"
+        ]
+      },
+      "expected": [
+        [
+          "u",
+          "5877642-06-25 (BC)",
+          "1.01",
+          "3.02"
+        ]
+      ]
+    },
+    {
+      "request": {
+        "input_scope": "entire_capture",
+        "windows": [
+          "previous",
+          "rolling"
+        ],
+        "display": {
+          "mode": "date_range",
+          "start_date": "271822-04-20 (BC)",
+          "end_date": "271822-04-20 (BC)"
+        }
+      },
+      "result": {
+        "schema_version": "ossie-fact-windows-result-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8:2",
+        "content_sha256": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "request": {
+          "input_scope": "entire_capture",
+          "windows": [
+            "previous",
+            "rolling"
+          ],
+          "display": {
+            "mode": "date_range",
+            "start_date": "271822-04-20 (BC)",
+            "end_date": "271822-04-20 (BC)"
+          }
+        },
+        "selected": [
+          "previous",
+          "rolling"
+        ],
+        "input_scope": "entire_capture",
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "previous",
+            "bound_type": "DECIMAL(18,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          },
+          {
+            "ordinal": 4,
+            "name": "rolling",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          }
+        ],
+        "paging": false,
+        "truncated": false,
+        "json_byte_limit": 1048576,
+        "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+        "dataset": "revenue",
+        "source_concept": "RevenueObservation",
+        "source_captured_rows": "5",
+        "source_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "output_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "display_stage": "after whole capture window computation",
+        "executed": true,
+        "members_computed": true,
+        "counts_computed": true,
+        "row_count": "1",
+        "rows": [
+          [
+            "u",
+            "271822-04-20 (BC)",
+            "2.01",
+            "5.02"
+          ]
+        ]
+      },
+      "plan": {
+        "schema_version": "ossie-fact-windows-plan-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8:2",
+        "content_sha256": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "request": {
+          "input_scope": "entire_capture",
+          "windows": [
+            "previous",
+            "rolling"
+          ],
+          "display": {
+            "mode": "date_range",
+            "start_date": "271822-04-20 (BC)",
+            "end_date": "271822-04-20 (BC)"
+          }
+        },
+        "selected": [
+          "previous",
+          "rolling"
+        ],
+        "input_scope": "entire_capture",
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "previous",
+            "bound_type": "DECIMAL(18,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          },
+          {
+            "ordinal": 4,
+            "name": "rolling",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          }
+        ],
+        "paging": false,
+        "truncated": false,
+        "json_byte_limit": 1048576,
+        "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+        "dataset": "revenue",
+        "source_concept": "RevenueObservation",
+        "source_captured_rows": "5",
+        "source_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "output_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "display_stage": "after whole capture window computation",
+        "executed": false,
+        "members_computed": false,
+        "counts_computed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed WHERE (observed.ds BETWEEN '271822-04-20 (BC)'::DATE AND '271822-04-20 (BC)'::DATE) ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+        "operators": [
+          "frozen single-source User/date projection",
+          "whole capture window computation",
+          "display DATE filtering",
+          "raw identity sorting",
+          "complete bounded encoding"
+        ]
+      },
+      "expected": [
+        [
+          "u",
+          "271822-04-20 (BC)",
+          "2.01",
+          "5.02"
+        ]
+      ]
+    },
+    {
+      "request": {
+        "input_scope": "entire_capture",
+        "windows": [
+          "previous",
+          "rolling"
+        ],
+        "display": {
+          "mode": "date_range",
+          "start_date": "1970-01-01",
+          "end_date": "1970-01-01"
+        }
+      },
+      "result": {
+        "schema_version": "ossie-fact-windows-result-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8:2",
+        "content_sha256": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "request": {
+          "input_scope": "entire_capture",
+          "windows": [
+            "previous",
+            "rolling"
+          ],
+          "display": {
+            "mode": "date_range",
+            "start_date": "1970-01-01",
+            "end_date": "1970-01-01"
+          }
+        },
+        "selected": [
+          "previous",
+          "rolling"
+        ],
+        "input_scope": "entire_capture",
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "previous",
+            "bound_type": "DECIMAL(18,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          },
+          {
+            "ordinal": 4,
+            "name": "rolling",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          }
+        ],
+        "paging": false,
+        "truncated": false,
+        "json_byte_limit": 1048576,
+        "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+        "dataset": "revenue",
+        "source_concept": "RevenueObservation",
+        "source_captured_rows": "5",
+        "source_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "output_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "display_stage": "after whole capture window computation",
+        "executed": true,
+        "members_computed": true,
+        "counts_computed": true,
+        "row_count": "1",
+        "rows": [
+          [
+            "u",
+            "1970-01-01",
+            "3.01",
+            "7.02"
+          ]
+        ]
+      },
+      "plan": {
+        "schema_version": "ossie-fact-windows-plan-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8:2",
+        "content_sha256": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "request": {
+          "input_scope": "entire_capture",
+          "windows": [
+            "previous",
+            "rolling"
+          ],
+          "display": {
+            "mode": "date_range",
+            "start_date": "1970-01-01",
+            "end_date": "1970-01-01"
+          }
+        },
+        "selected": [
+          "previous",
+          "rolling"
+        ],
+        "input_scope": "entire_capture",
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "previous",
+            "bound_type": "DECIMAL(18,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          },
+          {
+            "ordinal": 4,
+            "name": "rolling",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          }
+        ],
+        "paging": false,
+        "truncated": false,
+        "json_byte_limit": 1048576,
+        "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+        "dataset": "revenue",
+        "source_concept": "RevenueObservation",
+        "source_captured_rows": "5",
+        "source_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "output_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "display_stage": "after whole capture window computation",
+        "executed": false,
+        "members_computed": false,
+        "counts_computed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed WHERE (observed.ds BETWEEN '1970-01-01'::DATE AND '1970-01-01'::DATE) ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+        "operators": [
+          "frozen single-source User/date projection",
+          "whole capture window computation",
+          "display DATE filtering",
+          "raw identity sorting",
+          "complete bounded encoding"
+        ]
+      },
+      "expected": [
+        [
+          "u",
+          "1970-01-01",
+          "3.01",
+          "7.02"
+        ]
+      ]
+    },
+    {
+      "request": {
+        "input_scope": "entire_capture",
+        "windows": [
+          "previous",
+          "rolling"
+        ],
+        "display": {
+          "mode": "date_range",
+          "start_date": "5881580-07-10",
+          "end_date": "5881580-07-10"
+        }
+      },
+      "result": {
+        "schema_version": "ossie-fact-windows-result-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8:2",
+        "content_sha256": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "request": {
+          "input_scope": "entire_capture",
+          "windows": [
+            "previous",
+            "rolling"
+          ],
+          "display": {
+            "mode": "date_range",
+            "start_date": "5881580-07-10",
+            "end_date": "5881580-07-10"
+          }
+        },
+        "selected": [
+          "previous",
+          "rolling"
+        ],
+        "input_scope": "entire_capture",
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "previous",
+            "bound_type": "DECIMAL(18,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          },
+          {
+            "ordinal": 4,
+            "name": "rolling",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          }
+        ],
+        "paging": false,
+        "truncated": false,
+        "json_byte_limit": 1048576,
+        "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+        "dataset": "revenue",
+        "source_concept": "RevenueObservation",
+        "source_captured_rows": "5",
+        "source_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "output_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "display_stage": "after whole capture window computation",
+        "executed": true,
+        "members_computed": true,
+        "counts_computed": true,
+        "row_count": "1",
+        "rows": [
+          [
+            "u",
+            "5881580-07-10",
+            "4.01",
+            "9.02"
+          ]
+        ]
+      },
+      "plan": {
+        "schema_version": "ossie-fact-windows-plan-v1",
+        "profile": "multi-fact-user-program-v1",
+        "snapshot_id": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8:2",
+        "content_sha256": "4365b0d13311e50e24181e29870bc51b1a25165c8431ae94777db0069d56c3b8",
+        "core_sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942",
+        "ontology_sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0",
+        "mapping_sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f",
+        "manifest_sha256": "960409504cbb3478da314d11f96f1e8613ad8019cad0d16122b9396508ef4d4e",
+        "user_concept": "User",
+        "user_identity_relationship": "id",
+        "request": {
+          "input_scope": "entire_capture",
+          "windows": [
+            "previous",
+            "rolling"
+          ],
+          "display": {
+            "mode": "date_range",
+            "start_date": "5881580-07-10",
+            "end_date": "5881580-07-10"
+          }
+        },
+        "selected": [
+          "previous",
+          "rolling"
+        ],
+        "input_scope": "entire_capture",
+        "columns": [
+          {
+            "ordinal": 1,
+            "name": "user_id",
+            "bound_type": "VARCHAR",
+            "encoding": "string"
+          },
+          {
+            "ordinal": 2,
+            "name": "ds",
+            "bound_type": "DATE",
+            "encoding": "date-text"
+          },
+          {
+            "ordinal": 3,
+            "name": "previous",
+            "bound_type": "DECIMAL(18,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          },
+          {
+            "ordinal": 4,
+            "name": "rolling",
+            "bound_type": "DECIMAL(38,2)",
+            "encoding": "decimal-text",
+            "unit": "currency:USD:scale2"
+          }
+        ],
+        "paging": false,
+        "truncated": false,
+        "json_byte_limit": 1048576,
+        "ordering": "raw User UTF8 bytes ASC then DATE chronological ASC",
+        "dataset": "revenue",
+        "source_concept": "RevenueObservation",
+        "source_captured_rows": "5",
+        "source_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "output_identity_fields": [
+          "user_id",
+          "ds"
+        ],
+        "display_stage": "after whole capture window computation",
+        "executed": false,
+        "members_computed": false,
+        "counts_computed": false,
+        "physical_plan": false,
+        "sql_replayable": false,
+        "projection_sql": "SELECT observed.user_id, observed.ds, observed.previous, observed.rolling FROM (SELECT revenue.who AS user_id, revenue.\"day\" AS ds, main.lag(revenue.\"value\", 1, NULL) OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST) AS previous, main.sum(revenue.\"value\") OVER (PARTITION BY revenue.who ORDER BY revenue.\"day\" ASC NULLS LAST ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS rolling FROM \"system\".main._ossie_snapshot_rows() AS revenue) AS observed WHERE (observed.ds BETWEEN '5881580-07-10'::DATE AND '5881580-07-10'::DATE) ORDER BY observed.user_id ASC NULLS LAST, observed.ds ASC NULLS LAST",
+        "operators": [
+          "frozen single-source User/date projection",
+          "whole capture window computation",
+          "display DATE filtering",
+          "raw identity sorting",
+          "complete bounded encoding"
+        ]
+      },
+      "expected": [
+        [
+          "u",
+          "5881580-07-10",
+          "4.01",
+          "9.02"
+        ]
+      ]
+    }
+  ],
+  "fact_date_refusals": [
+    {
+      "fn": "ossie_fact_windows_json",
+      "date": "-infinity"
+    },
+    {
+      "fn": "ossie_fact_windows_compile",
+      "date": "-infinity"
+    },
+    {
+      "fn": "ossie_fact_windows_json",
+      "date": "infinity"
+    },
+    {
+      "fn": "ossie_fact_windows_compile",
+      "date": "infinity"
+    },
+    {
+      "fn": "ossie_fact_windows_json",
+      "date": "5877642-06-24 (BC)"
+    },
+    {
+      "fn": "ossie_fact_windows_compile",
+      "date": "5877642-06-24 (BC)"
+    },
+    {
+      "fn": "ossie_fact_windows_json",
+      "date": "5881580-07-11"
+    },
+    {
+      "fn": "ossie_fact_windows_compile",
+      "date": "5881580-07-11"
+    },
+    {
+      "fn": "ossie_fact_windows_json",
+      "date": "5877642-06-22 (BC)"
+    },
+    {
+      "fn": "ossie_fact_windows_compile",
+      "date": "5877642-06-22 (BC)"
+    }
+  ],
+  "refused": [
+    "negative infinity sentinel",
+    "positive infinity sentinel",
+    "below INT32_MIN"
+  ]
+}

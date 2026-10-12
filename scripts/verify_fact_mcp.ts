@@ -46,7 +46,14 @@ function refusalText(reply: Awaited<ReturnType<FactSession["call"]>>) {
   );
 }
 try {
-  for (const setup of ["original", "empty", "raw", "wide", "full"] as const)
+  for (const setup of [
+    "original",
+    "empty",
+    "raw",
+    "wide",
+    "finite-minimum",
+    "full",
+  ] as const)
     await withFactSession(cli, artifact, setup, async (s) => {
       const discovery = await s.discover(),
         inputs = factInputs(setup);
@@ -190,7 +197,20 @@ try {
                   end_date: "10000-01-01",
                 },
               ]
-            : []),
+            : setup === "finite-minimum"
+              ? [
+                  {
+                    mode: "date_range",
+                    start_date: "5877642-06-23 (BC)",
+                    end_date: "10000-01-01",
+                  },
+                  {
+                    mode: "date_range",
+                    start_date: "5877642-06-23 (BC)",
+                    end_date: "5877642-06-23 (BC)",
+                  },
+                ]
+              : []),
       ];
       for (const display of displays) {
         const request = {

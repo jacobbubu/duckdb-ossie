@@ -7,6 +7,7 @@
 #include "duckdb/parser/parsed_expression_iterator.hpp"
 #include "duckdb/parser/expression/columnref_expression.hpp"
 #include "duckdb/parser/expression/constant_expression.hpp"
+#include "duckdb/parser/expression/between_expression.hpp"
 #include "duckdb/parser/expression/comparison_expression.hpp"
 #include "duckdb/parser/expression/function_expression.hpp"
 #include "duckdb/parser/expression/window_expression.hpp"
@@ -642,9 +643,15 @@ unique_ptr<SelectStatement> CompileFactWindows(const FactProgram &p, const vecto
 		if (!Date::IsFinite(a) || !Date::IsFinite(b) || a.days > b.days) {
 			Reject("finite ordered display DATE required");
 		}
-		out += " WHERE observed.ds BETWEEN " + start.ToSQLString() + " AND " + end.ToSQLString();
 	}
 	auto result = SQL(out + " ORDER BY observed.user_id ASC NULLS LAST,observed.ds ASC NULLS LAST");
+	if (!start.IsNull()) {
+		// Preserve typed DATE values: the isolated finite INT32_MIN has a canonical
+		// rendering that DuckDB 1.5.6 cannot parse back as a textual DATE cast.
+		result->node->Cast<SelectNode>().where_clause =
+		    make_uniq<BetweenExpression>(make_uniq<ColumnRefExpression>("ds", "observed"),
+		                                 make_uniq<ConstantExpression>(start), make_uniq<ConstantExpression>(end));
+	}
 	result->node->Cast<SelectNode>().from_table = make_uniq<SubqueryRef>(std::move(inner), "observed");
 	return result;
 }

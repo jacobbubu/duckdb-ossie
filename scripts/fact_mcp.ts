@@ -8,6 +8,7 @@ import { DailySession, dailyContent } from "./daily_mcp.ts";
 import { INITIALIZE, runtimeMetadata } from "./observation_mcp.ts";
 import type { JsonObject, Tool } from "./agent_loop.ts";
 import { factProgram, factJSON } from "./fact_result.ts";
+import { relationDate } from "./relation_result.ts";
 import { binding } from "./observation_evidence.ts";
 export const FACT_SERVER = join(ROOT, "examples/fact_server.sql");
 export const FACT_TOOLS = [
@@ -102,6 +103,7 @@ export type FactSetup =
   | "empty"
   | "raw"
   | "wide"
+  | "finite-minimum"
   | "full"
   | "oversize";
 export async function withFactSession<T>(
@@ -137,8 +139,9 @@ export async function withFactSession<T>(
       else if (setup !== "empty") {
         const ids = setup === "raw" ? ["é", "a\0", "A", "a"] : ["D"];
         const dates =
-          setup === "wide"
+          setup === "wide" || setup === "finite-minimum"
             ? [
+                ...(setup === "finite-minimum" ? ["5877642-06-23 (BC)"] : []),
                 "5877642-06-25 (BC)",
                 "0001-01-01 (BC)",
                 "2026-01-01",
@@ -148,8 +151,10 @@ export async function withFactSession<T>(
             : ["2026-01-01"];
         for (const id of ids)
           for (const date of dates) {
+            const sqlDate =
+              "DATE '1970-01-01'+(" + relationDate(date) + ")::INTEGER";
             const sqlID = id.includes("\0") ? "'a'||chr(0)" : sqlString(id);
-            source += `INSERT INTO revenue VALUES (${sqlID},${sqlString(date)},1.01); INSERT INTO cost VALUES (${sqlID},${sqlString(date)},'X',0.02);\n`;
+            source += `INSERT INTO revenue VALUES (${sqlID},${sqlDate},1.01); INSERT INTO cost VALUES (${sqlID},${sqlDate},'X',0.02);\n`;
           }
       }
     }

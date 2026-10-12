@@ -3467,17 +3467,24 @@ FactCohort ParseFactCohort(yyjson_val *value, idx_t depth, idx_t &nodes) {
 	yyjson_arr_foreach(children, i, n, child) result.children.push_back(ParseFactCohort(child, depth + 1, nodes));
 	return result;
 }
-Value FactDisplayDate(yyjson_val *value, const string &name) {
-	auto text = FactString(value, name);
-	date_t date;
+date_t FiniteDisplayDate(const string &text, const string &name) {
+	// DuckDB formats the isolated finite INT32_MIN day, but its text cast rejects it.
+	const date_t minimum(std::numeric_limits<int32_t>::min());
+	if (text == Date::ToString(minimum)) {
+		return minimum;
+	}
+	date_t value;
 	idx_t pos = 0;
 	bool special = false;
 	if (text.empty() || text.size() > 32 ||
-	    Date::TryConvertDate(text.data(), text.size(), pos, date, special, true) != DateCastResult::SUCCESS ||
-	    pos != text.size() || special || !Date::IsFinite(date) || Date::ToString(date) != text) {
-		Fail(name, "arguments", "canonical finite DuckDB DATE text required, including BC and wide years");
+	    Date::TryConvertDate(text.data(), text.size(), pos, value, special, true) != DateCastResult::SUCCESS ||
+	    pos != text.size() || special || !Date::IsFinite(value) || Date::ToString(value) != text) {
+		Fail(name, "arguments", "finite canonical DuckDB DATE text required, including BC/wide years");
 	}
-	return Value::DATE(date);
+	return value;
+}
+Value FactDisplayDate(yyjson_val *value, const string &name) {
+	return Value::DATE(FiniteDisplayDate(FactString(value, name), name));
 }
 FactRequest ParseFactRequest(const string &bytes, const FactProgram &program, bool window) {
 	FactBudget("request_json_utf8_bytes", bytes.size(), DAILY_REQUEST_BYTES);
@@ -3569,20 +3576,6 @@ struct HistoryRequest {
 	string start_text, end_text;
 	std::set<string, RawByteLess> products;
 };
-date_t HistoryDate(const string &text, const string &name) {
-	// DuckDB formats the isolated finite INT32_MIN day, but its text cast rejects it.
-	const date_t minimum(std::numeric_limits<int32_t>::min());
-	if (text == Date::ToString(minimum)) {
-		return minimum;
-	}
-	date_t value;
-	idx_t pos = 0;
-	bool special = false;
-	if (Date::TryConvertDate(text.data(), text.size(), pos, value, special, true) != DateCastResult::SUCCESS ||
-	    pos != text.size() || special || !Date::IsFinite(value) || Date::ToString(value) != text)
-		Fail(name, "arguments", "finite canonical DuckDB DATE text required, including BC/wide years");
-	return value;
-}
 HistoryRequest ParseHistoryRequest(const string &bytes) {
 	if (bytes.size() > DAILY_REQUEST_BYTES)
 		Fail("history.request_json_utf8_bytes", "resource", "original complete request exceeds16KiB");
@@ -3602,8 +3595,8 @@ HistoryRequest ParseHistoryRequest(const string &bytes) {
 	} else if (mode == "range") {
 		r.start_text = DailyString(yyjson_obj_get(dates, "start_date"), "start_date");
 		r.end_text = DailyString(yyjson_obj_get(dates, "end_date"), "end_date");
-		r.start = HistoryDate(r.start_text, "start_date");
-		r.end = HistoryDate(r.end_text, "end_date");
+		r.start = FiniteDisplayDate(r.start_text, "start_date");
+		r.end = FiniteDisplayDate(r.end_text, "end_date");
 		if (r.start > r.end)
 			Fail("history.dates", "arguments", "start_date must not exceed end_date");
 	} else

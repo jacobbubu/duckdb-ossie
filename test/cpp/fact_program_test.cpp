@@ -2,10 +2,12 @@
 #include "duckdb/main/connection.hpp"
 #include "duckdb/main/database.hpp"
 #include "duckdb/main/query_result.hpp"
+#include "duckdb/main/prepared_statement.hpp"
 #include "duckdb/parser/tableref/basetableref.hpp"
 #include "duckdb/common/exception.hpp"
 #include <algorithm>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 
 namespace {
@@ -351,6 +353,22 @@ void Run() {
 	null_sources[0].reset();
 	Refuse([&] { CompileFactUsers(program, {"income"}, "common", a, std::move(null_sources)); },
 	       "missing explicit source AST refused");
+	Query(engine, "INSERT INTO r VALUES ('MIN',DATE '1970-01-01'+(-2147483648)::INTEGER,1.01)");
+	auto minimum = Value::DATE(date_t(std::numeric_limits<int32_t>::min()));
+	auto minimum_tree =
+	    CompileFactWindows(program, {"previous", "rolling"}, "entire_capture", minimum, minimum, Sources());
+	auto minimum_prepared = engine.Prepare(minimum_tree->Copy());
+	Check(!minimum_prepared->HasError(), "finite INT32_MIN typed window tree binds without date text cast");
+	auto minimum_result = minimum_prepared->Execute();
+	Check(!minimum_result->HasError(), "finite INT32_MIN typed tree executes");
+	auto minimum_chunk = minimum_result->Fetch();
+	Check(minimum_chunk && minimum_chunk->size() == 1 && minimum_chunk->GetValue(0, 0).ToString() == "MIN" &&
+	          minimum_chunk->GetValue(1, 0).GetValue<date_t>().days == std::numeric_limits<int32_t>::min() &&
+	          minimum_chunk->GetValue(2, 0).IsNull() && minimum_chunk->GetValue(3, 0).ToString() == "1.01",
+	      "complete minimum-date row and exact sparse window values preserved");
+	Check(!minimum_result->Fetch() && !minimum_result->HasError(), "minimum-date stream drains without error");
+	Check(engine.Query(minimum_tree->ToString())->HasError(),
+	      "rendered date text fails independently; typed plan is not promised replayable");
 }
 } // namespace
 int main() {

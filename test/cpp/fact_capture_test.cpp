@@ -180,6 +180,19 @@ void Run(const string &root, int threads) {
 	auto original_hash = initial->GetValue(2, 0).ToString();
 	initial.reset();
 	Baseline(reader);
+	const string minimum_request =
+	    "{\"input_scope\":\"entire_capture\",\"windows\":[\"previous\",\"rolling\"],\"display\":{"
+	    "\"mode\":\"date_range\",\"start_date\":\"5877642-06-23 (BC)\",\"end_date\":\"5877642-06-23 (BC)\"}}";
+	Check(Query(reader, "SELECT * FROM ossie_fact_windows_json(" + Literal(minimum_request) + ")")
+	              ->GetValue(0, 0)
+	              .ToString()
+	              .find("\"rows\":[]") != string::npos,
+	      "isolated finite DATE minimum accepted as empty window display");
+	Check(Query(reader, "SELECT * FROM ossie_fact_windows_compile(" + Literal(minimum_request) + ")")
+	              ->GetValue(0, 0)
+	              .ToString()
+	              .find("\"executed\":false") != string::npos,
+	      "isolated finite DATE minimum bound without execution");
 	Check(reader.Query(PopulationFactStatementForTesting(*reader.context, false)->ToString())->HasError(),
 	      "rendered SQL without frozen AST dependencies is refused");
 

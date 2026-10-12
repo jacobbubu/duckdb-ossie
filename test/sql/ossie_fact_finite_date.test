@@ -1,0 +1,42 @@
+# name: test/sql/ossie_fact_finite_date.test
+# description: full finite DATE window display includes isolated INT32_MIN; infinity stays rejected
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE revenue(who VARCHAR,day DATE,value DECIMAL(18,2));
+
+statement ok
+CREATE TABLE cost(who VARCHAR,day DATE,item VARCHAR,value DECIMAL(18,2));
+
+statement ok
+INSERT INTO revenue VALUES ('u',DATE '1970-01-01'+(-2147483648)::INTEGER,1.01),('u',DATE '1970-01-01'+(-2147483646)::INTEGER,2.02);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population-fact-program/bundle.json');
+
+query T
+SELECT regexp_extract(result_json,'"rows":(\[.*\])',1) FROM ossie_fact_windows_json('{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"5877642-06-23 (BC)","end_date":"5877642-06-23 (BC)"}}');
+----
+[["u","5877642-06-23 (BC)",null,"1.01"]]
+
+query T
+SELECT regexp_extract(result_json,'"rows":(\[.*\])',1) FROM ossie_fact_windows_json('{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"5877642-06-25 (BC)","end_date":"5877642-06-25 (BC)"}}');
+----
+[["u","5877642-06-25 (BC)","1.01","3.03"]]
+
+query T
+SELECT regexp_extract(plan_json,'"executed":(false|true)',1) FROM ossie_fact_windows_compile('{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"5877642-06-23 (BC)","end_date":"5877642-06-23 (BC)"}}');
+----
+false
+
+statement error
+SELECT * FROM ossie_fact_windows_json('{"input_scope":"entire_capture","windows":["previous"],"display":{"mode":"date_range","start_date":"5877642-06-24 (BC)","end_date":"2024-01-01"}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_fact_windows_compile('{"input_scope":"entire_capture","windows":["previous"],"display":{"mode":"date_range","start_date":"5877642-06-22 (BC)","end_date":"2024-01-01"}}');
+----
+INVALID_REQUEST

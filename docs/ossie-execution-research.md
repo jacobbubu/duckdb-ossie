@@ -1826,3 +1826,11 @@ MCP/专用program与surface、严格carrier解码、六场景注入Responses与�
 声明的全有限 DATE 显示范围不符。来源为空范围也应正常返回，而不是非法请求。
 沿 OSSIE-REQ-001 修共享解析并补实际结果/计划/decoder/MCP 边界，不缩小日期域。
 先修此缺陷再继续历史 Agent 封存重放，新 C++ Linux/tidy 与统一验收保留。
+
+有限日期缺陷修复：[新证据](research/ossie-req-001/p1-finite-window-controls/review.md)
+绑定 e04ff401，共享日期解析与窗口 typed DATE 常量查询树同时修复；只修解析的
+首轮执行仍失败，其日志/报告保留。五有限值完整窗口行和整数金额、十拒绝、
+fact MCP 37/48、fact program95/捕获264通过；其余原生、30SQL/1079、138Bun/723
+及质量、同产物全部旧SQL/MCP/五无模型与历史MCP复验通过。旧wide样本恢复，
+新增独立finite-minimum，未改历史证据。下一历史Agent/严格重放，再新代码Linux/
+tidy与完整五项审计；goal active，不调用模型或推送。

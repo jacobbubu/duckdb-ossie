@@ -85,6 +85,11 @@ P1 尚需历史无模型、状态与历史新代码 Linux/tidy、最终同产物
 全套质量检查与待推历史私有信息审计。本地命令通过不证明远端跨平台/tidy已运行；
 无模型演练不证明模型自主选择。完整P1的验收范围保持原需求与现有计划。
 
+[有限窗口显示边界修复](research/ossie-req-001/p1-finite-window-controls/review.md)
+补齐原生参数解析及 typed DATE 查询树对有限 INT32_MIN 的支持。此前合法最小
+日期被拒绝，与本页支持范围不符；新 e04ff401 产物完成实际窗口/计划/decoder/
+MCP 与旧全接口复验。无限/哨兵/越界拒绝保持，渲染计划不承诺独立重放。
+
 后续[当前产物质量与回归](research/ossie-req-001/p1-tidy-controls/review.md)
 记录样式修复后的66ec8a7c产物：Linux15编译单元tidy、六native、27SQL、
 完整P0、四服务MCP与四组无模型控制复验。历史9ddb报告和原源码/文档

@@ -155,7 +155,7 @@ jobs:
       - name: Verify complete relation links and logical compile against the same artifact
         run: bun --no-env-file scripts/verify_relation_objects_artifact.ts downloaded/ossie.duckdb_extension quality-reports/relation-objects
 
-      - name: Verify finite DATE boundaries through native links and the decoder
+      - name: Verify finite DATE boundaries through native links, fact windows and the decoder
         run: bun --no-env-file scripts/verify_finite_dates_artifact.ts downloaded/ossie.duckdb_extension quality-reports/finite-dates
 
       - name: Verify dual-fact loading and frozen capture controls

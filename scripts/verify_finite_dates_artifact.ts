@@ -3,6 +3,8 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { Database, ROOT, digest, assert } from "./artifact_helpers.ts";
 import { relationDate, relationResult } from "./relation_result.ts";
+import { factProgram, factValue } from "./fact_result.ts";
+import { populationError } from "./population_error.ts";
 const [artifactArg, outArg] = process.argv.slice(2);
 assert(artifactArg && outArg && process.argv.length === 4);
 const artifact = resolve(artifactArg),
@@ -32,7 +34,7 @@ try {
   const value = JSON.parse(String(raw));
   const report = {
     scope:
-      "complete finite Date native/decoder correspondence, not historical relation execution",
+      "finite DATE relation identities and fact display/window/plan/decoder correspondence; not generic historical execution",
     engine,
     artifact_sha256: digest(artifact),
     source_sha256: {
@@ -63,12 +65,97 @@ try {
   }
   for (const s of ["5877642-06-24 (BC)", "5881580-07-11", "5877642-06-22 (BC)"])
     assert.throws(() => relationDate(s));
+  await db.run(
+    "CREATE TABLE revenue(who VARCHAR,day DATE,value DECIMAL(18,2))",
+  );
+  await db.run(
+    "CREATE TABLE cost(who VARCHAR,day DATE,item VARCHAR,value DECIMAL(18,2))",
+  );
+  for (const [i, day] of offsets.entries())
+    await db.run(
+      `INSERT INTO revenue VALUES ('u',DATE '1970-01-01'+(${day})::INTEGER,${i + 1}.01)`,
+    );
+  await db.run("CALL ossie_bundle_load(?)", [
+    join(ROOT, "test/fixtures/population-fact-program/bundle.json"),
+  ]);
+  const [programRaw] = await db.one("SELECT * FROM ossie_fact_program()");
+  const program = factProgram(JSON.stringify([{ program_json: programRaw }]));
+  const windows: unknown[] = [],
+    refused: unknown[] = [];
+  for (let i = 0; i < actual.length; i++) {
+    const date = String(actual[i][0]);
+    const request = {
+      input_scope: "entire_capture",
+      windows: ["previous", "rolling"],
+      display: { mode: "date_range", start_date: date, end_date: date },
+    };
+    const [rawResult] = await db.one(
+      "SELECT * FROM ossie_fact_windows_json(?)",
+      [JSON.stringify(request)],
+    );
+    const [rawPlan] = await db.one(
+      "SELECT * FROM ossie_fact_windows_compile(?)",
+      [JSON.stringify(request)],
+    );
+    const result = factValue(
+      JSON.stringify([{ result_json: rawResult }]),
+      request,
+      program,
+      true,
+      false,
+    );
+    const plan = factValue(
+      JSON.stringify([{ plan_json: rawPlan }]),
+      request,
+      program,
+      true,
+      true,
+    );
+    const sum = (i + 1) * 100 + 1 + (i > 0 ? i * 100 + 1 : 0),
+      money = (n: number) =>
+        `${Math.floor(n / 100)}.${String(n % 100).padStart(2, "0")}`;
+    const expected = [
+      ["u", date, i === 0 ? null : money(i * 100 + 1), money(sum)],
+    ];
+    assert.deepEqual(result.rows, expected);
+    assert.equal(result.source_captured_rows, "5");
+    windows.push({ request, result, plan, expected });
+  }
+  for (const date of [
+    "-infinity",
+    "infinity",
+    "5877642-06-24 (BC)",
+    "5881580-07-11",
+    "5877642-06-22 (BC)",
+  ])
+    for (const fn of [
+      "ossie_fact_windows_json",
+      "ossie_fact_windows_compile",
+    ]) {
+      let caught = false;
+      try {
+        await db.one(`SELECT * FROM ${fn}(?)`, [
+          JSON.stringify({
+            input_scope: "entire_capture",
+            windows: ["previous"],
+            display: { mode: "date_range", start_date: date, end_date: date },
+          }),
+        ]);
+      } catch (e) {
+        assert.equal(populationError(String(e))?.code, "INVALID_REQUEST");
+        caught = true;
+      }
+      assert(caught);
+      refused.push({ fn, date });
+    }
   writeFileSync(
     join(out, "verification.json"),
     JSON.stringify(
       {
         ...report,
         passed: true,
+        fact_windows: windows,
+        fact_date_refusals: refused,
         refused: [
           "negative infinity sentinel",
           "positive infinity sentinel",
@@ -80,7 +167,7 @@ try {
     ) + "\n",
   );
   console.log(
-    "PASS actual frozen finite DATE links including INT32_MIN; decoded epoch/native equality and infinity/out-of-range refusals",
+    "PASS actual frozen finite DATE links and fact windows including INT32_MIN; full rows/plan/decoder and infinity/out-of-range refusals",
   );
 } finally {
   await db.close();

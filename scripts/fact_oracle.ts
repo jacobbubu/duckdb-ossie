@@ -53,8 +53,9 @@ export function factInputs(setup: FactSetup): {
         ? ["é", "a\0", "A", "a"]
         : ["D"];
   const dates =
-    setup === "wide"
+    setup === "wide" || setup === "finite-minimum"
       ? [
+          ...(setup === "finite-minimum" ? ["5877642-06-23 (BC)"] : []),
           "5877642-06-25 (BC)",
           "0001-01-01 (BC)",
           "2026-01-01",

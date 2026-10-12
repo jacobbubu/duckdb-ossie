@@ -1,0 +1,74 @@
+{
+  "scope": "required full finite DATE fact-window display fix, typed execution AST and complete relation/date correspondence; macOS ARM64 local",
+  "baseline_commit": "df186d439b7387815cf7c82299a3bde35ae90822",
+  "artifact_sha256": "e04ff401f37318a92d381f5454ff47c6683d8c52288db8d7d3348eb5b2cf9e71",
+  "source_sha256": {
+    "src/population/population.cpp": "49b75fabe7b01d91a354cbf95105066ca76d7bfd56fae745ab4300415a6342ce",
+    "src/population/fact_program.cpp": "66ede56c37d9ee97722b72a9e4e16dcc5a7729c6474a86a6694977203d6efeb1",
+    "test/cpp/fact_program_test.cpp": "2db3f0773840988593505c08d9cf16a46b2e24e0751ee3a3d27782f914bed829",
+    "test/cpp/fact_capture_test.cpp": "dcbd1bf1548a552ec1b3661890452d3b992eae6f3d0d2e5c36fe67acc5c20a72",
+    "test/sql/ossie_fact_finite_date.test": "1cb76bd453798245b5a889ee3824c2cfb31cb1216bf7da10fafb31a9543bf93a",
+    "scripts/fact_mcp.ts": "2ca43aede14287da9d6612cd8cb44bccd1fa6acbcaa215711d6c2be952c6147b",
+    "scripts/fact_oracle.ts": "79a1112f673dffc389236718b23d75c7cdcc046d44d7ed3cf54b826d052e4263",
+    "scripts/verify_fact_mcp.ts": "c55ee737f6d319d865d68ff33f474f5ff6c2ffc0961338db4f389e69e9ca474d",
+    "scripts/verify_finite_dates_artifact.ts": "6a494e26653fb75a2095cb52ea8e1aced16577c8bb2956707b1123b32cf859ec",
+    ".github/workflows/MainDistributionPipeline.yml": "cc2c43b623dd4b42c776d5138a90410eda8b0e4c63a6f6e2f81b49c5565aacae"
+  },
+  "private_manifest_sha256": "a5193a0bdf383605258526285cb463df57bd7f072e59df03aa5172f306967acb",
+  "private_files": 356,
+  "native": {
+    "state_snapshot": 19,
+    "metric_grain": 42,
+    "population_capture": 482,
+    "relation_program": 55,
+    "fact_program": 95,
+    "fact_capture": 264,
+    "history_index": 20474
+  },
+  "sql": {
+    "cases": 30,
+    "assertions": 1079
+  },
+  "bun": {
+    "tests": 138,
+    "expects": 723
+  },
+  "new_finite_window_cases": 5,
+  "new_date_refusals": 10,
+  "fact_mcp": {
+    "checks": 37,
+    "refusals": 48
+  },
+  "history_mcp": {
+    "checks": 15,
+    "refusals": 24,
+    "damage": 28
+  },
+  "same_artifact_regression": [
+    "full scoped P0 A1-A8",
+    "observation/daily users/states SQL",
+    "relation load/objects",
+    "fact load/objects/stock CLI",
+    "history load/links/plan/MCP",
+    "all five legacy MCP and sealed no-model suites"
+  ],
+  "quality": [
+    "TypeScript types/format",
+    "C++ format11",
+    "architecture",
+    "diff check"
+  ],
+  "retained_failures": [
+    "original valid min DATE rejected by fact argument parser",
+    "parameter parser fix alone still failed: window compiler rendered DATE then reparsed it",
+    "changing old wide fixture invalidated its historical contract evidence; original sample restored and distinct finite-minimum setup added"
+  ],
+  "remaining": [
+    "historical Agent loop and sealed offline replay",
+    "new C++ Linux/tidy",
+    "full five-category P1 audit and outgoing private check"
+  ],
+  "real_model_requests": 0,
+  "pushed": false,
+  "goal_complete": false
+}
