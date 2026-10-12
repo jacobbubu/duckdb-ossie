@@ -1,0 +1,49 @@
+{
+  "scope": "existing documented full finite DATE display range; minimum finite epoch probe",
+  "artifact_sha256": "d51854132706e00d5bd150d79ea55d25d22fe6cca0d2f2e9ce8cadb4421845bf",
+  "request": {
+    "input_scope": "entire_capture",
+    "windows": [
+      "previous",
+      "rolling"
+    ],
+    "display": {
+      "mode": "date_range",
+      "start_date": "5877642-06-23 (BC)",
+      "end_date": "5877642-06-23 (BC)"
+    }
+  },
+  "results": [
+    {
+      "fn": "ossie_fact_windows_json",
+      "accepted": false,
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "display.start_date",
+        "stage": "arguments",
+        "reason": "canonical finite DuckDB DATE text required, including BC and wide years",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=display.start_date stage=arguments reason=canonical finite DuckDB DATE text required, including BC and wide years missing_capability=bounded population profile"
+      }
+    },
+    {
+      "fn": "ossie_fact_windows_compile",
+      "accepted": false,
+      "error": {
+        "schema_version": "ossie-population-error-v1",
+        "code": "INVALID_REQUEST",
+        "object": "display.start_date",
+        "stage": "arguments",
+        "reason": "canonical finite DuckDB DATE text required, including BC and wide years",
+        "missing_capability": null,
+        "exception_type": "Invalid Input",
+        "source_exception_type": null,
+        "legacy_message": "ossie_population: object=display.start_date stage=arguments reason=canonical finite DuckDB DATE text required, including BC and wide years missing_capability=bounded population profile"
+      }
+    }
+  ],
+  "real_model_requests": 0
+}

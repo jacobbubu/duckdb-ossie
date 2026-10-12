@@ -1894,3 +1894,11 @@ registry探测，actual tools/list证明暴露；外层参数忽略/object转换
 未改，上一同SHA原生/SQL/旧全接口复验继续适用；138Bun/723及质量通过。原始
 会话/失败清单保留。下一历史无模型Agent/严格重放，之后新Cpp Linux/tidy与五项
 审计/未推历史私有检查；goal active，不调用真实模型/推送。
+
+日期边界审计发现：新 history fixture 覆盖全有限 DATE 下界后，发现既有
+FactDisplayDate 仍直接依赖会拒绝 INT32_MIN canonical 文本的固定 DuckDB 解析器。
+同 d5185413 实际请求已证明 fact windows json/compile 对合法
+5877642-06-23 (BC) 都返回 INVALID_REQUEST，与已声明的有限日期域不符；原 probe
+源码/请求/错误保留。这是已有 P1 范围的必要修复，优先补共享有限日期解析与
+原生/实际结果/计划/decoder/MCP 边界对照，不能只改文档缩小日期域；随后继续
+历史无模型及新 C++ Linux/tidy/五项审计，不扩展业务语义或调用模型。

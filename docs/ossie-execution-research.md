@@ -1820,3 +1820,9 @@ MCP/专用program与surface、严格carrier解码、六场景注入Responses与�
 上游外层忽略/转换如实记录。Cpp 未改，复用上一同 SHA 原生/SQL/旧全接口证据；
 138 Bun/723 及质量通过。历史 Agent 无模型封存重放、新 C++ Linux/tidy 及五项
 统一审计仍必需，goal active，无模型/推送。SDK BC 文本差异失败原件保留。
+
+同 SHA 日期审计发现已有必要修复：[实际窗口边界失败](research/ossie-req-001/p1-finite-date-window-defect/probe.json)
+证明 fact windows json/compile 都拒绝有限 INT32_MIN 的精确规范文本，与已经
+声明的全有限 DATE 显示范围不符。来源为空范围也应正常返回，而不是非法请求。
+沿 OSSIE-REQ-001 修共享解析并补实际结果/计划/decoder/MCP 边界，不缩小日期域。
+先修此缺陷再继续历史 Agent 封存重放，新 C++ Linux/tidy 与统一验收保留。
