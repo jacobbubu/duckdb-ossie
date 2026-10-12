@@ -1,5 +1,25 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 live run review delivery — 2026-10-12
+
+[运行方案审阅](docs/research/ossie-req-001/p1-agent-live-run-review/review.md)本地完成：
+facts→history→states单题候选、逐题人工停点、标准变量清除后显式配置加载、
+原4/3/4096预算和私有/公开v2边界明确。虚拟加载/三参数/原投影重放通过，
+62来源/2315原件保持；未读实际.env_test、无模型/新MCP/代码或额度变化/推送。
+运行前仍必需恢复并核对最近封存2c75 stock CLI（原临时文件已失效，build CLI
+hash不同）、脱敏核对有效配置与既定目标。tool_calls是loop意图，验收须另列
+RPC/回复/解码和native执行对应；若改公共命名另行实施。下一建议仅完成前置
+核对、不模型请求，然后再决定facts一次。原20/33/164入口完成结论保持。
+
+## P1 live run review checkpoint — 2026-10-12
+
+恢复90af7ee干净工作树，当前仅审阅真实运行命令、单题次序和预算/证据范围。
+沿原issue形成hash绑定运行候选，facts→history→states各一次、独立目录/进程、
+题间人工审阅；配置加载与标准变量区分，禁止模型调用和.env_test内容读取。
+核对现62来源/封存mock轨迹/参数解析/纯离线重放及公开v2语义，一轮只读Advisor。
+原入口实施/20传输/33旧控制/164测试完成保持，本轮不重跑服务或改代码/额度，
+不推送。发现的计数/复核边界沿现计划保留，不以方案审阅代替真实验收。
+
 ## P1 live entry wiring delivery — 2026-10-12
 
 [真实入口接线与无模型验收](docs/research/ossie-req-001/p1-agent-live-entry-controls/review.md)

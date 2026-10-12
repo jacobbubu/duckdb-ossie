@@ -1,0 +1,31 @@
+{
+  "schema": "ossie-p1-live-run-review-check-v1",
+  "date": "2026-10-12",
+  "baseline": "90af7ee",
+  "production_sources_changed": false,
+  "model_calls": 0,
+  "new_mcp_sessions": 0,
+  "actual_private_env_contents_read": false,
+  "official_docs_browsed": true,
+  "source_files_verified": 62,
+  "original_files_preserved": 2315,
+  "candidate_commands_parsed": 3,
+  "pure_offline_replays": "facts/history/states consistent pending",
+  "synthetic_env_loader": "pass; actual effective configuration unknown",
+  "stock_cli_available": false,
+  "execution_ready": false,
+  "local_links_checked": 325,
+  "private_review_manifest_sha256": "5b8212b1f3215d0ff70f56f80ff95bb5bc1a7ebe668499028acacc42718cc39d",
+  "marker_scan": "bounded new files/diff patterns pass; not universal secret detection",
+  "diff_check": "pass",
+  "review_files_sha256": {
+    "docs/research/ossie-req-001/p1-agent-live-run-review/review.md": "0e1d32e04d02c1a5c0f4f3432a413e5bee04e6fe984c2649f1ff211c35daf44f",
+    "docs/research/ossie-req-001/p1-agent-live-run-review/receipt.json": "ec49779650240a019d651f2e5b50d33ba40061f2bdf7ca07ed411cb03dd74996"
+  },
+  "retained_review_errors": [
+    "audit initially tried missing temporary stock CLI; original script retained",
+    "initial temporary comparison used earlier stock hash; latest sealed2c75 is authoritative, local build still differs",
+    "link check first expected its own not-yet-written verification report; generated link verified after emit"
+  ],
+  "tests": "review-only; no new full suite/native/tidy or CI run; previous20/33/164 retained"
+}

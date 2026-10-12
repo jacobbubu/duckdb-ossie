@@ -50,7 +50,7 @@ bun --no-env-file scripts/verify_p1_agent_offline.ts \
 
 私有档案保存实际发现、setup/context、原始arguments、RPC/工具/公开Responses事件、完整最终回答、评估、失败/清理和seal。startup/discovery失败只有诊断轨迹，不虚构完整执行；部分发现响应可缺失，但不能当成功发现。hash证明记录完整及当前来源对应，不证明外部真实性、私有续接状态、真实业务数据或模型可靠率。独立真实入口已接线，完整会话仍不公开导出。公开P1摘要先验证seal/当前来源和离线重放，逐项绑定原字节，仅派生固定状态/计数/预算/hash，不复制业务结果、自由错误文本、路径或provider标识；全部semantic_acceptance=not_proven。未知metadata即使重封存也不导出。
 
-[本地实施验证](research/ossie-req-001/p1-agent-offline-entry-controls/review.md)记录当前产物、28项控制、质量与原始失败。[实际上下文/预算/公开范围审阅](research/ossie-req-001/p1-agent-context-review/review.md)已完成，相关保护已在本轮落实；真实入口接线及无模型演练也已完成；下一步先审真实运行命令及范围；当前授权仍不允许真实模型调用、推送、合并或发布。
+[本地实施验证](research/ossie-req-001/p1-agent-offline-entry-controls/review.md)记录当前产物、28项控制、质量与原始失败。[实际上下文/预算/公开范围审阅](research/ossie-req-001/p1-agent-context-review/review.md)已完成，相关保护已在本轮落实；真实入口接线及无模型演练也已完成；[运行方案审阅](research/ossie-req-001/p1-agent-live-run-review/review.md)已完成，下一建议先恢复/核对stock CLI与脱敏配置；当前授权仍不允许真实模型调用、推送、合并或发布。
 
 ## 公开摘要衍生入口
 
@@ -62,7 +62,7 @@ bun --no-env-file scripts/p1_agent_public.ts \
 
 仅创建新文件，拒绝覆盖、源目录内写入或路径各级符号链接。输出是摘要衍生物，不能声称包含原始wire或可公开重放；startup失败仅为诊断。不会访问模型、启动MCP或读配置。源码改变会拒绝旧档案，必须保留旧raw并重新产生当前来源的新证据，不能改旧hash绕过。
 
-[四项保护验收](research/ossie-req-001/p1-agent-safety-controls/review.md)已在本地完成，含当前33项离线控制与针对性安全回归。真实入口接线及无模型验证见[本轮验收](research/ossie-req-001/p1-agent-live-entry-controls/review.md)；下一建议先审真实运行命令与范围；当前仍不允许真实模型调用或推送。
+[四项保护验收](research/ossie-req-001/p1-agent-safety-controls/review.md)已在本地完成，含当前33项离线控制与针对性安全回归。真实入口接线及无模型验证见[本轮验收](research/ossie-req-001/p1-agent-live-entry-controls/review.md)；运行方案已审阅，下一建议先完成CLI/配置前置核对；当前仍不允许真实模型调用或推送。
 
 ## 独立真实入口（本轮未执行）
 
@@ -85,3 +85,5 @@ bun --no-env-file scripts/verify_p1_agent_transport.ts \
 ```
 
 公开摘要当前为v2，区分构造/尝试/收到HTTP/接受投影/工具调用。live字段只代表选用入口和客户端尝试，不能证明后端执行或费用；startup与无可保存响应的失败仅作诊断。单场景history按自身发现和oracle重放，禁止伪造scene/计数；全部semantic_acceptance=not_proven。
+
+[单题运行方案](research/ossie-req-001/p1-agent-live-run-review/review.md)给出facts→history→states候选及显式加载私有文件的命令。虚拟试验确认继承变量优先于文件，故固定命令先env清除三标准变量，再禁自动dotenv并显式指定私有文件。实际配置内容未核对，原临时stock CLI已失效，不得直接执行旧示例路径或改用未验证的build CLI。公开tool_calls是loop调用意图，实际RPC派发/回复/成功解码须独立核对；pending/非零退出不触发自动重试。
