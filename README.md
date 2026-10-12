@@ -28,10 +28,11 @@ now have [daily three-valued state SQL, logical plans, discovery and independent
 verified locally on macOS ARM64 and Ubuntu ARM64. [Historical typed capture/index, full links and logical plans](docs/population-history.md)
 and dedicated MCP/scripted Agent replay are verified on both local platforms, with
 [current-source Linux functionality and tidy](docs/research/ossie-req-001/p1-final-linux-functional/review.md).
-The final requirement and delivery audit remains; full P1 acceptance is pending.
+The [five-category P1 local acceptance](docs/research/ossie-req-001/p1-final-acceptance/review.md)
+is complete within the frozen supported scope.
 These local P1 results do not imply remote CI has run.
 See the [bounded implementation record](docs/ossie-execution-research.md)
-and [current delivery status](ossie-duckdb-plan.md#current-delivery-checkpoint--2026-10-11)
+and [current delivery status](ossie-duckdb-plan.md#current-delivery-checkpoint--2026-10-12)
 for accepted scopes, evidence and remaining verification.
 The [adjusted A1–A8 local acceptance](docs/p0-acceptance.md) records complete
 rule-driven GAAP results, declared refusals and reproducible evidence. With Bun

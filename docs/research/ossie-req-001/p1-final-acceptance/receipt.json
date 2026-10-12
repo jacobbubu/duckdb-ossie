@@ -1,0 +1,208 @@
+{
+  "scope": "original requirement section5 five categories, frozen user-approved bounded P1 local implementation and delivery audit",
+  "status": "PASS within frozen local scope",
+  "implementation_commit": "3437cc8",
+  "audited_document_baseline": "0189096",
+  "original_requirement_sha256": "6c41eeaafba2dc8a28eb31dc99bb8e2d06e8a2b0e4826994f01c90ed82b1780b",
+  "accepted_time_policy_sha256": "07d425bac8309c5bccc3491c812a020335a50456162f1698d4a8c0e2bf7e370b",
+  "spec_commit": "8dd6732da354f22ca71f16d82626a46039ecdcd9",
+  "spec_version": "0.2.0.dev0",
+  "engine_version": "1.5.6",
+  "evidence_audit_sha256": "cf057cf64bb154d05632b9475655825ca473aed0aab15d756803bcca770e08b7",
+  "evidence_integrity": {
+    "private_files_checked": 878,
+    "linux_raw_files_checked": 3301,
+    "current_source_files_checked": 157,
+    "fixed_source_files_checked": 21,
+    "linux_successful_stages": 40,
+    "platform_reports_checked": 46
+  },
+  "platform_artifacts": {
+    "mac": "622b4796ea1caa42c1f241c5087eee7edc830262157be39f866414581a8fcd7a",
+    "linux": "71c1ccb9c27e57e837d40df6359e8851f8ff6ea5435867b1985cfff199e06692"
+  },
+  "native_runners": 7,
+  "sql": {
+    "cases": 30,
+    "assertions": 1079
+  },
+  "bun": {
+    "tests": 138,
+    "expects": 723
+  },
+  "linux_tidy": {
+    "unique_translation_units": 16,
+    "project_diagnostics": 0
+  },
+  "categories": [
+    {
+      "id": "P1.1",
+      "original": "不同粒度分别聚合后再组合的指标；多事实表和复杂人群筛选",
+      "status": "PASS within frozen local scope",
+      "supported": [
+        "两冻结事实：User/date 与 User/date/product；各自聚合后同 User 组合",
+        "收入、成本及差额精确 cents，共同冻结 User 分母；交集、并集、差集人群",
+        "原三个 profile 的对象、金额、人数、均值及拒绝行为回归"
+      ],
+      "proof": [
+        "fact_load/verification.json",
+        "fact_objects/verification.json",
+        "fact-stock/verification.json",
+        "p0/acceptance.json"
+      ],
+      "assertion_sources": [
+        "test/cpp/fact_program_test.cpp",
+        "scripts/fact_oracle.ts",
+        "scripts/verify_fact_objects_artifact.ts"
+      ],
+      "decisive_controls": [
+        "直接连接525对独立聚合375的fan-out反例；差额375−85=290",
+        "逐成员集合和BigInt金额独立oracle；NULL、缺键、重复、类型、单位与不支持组合拒绝"
+      ],
+      "boundaries": [
+        "不分摊产品粒度，不支持任意事实数或任意比率表达式；原第5节未要求通用比率引擎"
+      ]
+    },
+    {
+      "id": "P1.2",
+      "original": "两个月及同一用户跨日期；有效性状态变化、历史关系有效期和时间窗口",
+      "status": "PASS within frozen local scope",
+      "supported": [
+        "每天合格 User 集合：指定自然日全部合格，缺失日不合格",
+        "已接受三值每日归约与请求内相邻自然日状态对；冻结全集 User 域",
+        "有限半开DATE历史区间、缺口、全批冲突检查、原始record_id及完整link去重",
+        "跨月、闰日、BC/宽年份/有限最小日期；稀疏观察行 LAG 与有限 ROWS SUM"
+      ],
+      "proof": [
+        "daily-users.json",
+        "daily_states/verification.json",
+        "history_load/verification.json",
+        "history_links/verification.json",
+        "finite_dates/verification.json",
+        "fact_objects/verification.json"
+      ],
+      "assertion_sources": [
+        "scripts/verify_daily_users_artifact.ts",
+        "scripts/daily_state_oracle.ts",
+        "scripts/history_oracle.ts",
+        "test/cpp/history_program_test.cpp"
+      ],
+      "decisive_controls": [
+        "八种当日TRUE/FALSE/NULL组合及九种相邻状态对；单日零比较",
+        "范围只筛观察，不把范围外User从状态分母移除；不延续前日状态",
+        "同User不同目标重叠即全批拒绝，含没有观察的User；同目标不同ID保留原始证据",
+        "end日排除、缺口无link、重复ID拒绝、原始与合并索引区别；typed DATE最小值执行与解释"
+      ],
+      "boundaries": [
+        "有限DATE范围，明确预算；不支持开放区间、无穷日期、状态继承、通用时间推理；行窗口不补自然日"
+      ]
+    },
+    {
+      "id": "P1.3",
+      "original": "声明明确、可验证的非递归派生关系和约束检查",
+      "status": "PASS within frozen local scope",
+      "supported": [
+        "同User声明关系DAG，typed根/目标身份与显式引用",
+        "完整冻结根范围和实际link范围约束；失败不以WHERE静默丢记录"
+      ],
+      "proof": [
+        "relation_load/verification.json",
+        "relation_objects/verification.json"
+      ],
+      "assertion_sources": [
+        "test/cpp/relation_program_test.cpp",
+        "scripts/verify_relation_load_artifact.ts",
+        "scripts/verify_relation_objects_artifact.ts"
+      ],
+      "decisive_controls": [
+        "独立完整边集合18及规则变更207；依赖关系、集合并去重",
+        "循环/未知引用/未guard的NULL拒绝；资格范围外坏根仍使整批失败",
+        "空link约束真值不冒充存在性；冻结prepared、删源、失败保留旧parent"
+      ],
+      "boundaries": [
+        "明确项目RelationProgram与历史operator；不是通用derived_by/requires或递归本体解释器"
+      ]
+    },
+    {
+      "id": "P1.4",
+      "original": "按业务需求扩大OSSIE_SQL_2026函数及窗口支持；持续兼容矩阵",
+      "status": "PASS within frozen local scope",
+      "supported": [
+        "声明粒度的SUM/COUNT和有限组合/谓词",
+        "LAG与有界ROWS SUM，明确分区、排序、NULL和显示范围",
+        "固定规范快照与逐profile支持/拒绝兼容矩阵"
+      ],
+      "proof": [
+        "fact_objects/verification.json",
+        "finite_dates/verification.json",
+        "p0/acceptance.json"
+      ],
+      "assertion_sources": [
+        "src/population/fact_program.cpp",
+        "scripts/verify_fact_objects_artifact.ts",
+        "test/sql/ossie_sql_2026.test"
+      ],
+      "decisive_controls": [
+        "正负AST门禁；独立窗口结果；显示范围后置而不截断窗口输入",
+        "保留旧profile窗口拒绝；无限/哨兵/越界拒绝；有限最小DATE保持typed AST"
+      ],
+      "boundaries": [
+        "有限业务所需子集；不宣称全部SQL2026、任意DuckDB SQL或计划文本独立重放"
+      ]
+    },
+    {
+      "id": "P1.5",
+      "original": "完整对象查询接口、解释接口与MCP集成按实际调用契约补齐",
+      "status": "PASS within frozen local scope",
+      "supported": [
+        "六profile；新增每日集合/状态、关系、事实/窗口、历史全接口",
+        "同请求logical compile、绑定/规则/粒度/范围/版本/限制发现",
+        "六独立实际stock MCP服务；六脚本演练与封存有序重放；原MCP与P0回归"
+      ],
+      "proof": [
+        "relation_objects/verification.json",
+        "fact_objects/verification.json",
+        "daily_states/verification.json",
+        "history_links/verification.json",
+        "p0/acceptance.json",
+        "six MCP and six offline reports per platform"
+      ],
+      "assertion_sources": [
+        "scripts/history_mcp.ts",
+        "scripts/history_agent.ts",
+        "scripts/verify_history_agent_offline.ts",
+        "scripts/run_p0_acceptance.ts"
+      ],
+      "decisive_controls": [
+        "compile不执行、不算成员；prepared/旧定义/删除源后仍绑定原快照",
+        "完整10000对象/links及精确结果字节上限、超限整次拒绝和恢复；无静默截断",
+        "当前stock上游会忽略外层未知参数或把对象转String；调用方严格校验并传request_json字符串",
+        "历史七场景、20模拟响应/13实际工具调用、29重放/调用负控制；不依赖真实模型"
+      ],
+      "boundaries": [
+        "native mcp_registered=false仅表示未探测注册；实际tools/list另验证",
+        "原观察演练仍保留pending semantic review字段；本阶段只验集成、数值、范围和重放，不升级为自主Agent验收",
+        "无分页、真实模型调用、远端CI、推送、合并或部署"
+      ]
+    }
+  ],
+  "claim_method": "Lead requirement-to-assertion semantic review plus hash/outcome/source-binding checks; checks alone do not prove semantic correctness or authenticity",
+  "outgoing_precheck": {
+    "baseline": "bd8c0eef7e3c78dfd6b3a1f6f60585355fe14ca8",
+    "through": "0189096cbcf90dc0bd4f282b5af9086a6b2b38a8",
+    "commits": 42,
+    "unique_blobs": 852,
+    "findings": 0,
+    "boundary": "bounded patterns; final documentation commit receives a separate private full-range audit"
+  },
+  "remaining_within_local_scope": [],
+  "future_work_outside_goal": [
+    "MCP分页先调研",
+    "真实模型自主验收另行授权",
+    "分支推送与新远端CI另行授权",
+    "更广profile/通用推理与SQL支持另行研究"
+  ],
+  "real_model_requests": 0,
+  "provider_config_read": false,
+  "pushed": false
+}

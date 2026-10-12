@@ -23,7 +23,7 @@ OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckD
 | `daily-observation-population-v1` | 固定五个观察聚合形状；正式资格为分类整数与整数阈值比较；每日集合做自然日见证归约；专用状态 SQL 保留 BOOLEAN/NULL 后归约全部 User/day 与请求内相邻比较，独立 MCP/无模型已本地验证 | 每日归约不是 SQL 窗口；没有历史有效期；当前双平台/tidy 已复验 |
 | `observation-relation-program-v1` | 声明的同根 User 关系调用、正向非递归 DAG、有限整数条件和显式 NULL 约束 | 关系调用是 ontology typed 语法，不能当普通 SQL UDF；没有任意聚合/窗口 |
 | `multi-fact-user-program-v1` | 两个事实分别按 User 归约后组合；另有同源 User/date 行窗口 | 不支持原始事实连接后聚合、跨来源窗口、比率或任意 SQL 请求 |
-| `historical-observation-relation-v1` | 直接物理字段与明确 typed 角色，完整有限 DATE 双源捕获/索引、program、完整历史 links、只绑定投影的逻辑 compile、独立 MCP 与七场景无模型重放；时间匹配是项目算子 | 未执行通用 ontology derived_by，非空未执行规则拒绝；当前双平台/tidy 已复验，最终统一审计保留；无模型不证明自主模型能力 |
+| `historical-observation-relation-v1` | 直接物理字段与明确 typed 角色，完整有限 DATE 双源捕获/索引、program、完整历史 links、只绑定投影的逻辑 compile、独立 MCP 与七场景无模型重放；时间匹配是项目算子 | 未执行通用 ontology derived_by，非空未执行规则拒绝；当前双平台/tidy 已复验，最终逐项审计通过；无模型不证明自主模型能力 |
 
 ## P1 相关形状
 
@@ -42,7 +42,7 @@ OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckD
 | `SUM ... OVER`；规范窗口聚合 REQUIRED | 同源 User/date，明确 `ROWS BETWEEN n PRECEDING AND CURRENT ROW`，n为0..366字面整数 | n0/366执行通过；n367、RANGE、UNBOUNDED、FOLLOWING、倒序、产品粒度来源拒绝。先全部捕获计算窗口，后过滤显示日期；2月1日前值200、两行和250 |
 | `LEAD`、`FIRST_VALUE`、排名及其他窗口；规范 REQUIRED | 没有新增允许位置 | native直接实测 LEAD/FIRST_VALUE/ROW_NUMBER/AVG窗口拒绝；其余排名与NTH/LAST等未逐项实测，不以共用拒绝分支冒充每项证据 |
 | 日期/类型、自然日集合 | daily 请求为真实公历0001..9999、首尾包含、最多366自然日；fact/relation为完整有限 DuckDB DATE canonical文本、支持 BC/宽年份 | DATE 身份不截 TIMESTAMP、不猜时区；fact显示范围不补日。daily缺见证不能证明真实不合格；两个接口日期域有意不同 |
-| 历史有效期、每日三值状态变化 | 已接受口径：每日三值归约与相邻自然日比较全接口本地通过；历史半开区间匹配/重叠拒绝/缺口/完整 links、逻辑 compile、MCP 与无模型本地通过 | 当前双平台/tidy 已复验，整体 P1 统一审计仍必需；已有 LAG/ROWS 不替代这些验收 |
+| 历史有效期、每日三值状态变化 | 已接受口径：每日三值归约与相邻自然日比较全接口本地通过；历史半开区间匹配/重叠拒绝/缺口/完整 links、逻辑 compile、MCP 与无模型本地通过 | 当前双平台/tidy 已复验，整体 P1 逐项本地审计已通过；已有 LAG/ROWS 不替代这些验收 |
 
 窗口采用已验证 AST 副本直接嵌入捕获来源，不把 DuckDB 窗口 ToString 诊断
 文本重新解析成执行树。系统函数明确绑定 `system.main`；诊断文本可能省略
@@ -68,7 +68,7 @@ catalog，compile 的 `sql_replayable=false` 不能被忽略。Prepare 成功只
 偏离。固定11个方言名称严格校验；两个可执行 variant 中 OSSIE_SQL_2026 优先。
 其他合法方言仅保留描述，单独出现不支持执行。
 
-## 实际证据与剩余验收
+## 实际证据与验收边界
 
 本矩阵恢复检查绑定扩展 SHA
 `9ddb20dbc36bd92301b0a49178562f28a30b5e2ce774129964e7a9bd1216b5a9`，
@@ -81,8 +81,8 @@ SQL全套包含SQL2026、标量、每日、关系、多事实；native分别验�
 [八场景无模型演练](research/ossie-req-001/p1-fact-agent-controls/review.md)。
 原始证据与当时源码绑定，后续复验不能覆盖原始报告。
 
-P1 的当前双平台全接口回归与新代码 tidy 已通过；尚需原五项统一审计、交付状态
-核对与待推历史私有信息审计。本地命令通过不证明远端跨平台/tidy已运行；
+P1 的当前双平台全接口回归与新代码 tidy 已通过；原五项统一审计、交付状态
+核对与待推历史私有信息预检已完成，见[最终本地验收](research/ossie-req-001/p1-final-acceptance/review.md)。本地命令通过不证明远端跨平台/tidy已运行；
 无模型演练不证明模型自主选择。完整P1的验收范围保持原需求与现有计划。
 
 [有限窗口显示边界修复](research/ossie-req-001/p1-finite-window-controls/review.md)
@@ -90,13 +90,15 @@ P1 的当前双平台全接口回归与新代码 tidy 已通过；尚需原五�
 日期被拒绝，与本页支持范围不符；新 e04ff401 产物完成实际窗口/计划/decoder/
 MCP 与旧全接口复验。无限/哨兵/越界拒绝保持，渲染计划不承诺独立重放。
 
-后续[当前产物质量与回归](research/ossie-req-001/p1-tidy-controls/review.md)
+此前阶段的[产物质量与回归](research/ossie-req-001/p1-tidy-controls/review.md)
 记录样式修复后的66ec8a7c产物：Linux15编译单元tidy、六native、27SQL、
 完整P0、四服务MCP与四组无模型控制复验。历史9ddb报告和原源码/文档
 hash仍保留为当时版本；新receipt绑定当前源码，不能覆盖旧原件。
 
-当前源码的[Ubuntu ARM64 功能复验](research/ossie-req-001/p1-linux-functional/review.md)
+此前阶段源码的[Ubuntu ARM64 功能复验](research/ossie-req-001/p1-linux-functional/review.md)
 补齐此前未运行的 Linux 功能项：精确 ae0d0f4、Linux a5bef339，六 native、27 SQL、
 P0/11 接口/四无模型通过。此证据不改变矩阵支持范围，也不代替远端 AMD64 CI。
 [时间承载候选研究](research/ossie-req-001/p1-time-carrier-research/research.md)
-明确剩余状态/历史的承载与预算问题，尚未实现或获得业务口径答复。
+当时提出状态/历史的承载与预算问题；业务口径随后获接受并已实施。当前3437cc8实现的
+[双平台最终功能与16TU tidy](research/ossie-req-001/p1-final-linux-functional/review.md)
+包含状态/历史全接口、有限日期边界和全部旧回归，矩阵支持范围不扩大为通用SQL。

@@ -1,13 +1,12 @@
 # OSSIE-REQ-001 本体执行基线研究
 
-当前完整P1 goal状态：每日集合、非递归关系/约束、多事实/复杂人群及有限观察行
-窗口的本地实现和全接口已通过，最新[Linux功能证据](research/ossie-req-001/p1-linux-functional/review.md)
-与[macOS功能/Linux tidy证据](research/ossie-req-001/p1-tidy-controls/review.md)分别保留。
-每日三值状态与历史关系的[业务口径已接受](research/ossie-req-001/p1-time-accepted/acceptance.json)。
-[每日状态 SQL/解释/发现及独立 MCP/无模型](population-daily-states.md)已本地实施与验证；
-历史[双源加载/索引与 program](population-history.md)已本地验证，link/compile/MCP
-及新增代码 Linux/tidy 仍需完成。原候选研究保留历史待答记录，
-整个P1未完成。当前未推提交没有远端CI结论；以下远端结果属于此前已推阶段。
+当前完整P1本地实现/验收已完成：[原第5节五项逐条审计](research/ossie-req-001/p1-final-acceptance/review.md)
+覆盖混合粒度/多事实/复杂人群、跨日/状态/历史/窗口、非递归关系/约束、有限SQL2026
+及全接口。每日状态与历史口径已接受并落实，六profile保持旧行为回归。
+[当前Linux功能](research/ossie-req-001/p1-final-linux-functional/review.md)与
+[macOS功能/Linux16TU tidy](research/ossie-req-001/p1-final-tidy-controls/review.md)
+有实际产物证据；最终来源/证据绑定和待推历史检查通过。无模型、推送/合并/发布。
+新本地提交没有远端CI结论。后续历史checkpoint只说明当时状态，不覆盖本结论。
 
 当前交付更新（2026-10-11）：开发分支e3a6f5f的跨平台/观察验收/无模型
 演练/format/tidy及CI gate共17项已全部通过，见[最终证据](research/ossie-req-001/ci-e9359d2-controls/final-state.json)。

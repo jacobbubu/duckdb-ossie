@@ -4,7 +4,7 @@
 专用 `state_api_version=1.0.0`。旧每日合格集合入口保持原行为。
 用户已接受[业务口径](research/ossie-req-001/p1-time-accepted/acceptance.json)；
 原生 SQL、逻辑解释、专用发现及独立状态 MCP、严格调用方解码、六场景无模型
-演练已完成本地工作包。历史关系全接口及新增代码 Linux/tidy 已有本地双平台证据；完整 P1 的统一审计仍需完成。
+演练已完成本地工作包。历史关系全接口及新增代码 Linux/tidy 已有本地双平台证据；[完整 P1 逐项本地审计](research/ossie-req-001/p1-final-acceptance/review.md)已通过。
 
 ```sql
 SELECT result_json FROM ossie_daily_states_json(

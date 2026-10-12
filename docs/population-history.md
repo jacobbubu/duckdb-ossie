@@ -71,7 +71,7 @@ program、links 与 compile 保留旧父，重载及删两表后仍可读取原�
 
 [加载与生命周期证据](research/ossie-req-001/p1-history-load-controls/review.md)包含两源
 各 10,000 行完整载入/各自多一行拒绝、失败保留、原生取消、同事务及 prepared 控制。
-旧加载报告覆盖当时 macOS 产物；后续[双平台当前功能与 tidy](research/ossie-req-001/p1-final-linux-functional/review.md)已通过，远端 CI 和完整 P1 统一审计尚未完成。
+旧加载报告覆盖当时 macOS 产物；后续[双平台当前功能与 tidy](research/ossie-req-001/p1-final-linux-functional/review.md)已通过，完整 P1 逐项本地审计已通过；远端 CI 未运行。
 
 [查询与解释证据](research/ossie-req-001/p1-history-links-controls/review.md)另以新产物
 核对逐记录枚举的完整关系、有限日期极值、10,000 完整 links、精确字节预算及
@@ -103,4 +103,4 @@ prepared/原生取消。旧加载报告保留当时的 SHA 和接口状态，不
 封存后 `replayHistory(path, expectedArtifactSha)` 严格消费全部有序记录，重算来源/定义
 对应和最终成员；可绑定调用者指定产物 SHA。离线不启动 MCP/子进程或 fetch，不打开
 归档中的安装路径，也不执行归档代码。缺记录、改范围、错误证据 ID、重封伪造、
-只解释伪装查询、结构合法但语义错误等拒绝；完整源 seal 保持不变。新 C++ Linux/tidy 已有当前证据；整体 P1 统一审计及待推历史私有检查仍需完成。
+只解释伪装查询、结构合法但语义错误等拒绝；完整源 seal 保持不变。新 C++ Linux/tidy 已有当前证据；[整体 P1 逐项本地审计及待推历史私有信息预检](research/ossie-req-001/p1-final-acceptance/review.md)已通过。

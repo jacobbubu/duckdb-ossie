@@ -1,6 +1,6 @@
 # 两事实指标、人群集合与观察行窗口
 
-`multi-fact-user-program-v1` 面向同一User的两种独立事实粒度：User/date与User/date/product。先各自聚合到User，再组合金额和筛选人群，避免原始明细相连造成重复累计。原生加载、专用SQL接口、独立MCP及无模型Agent集成/重放已本地验收；完整P1仍未完成。示例采用合成的加性USD观察值，不代表GAAP或累计年内数值。
+`multi-fact-user-program-v1` 面向同一User的两种独立事实粒度：User/date与User/date/product。先各自聚合到User，再组合金额和筛选人群，避免原始明细相连造成重复累计。原生加载、专用SQL接口、独立MCP及无模型Agent集成/重放已本地验收；[完整P1逐项本地验收](research/ossie-req-001/p1-final-acceptance/review.md)已通过。示例采用合成的加性USD观察值，不代表GAAP或累计年内数值。
 
 加载[完整示例](../test/fixtures/population-fact-program/bundle.json)前，先执行[来源表脚本](../test/fixtures/population-fact-program/rows.sql)。manifest引用固定core/ontology/mapping，program只指定两个dataset/concept/显式currency，以及core中的窗口指标名。User身份关系必须相同且映射对象/完整关联树一致；金额实际类型DECIMAL(18,2)，User和product非空原始VARCHAR，DATE非NULL且有限，完整源身份唯一。错误、重复、取消或任一来源捕获失败都不替换当前有效快照；源改变需显式重新加载。
 
@@ -34,7 +34,7 @@ SELECT * FROM ossie_fact_windows_json(
 
 窗口schema为 `ossie-fact-windows-result-v1`，输出身份为User/date，columns第一、二列为user_id、ds，随后为选中窗口。输入是该窗口来源的全部捕获行，包含非共同User。先按实际User分区和DATE升序计算，再筛选显示日期，因此A在2月1日的前值仍为200，两行和为250。LAG取前一个观察行，可能不是前一天；前值NULL不跳过；无前行与前值NULL均返回NULL。SUM ROWS n PRECEDING..CURRENT ROW只观察最多n+1行，n为0..366，不补缺日，也不能推断状态变化或历史关系。
 
-显示范围必须显式all或date_range；all不能携带日期，date_range必须有有序start_date/end_date。日期文本须与固定DuckDB DATE的ToString规范往返一致，包括 `0001-01-01 (BC)`、宽年份和全部有限极值；不接受infinity、epoch快捷字、非规范简写或NULL。范围只过滤输出，不限制跨度或改变基础行。没有按日期/产品缩小聚合输入的选项。
+显示范围必须显式all或date_range；all不能携带日期，date_range必须有有序start_date/end_date。日期文本须与固定DuckDB DATE的ToString规范一致，包括 `0001-01-01 (BC)`、宽年份和全部有限极值；有限INT32_MIN的规范文本由项目显式解析（上游文本cast不能往返此值），窗口查询树保留typed DATE常量。不会把计划文本可重放作为承诺。不接受infinity、epoch快捷字、非规范简写或NULL。范围只过滤输出，不限制跨度或改变基础行。没有按日期/产品缩小聚合输入的选项。
 
 两种查询都有对应的 `ossie_fact_users_compile` / `ossie_fact_windows_compile`，参数完全相同。计划schema分别为 `ossie-fact-users-plan-v1` / `ossie-fact-windows-plan-v1`，说明实际绑定类型、逻辑阶段和诊断SQL，executed/members_computed/counts_computed均false。不计算或返回common/selected/结果行计数，不提供物理计划或普通SQL重放保证。冻结表依赖存在于AST中；诊断SQL不能独立执行，固定DuckDB窗口文本还可能省略catalog。来源captured_rows属于加载事实，counts_computed仅指本次查询的计算计数。
 
