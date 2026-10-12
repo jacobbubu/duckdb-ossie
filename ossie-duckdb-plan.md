@@ -1,5 +1,22 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 live prerequisites delivery — 2026-10-12
+
+[前置核对](docs/research/ossie-req-001/p1-agent-live-prerequisites/review.md)本地完成：
+固定官方归档/CLI hash 匹配并持久恢复，当前扩展加载及三运行时对应通过；
+实际私有文件三标准变量存在/合法/既定目标匹配、未改、不记录值。62来源/
+2315原件保持，三新路径命令仅解析；真实服务请求0、无新stdio MCP/代码改动/
+推送。密钥认证和实际后端仍未知，真实语义尚未验收。下一仅建议用户决定
+facts一次，pending后独立审阅，其他题不自动执行；下方checkpoint为执行前状态。
+
+## P1 live prerequisites checkpoint — 2026-10-12
+
+用户继续授权恢复固定 stock CLI 并脱敏核对实际私有配置。沿 OSSIE-REQ-001，
+以既有官方 v1.5.6 下载来源及 archive/binary SHA 恢复到持久忽略目录，先验 hash
+再执行版本/无模型运行时检查。清除继承三标准变量、禁自动 dotenv 后显式加载
+.env_test，仅记录存在/合法/目标匹配；不打印或修改密钥/配置。保留旧证据与
+条件命令，形成新候选。真实模型调用/推送仍未授权；下一停在 facts 一次的决定。
+
 ## P1 live run review delivery — 2026-10-12
 
 [运行方案审阅](docs/research/ossie-req-001/p1-agent-live-run-review/review.md)本地完成：
