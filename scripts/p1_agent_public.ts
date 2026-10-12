@@ -53,7 +53,7 @@ export async function exportP1Summary(
   const run = read("run.json"),
     summary = read("summary.json");
   const scenes = (summary.scenes as JsonObject[]).map((item, index) => {
-    const scene = SCENES[index];
+    const scene = (run.scenes as (typeof SCENES)[number][])[index];
     assert(
       item.scene === scene &&
         ["prepared", "mechanical_pass", "task_failed", "failed"].includes(
@@ -70,7 +70,14 @@ export async function exportP1Summary(
       scene,
       status: item.status,
       cleanup_failed: !!item.cleanup_failure,
-      request_attempts: requests.length,
+      constructed_requests: requests.length,
+      transport_attempts: events.filter((e) => e.kind === "transport_attempt")
+        .length,
+      received_responses: events.filter((e) => e.kind === "transport_response")
+        .length,
+      projected_responses: events.filter(
+        (e) => e.kind === "provider_projection",
+      ).length,
       tool_calls: events.filter((e) => e.kind === "tool_request").length,
       maximum_outbound_utf8_bytes: requests.reduce(
         (max, e) => Math.max(max, Buffer.byteLength(String(e.serialized_body))),
@@ -81,7 +88,7 @@ export async function exportP1Summary(
   });
   const limits = run.limits as JsonObject;
   const value = {
-    schema: "ossie-p1-public-summary-v1",
+    schema: "ossie-p1-public-summary-v2",
     derived: true,
     mode: replay.mode,
     status: replay.status,
@@ -89,8 +96,12 @@ export async function exportP1Summary(
       ? "startup_diagnostic_only"
       : scenes.some((s) => s.status === "failed")
         ? "recorded_diagnostic_or_execution"
-        : "recorded_simulation_or_preparation",
-    real_model_requests: 0,
+        : ["live", "transport-rehearsal"].includes(String(run.mode))
+          ? "recorded_projection"
+          : "recorded_simulation_or_preparation",
+    real_model_requests: replay.real_model_requests,
+    request_count_interpretation:
+      "Client transport attempts in live mode; backend execution and billing unverified",
     semantic_acceptance: "not_proven",
     source_seal_sha256: before.seal_sha256,
     artifact_sha256: artifactSha,
@@ -106,7 +117,7 @@ export async function exportP1Summary(
     cleanup_policy: CLEANUP_POLICY,
     scenes,
     limitations: [
-      "Synthetic fixture and scripted responses only",
+      "Synthetic fixture; rehearsal responses injected; live mode does not prove backend execution",
       "No model autonomy, provider authenticity, real business completeness, token sufficiency or billing proof",
       "Summary is not the original wire or a public replay archive",
     ],

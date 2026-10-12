@@ -1,3 +1,8 @@
+import {
+  P1ProviderFailure,
+  PROVIDER_CODES,
+  p1ProtectedFailure,
+} from "./p1_agent_provider.ts";
 import { CLEANUP_POLICY, p1ResponseBoundary } from "./p1_agent_safety.ts";
 import { p1JSON as factJSON } from "./p1_agent_json.ts";
 /** Offline only: recorded transport and completions, no server/config/provider access. */
@@ -40,20 +45,35 @@ export async function replayP1(path: string, artifactSha: string) {
     summary = read("summary.json");
   assert(
     run.schema === "ossie-p1-agent-run-v1" &&
-      ["prepared", "simulated"].includes(String(run.mode)) &&
+      ["prepared", "simulated", "live", "transport-rehearsal"].includes(
+        String(run.mode),
+      ) &&
       verified.mode === run.mode,
   );
+  const protectedMode =
+    run.mode === "live" || run.mode === "transport-rehearsal";
   assert(
     run.real_model_requests === 0 &&
-      run.provider_config_read === false &&
-      run.model === "simulated-p1",
+      run.provider_config_read === (run.mode === "live"),
+  );
+  assert(
+    protectedMode
+      ? typeof run.model === "string" && String(run.model).length > 0
+      : run.model === "simulated-p1",
   );
   assert.deepEqual(
     run.source_hashes,
     sourceHashes(),
     "current source inventory mismatch",
   );
-  assert.deepEqual(run.scenes, SCENES);
+  const selected = run.scenes as Scene[];
+  if (protectedMode)
+    assert(
+      Array.isArray(selected) &&
+        selected.length === 1 &&
+        SCENES.includes(selected[0]),
+    );
+  else assert.deepEqual(selected, SCENES);
   assert.deepEqual(run.cleanup_policy, CLEANUP_POLICY);
   const limits = run.limits as typeof LIMITS;
   for (const key of Object.keys(LIMITS) as (keyof typeof LIMITS)[])
@@ -83,7 +103,7 @@ export async function replayP1(path: string, artifactSha: string) {
       diagnostic_only: true,
       scenes: 0,
       real_model_requests: 0,
-      provider_config_read: false,
+      provider_config_read: run.mode === "live",
       source_seal_sha256: verified.seal_sha256,
       limitation:
         "Startup failure inventory only; no runtime or execution correspondence proof.",
@@ -100,14 +120,17 @@ export async function replayP1(path: string, artifactSha: string) {
   assert(
     summary.schema === "ossie-p1-agent-summary-v1" &&
       summary.mode === run.mode &&
-      summary.real_model_requests === 0 &&
-      summary.provider_config_read === false,
+      summary.provider_config_read === (run.mode === "live"),
   );
   const scenes = summary.scenes as JsonObject[];
-  assert(scenes.length > 0 && scenes.length <= 3);
+  assert(scenes.length > 0 && scenes.length <= selected.length);
+  let attempted = 0,
+    constructed = 0,
+    received = 0,
+    projectedCount = 0;
   const results: JsonObject[] = [];
   for (const [index, item] of scenes.entries()) {
-    const scene = SCENES[index];
+    const scene = selected[index];
     assert(item.scene === scene);
     const text = readFileSync(
       join(verified.path, scene + "/events.jsonl"),
@@ -117,6 +140,12 @@ export async function replayP1(path: string, artifactSha: string) {
       .trim()
       .split("\n")
       .map((v) => factJSON(v, 16 * 1048576) as JsonObject);
+    attempted += events.filter((e) => e.kind === "transport_attempt").length;
+    constructed += events.filter((e) => e.kind === "provider_request").length;
+    received += events.filter((e) => e.kind === "transport_response").length;
+    projectedCount += events.filter(
+      (e) => e.kind === "provider_projection",
+    ).length;
     let elapsed = -1;
     events.forEach((e, i) => {
       assert(e.scene === scene && e.sequence === i + 1);
@@ -140,9 +169,14 @@ export async function replayP1(path: string, artifactSha: string) {
       assert(index === scenes.length - 1 && summary.status === "failed");
       assert(
         !events.some((e) =>
-          ["provider_request", "tool_request", "simulation_response"].includes(
-            String(e.kind),
-          ),
+          [
+            "provider_request",
+            "tool_request",
+            "simulation_response",
+            "transport_attempt",
+            "provider_projection",
+            "provider_failure",
+          ].includes(String(e.kind)),
         ),
       );
       const failure = events.find((e) => e.kind === "failure")?.failure;
@@ -249,6 +283,10 @@ export async function replayP1(path: string, artifactSha: string) {
           Number(events[cursor].elapsed_ms) >= limits.milliseconds
         ) {
           const failure = events[cursor].failure as JsonObject;
+          if (protectedMode) {
+            assert(failure.code === "cancelled");
+            throw new P1ProviderFailure("cancelled");
+          }
           assert(
             [
               "scenario deadline exceeded",
@@ -258,6 +296,85 @@ export async function replayP1(path: string, artifactSha: string) {
           const error = new Error(String(failure.reason));
           error.name = String(failure.category);
           throw error;
+        }
+        if (protectedMode) {
+          const attempt = take("transport_attempt");
+          const {
+            scene: _s,
+            sequence: _q,
+            elapsed_ms: _e,
+            ...attemptPayload
+          } = attempt;
+          assert.deepEqual(attemptPayload, { kind: "transport_attempt" });
+          if (
+            events[cursor]?.kind === "failure" &&
+            Number(events[cursor].elapsed_ms) >= limits.milliseconds
+          ) {
+            assert((events[cursor].failure as JsonObject).code === "cancelled");
+            throw new P1ProviderFailure("cancelled");
+          }
+          let httpStatus: number | undefined;
+          if (events[cursor]?.kind === "transport_response") {
+            const received = take("transport_response");
+            httpStatus = Number(received.http_status);
+            assert(
+              Number.isInteger(httpStatus) &&
+                httpStatus >= 100 &&
+                httpStatus <= 599,
+            );
+            const {
+              scene: _s,
+              sequence: _q,
+              elapsed_ms: _e,
+              ...payload
+            } = received;
+            assert.deepEqual(payload, {
+              kind: "transport_response",
+              http_status: httpStatus,
+            });
+          }
+          if (events[cursor]?.kind === "provider_failure") {
+            const f = take("provider_failure");
+            assert(
+              PROVIDER_CODES.includes(f.code as never) &&
+                f.diagnostic_only === true,
+            );
+            assert(
+              f.http_status === undefined ||
+                (Number.isInteger(f.http_status) &&
+                  Number(f.http_status) >= 100 &&
+                  Number(f.http_status) <= 599),
+            );
+            if (f.code === "http_failure")
+              assert(
+                f.http_status === httpStatus &&
+                  (httpStatus! < 200 || httpStatus! >= 300),
+              );
+            throw new P1ProviderFailure(
+              f.code as (typeof PROVIDER_CODES)[number],
+              f.http_status as number | undefined,
+            );
+          }
+          assert(
+            httpStatus !== undefined && httpStatus >= 200 && httpStatus < 300,
+            "projection without successful transport response",
+          );
+          const projected = take("provider_projection");
+          assert(
+            projected.projection ===
+              "whitelisted derivative; not original wire; private reasoning omitted",
+          );
+          const response = await p1ResponseBoundary(
+            new Response(JSON.stringify(projected.body)),
+            Number(run.inbound_bytes),
+            init!.signal as AbortSignal,
+          );
+          assert.deepEqual(
+            await response.clone().json(),
+            projected.body,
+            "noncanonical provider projection",
+          );
+          return response;
         }
         const input = take("simulation_response");
         assert(
@@ -285,7 +402,7 @@ export async function replayP1(path: string, artifactSha: string) {
     let caught: unknown;
     try {
       final = await agentLoop({
-        model: "simulated-p1",
+        model: String(run.model),
         system: c.system,
         question: c.question,
         resources: c.resources,
@@ -324,6 +441,11 @@ export async function replayP1(path: string, artifactSha: string) {
       assert.deepEqual(rest, audit);
       assert(calls === final.calls && rounds === final.rounds);
       assert(["pending", "fail", "scripted_pass"].includes(String(review)));
+      if (protectedMode)
+        assert(
+          review === "pending",
+          "transport semantic review cannot be scripted",
+        );
       if (review === "scripted_pass")
         assert(
           (factJSON(final.content) as JsonObject).definition ===
@@ -340,12 +462,19 @@ export async function replayP1(path: string, artifactSha: string) {
       // Only a recorded reproduction of the same terminal error is a valid failed trace.
       const failure = take("failure").failure as JsonObject;
       assert.deepEqual(read(scene + "/failure.json"), failure);
-      assert(
-        caught instanceof Error &&
-          failure.category === caught.name &&
-          failure.reason === caught.message.split("\n")[0],
-        "failure not reproduced",
-      );
+      if (protectedMode)
+        assert.deepEqual(
+          failure,
+          p1ProtectedFailure(caught, String(failure.stage)),
+          "protected failure mismatch",
+        );
+      else
+        assert(
+          caught instanceof Error &&
+            failure.category === caught.name &&
+            failure.reason === caught.message.split("\n")[0],
+          "failure not reproduced",
+        );
       const { cleanup_failure: _cleanup, ...withoutCleanup } = item;
       assert.deepEqual(withoutCleanup, {
         scene,
@@ -383,7 +512,14 @@ export async function replayP1(path: string, artifactSha: string) {
           : "complete";
   assert(summary.status === status);
   if (status === "complete")
-    assert(results.length === 3, "complete batch missing scene");
+    assert(results.length === selected.length, "complete batch missing scene");
+  assert(summary.real_model_requests === (run.mode === "live" ? attempted : 0));
+  assert(
+    summary.transport_attempts === attempted &&
+      summary.constructed_requests === constructed &&
+      summary.received_responses === received &&
+      summary.projected_responses === projectedCount,
+  );
   assert(verifyArchive(path).seal_sha256 === verified.seal_sha256);
   return {
     schema: "ossie-p1-agent-replay-v1",
@@ -393,10 +529,14 @@ export async function replayP1(path: string, artifactSha: string) {
     scenes: results.length,
     artifact_sha256: artifactSha,
     source_seal_sha256: verified.seal_sha256,
-    real_model_requests: 0,
-    provider_config_read: false,
+    real_model_requests: summary.real_model_requests,
+    transport_attempts: attempted,
+    constructed_requests: constructed,
+    received_responses: received,
+    projected_responses: projectedCount,
+    provider_config_read: run.mode === "live",
     limitation:
-      "Recorded simulation consistency; no provider authenticity, private continuation or model autonomy proof.",
+      "Recorded projected/simulated consistency; provider failures diagnostic only; no original wire, provider authenticity, private continuation or model autonomy proof.",
   };
 }
 if (import.meta.main) {

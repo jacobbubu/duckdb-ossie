@@ -1,10 +1,16 @@
 import {
+  p1Configuration,
+  p1Transport,
+  p1ProtectedFailure,
+  P1ProviderFailure,
+  type P1Request,
+} from "./p1_agent_provider.ts";
+import {
   CLEANUP_POLICY,
   cleanupSteps,
   p1ResponseBoundary,
 } from "./p1_agent_safety.ts";
 import { digest } from "./artifact_helpers.ts";
-import { existsSync } from "node:fs";
 /** Prepare + simulated orchestration only. There is deliberately no --run/live branch. */
 import assert from "node:assert/strict";
 import { resolve } from "node:path";
@@ -46,21 +52,87 @@ export function validateCompletion(
   for (const call of response.message.tool_calls ?? [])
     validateArguments(call.function.name, call.function.arguments, tools);
 }
-export async function executeP1(options: {
-  mode: "prepared" | "simulated";
+type P1Base = {
   cli: string;
   artifact: string;
   out: string;
-  simulate?: Simulation;
-  review?: (scene: Scene, final: JsonObject) => Review;
   limits?: typeof LIMITS;
   inboundBytes?: number;
-  cleanupFault?: () => Promise<void>;
-}) {
-  assert(["prepared", "simulated"].includes(options.mode));
-  assert(
-    options.mode === "simulated" || (!options.simulate && !options.review),
+};
+export type P1Options = P1Base &
+  (
+    | {
+        mode: "prepared" | "simulated";
+        simulate?: Simulation;
+        review?: (scene: Scene, final: JsonObject) => Review;
+        cleanupFault?: () => Promise<void>;
+        scene?: never;
+        env?: never;
+        transport?: never;
+      }
+    | {
+        mode: "live";
+        scene: Scene;
+        env?: Record<string, string | undefined>;
+        transport?: never;
+        simulate?: never;
+        review?: never;
+        cleanupFault?: never;
+      }
+    | {
+        mode: "transport-rehearsal";
+        scene: Scene;
+        env: Record<string, string | undefined>;
+        transport: P1Request;
+        simulate?: never;
+        review?: never;
+        cleanupFault?: never;
+      }
   );
+export async function executeP1(options: P1Options) {
+  const protectedMode =
+    options.mode === "live" || options.mode === "transport-rehearsal";
+  assert(
+    ["prepared", "simulated", "live", "transport-rehearsal"].includes(
+      options.mode,
+    ),
+  );
+  if (protectedMode) {
+    assert(SCENES.includes(options.scene!));
+    assert(
+      !options.simulate && !options.review && !options.cleanupFault,
+      "scripted overrides refused for transport modes",
+    );
+    assert(
+      options.mode === "live"
+        ? !options.transport
+        : typeof options.transport === "function" && !!options.env,
+      "transport mode isolation",
+    );
+  } else {
+    assert(!options.env && !options.transport && !options.scene);
+    assert(
+      options.mode === "simulated" || (!options.simulate && !options.review),
+    );
+  }
+  const selected = protectedMode ? [options.scene!] : SCENES;
+  let config: ReturnType<typeof p1Configuration> | undefined,
+    configFailure: unknown;
+  if (protectedMode)
+    try {
+      config = p1Configuration(
+        options.mode === "live" ? (options.env ?? process.env) : options.env!,
+      );
+    } catch {
+      configFailure = new P1ProviderFailure("configuration_failure");
+    }
+  const model =
+    config?.model ?? (protectedMode ? "unavailable" : "simulated-p1");
+  const providerConfigRead = options.mode === "live";
+  let transportAttempts = 0,
+    constructedRequests = 0,
+    receivedResponses = 0,
+    projectedResponses = 0;
   const limits = options.limits ?? LIMITS;
   for (const k of Object.keys(LIMITS) as (keyof typeof LIMITS)[])
     assert(
@@ -71,38 +143,52 @@ export async function executeP1(options: {
       (options.inboundBytes ?? INBOUND_BYTES) > 0 &&
       (options.inboundBytes ?? INBOUND_BYTES) <= INBOUND_BYTES,
   );
-  const archive = PrivateArchive.create(options.out);
+  const archive = PrivateArchive.create(
+    options.out,
+    config ? [config.key] : [],
+  );
   let runtimes: { facts: JsonObject; states: JsonObject; history: JsonObject };
   try {
+    if (configFailure) throw configFailure;
     runtimes = {
       facts: factRuntime(options.cli, options.artifact),
       states: stateRuntime(options.cli, options.artifact),
       history: historyRuntime(options.cli, options.artifact),
     };
   } catch (error) {
-    const failure = {
-      stage: "runtime preflight",
-      category: error instanceof Error ? error.name : "Error",
-      reason:
-        error instanceof Error
-          ? error.message.split("\n")[0]
-          : "Unknown startup error",
-    };
+    const failure = protectedMode
+      ? p1ProtectedFailure(
+          error,
+          configFailure ? "configuration" : "runtime preflight",
+        )
+      : {
+          stage: "runtime preflight",
+          category: error instanceof Error ? error.name : "Error",
+          reason:
+            error instanceof Error
+              ? error.message.split("\n")[0]
+              : "Unknown startup error",
+        };
     archive.save("run.json", {
       schema: "ossie-p1-agent-run-v1",
       mode: options.mode,
       real_model_requests: 0,
-      provider_config_read: false,
-      model: "simulated-p1",
+      provider_config_read: providerConfigRead,
+      model,
       limits,
       cleanup_policy: CLEANUP_POLICY,
       inbound_bytes: options.inboundBytes ?? INBOUND_BYTES,
-      scenes: SCENES,
+      scenes: selected,
       source_hashes: sourceHashes(),
+      request_count_scope: "initial zero; final attempt counts in summary",
       startup_failure: failure,
-      declared_artifact_sha256: existsSync(options.artifact)
-        ? digest(options.artifact)
-        : null,
+      declared_artifact_sha256: (() => {
+        try {
+          return digest(options.artifact);
+        } catch {
+          return null;
+        }
+      })(),
     });
     archive.save("failure.json", failure);
     const result = {
@@ -111,7 +197,11 @@ export async function executeP1(options: {
       status: "failed",
       scenes: [] as JsonObject[],
       real_model_requests: 0,
-      provider_config_read: false,
+      constructed_requests: 0,
+      transport_attempts: 0,
+      received_responses: 0,
+      projected_responses: 0,
+      provider_config_read: providerConfigRead,
     };
     archive.save("summary.json", result);
     return { ...result, seal_sha256: archive.seal() };
@@ -120,19 +210,32 @@ export async function executeP1(options: {
     schema: "ossie-p1-agent-run-v1",
     mode: options.mode,
     real_model_requests: 0,
-    provider_config_read: false,
+    provider_config_read: providerConfigRead,
     limits,
     cleanup_policy: CLEANUP_POLICY,
     inbound_bytes: options.inboundBytes ?? INBOUND_BYTES,
     source_hashes: sourceHashes(),
     runtimes,
-    scenes: SCENES,
-    model: "simulated-p1",
-    review_mode: "scripted; no real semantic acceptance",
+    scenes: selected,
+    model,
+    review_mode: protectedMode
+      ? "pending semantic review; no scripted approval"
+      : "scripted; no real semantic acceptance",
+    request_count_scope: "initial zero; final attempt counts in summary",
+    ...(config
+      ? {
+          provider: {
+            baseURL: config.baseURL,
+            api: "responses",
+            retention: "unknown",
+            billing: "unknown",
+          },
+        }
+      : {}),
   });
   const summary: JsonObject[] = [];
   let status = "complete";
-  for (const scene of SCENES) {
+  for (const scene of selected) {
     const started = Date.now();
     const deadline = started + limits.milliseconds;
     let acceptEvents = true;
@@ -148,6 +251,10 @@ export async function executeP1(options: {
         sequence: ++sequence,
         elapsed_ms: Date.now() - started,
       };
+      if (e.kind === "provider_request") constructedRequests++;
+      if (e.kind === "transport_attempt") transportAttempts++;
+      if (e.kind === "transport_response") receivedResponses++;
+      if (e.kind === "provider_projection") projectedResponses++;
       events.push(structuredClone(row));
       archive.record(scene, row);
     };
@@ -177,38 +284,49 @@ export async function executeP1(options: {
         }
         stage = "loop";
         const simulation = options.simulate ?? scriptedSimulation();
-        const provider = responsesProvider(
-          "https://simulated.invalid/v1/",
-          "",
-          async (_url, init) => {
-            const raw = await abortable(
-              Promise.resolve(
-                simulation(scene, JSON.parse(String(init?.body)), events),
+        const provider = protectedMode
+          ? responsesProvider(
+              config!.baseURL,
+              config!.key,
+              p1Transport(
+                config!,
+                options.mode === "live" ? fetch : options.transport!,
+                record,
+                options.inboundBytes ?? INBOUND_BYTES,
               ),
-              init!.signal as AbortSignal,
+            )
+          : responsesProvider(
+              "https://simulated.invalid/v1/",
+              "",
+              async (_url, init) => {
+                const raw = await abortable(
+                  Promise.resolve(
+                    simulation(scene, JSON.parse(String(init?.body)), events),
+                  ),
+                  init!.signal as AbortSignal,
+                );
+                (init!.signal as AbortSignal).throwIfAborted();
+                assert(acceptEvents, "scene terminated");
+                record({
+                  kind: "simulation_response",
+                  recording_scope: "synthetic_only; never raw real Responses",
+                  encoding: "base64",
+                  body: Buffer.from(raw)
+                    .subarray(0, (options.inboundBytes ?? INBOUND_BYTES) + 1)
+                    .toString("base64"),
+                  truncated:
+                    Buffer.byteLength(raw) >
+                    (options.inboundBytes ?? INBOUND_BYTES) + 1,
+                });
+                return p1ResponseBoundary(
+                  new Response(raw),
+                  options.inboundBytes ?? INBOUND_BYTES,
+                  init!.signal as AbortSignal,
+                );
+              },
             );
-            (init!.signal as AbortSignal).throwIfAborted();
-            assert(acceptEvents, "scene terminated");
-            record({
-              kind: "simulation_response",
-              recording_scope: "synthetic_only; never raw real Responses",
-              encoding: "base64",
-              body: Buffer.from(raw)
-                .subarray(0, (options.inboundBytes ?? INBOUND_BYTES) + 1)
-                .toString("base64"),
-              truncated:
-                Buffer.byteLength(raw) >
-                (options.inboundBytes ?? INBOUND_BYTES) + 1,
-            });
-            return p1ResponseBoundary(
-              new Response(raw),
-              options.inboundBytes ?? INBOUND_BYTES,
-              init!.signal as AbortSignal,
-            );
-          },
-        );
         const final = await agentLoop({
-          model: "simulated-p1",
+          model,
           system: c.system,
           question: c.question,
           resources: c.resources,
@@ -231,7 +349,7 @@ export async function executeP1(options: {
         assert(Date.now() <= deadline, "scene deadline exceeded");
         const evaluation = evaluate(scene, final.content, events, d);
         let review: Review = "pending";
-        if (evaluation.status === "mechanical_pass") {
+        if (!protectedMode && evaluation.status === "mechanical_pass") {
           const a = JSON.parse(final.content) as JsonObject;
           review = options.review
             ? options.review(scene, a)
@@ -278,7 +396,7 @@ export async function executeP1(options: {
       const result = await beforeDeadline(deadline, () => work!);
       summary.push({ scene, ...result });
       if (
-        options.mode === "simulated" &&
+        options.mode !== "prepared" &&
         (result.status !== "mechanical_pass" ||
           (result as JsonObject).review !== "scripted_pass")
       ) {
@@ -291,14 +409,16 @@ export async function executeP1(options: {
       }
     } catch (error) {
       status = "failed";
-      const failure = {
-        stage,
-        category: error instanceof Error ? error.name : "Error",
-        reason:
-          error instanceof Error
-            ? error.message.split("\n")[0]
-            : "Unknown error",
-      };
+      const failure = protectedMode
+        ? p1ProtectedFailure(error, stage)
+        : {
+            stage,
+            category: error instanceof Error ? error.name : "Error",
+            reason:
+              error instanceof Error
+                ? error.message.split("\n")[0]
+                : "Unknown error",
+          };
       record({ kind: "failure", failure });
       archive.save(scene + "/failure.json", failure);
       summary.push({
@@ -318,14 +438,16 @@ export async function executeP1(options: {
         await cleanupSteps(steps);
       } catch (error) {
         status = "failed";
-        const failure = {
-          stage: "cleanup",
-          category: error instanceof Error ? error.name : "Error",
-          reason:
-            error instanceof Error
-              ? error.message.split("\n")[0]
-              : "Unknown cleanup error",
-        };
+        const failure = protectedMode
+          ? p1ProtectedFailure(error, "cleanup")
+          : {
+              stage: "cleanup",
+              category: error instanceof Error ? error.name : "Error",
+              reason:
+                error instanceof Error
+                  ? error.message.split("\n")[0]
+                  : "Unknown cleanup error",
+            };
         archive.record(scene, {
           kind: "cleanup_failure",
           scene,
@@ -344,8 +466,12 @@ export async function executeP1(options: {
     mode: options.mode,
     status,
     scenes: summary,
-    real_model_requests: 0,
-    provider_config_read: false,
+    real_model_requests: options.mode === "live" ? transportAttempts : 0,
+    transport_attempts: transportAttempts,
+    constructed_requests: constructedRequests,
+    received_responses: receivedResponses,
+    projected_responses: projectedResponses,
+    provider_config_read: providerConfigRead,
   };
   archive.save("summary.json", result);
   const seal = archive.seal();

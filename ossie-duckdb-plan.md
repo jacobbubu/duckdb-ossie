@@ -1,5 +1,25 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 live entry wiring delivery — 2026-10-12
+
+[真实入口接线与无模型验收](docs/research/ossie-req-001/p1-agent-live-entry-controls/review.md)
+本地完成：标准配置/单场景显式run、原预算/投影/凭据停止/固定失败/pending与
+单题重放/摘要v2接通；构造/尝试/HTTP收到/投影接受/工具调用分开记账。
+同产物20传输与旧33离线控制、164Bun/808expects、格式/类型/架构通过。
+CI YAML解析及新共同产物命令配置完成，没有新远端CI。所有演练virtual env/
+mock transport（live分支mock fetch2），实际网络/模型0、实际服务配置/.env_test未读。
+旧raw/hash不改；下一建议先审真实运行命令、单题次序、预算/公开范围，另行
+决定真实调用。真实预算充分性、后端/续接/计费/留存未知，不推送或扩展发布。
+
+## P1 live entry wiring checkpoint — 2026-10-12
+
+恢复b4e6373，用户授权入口接线及无模型验证，真实调用继续禁止。沿原issue
+新增单场景显式run/token-budget-only入口，使用标准OPENAI环境名；共享原loop/
+MCP/预算/白名单/清理与失败封存，真实语义pending不自动通过。演练只传虚拟
+配置与受控transport，覆盖重放/摘要和失败/越权/泄露反例；59源码/旧raw保留。
+Lead实施，一轮只读Advisor反证。完成需实际MCP与模拟传输入口、旧33控制/回归
+及质量/来源证据；不读.env_test、不模型请求/推送/main合并/发布。
+
 ## P1 context and evidence protection delivery — 2026-10-12
 
 [四保护验收](docs/research/ossie-req-001/p1-agent-safety-controls/review.md)本地完成：

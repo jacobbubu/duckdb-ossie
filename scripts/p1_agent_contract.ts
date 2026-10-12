@@ -336,6 +336,8 @@ export function sourceHashes() {
   }
   for (const p of [
     "scripts/p1_agent.ts",
+    "scripts/p1_agent_run.ts",
+    "scripts/verify_p1_agent_transport.ts",
     "scripts/p1_agent_simulation.ts",
     "scripts/p1_agent_contract.ts",
     "scripts/p1_agent_replay.ts",

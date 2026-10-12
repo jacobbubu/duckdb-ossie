@@ -23,7 +23,12 @@ export async function verifyP1Offline(
   const controls: JsonObject[] = [];
   const run = (
     name: string,
-    options: Partial<Parameters<typeof executeP1>[0]> = {},
+    options: Partial<
+      Extract<
+        Parameters<typeof executeP1>[0],
+        { mode: "prepared" | "simulated" }
+      >
+    > = {},
   ) =>
     executeP1({
       mode: "simulated",
@@ -97,7 +102,15 @@ export async function verifyP1Offline(
       passed: true,
     });
   }
-  const faultCases: [string, Partial<Parameters<typeof executeP1>[0]>][] = [
+  const faultCases: [
+    string,
+    Partial<
+      Extract<
+        Parameters<typeof executeP1>[0],
+        { mode: "prepared" | "simulated" }
+      >
+    >,
+  ][] = [
     [
       "duplicate-outer",
       { simulate: scriptedSimulation({ duplicateOuter: true }) },
