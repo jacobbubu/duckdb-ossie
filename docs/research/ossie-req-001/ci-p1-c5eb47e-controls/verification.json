@@ -1,0 +1,137 @@
+{
+  "schema": "ossie-p1-ci-verification-v1",
+  "run_id": 38402095010,
+  "head_sha": "c5eb47e6f20ccc265ef84840097b3c6dcee6b9b1",
+  "jobs_total": 17,
+  "jobs_successful": 17,
+  "jobs_failed": 0,
+  "project_controls": {
+    "bun_tests": 194,
+    "assertions": 956,
+    "failures": 0
+  },
+  "tidy": {
+    "actual_make_tidy_check": true,
+    "entire_src_pattern": true,
+    "conclusion": "success"
+  },
+  "artifact_bindings": [
+    {
+      "architecture": "linux_amd64",
+      "extension_sha256": "9fc1071d45d399ac8ef7b15b4532e5de3851b64662bd74af399c1f584e4ce6ec",
+      "artifacts": [
+        {
+          "name": "ossie-v1.5.6-extension-linux_amd64",
+          "id": 11820178956,
+          "archive_digest": "sha256:459f38c6d4680a68d007b50e96b602523893fd0a7f47e5cde81ffb688c1de570",
+          "expired": false
+        },
+        {
+          "name": "ossie-independent-evidence-linux_amd64",
+          "id": 11823201544,
+          "archive_digest": "sha256:9588b2ff1ee32121367f3c5f22f20ec182ac936d9dd54783a25ea19fa6837e64",
+          "expired": false
+        }
+      ],
+      "reports": [
+        {
+          "report": "p1-three-scene-offline.json",
+          "passed": true,
+          "controls": 66,
+          "report_sha256": "9be999d5fb1ad2ccc06c835b789d7da6789abbe878e23dfd03a0233f88311b47",
+          "artifact_sha256_matches_download": true,
+          "real_model_requests": 0
+        },
+        {
+          "report": "p1-transport.json",
+          "passed": true,
+          "controls": 20,
+          "report_sha256": "eb6298d135f60c5d609469713cfd9a7b6a7b8290419214502b08170ae34565c0",
+          "artifact_sha256_matches_download": true,
+          "real_model_requests": 0
+        }
+      ],
+      "required_steps_succeeded": [
+        "Prepare rehearse and replay three P1 scenarios with bounded failure controls",
+        "Verify P1 live entry with mock transport and no provider network",
+        "Verify daily observation MCP against the same artifact",
+        "Rehearse four observation scenes and replay without a model"
+      ]
+    },
+    {
+      "architecture": "osx_arm64",
+      "extension_sha256": "487c2540271dea8349084a1742200277242d2034b10d4309700f1aa79829bb73",
+      "artifacts": [
+        {
+          "name": "ossie-v1.5.6-extension-osx_arm64",
+          "id": 11822460471,
+          "archive_digest": "sha256:6bb9b265dd467d524e2847d168a46f6f27a387f410cffc58095520092ec8ba11",
+          "expired": false
+        },
+        {
+          "name": "ossie-independent-evidence-osx_arm64",
+          "id": 11823006802,
+          "archive_digest": "sha256:cf683ffd98f660136e630dd9ee2e254840b680ab73d7b7d9c20044b9b1783a73",
+          "expired": false
+        }
+      ],
+      "reports": [
+        {
+          "report": "p1-three-scene-offline.json",
+          "passed": true,
+          "controls": 66,
+          "report_sha256": "ba12eb9d84bc87bf4ff5ca3decfea4a3839a4ee6004ab2bce4317acc102c46ad",
+          "artifact_sha256_matches_download": true,
+          "real_model_requests": 0
+        },
+        {
+          "report": "p1-transport.json",
+          "passed": true,
+          "controls": 20,
+          "report_sha256": "0c3408efeb92430f8da1a1f5e5be93e0c70f516425ee5c1f5afc542a7e0cf7c7",
+          "artifact_sha256_matches_download": true,
+          "real_model_requests": 0
+        }
+      ],
+      "required_steps_succeeded": [
+        "Prepare rehearse and replay three P1 scenarios with bounded failure controls",
+        "Verify P1 live entry with mock transport and no provider network",
+        "Verify daily observation MCP against the same artifact",
+        "Rehearse four observation scenes and replay without a model"
+      ]
+    }
+  ],
+  "slow_environment_step": {
+    "name": "Build Docker image",
+    "started_at": "2026-10-13T13:06:46Z",
+    "completed_at": "2026-10-13T14:06:11Z",
+    "conclusion": "success",
+    "network_or_cpu_cause_confirmed": false
+  },
+  "historical_integrity": [
+    {
+      "archive": "ci-p1-4768236-controls",
+      "files": 579,
+      "unchanged": true,
+      "manifest_sha256": "fd9d7eae4ee33333c12313ca84f1ee8a8e4e5293f27c1f079d30c64e45af43b8"
+    },
+    {
+      "archive": "ci-p1-4f991db-controls",
+      "files": 589,
+      "unchanged": true,
+      "manifest_sha256": "bc12e2c8728774323bc0e6a22f2eecd2627eaf0a61ca84abb5969761941c9ff8"
+    },
+    {
+      "archive": "p1-copy-permissions-controls",
+      "files": 6626,
+      "unchanged": true,
+      "manifest_sha256": "b9a8ab07e2e109b15cba7080b2ccddb447128fe7ca8963a41013ac8877a83861"
+    }
+  ],
+  "real_model_calls_added": 0,
+  "automatic_rerun": false,
+  "implementation_modified": false,
+  "ci_delivery_complete": true,
+  "whole_ossie_or_new_agent_acceptance_claimed": false,
+  "original_4768236_cause_confirmed": false
+}

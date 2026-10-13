@@ -1,5 +1,15 @@
 # OSSIE-REQ-001 本体执行基线研究
 
+### c5eb47e新提交跨平台/tidy CI收口（2026-10-13）
+
+[推送与最终证据](research/ossie-req-001/ci-p1-c5eb47e-controls/review.md)：
+正常push/完整远端SHA一致，run38402095010首次运行17/17成功。九构建/
+实际src tidy/格式/194Bun956/MCP，GitHub AMD64/Mac独立各66离线20
+模拟传输与后续观察通过，报告和本run产物SHA相符、真实模型0。
+权限/字节校验未放宽，原两次失败与局限保留。新SHA交付阻塞解除，
+不反推旧476具体根因、不扩成整体规范/新真实验收。下一审阅本收口与
+既有剩余交付事项，当前收口仅本地，无模型/重跑/追加push/实现变化。
+
 ### P1测试副本权限最小修复本地完成（2026-10-13）
 
 [确定性Linux复现及验证](research/ossie-req-001/p1-copy-permissions-controls/review.md)：

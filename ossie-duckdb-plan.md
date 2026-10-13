@@ -1,5 +1,19 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 c5eb47e pushed / fresh CI closure — 2026-10-13
+
+[本次跨平台CI收口](docs/research/ossie-req-001/ci-p1-c5eb47e-controls/review.md)
+完成：c5eb47e正常push/远端完整SHA一致，run38402095010首次运行终态
+success，17/17job通过。九构建/实际src tidy/格式/194Bun956/MCP通过，
+GitHub AMD64/Mac ARM64独立验收各P1 66离线/20传输及后续观察通过；
+报告SHA与本run实际下载产物一致、真实模型0。目录/文件权限拒绝与
+原异步来源字节拒绝都保持，原两次CI/raw/限定接受与局限分别保留。
+AMD环境构建等待较长，最终成功；耗时不等同网络/CPU根因证明，不
+自动重跑取绿。此工作包及新SHA跨平台交付完成，原476具体根因仍未知，
+不宣称整个OSSIE/任意模型数据已验收。下一审阅收口文档与既有剩余
+交付事项，文档追加push/合并发布/模型仍分别授权。本轮不改产品/模型/
+追加push，收口记录仅本地，无剩余CI阻塞。
+
 ## P1 copied-fixture permission local delivery — 2026-10-13
 
 [确定性复现与修复](docs/research/ossie-req-001/p1-copy-permissions-controls/review.md)

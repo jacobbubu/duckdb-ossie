@@ -30,7 +30,7 @@ bun --no-env-file scripts/verify_p1_agent_offline.ts \
   .local-agent-evidence/p1-new-controls /tmp/p1-new-controls-report.json
 ```
 
-[单调计时修复与本地验证](research/ossie-req-001/p1-monotonic-controls/review.md)记录本轮计时合同、共享消费者与旧归档边界。该入口检查实际MCP正路径、错误查询、预算/失败停止、协调重封存篡改，以及重放时fetch/子进程调用均为0。CI已为Linux AMD64和macOS ARM64产物验收配置此命令；4f991db已推送，本次macOS通过、Linux在末尾测试副本权限校验失败，跨平台尚未收口，详见[新CI结果](research/ossie-req-001/ci-p1-4f991db-controls/review.md)。[测试副本权限修复](research/ossie-req-001/p1-copy-permissions-controls/review.md)已完成本地Mac/Linux ARM64无模型66项回归；此增量尚未推送，GitHub AMD64跨平台与tidy仍待新CI验证。
+[单调计时修复与本地验证](research/ossie-req-001/p1-monotonic-controls/review.md)记录本轮计时合同、共享消费者与旧归档边界。该入口检查实际MCP正路径、错误查询、预算/失败停止、协调重封存篡改，以及重放时fetch/子进程调用均为0。CI已为Linux AMD64和macOS ARM64产物验收配置此命令；c5eb47e已推送，[新GitHub AMD64/macOS及tidy CI](research/ossie-req-001/ci-p1-c5eb47e-controls/review.md)17/17通过，两平台离线各66项、模拟传输各20项通过且报告与本run产物SHA一致；本次交付阻塞解除。原[4f991db失败](research/ossie-req-001/ci-p1-4f991db-controls/review.md)与[测试副本权限修复](research/ossie-req-001/p1-copy-permissions-controls/review.md)分别保留。
 
 ## 运行与独立评估
 
