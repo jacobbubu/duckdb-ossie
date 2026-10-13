@@ -1,5 +1,24 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 revised history one-shot delivery — 2026-10-13
+
+[history一次真实验收](docs/research/ossie-req-001/p1-contract-history-live-controls/review.md)
+已停止：脱敏标准配置/既定目标匹配，2请求/HTTP200/投影、1实际查询/回复/
+解码，完整结果及scope/独立逐记录oracle相符；Lead日期/缺口/见证去重/
+四元关系计数/大小写Unicode实际NUL语义审阅limited_pass，用户接受尚未记录。
+原pending/seal保持，纯离线同源重放通过；66源/1228上轮原件不变，body
+12911/11954字节，预算不改，无重试/其他题/推送。首题成功不证明可靠率或
+补声明唯一因果，实际后端/原wire/计费/留存未独立核验。本单题包完成，
+下一待用户接受限定结论并另定工作；states真实验收未执行，不自动继续。
+
+## P1 revised history one-shot checkpoint — 2026-10-13
+
+用户明确授权新版history一次：先脱敏复核既定配置/固定产物，原预算新目录，
+结束后停下审阅完整关系、日期/去重/数量与调用证据，不重试或自动其他题。
+沿OSSIE-REQ-001基线fb85254，核66来源/新out和日志未占用；清三标准变量
+后显式私有配置，只输出存在/合法/既定目标匹配等布尔，不输出或保存key。
+不改代码/提示词/额度，原pending/失败seal保持，审阅另存衍生记录。不推送。
+
 ## P1 revised history live review delivery — 2026-10-13
 
 [新版history审阅](docs/research/ossie-req-001/p1-revised-history-live-review/review.md)
