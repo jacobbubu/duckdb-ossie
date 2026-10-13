@@ -1,0 +1,19 @@
+{
+  "schema": "ossie-p1-contract-facts-user-acceptance-v1",
+  "date": "2026-10-13",
+  "acceptance": "accepted_limited_conclusion",
+  "authority": "Explicit user message in this conversation",
+  "accepted_scope": "Revised facts one-shot fixture, full result/scope/count/unit/NULL semantics and recorded execution evidence reviewed by Lead",
+  "lead_review_receipt_sha256": "e43a847f46260d05da41d38cce41b48c07bdaebc0a6d0f48bb720fdee96fc333",
+  "source_seal_sha256": "ce10e657e973f235823031833d4604c929348245997d99023cc42e9744084aae",
+  "lead_review_status": "limited_pass",
+  "original_raw_status": "pending",
+  "original_receipt_and_raw_archive_preserved": true,
+  "not_claimed": [
+    "General model reliability or sole causal effect of discovery changes",
+    "History or states live acceptance",
+    "Backend identity, original wire, fees or retention verification"
+  ],
+  "additional_live_calls_authorized": false,
+  "push_authorized": false
+}

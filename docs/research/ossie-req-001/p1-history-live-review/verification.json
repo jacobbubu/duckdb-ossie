@@ -1,0 +1,29 @@
+{
+  "schema": "ossie-p1-history-review-verification-v1",
+  "date": "2026-10-13",
+  "baseline": "240e631",
+  "production_sources_verified_unchanged": 64,
+  "prior_private_manifests_verified": {
+    ".local-agent-evidence/p1-fact-discovery-implementation/manifest.json": 4447,
+    ".local-agent-evidence/p1-contract-facts-live-review/manifest-final.json": 21
+  },
+  "pure_offline_replay": "consistent pending",
+  "network_blocked_during_replay": true,
+  "candidate_argument_parsing": "pass; history only",
+  "candidate_commands_executed": 0,
+  "new_mcp_sessions": 0,
+  "real_model_requests": 0,
+  "actual_env_test_contents_read": false,
+  "private_manifest_sha256": "2c001c0093b2732dfcfa5eb6900d63a244efc44be1ed124828a7cd26d5f4ffa7",
+  "private_files_bound": 4,
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/p1-history-live-review/receipt.json": "809a88525bf133af7fca140a1faac2bdaf8c658756e7ce79b07bef6dee2b2b8b",
+    "docs/research/ossie-req-001/p1-history-live-review/review.md": "e7fb2a603c523adc378112c33547f92b1ce2016f3b828425a81700ee1d3e2971",
+    "docs/research/ossie-req-001/p1-contract-facts-live-controls/user-acceptance.json": "9dea719927f1e65c4eed079062e2869eb4d716935ea2244fd3e3e59389311f1b"
+  },
+  "conclusion": "Discovery grammar gap; research before live execution. No implementation or push.",
+  "local_links_checked": 329,
+  "bounded_public_marker_scan": "pass; actual configuration/secret not read; no universal detection claim",
+  "facts_original_receipt_and_seal_unchanged": true,
+  "diff_check": "pass"
+}

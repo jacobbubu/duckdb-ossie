@@ -1,5 +1,25 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 history live review delivery — 2026-10-13
+
+[history审阅](docs/research/ossie-req-001/p1-history-live-review/review.md)完成，发现
+内层JSON嵌套字段/分支及客户端产品排序没有进入模型发现信息。5发现RPC/
+2工具2资源、原问题/初始输入核对，64来源不变，纯离线pending重放通过；
+虚拟body8967/7958字节，仅候选history参数解析/固定产物hash/配置元信息检查。
+facts用户限定接受已另记[衍生记录](docs/research/ossie-req-001/p1-contract-facts-live-controls/user-acceptance.json)，
+旧receipt/raw pending/seal/失败保持。4447实现和21真实审阅私有原件一致。
+无模型/新MCP/配置内容读取/实现/推送。本工作包完成；下一建议先研究history
+最小发现语法和通用示例，不先真实运行。history/states真实验收仍未执行，
+单次facts接受不证明整体真实可靠率或因果。
+
+## P1 history live review checkpoint — 2026-10-13
+
+用户接受新版facts限定结论；本轮沿OSSIE-REQ-001只审history实际上下文、
+单题命令、预算与证据范围。不调用模型、不读.env_test内容、不实现发现补充。
+复用当前64来源的已封存history实际MCP＋虚拟传输，纯离线重放/参数解析；
+facts接受另记衍生文件，不改原pending/seal或历史Lead记录。发现语法披露缺口
+需作为下一候选研究，不因既有模拟成功认定模型能自主构造。无推送或新MCP。
+
 ## P1 revised facts one-shot delivery — 2026-10-13
 
 [新版facts一次真实验收](docs/research/ossie-req-001/p1-contract-facts-live-controls/review.md)
