@@ -1,5 +1,27 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 delivery preflight audit delivery — 2026-10-13
+
+[无模型交付前审计](docs/research/ossie-req-001/p1-delivery-preflight/review.md)完成，
+隐私清理尚未通过：缓存9dd7956..6d8df7c共23提交/1533完整快照blob/消息/
+当前候选核对，凭据/内部端点/模型匹配0；两条新增个人技能绝对路径在
+history/states Advisor公开记录，旧基线155blob及23研究文档版本继承路径
+另计。未直接改hash绑定的证据或重写历史。两平台八入口/无dotenv/mock/
+质量tidy门禁/公开上传配置通过，本轮无新远端CI。当前68源与991最终
+私有文件、65三题及2收口文件共1058 hash检查通过；64/66/68真实来源
+逐原提交吻合，旧seal/失败/接受保持，非统一当前版真实联测。包完成，
+下一先处理两新增路径、未推历史及公开衍生hash对应，再候选复查；推送/
+新CI需另授权。子模块陈旧Git路径环境项保留；无模型/MCP/实现/推送。
+
+## P1 delivery preflight audit checkpoint — 2026-10-13
+
+用户授权无模型交付前审计，禁止模型/推送。沿OSSIE-REQ-001、6d8df7c，
+以本地缓存origin9dd7956为已推基线，核23个未推提交的消息/路径/每个版本
+blob含后来删除内容、当前发布候选；私有seed只在内存匹配不打印值。核CI
+两平台入口/质量门禁/无模型与上传范围，68源当前无模型证据和64/66/68
+三真实旧档案分别对应，不重封。环境子模块路径缺口记录，不新增native/
+完整套件/远端CI；发现问题先保留证据，必要修正后再局部验证。不推送。
+
 ## P1 three-scene live closure delivery — 2026-10-13
 
 [三场景收口](docs/research/ossie-req-001/p1-three-scene-live-closure/review.md)完成：

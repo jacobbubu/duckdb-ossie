@@ -1,0 +1,32 @@
+{
+  "schema": "ossie-p1-delivery-preflight-verification-v1",
+  "date": "2026-10-13",
+  "baseline": "6d8df7c37346579694a8ddb0d5d1d9d247fc854c",
+  "status": "audit_complete_privacy_paths_pending",
+  "private_manifest_sha256": "a4373dcf606561a60977f284feefba4bd892116fef26bd44f558b889f4e0f7c7",
+  "private_files_bound": 16,
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/p1-delivery-preflight/receipt.json": "95fdad82f63510f20fbaa0e4ffc42c0c11e3a9cff651cbacbc0321b0f4f61392",
+    "docs/research/ossie-req-001/p1-delivery-preflight/review.md": "4106ed5a01a0c3509b28ff424b3687a6b5c0845a67ab6677feeecbeac5e2ed27",
+    "ossie-duckdb-plan.md": "cc912d2ed302ce488fdc494ae7c21d93d688396d267f253ccd398894fec8e7ca",
+    "docs/ossie-execution-research.md": "65152919edf6be51fa490eb0bd23370ffea9c9094014adafafab6ae737d1dc1f"
+  },
+  "local_links_checked": 353,
+  "full_history_and_final_candidate_pattern_scan": "credential/service/model patterns zero; personal paths remain, no privacy clearance",
+  "ci_structure": "pass; not a fresh remote execution",
+  "evidence_correspondence": "pass; 68 current sources, 1058 manifest file checks and 64/66/68 historical commit correspondence",
+  "audit_script_initial_failure": "wrong artifact field assumption corrected to existing closure receipt; no product defect",
+  "source_changes": false,
+  "history_rewrite": false,
+  "old_archive_reseal": false,
+  "new_model_requests": 0,
+  "new_mcp_sessions": 0,
+  "push": false,
+  "remote_refresh": false,
+  "diff_check": "pass",
+  "limitations": [
+    "Two newly added personal absolute skill paths in unpublished Advisor evidence need provenance-preserving publication handling before privacy clearance",
+    "No current-tip remote CI; cached historical CI does not prove unpublished revisions",
+    "Stale local duckdb submodule Git path still needs repair before ordinary whole-repo Git/native work"
+  ]
+}
