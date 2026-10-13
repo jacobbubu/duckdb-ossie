@@ -1,0 +1,34 @@
+{
+  "schema": "ossie-p1-three-scene-closure-verification-v1",
+  "date": "2026-10-13",
+  "baseline": "dee13e1",
+  "source_files_verified_unchanged": 68,
+  "three_user_acceptances_bound": true,
+  "original_raw_pending_seals_and_first_failure_preserved": true,
+  "prior_private_files_verified": 65,
+  "private_manifest_sha256": "d4fb082e865bbc5859cfd168a41e491cef12fab2b876ba06dc8a92df724b2b8d",
+  "new_private_files_bound": 2,
+  "delivery_files_sha256": {
+    "docs/research/ossie-req-001/p1-three-scene-live-closure/receipt.json": "7e5c3c8c91bb5c719160086c0b9add799aa31048fa0abfc4a2ef18b245c38ff1",
+    "docs/research/ossie-req-001/p1-three-scene-live-closure/review.md": "b3432cbcb265ed1c5d121e9c78d4d7294821556e424444c996de059caaf55e63",
+    "docs/research/ossie-req-001/p1-contract-states-live-controls/user-acceptance.json": "5438a4dd2fe7b93d20aced16175b036b627b7da7def2187f0da90b1516806e80",
+    "docs/agent-p1-offline.md": "2514e239979742a7abbd7dd836adc5d62d0a02c7d99fbe40d5cf66445f61ed69"
+  },
+  "local_links_checked": 372,
+  "bounded_public_marker_scan": "pass; actual secret/config not read; not universal detection or full unpublished-history audit",
+  "additional_model_calls": 0,
+  "new_mcp_sessions": 0,
+  "actual_configuration_contents_read": false,
+  "production_code_changed": false,
+  "push": false,
+  "old_source_archives_current_replay_or_reseal": false,
+  "fresh_remote_ci_or_remote_head_check": false,
+  "local_submodule_status": "ordinary git status fails due stale duckdb Git path; parent repository checked with ignore-submodules; repair not attempted",
+  "diff_check": "pass",
+  "not_run": [
+    "Full unpublished commit/blob/message private audit",
+    "New full test suite/native build/tidy/remote CI",
+    "Additional model/evaluator runs"
+  ],
+  "remaining": "Delivery preflight is proposed next; broader reliability/data/rules/version coverage requires separate scope"
+}

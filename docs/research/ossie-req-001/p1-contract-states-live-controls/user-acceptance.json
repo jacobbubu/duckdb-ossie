@@ -1,0 +1,20 @@
+{
+  "schema": "ossie-p1-contract-states-user-acceptance-v1",
+  "date": "2026-10-13",
+  "acceptance": "accepted_limited_conclusion",
+  "authority": "Explicit user message in this conversation",
+  "accepted_scope": "One states synthetic fixture, complete states/comparisons/scope/count units/current rule and execution evidence reviewed by Lead; mixed same-day Boolean combinations not directly exercised",
+  "lead_review_receipt_sha256": "4ca0617328cfa3f6e71ccc3f0e2998308c1d4241c3c650081aa148152614d7fc",
+  "source_seal_sha256": "602d43c2445a7ecb7c2eb786c28f01f3ee73c2ad61dbd3dfe3b0df5d97f2194c",
+  "lead_review_status": "limited_pass",
+  "original_raw_status": "pending",
+  "original_receipt_and_raw_archive_preserved": true,
+  "not_claimed": [
+    "General autonomous reliability or sole causal effect of grammar additions",
+    "Mixed same-day Boolean, resource-extreme or alternative-rule live coverage",
+    "Unified final-source three-scene live rerun",
+    "Backend identity, original wire, fees or retention verification"
+  ],
+  "additional_live_calls_authorized": false,
+  "push_authorized": false
+}

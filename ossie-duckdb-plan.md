@@ -1,5 +1,26 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 three-scene live closure delivery — 2026-10-13
+
+[三场景收口](docs/research/ossie-req-001/p1-three-scene-live-closure/review.md)完成：
+facts/history/states各自fixture真实执行/Lead口径复核/用户限定接受均完成，
+states接受独立绑定原receipt/seal。三成功场景合计6客户端请求/3实际query；
+首facts失败保留，全部历史4启动/7请求/3query，不计算可靠率。分别64/66/68
+来源、同native产物，非最终统一源联测；当前68源无模型176/33/20保持，
+65私有原件/三原seal/首次失败/接受绑定核对，无重封。使用文档/issue当前
+状态更新，历史pending保留。原P1本地能力与此三题包已完成；待交付全历史
+私有预检/CI入口核对和后来获授权的新CI，普通子模块Git路径仍需环境处理。
+同日混合真值/广数据规则/统一源多次真实/分页等为独立未来范围。本轮无
+配置内容/新MCP/模型/实现/推送；下一建议仅无模型交付前审计，须另定范围。
+
+## P1 three-scene live closure checkpoint — 2026-10-13
+
+用户接受states限定结论，授权梳理facts/history/states整体状态/数据局限/
+剩余工作，禁止追加模型/推送。沿OSSIE-REQ-001、dee13e1，接受另存衍生
+记录，核三个原receipt/seal/接受绑定及失败史；区分三来源版本64/66/68
+与最终版本离线回归、原P1完成和交付未推状态，不统计可靠率或重封旧原件。
+只更新当前计划/使用文档与汇总，不读配置、不新MCP/模型/实现或全套重跑。
+
 ## P1 revised states one-shot delivery — 2026-10-13
 
 [states一次真实验收](docs/research/ossie-req-001/p1-contract-states-live-controls/review.md)

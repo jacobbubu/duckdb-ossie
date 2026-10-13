@@ -1,6 +1,6 @@
 # P1 三场景 prepare、模拟演练和离线重放
 
-三个隔离场景已具备本地入口：多事实指标/人群、每日状态、历史关系。prepare实际发现MCP能力但不查询；rehearse采用本地模拟Responses响应，实际执行stock MCP；replay只检查封存轨迹，不启动MCP或访问模型配置。旧入口仍拒绝`--run`和环境配置参数；独立真实入口已接线，须显式run/token-budget-only/单场景，见下节，本轮没有真实调用。
+三个隔离场景已具备本地入口：多事实指标/人群、每日状态、历史关系。prepare实际发现MCP能力但不查询；rehearse采用本地模拟Responses响应，实际执行stock MCP；replay只检查封存轨迹，不启动MCP或访问模型配置。旧入口仍拒绝`--run`和环境配置参数；独立真实入口已接线，须显式run/token-budget-only/单场景，见下节。三个单题真实样例均已分别执行并获用户限定接受，详见[整体验收状态与局限](research/ossie-req-001/p1-three-scene-live-closure/review.md)；下文命令是接口说明，不授权新增调用。
 
 使用固定DuckDB1.5.6 stock CLI、本仓库的扩展产物及Bun1.3.11。CLI和产物路径由调用者显式提供；每次输出必须是新的Git忽略私有目录，不能复用或覆盖已封存记录。以下命令中的路径按本机安装替换。
 
@@ -50,7 +50,7 @@ bun --no-env-file scripts/verify_p1_agent_offline.ts \
 
 私有档案保存实际发现、setup/context、原始arguments、RPC/工具/公开Responses事件、完整最终回答、评估、失败/清理和seal。startup/discovery失败只有诊断轨迹，不虚构完整执行；部分发现响应可缺失，但不能当成功发现。hash证明记录完整及当前来源对应，不证明外部真实性、私有续接状态、真实业务数据或模型可靠率。独立真实入口已接线，完整会话仍不公开导出。公开P1摘要先验证seal/当前来源和离线重放，逐项绑定原字节，仅派生固定状态/计数/预算/hash，不复制业务结果、自由错误文本、路径或provider标识；全部semantic_acceptance=not_proven。未知metadata即使重封存也不导出。
 
-[本地实施验证](research/ossie-req-001/p1-agent-offline-entry-controls/review.md)记录当前产物、28项控制、质量与原始失败。[实际上下文/预算/公开范围审阅](research/ossie-req-001/p1-agent-context-review/review.md)已完成，相关保护已在本轮落实；真实入口接线及无模型演练也已完成；[运行方案审阅](research/ossie-req-001/p1-agent-live-run-review/review.md)已完成，下一建议先恢复/核对stock CLI与脱敏配置；当前授权仍不允许真实模型调用、推送、合并或发布。
+[本地实施验证](research/ossie-req-001/p1-agent-offline-entry-controls/review.md)记录当前产物、28项控制、质量与原始失败。[实际上下文/预算/公开范围审阅](research/ossie-req-001/p1-agent-context-review/review.md)已完成，相关保护已在本轮落实；真实入口接线及无模型演练也已完成；[运行方案审阅](research/ossie-req-001/p1-agent-live-run-review/review.md)为历史阶段记录。CLI/配置前置工作与三题分别授权的真实运行/用户限定接受已完成；当前结论和数据/版本局限见[三场景收口](research/ossie-req-001/p1-three-scene-live-closure/review.md)。新增调用、推送、合并或发布仍须另行授权。
 
 ## 公开摘要衍生入口
 
@@ -62,9 +62,9 @@ bun --no-env-file scripts/p1_agent_public.ts \
 
 仅创建新文件，拒绝覆盖、源目录内写入或路径各级符号链接。输出是摘要衍生物，不能声称包含原始wire或可公开重放；startup失败仅为诊断。不会访问模型、启动MCP或读配置。源码改变会拒绝旧档案，必须保留旧raw并重新产生当前来源的新证据，不能改旧hash绕过。
 
-[四项保护验收](research/ossie-req-001/p1-agent-safety-controls/review.md)已在本地完成，含当前33项离线控制与针对性安全回归。真实入口接线及无模型验证见[本轮验收](research/ossie-req-001/p1-agent-live-entry-controls/review.md)；运行方案已审阅，下一建议先完成CLI/配置前置核对；当前仍不允许真实模型调用或推送。
+[四项保护验收](research/ossie-req-001/p1-agent-safety-controls/review.md)已在本地完成，含当前33项离线控制与针对性安全回归。真实入口接线及无模型验证见[本轮验收](research/ossie-req-001/p1-agent-live-entry-controls/review.md)；该报告保留当时入口状态。后来三题单独授权的真实运行已完成并获限定接受，原raw pending/seal未改；最新状态见[收口记录](research/ossie-req-001/p1-three-scene-live-closure/review.md)，当前不追加模型或推送。
 
-## 独立真实入口（本轮未执行）
+## 独立真实入口（每次新增启动均需授权）
 
 入口只接受一题，沿标准OPENAI配置读取。OPENAI_BASE_URL默认官方v1地址，OPENAI_MODEL和OPENAI_API_KEY必填。配置由运行者显式提供，不提交凭据/内部端点/model，也不自动读或改.env_test。
 
