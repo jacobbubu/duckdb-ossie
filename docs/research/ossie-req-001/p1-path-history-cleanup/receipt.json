@@ -1,0 +1,181 @@
+{
+  "schema": "ossie-path-history-cleanup-receipt-v1",
+  "date": "2026-10-13",
+  "issue": "OSSIE-REQ-001",
+  "status": "two_new_personal_paths_removed_from_unpublished_publication_ancestry",
+  "original_tip": "6d3f1a7e6e53f81cbd36dd0537367a8c03a51b8a",
+  "rewritten_tip": "840165578c09d6dc48f64507330c805a8310ee8f",
+  "cached_remote_base": "9dd795624bc47b64a1d091c3e9dcf65c9312db28",
+  "remote_refreshed": false,
+  "original_unpublished_commits": 24,
+  "unchanged_commit_ids": 13,
+  "rewritten_commit_ids": 11,
+  "full_tree_entry_pairs_compared": 48736,
+  "changed_entry_pairs": 34,
+  "changed_files": [
+    {
+      "path": "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+      "old_blob": "597b4e47e5c35a17b4245c0fd93dbdb7bbc5032e",
+      "new_blob": "bda03e5843405a8295902c7d33075f3337c296f4",
+      "old_sha256": "9defeef2533d4a1ea63e3d8acb9383dc6b4a564e46ab933a2f350184cb8f4fe2",
+      "new_sha256": "74149882365934283c2a020cec4a212b464d4b91a73745de4d4b29d92ca445a5",
+      "reason": "personal skill location replaced by portable identifier"
+    },
+    {
+      "path": "docs/research/ossie-req-001/p1-history-discovery-research/verification.json",
+      "old_blob": "84ea262fc4a874a1a5936dfff3121f1ed5243200",
+      "new_blob": "804772f8b5776a3d4b048ef71c1202ecdb39124f",
+      "old_sha256": "fc9eb50638385d5809bf2e76cef1fdbfc48812ac760cf8049ddc9d4322c61d97",
+      "new_sha256": "9c2b868af64de88960f2dae798400e7bbe1b55af068985205d8ebded8f461f82",
+      "reason": "bound public derivative hash follows sanitized advisor"
+    },
+    {
+      "path": "docs/research/ossie-req-001/p1-states-discovery-research/advisor.json",
+      "old_blob": "e020ffc8a1374a6935a7324d890b3ab57072718c",
+      "new_blob": "fe05437bcf15c1bf106db6d17a6899302b633260",
+      "old_sha256": "3cefc59a53dc33055f6574b79081c551b4b7adad7d3ed30f175489da7c8596ed",
+      "new_sha256": "c13813bd3ca9d63c6590871684d449022131634acc9af680a8944ceaf2b8625c",
+      "reason": "personal skill location replaced by portable identifier"
+    },
+    {
+      "path": "docs/research/ossie-req-001/p1-states-discovery-research/verification.json",
+      "old_blob": "d9dd9e0498749c01ee2d6d2e86b39e8b23ef9db5",
+      "new_blob": "a31d01016ac3db41287b3f5f1f64586426479a69",
+      "old_sha256": "7ee2cb916053dc36efe0e035b451b5d786f81982f095800049954763841ac3f4",
+      "new_sha256": "c5716fc90c31dbd386070dd38cbf05c518050f582a879d3e2d44d75783fa25dd",
+      "reason": "bound public derivative hash follows sanitized advisor"
+    }
+  ],
+  "original_author_committer_dates_messages_preserved": true,
+  "all_other_bytes_modes_gitlinks_preserved": true,
+  "publication_derivative_warning": "Updated research_files_sha256 binds sanitized publication bytes, not a claim the historical run verified those replacement bytes. Original reports/files and execution baselines remain in the private complete bundle and raw evidence; use old/new map for publication commits.",
+  "preservation": {
+    "complete_bundle_sha256": "cca9aa176f5ddcc8e89a48f86d753549a5099bc859dae0dfd9ea07eae8394cc9",
+    "bundle_no_prerequisites": true,
+    "original_public_files": 4,
+    "original_private_manifests": 8,
+    "original_private_file_hash_checks": 1079,
+    "private_originals_and_archives_unchanged": true,
+    "old_execution_baseline_fields_unchanged": true,
+    "old_archives_resealed": false
+  },
+  "privacy": {
+    "commits_scanned": 24,
+    "complete_tree_entries": 48736,
+    "unique_snapshot_blobs": 1538,
+    "blob_bytes": 79124381,
+    "working_tree_files": 2080,
+    "credential_endpoint_model_pattern_findings": 0,
+    "new_personal_home_lines_in_publication_history": 0,
+    "targeted_four_file_personal_path_findings": 0,
+    "remaining_personal_home_blob_findings": 179,
+    "remaining_personal_home_worktree_findings": 156,
+    "remaining_paths_scope": "Existing published baseline path text and inherited research-document versions; not globally removed",
+    "tracked_env_template_only": true,
+    "private_config_read_only_for_in_memory_matching": true,
+    "private_config_values_recorded": false,
+    "limits": [
+      "Bounded literal/JSON/URL/base64 and token/host/path patterns, not universal secret detection",
+      "No author-name privacy claim; personal absolute home paths classified separately from credentials",
+      "All snapshot blobs including later deleted files scanned; vendor gitlink contents not recursively scanned"
+    ],
+    "final_delivery_worktree_files_scanned": 2084,
+    "new_delivery_files_sensitive_pattern_findings": 0,
+    "final_scan_sha256": "af6ea9a5e29bcbed05f6493dd964b7a5d99944dd7bff88178d819a8cbc875dab"
+  },
+  "evidence": {
+    "current_execution_sources_unchanged": 68,
+    "original_accepted_live_scenes": [
+      {
+        "scene": "facts",
+        "original_execution_commit": "782cdd78ad43eb2867135435c7c7ee7b448bd00a",
+        "rewritten_publication_commit": "782cdd78ad43eb2867135435c7c7ee7b448bd00a",
+        "source_files": 64,
+        "execution_source_bytes_identical": true,
+        "original_seal_unchanged": true,
+        "original_user_acceptance_unchanged": true
+      },
+      {
+        "scene": "history",
+        "original_execution_commit": "fb852546cb99a72fa8c52e524b50c112f7cb1f4d",
+        "rewritten_publication_commit": "d828937ce9360142c28ba7d8fef8b65ae5f30983",
+        "source_files": 66,
+        "execution_source_bytes_identical": true,
+        "original_seal_unchanged": true,
+        "original_user_acceptance_unchanged": true
+      },
+      {
+        "scene": "states",
+        "original_execution_commit": "70d7a6c4a24a8e5635fc4e5a589458828df2f058",
+        "rewritten_publication_commit": "4b6be53006538ca094148bb0dd10b393eba15f34",
+        "source_files": 68,
+        "execution_source_bytes_identical": true,
+        "original_seal_unchanged": true,
+        "original_user_acceptance_unchanged": true
+      }
+    ],
+    "final_no_model_archives": [
+      {
+        "relative_archive": "p1-offline/positive",
+        "source_files": 68,
+        "seal_sha256": "74c7fb17c22e6e4da05072bffa4c740b1d9e8303b1f2432aa3baf29fd5005ae2"
+      },
+      {
+        "relative_archive": "p1-transport/facts",
+        "source_files": 68,
+        "seal_sha256": "0bd9cf56dee2982ace294f2335a56e22383473e02a084fbb7d5dfbece1bf1d86"
+      },
+      {
+        "relative_archive": "p1-transport/history",
+        "source_files": 68,
+        "seal_sha256": "697e8e3ea448b0c2b2af08b157cd97aecbff3f65d623c403d3171c71818f2624"
+      },
+      {
+        "relative_archive": "p1-transport/states",
+        "source_files": 68,
+        "seal_sha256": "f2f3f4b8b3884b76262c5de2154db91d24ef29e4121f732240375fc6df08a0e5"
+      }
+    ],
+    "initial_facts_failure_preserved": true,
+    "native_cli_mcp_hashes_unchanged": {
+      "extension": "98b0aeba1f97f2e61d8570be43c671e3270d9ffe36120b15d5e6908ab82dab3a",
+      "stock_cli": "2c75d4758c9d74cb0f4642f4e8d3c1a13e8a888a1e475fffd90934ad5ae3dd17",
+      "mcp": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e"
+    },
+    "original_current_no_model_test_results_reused": {
+      "state_mcp": {
+        "checks": 19,
+        "refusals": 23,
+        "damage": 25
+      },
+      "state_agent": {
+        "scenes": 6,
+        "controls": 18
+      },
+      "p1_offline_controls": 33,
+      "p1_transport_controls": 20,
+      "bun_tests": 176,
+      "bun_assertions": 892,
+      "typecheck": "pass",
+      "format_and_two_generated_sql_checks": "pass",
+      "architecture": "pass"
+    },
+    "ci_workflow_hash_unchanged": "d4c32c519940ffcb52576e961a33a8eefa5b83268685058fc044a9db20870cfc",
+    "new_remote_ci": false,
+    "fresh_format_and_two_generated_description_checks": "pass"
+  },
+  "activity": {
+    "application_model_requests": 0,
+    "new_mcp_sessions": 0,
+    "native_build": false,
+    "full_test_suite": false,
+    "push": false,
+    "history_rewrite": true
+  },
+  "remaining": [
+    "If separately authorized, push current branch and inspect new cross-platform and tidy CI; cached old success is not current CI",
+    "Published baseline personal paths remain a separate scope",
+    "Stale local duckdb submodule Git path remains before ordinary whole-repo Git/native work"
+  ],
+  "commit_and_file_map_sha256": "2587776c182c44fd79909d319a9ed90892cb148d1e587e543d3765b3711ccb77"
+}

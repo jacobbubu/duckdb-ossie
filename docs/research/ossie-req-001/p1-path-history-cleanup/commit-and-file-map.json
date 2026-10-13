@@ -1,0 +1,335 @@
+{
+  "schema": "ossie-path-history-cleanup-map-v1",
+  "issue": "OSSIE-REQ-001",
+  "cached_remote_base": "9dd795624bc47b64a1d091c3e9dcf65c9312db28",
+  "old_tip": "6d3f1a7e6e53f81cbd36dd0537367a8c03a51b8a",
+  "new_tip": "840165578c09d6dc48f64507330c805a8310ee8f",
+  "unpublished_commits": 24,
+  "rewritten_commits": 11,
+  "unmodified_commits": 13,
+  "rows": [
+    {
+      "old_commit": "d864b4e0326deba79941eb6adb8506b5599e4d88",
+      "new_commit": "d864b4e0326deba79941eb6adb8506b5599e4d88",
+      "old_parent": "9dd795624bc47b64a1d091c3e9dcf65c9312db28",
+      "new_parent": "9dd795624bc47b64a1d091c3e9dcf65c9312db28",
+      "old_tree": "5588242d1fa75ff0092cae2f13b1c48cb119ee26",
+      "new_tree": "5588242d1fa75ff0092cae2f13b1c48cb119ee26",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "f7eec8305c886337be8463d4a8986172a508a3af",
+      "new_commit": "f7eec8305c886337be8463d4a8986172a508a3af",
+      "old_parent": "d864b4e0326deba79941eb6adb8506b5599e4d88",
+      "new_parent": "d864b4e0326deba79941eb6adb8506b5599e4d88",
+      "old_tree": "6eccb0facc385e1bfb330ab4d14f7f4f7f388ad4",
+      "new_tree": "6eccb0facc385e1bfb330ab4d14f7f4f7f388ad4",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "841a3a5dd9f665428f3aa59ceda6bf66f246f94e",
+      "new_commit": "841a3a5dd9f665428f3aa59ceda6bf66f246f94e",
+      "old_parent": "f7eec8305c886337be8463d4a8986172a508a3af",
+      "new_parent": "f7eec8305c886337be8463d4a8986172a508a3af",
+      "old_tree": "e2ae6660accb2d425a59bdb3032dbe36a9ec867c",
+      "new_tree": "e2ae6660accb2d425a59bdb3032dbe36a9ec867c",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "b4e6373fb812fb44173198c254fb6b43e3785f09",
+      "new_commit": "b4e6373fb812fb44173198c254fb6b43e3785f09",
+      "old_parent": "841a3a5dd9f665428f3aa59ceda6bf66f246f94e",
+      "new_parent": "841a3a5dd9f665428f3aa59ceda6bf66f246f94e",
+      "old_tree": "04afaf7caf0922fc8e2af64c7a583fe02eda676d",
+      "new_tree": "04afaf7caf0922fc8e2af64c7a583fe02eda676d",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "90af7ee207f2ca22da9cde2ed712638eef8ce8b7",
+      "new_commit": "90af7ee207f2ca22da9cde2ed712638eef8ce8b7",
+      "old_parent": "b4e6373fb812fb44173198c254fb6b43e3785f09",
+      "new_parent": "b4e6373fb812fb44173198c254fb6b43e3785f09",
+      "old_tree": "de03ff23e3f1d3bccff62e6cae85a124c8e12af3",
+      "new_tree": "de03ff23e3f1d3bccff62e6cae85a124c8e12af3",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "223ee4f6641c424f9e8be2b04a1ee00446ad5adc",
+      "new_commit": "223ee4f6641c424f9e8be2b04a1ee00446ad5adc",
+      "old_parent": "90af7ee207f2ca22da9cde2ed712638eef8ce8b7",
+      "new_parent": "90af7ee207f2ca22da9cde2ed712638eef8ce8b7",
+      "old_tree": "f53349ec33cb5b9fdfaca284b07652a85d7197ac",
+      "new_tree": "f53349ec33cb5b9fdfaca284b07652a85d7197ac",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "7909d7d6d937f35761f165593fdf723f426614ab",
+      "new_commit": "7909d7d6d937f35761f165593fdf723f426614ab",
+      "old_parent": "223ee4f6641c424f9e8be2b04a1ee00446ad5adc",
+      "new_parent": "223ee4f6641c424f9e8be2b04a1ee00446ad5adc",
+      "old_tree": "104ed0e44df75e35777a8ec2139b3c2d22b33b56",
+      "new_tree": "104ed0e44df75e35777a8ec2139b3c2d22b33b56",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "46d2b20ca2b0babba12389220e313d04e191734b",
+      "new_commit": "46d2b20ca2b0babba12389220e313d04e191734b",
+      "old_parent": "7909d7d6d937f35761f165593fdf723f426614ab",
+      "new_parent": "7909d7d6d937f35761f165593fdf723f426614ab",
+      "old_tree": "be4185812a9e0904917cc78314a61c9ffe9459ae",
+      "new_tree": "be4185812a9e0904917cc78314a61c9ffe9459ae",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "15b8ab2af71f69a3c7b2f693d896b1c914271136",
+      "new_commit": "15b8ab2af71f69a3c7b2f693d896b1c914271136",
+      "old_parent": "46d2b20ca2b0babba12389220e313d04e191734b",
+      "new_parent": "46d2b20ca2b0babba12389220e313d04e191734b",
+      "old_tree": "3160df8e8aca3a76a656214640174365aea509e1",
+      "new_tree": "3160df8e8aca3a76a656214640174365aea509e1",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "70df95ee758453e8d18594bfb741c4e28764589c",
+      "new_commit": "70df95ee758453e8d18594bfb741c4e28764589c",
+      "old_parent": "15b8ab2af71f69a3c7b2f693d896b1c914271136",
+      "new_parent": "15b8ab2af71f69a3c7b2f693d896b1c914271136",
+      "old_tree": "84856f4286f85a2d41f9c36461a487194e014c70",
+      "new_tree": "84856f4286f85a2d41f9c36461a487194e014c70",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "782cdd78ad43eb2867135435c7c7ee7b448bd00a",
+      "new_commit": "782cdd78ad43eb2867135435c7c7ee7b448bd00a",
+      "old_parent": "70df95ee758453e8d18594bfb741c4e28764589c",
+      "new_parent": "70df95ee758453e8d18594bfb741c4e28764589c",
+      "old_tree": "9d461f23375bc81db4bf72a236e208b64f9909e2",
+      "new_tree": "9d461f23375bc81db4bf72a236e208b64f9909e2",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "240e6316dea233b2cb9ecc58a743909d027ac706",
+      "new_commit": "240e6316dea233b2cb9ecc58a743909d027ac706",
+      "old_parent": "782cdd78ad43eb2867135435c7c7ee7b448bd00a",
+      "new_parent": "782cdd78ad43eb2867135435c7c7ee7b448bd00a",
+      "old_tree": "cc63e730e3435b57b88a1c229d3814dc64f991a0",
+      "new_tree": "cc63e730e3435b57b88a1c229d3814dc64f991a0",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "93763183b39cdee6f4dba34fa1789ebdf1b6daf8",
+      "new_commit": "93763183b39cdee6f4dba34fa1789ebdf1b6daf8",
+      "old_parent": "240e6316dea233b2cb9ecc58a743909d027ac706",
+      "new_parent": "240e6316dea233b2cb9ecc58a743909d027ac706",
+      "old_tree": "32e555d81bdf5592da1f356ac5348173b11d2ecd",
+      "new_tree": "32e555d81bdf5592da1f356ac5348173b11d2ecd",
+      "changed_files": [],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "0361a3678873d3a6a4539eebbf33034856e81390",
+      "new_commit": "1ef48234e9cb9c4661ee89e4c5438d39eba6dff2",
+      "old_parent": "93763183b39cdee6f4dba34fa1789ebdf1b6daf8",
+      "new_parent": "93763183b39cdee6f4dba34fa1789ebdf1b6daf8",
+      "old_tree": "fe5203dd209b9234653b9c642ee86e4941821fad",
+      "new_tree": "a0fbd63beeec06ab97c6735a0dacc7a512c8d5c1",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "9e8ed9bdacbef2e4a9a3b61161fa463e7e32a347",
+      "new_commit": "4ae151884b3fdf733b13784682be05bdb92fb709",
+      "old_parent": "0361a3678873d3a6a4539eebbf33034856e81390",
+      "new_parent": "1ef48234e9cb9c4661ee89e4c5438d39eba6dff2",
+      "old_tree": "d7dfcfb58a75f6035c75ef87ce1d1995b4e450fd",
+      "new_tree": "b9d0e340ef585d8f22552cf86bffdbe0680994c1",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "fb852546cb99a72fa8c52e524b50c112f7cb1f4d",
+      "new_commit": "d828937ce9360142c28ba7d8fef8b65ae5f30983",
+      "old_parent": "9e8ed9bdacbef2e4a9a3b61161fa463e7e32a347",
+      "new_parent": "4ae151884b3fdf733b13784682be05bdb92fb709",
+      "old_tree": "082bb4fda49e1b059f7be5338b4566c2ecc970e3",
+      "new_tree": "67983601cb7519cc54e36bec816c0c7ecc2795b8",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "2ccfdb36e360106e9a906b3ad2ad7576ef7e8984",
+      "new_commit": "70fb1d344b763ea7b824429bb3accd6dd34aedf7",
+      "old_parent": "fb852546cb99a72fa8c52e524b50c112f7cb1f4d",
+      "new_parent": "d828937ce9360142c28ba7d8fef8b65ae5f30983",
+      "old_tree": "c23749b639fbb54ee981770e5dd1d4937560b902",
+      "new_tree": "45cb324f8f469c8034ade01b11b0ad91877e6264",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "c7908d86a8d3d1e5fe7a720edaf91c95992f0748",
+      "new_commit": "7d8f0b3685405e71ab9377f8c7eb9be79b519aa4",
+      "old_parent": "2ccfdb36e360106e9a906b3ad2ad7576ef7e8984",
+      "new_parent": "70fb1d344b763ea7b824429bb3accd6dd34aedf7",
+      "old_tree": "51fbea42e1b4b792364b5e8f97faa819989048ec",
+      "new_tree": "b57f8516e51f633fc6ccae5c651d09332dfa9dd6",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "e5d74ddba6e82eae8457c9cbe2ad9fc981982d41",
+      "new_commit": "1c9d25c9bdd203bb5966ba52c447ee5403689909",
+      "old_parent": "c7908d86a8d3d1e5fe7a720edaf91c95992f0748",
+      "new_parent": "7d8f0b3685405e71ab9377f8c7eb9be79b519aa4",
+      "old_tree": "f58dc77675a590733f9655c3eade01b2cb0063bb",
+      "new_tree": "5ad9a5a56b53fbc781ac7cc99ce4f8849e4cab56",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "eeb3cc384aabf242ef9274ce0669f2159392ea99",
+      "new_commit": "eeb3a653858077202dc71aafe513903f27732660",
+      "old_parent": "e5d74ddba6e82eae8457c9cbe2ad9fc981982d41",
+      "new_parent": "1c9d25c9bdd203bb5966ba52c447ee5403689909",
+      "old_tree": "08a1c8847d0389ff18e828985db09e02867c925e",
+      "new_tree": "59fe216c7015342d03a8dbdd4148a18c4f10f270",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "70d7a6c4a24a8e5635fc4e5a589458828df2f058",
+      "new_commit": "4b6be53006538ca094148bb0dd10b393eba15f34",
+      "old_parent": "eeb3cc384aabf242ef9274ce0669f2159392ea99",
+      "new_parent": "eeb3a653858077202dc71aafe513903f27732660",
+      "old_tree": "81b63a79d9e43cfeb945a28db16918ec3c296587",
+      "new_tree": "a4fe992233b70bfb45e39421a73008923f36ac4a",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "dee13e1ee1c9ff37475d39bd5c6bf61d5d36bf27",
+      "new_commit": "ccff2333ce0bb15741a24769887efd384dcb9da0",
+      "old_parent": "70d7a6c4a24a8e5635fc4e5a589458828df2f058",
+      "new_parent": "4b6be53006538ca094148bb0dd10b393eba15f34",
+      "old_tree": "0eef01d28490e46f000603802dc28f6fd290200b",
+      "new_tree": "dd81fcac1b21d6e9404b470290e55b3ba12804d4",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "6d8df7c37346579694a8ddb0d5d1d9d247fc854c",
+      "new_commit": "25d54ae1fbaad16d97a0663e62bf3fc5c9ae94db",
+      "old_parent": "dee13e1ee1c9ff37475d39bd5c6bf61d5d36bf27",
+      "new_parent": "ccff2333ce0bb15741a24769887efd384dcb9da0",
+      "old_tree": "44a068d2b279e1cf0c5e19f29e40f36bf11b5769",
+      "new_tree": "78cba74cbd43e0b71a427edbd0e097d9d5725466",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    },
+    {
+      "old_commit": "6d3f1a7e6e53f81cbd36dd0537367a8c03a51b8a",
+      "new_commit": "840165578c09d6dc48f64507330c805a8310ee8f",
+      "old_parent": "6d8df7c37346579694a8ddb0d5d1d9d247fc854c",
+      "new_parent": "25d54ae1fbaad16d97a0663e62bf3fc5c9ae94db",
+      "old_tree": "b9c435bd81a1d759b933a71a4da4d6ea023af9ff",
+      "new_tree": "8bbec507128a588f49153492c69058451735710d",
+      "changed_files": [
+        "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-history-discovery-research/verification.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/advisor.json",
+        "docs/research/ossie-req-001/p1-states-discovery-research/verification.json"
+      ],
+      "author_committer_message_preserved": true
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/research/ossie-req-001/p1-history-discovery-research/advisor.json",
+      "old_blob": "597b4e47e5c35a17b4245c0fd93dbdb7bbc5032e",
+      "new_blob": "bda03e5843405a8295902c7d33075f3337c296f4",
+      "old_sha256": "9defeef2533d4a1ea63e3d8acb9383dc6b4a564e46ab933a2f350184cb8f4fe2",
+      "new_sha256": "74149882365934283c2a020cec4a212b464d4b91a73745de4d4b29d92ca445a5",
+      "reason": "personal skill location replaced by portable identifier"
+    },
+    {
+      "path": "docs/research/ossie-req-001/p1-history-discovery-research/verification.json",
+      "old_blob": "84ea262fc4a874a1a5936dfff3121f1ed5243200",
+      "new_blob": "804772f8b5776a3d4b048ef71c1202ecdb39124f",
+      "old_sha256": "fc9eb50638385d5809bf2e76cef1fdbfc48812ac760cf8049ddc9d4322c61d97",
+      "new_sha256": "9c2b868af64de88960f2dae798400e7bbe1b55af068985205d8ebded8f461f82",
+      "reason": "bound public derivative hash follows sanitized advisor"
+    },
+    {
+      "path": "docs/research/ossie-req-001/p1-states-discovery-research/advisor.json",
+      "old_blob": "e020ffc8a1374a6935a7324d890b3ab57072718c",
+      "new_blob": "fe05437bcf15c1bf106db6d17a6899302b633260",
+      "old_sha256": "3cefc59a53dc33055f6574b79081c551b4b7adad7d3ed30f175489da7c8596ed",
+      "new_sha256": "c13813bd3ca9d63c6590871684d449022131634acc9af680a8944ceaf2b8625c",
+      "reason": "personal skill location replaced by portable identifier"
+    },
+    {
+      "path": "docs/research/ossie-req-001/p1-states-discovery-research/verification.json",
+      "old_blob": "d9dd9e0498749c01ee2d6d2e86b39e8b23ef9db5",
+      "new_blob": "a31d01016ac3db41287b3f5f1f64586426479a69",
+      "old_sha256": "7ee2cb916053dc36efe0e035b451b5d786f81982f095800049954763841ac3f4",
+      "new_sha256": "c5716fc90c31dbd386070dd38cbf05c518050f582a879d3e2d44d75783fa25dd",
+      "reason": "bound public derivative hash follows sanitized advisor"
+    }
+  ],
+  "scope": "Only two Advisor skill strings and two corresponding public verification hash fields; historical execution baselines and private manifests untouched",
+  "native_tooling_fixtures_unchanged": true,
+  "old_bundle_private": true,
+  "push": false
+}

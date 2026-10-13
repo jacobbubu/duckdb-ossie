@@ -1,0 +1,23 @@
+{
+  "schema": "ossie-history-cleanup-advice-v1",
+  "skill": "advisor-escalation/SKILL.md",
+  "trigger": "History rewrite and immutable evidence provenance",
+  "requested_role": "advisor",
+  "requested_model": "gpt-6-astra",
+  "requested_effort": "high",
+  "effective_model": "unknown",
+  "effective_effort": "unknown",
+  "usage": "unknown",
+  "billing": "unknown",
+  "decision": "Support four-file bounded rewrite conditional on explicit publication derivative provenance, exhaustive tree comparison and self-contained backup",
+  "lead_decision": "accepted and independently verified",
+  "verification": "Advisor read-only direct hash dependencies, linear boundary, no signatures and local refs; Lead complete blob dependency scan, bundle header/verification, all tree pairs and original private bindings",
+  "constraints": [
+    "Keep original run verification distinct from later sanitized publication derivatives",
+    "Keep historical execution baseline fields and private manifests unchanged",
+    "Atomic ref and checked-out index/worktree must agree",
+    "No push or application-model calls; original objects intentionally remain privately recoverable"
+  ],
+  "writes": false,
+  "child_delegation": false
+}

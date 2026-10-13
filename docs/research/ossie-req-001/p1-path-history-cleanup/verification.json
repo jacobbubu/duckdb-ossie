@@ -1,0 +1,47 @@
+{
+  "schema": "ossie-personal-path-history-cleanup-verification-v1",
+  "date": "2026-10-13",
+  "rewritten_baseline": "840165578c09d6dc48f64507330c805a8310ee8f",
+  "status": "authorized_two_path_history_cleanup_complete",
+  "private_manifest_sha256": "1edf7926d85bebbc2b32a73a85bb6a1aa011007834cad4c9d7d4341799d2fa3d",
+  "new_private_files_bound": 32,
+  "original_private_manifests": 8,
+  "original_private_file_hash_checks": 1079,
+  "complete_original_history_bundle_verified": true,
+  "original_public_files_preserved": 4,
+  "commit_map_rows": 24,
+  "unchanged_commit_ids": 13,
+  "rewritten_commit_ids": 11,
+  "full_tree_entry_pairs_compared": 48736,
+  "only_four_file_tree_changes": true,
+  "public_research_bindings": "pass for sanitized publication derivatives; historical originals separately retained",
+  "current_execution_source_files_unchanged": 68,
+  "historical_live_versions": [
+    64,
+    66,
+    68
+  ],
+  "original_failure_seals_and_acceptances_preserved": true,
+  "privacy": "Targeted paths removed throughout unpublished publication ancestry; no new home lines; bounded credential/config patterns zero; published-baseline path text remains",
+  "format_and_generated_descriptors": "fresh pass",
+  "local_links_checked": 356,
+  "diff_check": "pass",
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/p1-path-history-cleanup/review.md": "941013cd7dfb4ea8c7fe8a66452bb6d31e4b098bc18fe59e4cdef035d6f07745",
+    "docs/research/ossie-req-001/p1-path-history-cleanup/receipt.json": "577d01d228a63167c9aa80cdf21c6255e83f1db6a8285a2a17b9ac280bd49156",
+    "docs/research/ossie-req-001/p1-path-history-cleanup/commit-and-file-map.json": "2587776c182c44fd79909d319a9ed90892cb148d1e587e543d3765b3711ccb77",
+    "docs/research/ossie-req-001/p1-path-history-cleanup/advisor.json": "b4d450608aecdb7a851acd3d98d40081590287acce23fdf6f34dde65aa5a23aa",
+    "ossie-duckdb-plan.md": "c0473d2177c7d8772d53ecb3f1b0cc9474ae6aee3dd7177c2053e1ac9cec290c",
+    "docs/ossie-execution-research.md": "047e1733ee216684e0cd9741990096bb65571b238df7ba750cefc9fdcd9f2c96"
+  },
+  "application_model_calls": 0,
+  "new_mcp_sessions": 0,
+  "push": false,
+  "remote_refreshed": false,
+  "new_remote_ci": false,
+  "remaining": [
+    "If separately authorized, push current branch and inspect new cross-platform and tidy CI; cached old success is not current CI",
+    "Published baseline personal paths remain a separate scope",
+    "Stale local duckdb submodule Git path remains before ordinary whole-repo Git/native work"
+  ]
+}

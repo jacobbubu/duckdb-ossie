@@ -1,5 +1,31 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 personal-path history cleanup delivery — 2026-10-13
+
+[两路径及未推历史清理](docs/research/ossie-req-001/p1-path-history-cleanup/review.md)
+完成：原6d3f1a7完整bundle/四原文件私有保留，13提交ID不变/11改写，
+候选8401655；四文件仅skill及对应hash变化，48736树条目/34变化，全部
+其他内容/mode/gitlink/作者/日期/消息保持。24原提交及四blob/SHA256公开
+对应；原执行baseline/private_manifest/seal不改，公开verification是发布
+衍生而非历史重验。1079原私有文件/68源/三题64/66/68/失败/接受/四离线
+正向档案及三二进制/CI hash复核保持。完整新历史1538blob，凭据/服务/
+模型匹配0，新增个人目录行0，目标四文件路径0；旧基线155及继承文档
+24版本路径另计未清理。实际格式/两生成一致性通过，不重跑全套/native/
+MCP/远端CI或真实Agent模型，不推送。包完成；下一若获推送授权再查
+新跨平台/tidy CI。旧基线路径另范围，陈旧子模块Git环境项保留。
+
+## P1 personal-path history cleanup checkpoint — 2026-10-13
+
+用户授权清理两处个人路径和未推历史，保留本地原始证据及新旧hash对应，
+无模型复查，禁止真实模型/推送。沿OSSIE-REQ-001、原6d3f1a7、缓存9dd7956，
+完整bundle及四原公开文件已另存ignored；八原私有manifest/1079文件hash
+保持。只读Advisor复核四文件依赖/线性边界后，Lead构造24提交对应：13
+ID不变、11改写；48736树条目对照仅34次四文件条目变化，保留全部其他
+内容/mode/gitlink/作者/时间/消息。两skill改可移植标识，两对应hash同步，
+旧执行baseline/private_manifest不变。候选8401655已CAS安装，父仓库/index
+一致，缓存远端不变。下一公开衍生/原件/提交映射、全历史私有扫描及
+68源/原封存复核，不追加MCP/native/完整测试/远端CI或模型/推送。
+
 ## P1 delivery preflight audit delivery — 2026-10-13
 
 [无模型交付前审计](docs/research/ossie-req-001/p1-delivery-preflight/review.md)完成，
