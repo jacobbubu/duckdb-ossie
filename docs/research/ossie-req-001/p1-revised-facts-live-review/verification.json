@@ -1,0 +1,47 @@
+{
+  "schema": "ossie-p1-revised-facts-review-delivery-v1",
+  "date": "2026-10-13",
+  "baseline": "70df95e",
+  "production_sources_unchanged": true,
+  "source_files_verified": 64,
+  "original_implementation_private_files_preserved": 4447,
+  "candidate_scene": "facts",
+  "candidate_arguments_parsed": 1,
+  "candidate_commands_executed": 0,
+  "old_output_path_occupied_and_preserved": true,
+  "new_output_and_log_paths_available": true,
+  "actual_model_requests": 0,
+  "new_mcp_sessions": 0,
+  "actual_env_test_contents_read": false,
+  "metadata_only_configuration_check": true,
+  "pure_offline_replay": "consistent pending",
+  "canonical_context_cross_check": {
+    "schema": "ossie-p1-revised-facts-context-cross-check-v1",
+    "canonical_system_and_question_match": true,
+    "initial_body_differs_from_other_current_rehearsal_only_in_model_field": true,
+    "recorded_utf8_bytes": 32211,
+    "other_rehearsal_utf8_bytes": 32208,
+    "real_configuration_read": false,
+    "model_requests": 0
+  },
+  "previous_native_artifact_sha256": "98b0aeba1f97f2e61d8570be43c671e3270d9ffe36120b15d5e6908ab82dab3a",
+  "current_cli_and_installed_mcp_hashes_match": true,
+  "limits_and_cleanup_policy_unchanged": true,
+  "public_recording_boundary_unchanged": true,
+  "local_links_checked": 327,
+  "bounded_public_marker_scan": "pass; actual secret not read; no universal secret-detection claim",
+  "diff_check": "pass",
+  "private_review_manifest_sha256": "9ad93202055902bf6173c83731c2e7e66d5d01c59e958f3421c9ccf8c4880f3b",
+  "private_review_files_bound": 6,
+  "review_files_sha256": {
+    "docs/research/ossie-req-001/p1-revised-facts-live-review/receipt.json": "e407af1fd0bc5561bc7b5dca1383becb595670d6477982b403eee74bc6852969",
+    "docs/research/ossie-req-001/p1-revised-facts-live-review/review.md": "2c315213abc34979f581a35b0cff73f0148276ed6d0b12eb807ecaff12c626e9"
+  },
+  "checks_not_run": [
+    "live model/config validation",
+    "new MCP discovery",
+    "new full test suite/native build/tidy/remote CI"
+  ],
+  "prior_validation_retained": "implementation170Bun/854 expects; fact37/48; 8scenes30forgeries; P1offline33/transport20",
+  "next": "Only a separate explicitly authorized new facts start; selected configuration check before invocation if changed; stop for semantic review; no other scene or push"
+}

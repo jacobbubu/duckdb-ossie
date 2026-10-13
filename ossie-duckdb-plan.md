@@ -1,5 +1,26 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 revised facts live review delivery — 2026-10-13
+
+[新版单题审阅](docs/research/ossie-req-001/p1-revised-facts-live-review/review.md)
+本地完成：64来源/4447上轮私有文件保持，新资源/两摘要在context/body，
+原问题/系统说明和6通用例子边界明确；虚拟body32211/11969字节，首请求
+与模拟32208只差model字段，非真实token/未来大小保证。纯离线pending重放
+与仅facts新目录候选参数通过，CLI/扩展/已安装MCP hash一致，旧输出已占用
+保留不复用。4请求/3意图/4096输出/128KiB/2MiB/180秒及逐步清理/公开v2
+不改；未读实际配置、无新MCP/模型/源码/额度变化或推送。下一建议另行
+决定新版facts一次，运行前脱敏复核所选配置若已变；三题真实验收未完成。
+
+## P1 revised facts live review checkpoint — 2026-10-13
+
+用户仅授权审阅新版facts实际上下文/运行命令/预算/证据范围，模型继续禁止。
+沿OSSIE-REQ-001，基线70df95e，用已封存单题实际MCP＋虚拟传输轨迹核对
+三资源/两语法摘要/上下文和首次/续接body；纯离线重放及新命令参数解析，
+不执行run、不读实际.env_test内容、不创建新MCP或更改代码/提示词/额度。
+候选仅facts，新输出目录保留原首次失败；明确输入/通用例子与隐藏oracle
+边界、意图/RPC/解码/执行计数与公开v2限制。固定CLI/扩展hash及文件元信息
+只读核对；实现170/33/20回归保持，不重复全套或推送。
+
 ## P1 facts discovery implementation delivery — 2026-10-13
 
 [最小发现声明](docs/research/ossie-req-001/p1-fact-discovery-controls/review.md)
