@@ -105,6 +105,7 @@ export const stateQuestion = (s: StateScene) =>
 export const STATE_AGENT_SOURCES = [
   STATE_FIXTURE,
   "examples/daily_state_server.sql",
+  "examples/state_request_notice.json",
   ...[
     "core.json",
     "ontology.json",
@@ -116,6 +117,8 @@ export const STATE_AGENT_SOURCES = [
   ...[
     "daily_state_agent",
     "daily_state_mcp",
+    "state_request_notice",
+    "p1_agent_json",
     "daily_state_result",
     "daily_state_oracle",
     "daily_result",

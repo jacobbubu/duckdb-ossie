@@ -1,5 +1,24 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 states discovery implementation delivery — 2026-10-13
+
+[states两工具完整声明](docs/research/ossie-req-001/p1-states-discovery-controls/review.md)
+本地完成：同源完整构造/紧凑假想String例、精简专用后缀，实际2工具/4资源/
+7发现保持，新资源0。MCP/context/body对应，虚拟22912/17627字节；68P1/
+25states来源含JSON/helper/严格parser，1253旧私有原件保持。19/23/25state
+MCP、六场景18负控、P1离线33/传输20、176Bun892及类型/格式/生成一致性/
+架构通过。首单测变更目标旧名修正，初失败留私有。原生/提示词/预算/
+公开v2不改，无配置读取/真实模型/native构建/tidy/新远端CI/推送。包完成，
+下一先审新版states上下文/命令/预算/证据，真实一次另定；states尚未真实验收。
+
+## P1 states discovery implementation checkpoint — 2026-10-13
+
+用户授权states两描述共同来源/通用示例实施及无模型回归，基线e5d74dd，
+沿OSSIE-REQ-001保留2工具/4资源/7发现、两个String和原生规则/请求门禁。
+整合重复说明，完整根字段/产品分支，compile不执行但做容量门禁；实际
+发现/context/body及state/P1回归，新来源/解析依赖绑定。旧封存不改；不
+增资源、不读配置或真实模型/推送，不改native/提示词/预算。
+
 ## P1 states discovery research delivery — 2026-10-13
 
 [states最小完整语法研究](docs/research/ossie-req-001/p1-states-discovery-research/proposal.md)

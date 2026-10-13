@@ -346,6 +346,7 @@ export function sourceHashes() {
     "package.json",
     "examples/fact_users_request_contract.json",
     "examples/history_request_notice.json",
+    "examples/state_request_notice.json",
     "bun.lock",
     RESEARCH + "prompts.json",
     RESEARCH + "independent-answers.json",

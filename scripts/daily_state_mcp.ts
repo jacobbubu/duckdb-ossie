@@ -7,6 +7,10 @@ import { RpcProcess } from "./mcp_check.ts";
 import { INITIALIZE, runtimeMetadata } from "./observation_mcp.ts";
 import { binding } from "./observation_evidence.ts";
 import { stateProgram, sameStateBinding } from "./daily_state_result.ts";
+import {
+  checkStateDescriptions,
+  renderStateDescriptions,
+} from "./state_request_notice.ts";
 import type { JsonObject, Tool } from "./agent_loop.ts";
 export { dailyContent as stateContent } from "./daily_mcp.ts";
 export const STATE_SERVER = join(ROOT, "examples/daily_state_server.sql");
@@ -35,6 +39,11 @@ export function stateSetup(
     copy =
       "COPY observations FROM 'docs/research/ossie-req-001/multi-period-research/every-day/observations.csv' (HEADER);";
   let text = readFileSync(STATE_SERVER, "utf8");
+  assert.equal(
+    text,
+    renderStateDescriptions(text),
+    "state SQL descriptions are stale",
+  );
   assert(text.includes(registry) && text.includes(copy));
   text = text
     .replace(registry, `LOAD ${sqlString(resolve(artifact))};\n`)
@@ -103,6 +112,7 @@ export class StateSession {
     assert(!listed.error);
     const tools = listed.result?.tools as Tool[];
     assert.deepEqual(tools.map((t) => t.name).sort(), STATE_TOOLS);
+    checkStateDescriptions(tools);
     for (const t of tools) {
       const p = t.inputSchema.properties as Record<string, { type: string }>;
       assert.deepEqual(Object.keys(p).sort(), ["concept", "request_json"]);

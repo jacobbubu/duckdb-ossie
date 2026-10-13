@@ -5,8 +5,8 @@
   "packageManager": "bun@1.3.11",
   "scripts": {
     "typecheck": "bun x --bun --no-install tsc --noEmit",
-    "format:check": "bun x --bun --no-install prettier --check scripts/*.ts test/tooling/*.ts package.json tsconfig.json examples/fact_users_request_contract.json examples/history_request_notice.json && bun --no-env-file scripts/history_request_notice.ts --check",
-    "format": "bun x --bun --no-install prettier --write scripts/*.ts test/tooling/*.ts package.json tsconfig.json examples/fact_users_request_contract.json examples/history_request_notice.json",
+    "format:check": "bun x --bun --no-install prettier --check scripts/*.ts test/tooling/*.ts package.json tsconfig.json examples/fact_users_request_contract.json examples/history_request_notice.json examples/state_request_notice.json && bun --no-env-file scripts/history_request_notice.ts --check && bun --no-env-file scripts/state_request_notice.ts --check",
+    "format": "bun x --bun --no-install prettier --write scripts/*.ts test/tooling/*.ts package.json tsconfig.json examples/fact_users_request_contract.json examples/history_request_notice.json examples/state_request_notice.json",
     "test": "bun test test/tooling",
     "architecture": "bun scripts/check_architecture.ts"
   },

@@ -1,0 +1,43 @@
+{
+  "schema": "ossie-states-discovery-controls-verification-v1",
+  "date": "2026-10-13",
+  "baseline": "e5d74dd",
+  "checks": {
+    "state_mcp": {
+      "checks": 19,
+      "refusals": 23,
+      "damage": 25
+    },
+    "state_agent": {
+      "scenes": 6,
+      "controls": 18
+    },
+    "p1_offline_controls": 33,
+    "p1_transport_controls": 20,
+    "bun_tests": 176,
+    "bun_assertions": 892,
+    "typecheck": "pass",
+    "format_and_two_generated_sql_checks": "pass",
+    "architecture": "pass"
+  },
+  "private_manifest_sha256": "90cc460c4685bc7cb4dba8f21abd55dca3e388ae6e46fcf4b21ef5d9398643ce",
+  "new_private_files_bound": 991,
+  "prior_private_files_preserved": 1253,
+  "source_files_bound": 68,
+  "state_source_files_bound": 25,
+  "actual_model_requests": 0,
+  "actual_env_test_read": false,
+  "new_resource": false,
+  "native_changes": false,
+  "push": false,
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/p1-states-discovery-controls/p1-summary.json": "6a4a8c703dfe0c0a434340534cd44f5eda5e5dca1f9bcd9eb1cc83a8cfdaceab",
+    "docs/research/ossie-req-001/p1-states-discovery-controls/receipt.json": "6e1b9d36d6a78a7b99a70bb5109999f58ff3abb84d4ce59cf01aaf4a7e234fd9",
+    "docs/research/ossie-req-001/p1-states-discovery-controls/review.md": "fca9e84039e1b8785070a6e21d5cce0165f002c811d0af9d76defa220491ba58"
+  },
+  "remaining": "Review new states context/command/budgets/recording before any separately authorized live one-shot.",
+  "local_links_checked": 347,
+  "bounded_public_marker_scan": "pass; actual secret/config not read; not universal detection",
+  "diff_check": "pass",
+  "final_source_private_and_derivative_hash_check": "pass"
+}
