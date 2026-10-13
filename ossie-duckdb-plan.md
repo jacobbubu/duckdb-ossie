@@ -1,5 +1,24 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 history discovery implementation delivery — 2026-10-13
+
+[history两工具最小声明](docs/research/ossie-req-001/p1-history-discovery-controls/review.md)
+本地完成：共同源生成且检查两完整描述，紧凑假想String示例，工具/资源2/2、
+发现RPC5保持，无新资源。实际MCP/context/body一致，虚拟body12911/11902
+字节；66P1/25history来源含共同JSON/helper/严格parser，4475旧私有原件保持。
+15/24/28history MCP、七场景29负控、P1离线33/传输20、173Bun873及类型/
+格式/生成一致性/架构通过。原生/提示词/预算/公开v2不改；未读配置或调用
+模型、无native构建/tidy/新远端CI/推送。本包完成，下一候选先审新版history
+实际上下文/命令/预算/证据，真实一次需另定；history/states真实验收未执行。
+
+## P1 history discovery implementation checkpoint — 2026-10-13
+
+用户授权history query/compile最小语法实施及无模型验证，基线0361a36，
+沿OSSIE-REQ-001共同来源生成两描述并一致性检查，通用紧凑示例不含pilot
+答案。保留两工具/两资源/5发现RPC及String/原生语义/提示词/预算；新增
+来源及解析依赖纳入封存/重放。实际MCP/context/body和旧history/P1回归，
+源/旧私有原件保持。不新增资源、不读配置/调用模型/推送，无native改动。
+
 ## P1 history discovery research delivery — 2026-10-13
 
 [history最小发现研究](docs/research/ossie-req-001/p1-history-discovery-research/proposal.md)

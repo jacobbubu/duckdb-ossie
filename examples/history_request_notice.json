@@ -1,0 +1,26 @@
+{
+  "schema_version": "ossie-history-tool-notice-v1",
+  "applies_to": [
+    "population_history_links",
+    "population_history_links_compile"
+  ],
+  "base_descriptions": {
+    "population_history_links": "Return the complete frozen Observation to typed target link set. Discover history-program and exact relationship first. Project operator history_at_observation uses finite DATE [start,end); gaps produce no link. Same-target overlapping record_id witnesses give one complete link; whole-history different-target overlap and duplicate record_id reject load, including unobserved Users. request_json exactly dates and products. Dates explicit all or inclusive canonical finite DuckDB DATE range, including BC/wide years; no calendar expansion or carry. Products explicit all or nonempty subset max64 unique raw strings/max256 UTF-8 bytes each. Filters affect observations only, not history validation. Request max16KiB, complete links max10000, complete internal JSON max1MiB including metadata and escaping. No paging or truncation. Parse one result_json carrier as ossie-history-links-result-v1/api_version1.0.0, four roles User/DATE/product/target, integer-text counts. Source/index counts are load metadata, not query counts. Compare scope, role concepts and six hashes. Unknown outer arguments are ignored; upstream may coerce values; clients send Strings. No qualification, registry, generic derived_by, load/reload or arbitrary SQL tools.",
+    "population_history_links_compile": "Explain the same historical scope without scanning observations, matching targets or computing link counts. Parse one plan_json carrier as ossie-history-links-plan-v1/api_version1.0.0. Actual frozen input projection is VARCHAR/DATE/VARCHAR. Index and source counts are load metadata; plan is logical, not physical or independently replayable SQL, and does not guarantee execution-result size/completion. Same exact request and budgets as population_history_links. Compare request, concepts and six hashes across calls; separate calls can bind different snapshots if operator reloads. Unknown outer arguments are ignored; upstream may coerce values; clients send Strings. Two historical tools only, without load/reload or arbitrary SQL."
+  },
+  "construction_notice": "request_json is a String encoding exactly one JSON object, not an object argument or a JSON string value. Inner shape: {\"dates\":D,\"products\":P}. D is exactly {\"mode\":\"all\"} or {\"mode\":\"range\",\"start_date\":S,\"end_date\":E}; S/E are finite canonical DuckDB DATE strings, at most32 bytes, start<=end, inclusive observation bounds (BC and wide years supported, not infinity). P is exactly {\"mode\":\"all\"} or {\"mode\":\"subset\",\"values\":[string,...]}; 1..64 unique nonempty raw UTF-8 strings, <=256 decoded UTF-8 bytes each, case-sensitive identities including Unicode/control characters. Send subset values sorted by ascending raw UTF-8 bytes for this Agent client; native accepts arbitrary order and normalizes. No omitted/default/unknown/duplicate fields, nulls, numbers or booleans; raw inner JSON <=16384 UTF-8 bytes including whitespace/escapes. relationship is the exact name discovered from history-program, separate from request_json. Query and compile use the identical request grammar. Dates/products filter frozen observations only, not whole-history validation; all does not expand a calendar or carry gaps. Native history intervals remain finite [start,end), different from inclusive request date bounds. Query returns complete executed links/counts; compile only binds/explains, never computes links/counts. Native outer MCP may ignore unknown arguments/coerce values; this Agent sends exactly two Strings.",
+  "generic_example_notice": "Hypothetical other program must declare this exact relationship; no data/result/count implied, not executable against the current pilot. Discover actual relationship before use.",
+  "generic_inner_example": {
+    "dates": {
+      "mode": "all"
+    },
+    "products": {
+      "mode": "subset",
+      "values": ["Catalog-A"]
+    }
+  },
+  "generic_outer_example": {
+    "relationship": "membership_at_observation",
+    "request_json": "{\"dates\":{\"mode\":\"all\"},\"products\":{\"mode\":\"subset\",\"values\":[\"Catalog-A\"]}}"
+  }
+}

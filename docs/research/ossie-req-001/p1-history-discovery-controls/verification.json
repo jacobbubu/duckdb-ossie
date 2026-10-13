@@ -1,0 +1,43 @@
+{
+  "schema": "ossie-history-discovery-controls-verification-v1",
+  "date": "2026-10-13",
+  "baseline": "0361a36",
+  "checks": {
+    "history_mcp": {
+      "checks": 15,
+      "refusals": 24,
+      "damage": 28
+    },
+    "history_agent": {
+      "scenes": 7,
+      "controls": 29
+    },
+    "p1_offline_controls": 33,
+    "p1_transport_controls": 20,
+    "bun_tests": 173,
+    "bun_assertions": 873,
+    "typecheck": "pass",
+    "format_and_generated_sql_check": "pass",
+    "architecture": "pass"
+  },
+  "private_manifest_sha256": "9acb6701cc377b0f1507d046f7568d4df42f7ab5eb2f5f4dc079231dffc9b4f6",
+  "new_private_files_bound": 1224,
+  "prior_private_files_preserved": 4475,
+  "source_files_bound": 66,
+  "history_source_files_bound": 25,
+  "actual_model_requests": 0,
+  "actual_env_test_read": false,
+  "new_resource": false,
+  "native_changes": false,
+  "pushed": false,
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/p1-history-discovery-controls/p1-summary.json": "7e6e27fd37705da2ade4909990888bfabccf5b03b9b0ac9154c0deba4ab08a3e",
+    "docs/research/ossie-req-001/p1-history-discovery-controls/receipt.json": "5967cd48765ebdb280903c0bac20f79a15588b85564cd0c38b8051ad3ed97352",
+    "docs/research/ossie-req-001/p1-history-discovery-controls/review.md": "1199760dbe8d5803decd3ce763b34f6796632e46c9c3c685ca37f5ccab2a545e"
+  },
+  "remaining": "Review new history context/command/budget/recording boundaries; live history/states not executed.",
+  "local_links_checked": 337,
+  "bounded_public_marker_scan": "pass; real configuration/secret not read; not universal detection",
+  "diff_check": "pass",
+  "final_hash_check": "pass; current66 sources,1224 new private files, public derivatives unchanged"
+}

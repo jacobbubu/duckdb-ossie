@@ -106,12 +106,15 @@ export const historyQuestion = (s: HistoryScene) =>
 export const HISTORY_AGENT_SOURCES = [
   HISTORY_FIXTURE,
   "examples/history_server.sql",
+  "examples/history_request_notice.json",
   ...["core.json", "ontology.json", "mapping.json", "bundle.json"].map(
     (n) => "test/fixtures/population-history-program/" + n,
   ),
   ...[
     "history_agent",
     "history_mcp",
+    "history_request_notice",
+    "p1_agent_json",
     "history_result",
     "history_oracle",
     "relation_result",

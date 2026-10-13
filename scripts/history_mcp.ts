@@ -8,6 +8,10 @@ import { INITIALIZE, runtimeMetadata } from "./observation_mcp.ts";
 import { binding } from "./observation_evidence.ts";
 import { historyProgram } from "./history_result.ts";
 import { HISTORY_FIXTURE } from "./history_oracle.ts";
+import {
+  checkHistoryDescriptions,
+  renderHistoryDescriptions,
+} from "./history_request_notice.ts";
 import type { JsonObject, Tool } from "./agent_loop.ts";
 export { dailyContent as historyContent } from "./daily_mcp.ts";
 export const HISTORY_SERVER = join(ROOT, "examples/history_server.sql");
@@ -28,6 +32,11 @@ export function historySetup(artifact: string, dataset = "extended") {
   const registry = "INSTALL ossie FROM community;\nLOAD ossie;\n",
     marker = ".read " + HISTORY_FIXTURE;
   let text = readFileSync(HISTORY_SERVER, "utf8");
+  assert.equal(
+    text,
+    renderHistoryDescriptions(text),
+    "history SQL descriptions are stale",
+  );
   assert(text.includes(registry) && text.includes(marker));
   const rows =
     dataset === "empty"
@@ -96,6 +105,7 @@ export class HistorySession {
     assert(!listed.error);
     const tools = listed.result?.tools as Tool[];
     assert.deepEqual(tools.map((t) => t.name).sort(), HISTORY_TOOLS);
+    checkHistoryDescriptions(tools);
     for (const t of tools) {
       const p = t.inputSchema.properties as Record<string, { type: string }>;
       assert.deepEqual(Object.keys(p).sort(), ["relationship", "request_json"]);
