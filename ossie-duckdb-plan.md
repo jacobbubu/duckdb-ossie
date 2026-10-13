@@ -1,5 +1,19 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 copied-fixture permission local delivery — 2026-10-13
+
+[确定性复现与修复](docs/research/ossie-req-001/p1-copy-permissions-controls/review.md)
+完成：本地Ubuntu24.04 ARM64/Bun1.3.11、022三次复制根/内层700→755，
+077三次700；Mac两组保持700，文件600/字节一致。最小改末尾P1夹具：
+固定700/600独占复制原Buffer/原seal并先严格验证，根/内层/文件放宽
+拒绝后恢复，原异步字节变化精确拒绝与无输出保护不宽化。归档生产
+校验不变，无全局umask修补。Mac66离线/20传输/194Bun956，Linux022/
+077各66、20传输/194Bun956及格式/类型/架构通过，回归禁网络/模型。
+Linux隔离首次缺工具子模块导致单元193/194，补齐固定工具后成功、原
+失败保存。三新69来源相同/字节一致，旧21898文件不改。native未改/
+重编，无push/真实模型/新CI。本包完成，整体须新GitHub AMD64/Mac与
+实际tidy验证；下一审阅提交/证据，授权push后检查新SHA，不追加模型。
+
 ## P1 4f991db pushed / fresh CI result — 2026-10-13
 
 [推送与新CI验收](docs/research/ossie-req-001/ci-p1-4f991db-controls/review.md)完成：

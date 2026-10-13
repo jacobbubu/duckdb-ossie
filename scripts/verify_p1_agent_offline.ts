@@ -6,7 +6,7 @@ import { spyOn } from "bun:test";
 import assert from "node:assert/strict";
 import { isDeepStrictEqual } from "node:util";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { executeP1 } from "./p1_agent.ts";
 import { scriptedSimulation, type Simulation } from "./p1_agent_simulation.ts";
 import { replayP1 } from "./p1_agent_replay.ts";
@@ -818,7 +818,43 @@ export async function verifyP1Offline(
     passed: true,
   });
   const changingTarget = join(out, "changing-source");
-  fs.cpSync(join(out, "positive"), changingTarget, { recursive: true });
+  // Explicit modes avoid cpSync's platform/umask-dependent directory creation.
+  // Preserve original bytes and seal: this is a test copy, not a re-sealed archive.
+  assert(!existsSync(changingTarget));
+  fs.mkdirSync(changingTarget, { mode: 0o700 });
+  for (const name of [...Object.keys(original.files), "seal.json"]) {
+    const target = join(changingTarget, name);
+    fs.mkdirSync(dirname(target), { recursive: true, mode: 0o700 });
+    writeFileSync(target, readFileSync(join(out, "positive", name)), {
+      mode: 0o600,
+      flag: "wx",
+    });
+  }
+  assert(verifyArchive(changingTarget).seal_sha256 === original.seal_sha256);
+  controls.push({
+    name: "explicit private byte copy preserves original seal and 0700/0600 modes",
+    passed: true,
+  });
+  for (const [name, mode] of [
+    [changingTarget, 0o700],
+    [join(changingTarget, "facts"), 0o700],
+    [join(changingTarget, "run.json"), 0o600],
+  ] as const) {
+    fs.chmodSync(name, mode | 0o044);
+    try {
+      assert.throws(
+        () => verifyArchive(changingTarget),
+        /private evidence permissions must be 0700\/0600/,
+      );
+    } finally {
+      fs.chmodSync(name, mode);
+    }
+    assert(verifyArchive(changingTarget).seal_sha256 === original.seal_sha256);
+  }
+  controls.push({
+    name: "widened root, nested directory and file permissions refused before source mutation",
+    passed: true,
+  });
   const pendingExport = exportP1Summary(
     changingTarget,
     join(out, "changed-source-summary.json"),

@@ -1,5 +1,16 @@
 # OSSIE-REQ-001 本体执行基线研究
 
+### P1测试副本权限最小修复本地完成（2026-10-13）
+
+[确定性Linux复现及验证](research/ossie-req-001/p1-copy-permissions-controls/review.md)：
+现有Ubuntu24.04 ARM64/Bun1.3.11在022三次目录700→755，077保持700；
+Mac均保持700，文件600/字节相同。仅改末尾夹具显式私有权限复制原字节/
+seal，合法副本先验证，再权限拒绝与异步字节变化拒绝；归档生产检查不变。
+Mac/Linux各194Bun956/格式/类型/架构，Mac66/20与Linux022/077各66/20
+通过，功能回归禁网络、真实模型0；新69来源跨平台一致，旧21898文件
+不改。首次Linux工具文件缺失与后续成功均保存。当前不推送/native重编/
+真实模型，新GitHub AMD64跨平台与tidy仍待授权推送后验证。
+
 ### 4f991db推送与新CI检查完成（2026-10-13）
 
 [本次CI验收](research/ossie-req-001/ci-p1-4f991db-controls/review.md)：正常推送，

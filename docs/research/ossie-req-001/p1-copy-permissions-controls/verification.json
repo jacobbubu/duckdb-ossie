@@ -1,0 +1,362 @@
+{
+  "schema": "ossie-p1-copy-permissions-verification-v1",
+  "scope": "local Linux ARM64 and macOS ARM64; not fresh GitHub AMD64/tidy CI",
+  "probes": {
+    "linux": {
+      "platform": "linux",
+      "arch": "arm64",
+      "bun": "1.3.11",
+      "results": [
+        {
+          "umask": "22",
+          "iteration": 0,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "755",
+            "scene": "755",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        },
+        {
+          "umask": "22",
+          "iteration": 1,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "755",
+            "scene": "755",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        },
+        {
+          "umask": "22",
+          "iteration": 2,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "755",
+            "scene": "755",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        },
+        {
+          "umask": "77",
+          "iteration": 0,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        },
+        {
+          "umask": "77",
+          "iteration": 1,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        },
+        {
+          "umask": "77",
+          "iteration": 2,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        }
+      ]
+    },
+    "mac": {
+      "platform": "darwin",
+      "arch": "arm64",
+      "bun": "1.3.11",
+      "results": [
+        {
+          "umask": "22",
+          "iteration": 0,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        },
+        {
+          "umask": "22",
+          "iteration": 1,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        },
+        {
+          "umask": "22",
+          "iteration": 2,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        },
+        {
+          "umask": "77",
+          "iteration": 0,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        },
+        {
+          "umask": "77",
+          "iteration": 1,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        },
+        {
+          "umask": "77",
+          "iteration": 2,
+          "source": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "copy": {
+            "root": "700",
+            "scene": "700",
+            "run": "600",
+            "events": "600"
+          },
+          "bytes_equal": true
+        }
+      ]
+    }
+  },
+  "quality": {
+    "platforms": [
+      "Ubuntu 24.04 ARM64",
+      "macOS ARM64"
+    ],
+    "each": {
+      "format": "passed",
+      "typecheck": "passed",
+      "architecture": "passed",
+      "bun_tests": 194,
+      "assertions": 956,
+      "failures": 0
+    }
+  },
+  "reports": [
+    {
+      "name": "mac-offline",
+      "controls": 66,
+      "passed": true,
+      "report_sha256": "f9749be38cdc85eedf3888bcecf8544d1870ed28e80ff9e8e9e6fcaa5500d69f",
+      "artifact_sha256": "15f22257238d0443da73bfef83f620fd3b8083b3f90c9233cbc70fd0502a16bc",
+      "real_model_requests": 0
+    },
+    {
+      "name": "mac-transport",
+      "controls": 20,
+      "passed": true,
+      "report_sha256": "c319ecc7d5e8c533b5628efd2789ab012936643845d8a898d0c2ca1cdb3a83eb",
+      "artifact_sha256": "15f22257238d0443da73bfef83f620fd3b8083b3f90c9233cbc70fd0502a16bc",
+      "real_model_requests": 0
+    },
+    {
+      "name": "linux-offline-022",
+      "controls": 66,
+      "passed": true,
+      "report_sha256": "89c1512aa3eb265a5d1ff84a3df87b2bb26ccd1d4777d83bdaa057110cce8678",
+      "artifact_sha256": "bbd1ff7f7806401873660cbcad7fa62fbbdeb0f5dc45c8cfc50d134a8aba793d",
+      "real_model_requests": 0
+    },
+    {
+      "name": "linux-offline-077",
+      "controls": 66,
+      "passed": true,
+      "report_sha256": "bfbf59c60258261af023d5589333232148c40434e7974db28d83988016797241",
+      "artifact_sha256": "bbd1ff7f7806401873660cbcad7fa62fbbdeb0f5dc45c8cfc50d134a8aba793d",
+      "real_model_requests": 0
+    },
+    {
+      "name": "linux-transport",
+      "controls": 20,
+      "passed": true,
+      "report_sha256": "f693ff094238abd761613985d5308fb13a2ef514dc4428d81729c4cabc156dd9",
+      "artifact_sha256": "bbd1ff7f7806401873660cbcad7fa62fbbdeb0f5dc45c8cfc50d134a8aba793d",
+      "real_model_requests": 0
+    }
+  ],
+  "new_controls": [
+    {
+      "name": "explicit private byte copy preserves original seal and 0700/0600 modes",
+      "passed": true
+    },
+    {
+      "name": "widened root, nested directory and file permissions refused before source mutation",
+      "passed": true
+    },
+    {
+      "name": "source copy changed during asynchronous export is rejected; no output written (not a filesystem race guarantee)",
+      "passed": true
+    }
+  ],
+  "copy_correspondence": {
+    "source_files": 69,
+    "source_maps_match_across_platforms": true,
+    "proof": [
+      {
+        "run": "mac-offline",
+        "only_changed_file": "run.json",
+        "seal_bytes_preserved": true,
+        "directory_modes": "0700",
+        "file_modes": "0600",
+        "mutation_summary_absent": true
+      },
+      {
+        "run": "linux-archives/copy-022",
+        "only_changed_file": "run.json",
+        "seal_bytes_preserved": true,
+        "directory_modes": "0700",
+        "file_modes": "0600",
+        "mutation_summary_absent": true
+      },
+      {
+        "run": "linux-archives/copy-077",
+        "only_changed_file": "run.json",
+        "seal_bytes_preserved": true,
+        "directory_modes": "0700",
+        "file_modes": "0600",
+        "mutation_summary_absent": true
+      }
+    ]
+  },
+  "historical_integrity": [
+    {
+      "archive": "ci-p1-4768236-controls",
+      "files": 579,
+      "unchanged": true,
+      "manifest_sha256": "fd9d7eae4ee33333c12313ca84f1ee8a8e4e5293f27c1f079d30c64e45af43b8"
+    },
+    {
+      "archive": "ci-p1-4f991db-controls",
+      "files": 589,
+      "unchanged": true,
+      "manifest_sha256": "bc12e2c8728774323bc0e6a22f2eecd2627eaf0a61ca84abb5969761941c9ff8"
+    },
+    {
+      "archive": "p1-monotonic-controls",
+      "files": 20730,
+      "unchanged": true,
+      "manifest_sha256": "4c59b0b83b46715870807506ff87acff5a89ba89bf932c742e5e34fcd2416726"
+    }
+  ],
+  "boundaries": {
+    "functional_linux_network": "none",
+    "preparation_network": "MCP package installation only; pinned tooling installed from existing cache",
+    "actual_provider_config_read": false,
+    "real_model_requests": 0,
+    "archive_validator_modified": false,
+    "native_source_modified": false,
+    "new_ci_run": false,
+    "pushed": false
+  },
+  "preserved_local_failure": {
+    "cause": "isolated source initially lacked extension-ci-tools files; make dry-run unit failed",
+    "initial_tests": {
+      "passed": 193,
+      "failed": 1
+    },
+    "resolution": "supplied existing pinned ci-tools source; repeated in fresh temporary container; expectation unchanged"
+  }
+}
