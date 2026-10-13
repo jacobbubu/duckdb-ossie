@@ -1,5 +1,25 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 revised history live review delivery — 2026-10-13
+
+[新版history审阅](docs/research/ossie-req-001/p1-revised-history-live-review/review.md)
+完成：两完整共同语法/通用例在实际context/body，2工具2资源/5发现RPC；
+原系统/问题保持，hidden oracle未加入首轮输入。同源首body只差model，
+虚拟12911/11902字节（模拟首12908），纯离线pending重放与仅history新路径
+候选参数通过，CLI/扩展/MCP hash一致；66源/1224实施私有原件保持。
+预算4/3/4096、出站128KiB/入站2MiB/180秒及清理/公开v2保持；数量为完整
+四元关系、非源行/用户/索引数，compile不执行。无配置内容读取、新MCP/
+模型/实现/推送，不重跑全套。包完成，下一仅建议另定一次history真实启动，
+先脱敏复核配置，停止独立审阅；history/states真实验收仍未执行。
+
+## P1 revised history live review checkpoint — 2026-10-13
+
+用户只授权新版history上下文/命令/预算/证据审阅，真实模型继续禁止。沿
+OSSIE-REQ-001和9e8ed9b，用已封存实际MCP＋虚拟传输及同源模拟轨迹核对
+完整语法/假想例/原问题隔离，纯离线重放和新单题命令参数解析。不读配置
+内容、不新MCP/实现/额度变化；检查固定产物hash和配置元信息，旧seal及
+1224实施私有原件保持。不重复全套回归或推送，下一停在单题真实运行决定。
+
 ## P1 history discovery implementation delivery — 2026-10-13
 
 [history两工具最小声明](docs/research/ossie-req-001/p1-history-discovery-controls/review.md)

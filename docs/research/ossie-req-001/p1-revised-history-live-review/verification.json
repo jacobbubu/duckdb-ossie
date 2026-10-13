@@ -1,0 +1,35 @@
+{
+  "schema": "ossie-p1-revised-history-review-verification-v1",
+  "date": "2026-10-13",
+  "baseline": "9e8ed9b",
+  "production_sources_verified_unchanged": 66,
+  "implementation_private_files_preserved": 1224,
+  "private_manifest_sha256": "7796449dad76ae79f69c7d7f53df28a99f94e273921762a0f5d209bd7b4907aa",
+  "private_files_bound": 4,
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/p1-revised-history-live-review/receipt.json": "71eb467ac0968d78f1e704935c10ae0f7c54f568a025360220c13680014d9de9",
+    "docs/research/ossie-req-001/p1-revised-history-live-review/review.md": "1085a4ea3c998e73e94a3675bfa96f5721aca35c7fc59f9901f79502da4e590a"
+  },
+  "pure_offline_replay": "consistent pending",
+  "candidate_arguments_parsed": true,
+  "candidate_commands_executed": 0,
+  "fixed_cli_extension_installed_mcp_hashes_match": true,
+  "actual_config_contents_read": false,
+  "metadata_only_configuration_check": true,
+  "new_mcp_sessions": 0,
+  "actual_model_requests": 0,
+  "changes_to_prompt_budget_provider_or_runtime_code": false,
+  "new_shared_resource": false,
+  "push": false,
+  "prior_validation_retained": "173Bun/873assertions; history7scenes29controls; MCP15/24/28; P1offline33/transport20",
+  "next": "Separate authorization for one revised history entry invocation with redacted effective-config recheck; stop for independent answer/scope/evidence review, no other scenes",
+  "checks_not_run": [
+    "Live service/config validation",
+    "New MCP/compile/query",
+    "Full test suite/native build/tidy/remote CI"
+  ],
+  "local_links_checked": 336,
+  "bounded_public_marker_scan": "pass; actual secret/config not read; no universal detection claim",
+  "diff_check": "pass",
+  "final_source_and_derivative_hash_check": "pass"
+}
