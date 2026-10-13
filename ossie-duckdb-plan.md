@@ -1,5 +1,25 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 revised states one-shot delivery — 2026-10-13
+
+[states一次真实验收](docs/research/ossie-req-001/p1-contract-states-live-controls/review.md)
+已停止：脱敏标准配置/既定目标匹配，2请求/HTTP200/投影、1实际query/
+回复/解码，完整状态/比较/计数及scope与两个独立oracle相符；Lead全域/
+日历/三值/无carry/相邻对/单位与规则解释limited_pass，用户接受未记录。
+原pending/seal保持，纯离线重放通过；68源/995上轮原件不变，真实body
+22912/17681字节，预算不改，无重试/其他题/推送。单产品样例每User/day
+最多一贡献观察，未直接覆盖同日混合真值组合；资源极值/其他规则/整体
+可靠率与声明唯一因果均不由此证明。本包完成，待用户限定接受再梳理
+整体状态/剩余项；不自动加样本/模型或推送。
+
+## P1 revised states one-shot checkpoint — 2026-10-13
+
+用户明确授权新版states一次，先脱敏核配置/固定产物/新路径，既定预算，
+结束审完整状态/比较/统计口径/证据，不重试或自动其他场景。沿
+OSSIE-REQ-001基线70d7a6c，核68源，清继承三标准变量后显式私有配置；
+只输出布尔匹配，不记录key/内部服务值。原pending/失败seal保持，解释
+审阅另记衍生，不改源码/提示词/额度、不推送。本题不当整体可靠率证明。
+
 ## P1 revised states live review delivery — 2026-10-13
 
 [新版states审阅](docs/research/ossie-req-001/p1-revised-states-live-review/review.md)
