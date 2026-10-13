@@ -1,0 +1,106 @@
+{
+  "schema": "ossie-p1-ci-verification-v1",
+  "run_id": 38385250440,
+  "head_sha": "4f991dbfdc31191a3f80d23ac459cb698fb8a900",
+  "jobs_total": 17,
+  "jobs_successful": 15,
+  "jobs_failed": 2,
+  "project_controls": {
+    "bun_tests": 194,
+    "assertions": 956,
+    "failures": 0
+  },
+  "tidy": {
+    "actual_make_tidy_check": true,
+    "entire_src_pattern": true,
+    "conclusion": "success"
+  },
+  "artifact_bindings": [
+    {
+      "architecture": "linux_amd64",
+      "extension_sha256": "97a851d1304652ae2ff738e62fb92edfbd3c1b1583cbc3643ea5e6065321ef20",
+      "artifacts": [
+        {
+          "name": "ossie-v1.5.6-extension-linux_amd64",
+          "id": 11806416185,
+          "archive_digest": "sha256:163d8dcd2658638fec4529f307b6d616a1eb2e1980cb60a1d0f296302ac02602",
+          "expired": false
+        },
+        {
+          "name": "ossie-independent-evidence-linux_amd64",
+          "id": 11806317915,
+          "archive_digest": "sha256:f1fcce06cbdca93e97950bc158fcf131920311cf60a23a6a0c329a01945696ed",
+          "expired": false
+        }
+      ],
+      "p1_reports": [
+        {
+          "report": "p1-three-scene-offline.json",
+          "present": false,
+          "passed": false
+        },
+        {
+          "report": "p1-transport.json",
+          "present": false,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "architecture": "osx_arm64",
+      "extension_sha256": "15f22257238d0443da73bfef83f620fd3b8083b3f90c9233cbc70fd0502a16bc",
+      "artifacts": [
+        {
+          "name": "ossie-v1.5.6-extension-osx_arm64",
+          "id": 11806256773,
+          "archive_digest": "sha256:cbe187aba414ab562b8fda63533b4044fb75f94ac402ecce0d23c97f12de7fb1",
+          "expired": false
+        },
+        {
+          "name": "ossie-independent-evidence-osx_arm64",
+          "id": 11806632907,
+          "archive_digest": "sha256:2ca1a82777b2f4a12f19a0891d4c93580e145e057767ebcdfdd64bba7c622e61",
+          "expired": false
+        }
+      ],
+      "p1_reports": [
+        {
+          "report": "p1-three-scene-offline.json",
+          "present": true,
+          "passed": true,
+          "controls": 64,
+          "report_sha256": "5904e46a8b12f6e9603665bc8d7124ccdb32a4ba9289ee707cb64a3898054e05",
+          "artifact_sha256_matches_download": true,
+          "real_model_requests": 0
+        },
+        {
+          "report": "p1-transport.json",
+          "present": true,
+          "passed": true,
+          "controls": 20,
+          "report_sha256": "42c55281449dbdd3cdfa2f0c7e417bc6e6c206fed2daa0123c20d540923918b5",
+          "artifact_sha256_matches_download": true,
+          "real_model_requests": 0
+        }
+      ]
+    }
+  ],
+  "linux_failure": {
+    "step": "Prepare rehearse and replay three P1 scenarios with bounded failure controls",
+    "test": "source copy changed during asynchronous public export",
+    "recorded_error": "private evidence permissions must be 0700/0600",
+    "actual_directory_mode": "0755",
+    "required_directory_mode": "0700",
+    "expected_rejection": "archive byte hash mismatch|source snapshot changed",
+    "copied_fixture_location": "changing-source",
+    "failure_site": "scripts/verify_p1_agent_offline.ts:822",
+    "diagnosis": "copied test fixture violates private archive permissions before intended source-mutation rejection; log and source inspection",
+    "independent_linux_copy_reproduction": false,
+    "raw_runner_private_trace_available": false,
+    "prior_4768236_cause_confirmed": false
+  },
+  "no_real_model_calls_added": true,
+  "automatic_rerun": false,
+  "implementation_modified": false,
+  "complete_delivery": false
+}

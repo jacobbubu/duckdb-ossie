@@ -1,0 +1,341 @@
+{
+  "schema": "ossie-p1-fresh-ci-receipt-v1",
+  "date": "2026-10-13",
+  "issue": "OSSIE-REQ-001",
+  "push": {
+    "repository": "jacobbubu/duckdb-ossie",
+    "branch": "codex/ossie-execution",
+    "remote_before": "476823619da581e7eb0cfe942751caf43a11f098",
+    "remote_after_confirmed": "4f991dbfdc31191a3f80d23ac459cb698fb8a900",
+    "normal_fast_forward": true,
+    "force_push": false,
+    "authorized_scope": "push current branch and inspect new cross-platform and tidy CI; no real model",
+    "closing_documentation": "local only; no additional push"
+  },
+  "run": {
+    "schema": "ossie-ci-final-state-v1",
+    "run_id": 38385250440,
+    "head_sha": "4f991dbfdc31191a3f80d23ac459cb698fb8a900",
+    "head_branch": "codex/ossie-execution",
+    "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440",
+    "event": "push",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-10-13T10:42:54Z",
+    "updated_at": "2026-10-13T11:01:17Z",
+    "jobs": [
+      {
+        "id": 115255312484,
+        "name": "Project quality controls",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115255312484",
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 115255312572,
+        "name": "Build extension binaries / Generate matrix",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115255312572",
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 115255312691,
+        "name": "Code Quality Check / Format Check",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115255312691",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Checkout override repository"
+        ]
+      },
+      {
+        "id": 115255312814,
+        "name": "Code Quality Check / Tidy Check",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115255312814",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Checkout override repository"
+        ]
+      },
+      {
+        "id": 115255365538,
+        "name": "Build extension binaries / Linux (linux_amd64, ubuntu-24.04, x64-linux-release, x64-linux-release, true, false)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115255365538",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Checkout override repository",
+          "Fetch override repository",
+          "Set DuckDB to ref of calling workflow",
+          "Tag extension",
+          "Tag DuckDB extension",
+          "Install extra vcpkg dependencies",
+          "Inject extra extension config",
+          "Run actions/upload-artifact@v4",
+          "Print Rust logs"
+        ]
+      },
+      {
+        "id": 115255365724,
+        "name": "Build extension binaries / Linux (linux_arm64, ubuntu-24.04-arm, arm64-linux-release, arm64-linux-release, false, false)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115255365724",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Checkout override repository",
+          "Fetch override repository",
+          "Set DuckDB to ref of calling workflow",
+          "Tag extension",
+          "Tag DuckDB extension",
+          "Install extra vcpkg dependencies",
+          "Inject extra extension config",
+          "Test extension (inside docker)",
+          "Test extension (outside docker)",
+          "Run actions/upload-artifact@v4",
+          "Print Rust logs"
+        ]
+      },
+      {
+        "id": 115258134251,
+        "name": "Build extension binaries / DuckDB-Wasm (wasm_eh, wasm32-emscripten, x64-linux, false, false)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115258134251",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Checkout override repository",
+          "Fetch override repository",
+          "Set DuckDB to ref of calling workflow",
+          "Tag extension",
+          "Tag DuckDB extension",
+          "Setup Rust for cross compilation",
+          "Setup go",
+          "Downgrade AWS cli",
+          "Inject extra extension config",
+          "Install extra vcpkg dependencies",
+          "Run actions/upload-artifact@v4",
+          "Print Rust logs"
+        ]
+      },
+      {
+        "id": 115258134316,
+        "name": "Build extension binaries / Windows (windows_amd64, windows-latest, x64-windows-static-release, x64-windows-static-release, t...",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115258134316",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Downgrade AWS cli",
+          "Checkout override repository",
+          "Setup Rust",
+          "Setup Rust for Mingw",
+          "Setup go",
+          "Install parser tools",
+          "Run r-lib/actions/setup-r@v2",
+          "setup rtools gcc for vcpkg",
+          "Fetch override repository",
+          "Set DuckDB to ref of calling workflow",
+          "Tag extension",
+          "Tag DuckDB extension",
+          "Inject extra extension config",
+          "Install extra vcpkg dependencies",
+          "Run actions/upload-artifact@v4",
+          "Print Rust logs",
+          "Move rtools supplied zstd out of the way, so ccache can work"
+        ]
+      },
+      {
+        "id": 115258134324,
+        "name": "Build extension binaries / MacOS (osx_arm64, macos-15, arm64, arm64-osx-release, arm64-osx-release, true, false)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115258134324",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Checkout override repository",
+          "Fetch override repository",
+          "Set DuckDB to ref of calling workflow",
+          "Tag extension",
+          "Tag DuckDB extension",
+          "Install Rust cross compile dependency",
+          "Install Fortran",
+          "Setup go",
+          "Install parser tools",
+          "Inject extra extension config",
+          "install omp (x86)",
+          "install omp (arm)",
+          "Install unixODBC (arm64)",
+          "Install unixODBC (amd64)",
+          "Override AWS CLI",
+          "Install extra vcpkg dependencies",
+          "Run actions/upload-artifact@v4",
+          "Print Rust logs"
+        ]
+      },
+      {
+        "id": 115258134364,
+        "name": "Build extension binaries / DuckDB-Wasm (wasm_threads, wasm32-emscripten, x64-linux, false, false)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115258134364",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Checkout override repository",
+          "Fetch override repository",
+          "Set DuckDB to ref of calling workflow",
+          "Tag extension",
+          "Tag DuckDB extension",
+          "Setup Rust for cross compilation",
+          "Setup go",
+          "Downgrade AWS cli",
+          "Inject extra extension config",
+          "Install extra vcpkg dependencies",
+          "Run actions/upload-artifact@v4",
+          "Print Rust logs"
+        ]
+      },
+      {
+        "id": 115258134368,
+        "name": "Build extension binaries / DuckDB-Wasm (wasm_mvp, wasm32-emscripten, x64-linux, true, false)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115258134368",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Checkout override repository",
+          "Fetch override repository",
+          "Set DuckDB to ref of calling workflow",
+          "Tag extension",
+          "Tag DuckDB extension",
+          "Setup Rust for cross compilation",
+          "Setup go",
+          "Downgrade AWS cli",
+          "Inject extra extension config",
+          "Install extra vcpkg dependencies",
+          "Run actions/upload-artifact@v4",
+          "Print Rust logs"
+        ]
+      },
+      {
+        "id": 115258134379,
+        "name": "Build extension binaries / Windows (windows_amd64_mingw, windows-latest, x64-mingw-static, x64-mingw-static, true, false)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115258134379",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Downgrade AWS cli",
+          "Checkout override repository",
+          "Setup Rust",
+          "Setup go",
+          "Install parser tools",
+          "Fetch override repository",
+          "Set DuckDB to ref of calling workflow",
+          "Tag extension",
+          "Tag DuckDB extension",
+          "Inject extra extension config",
+          "Install extra vcpkg dependencies",
+          "Run actions/upload-artifact@v4",
+          "Print Rust logs"
+        ]
+      },
+      {
+        "id": 115258134449,
+        "name": "Build extension binaries / MacOS (osx_amd64, macos-15, x86_64, x64-osx-release, arm64-osx-release, false, false)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115258134449",
+        "failed_steps": [],
+        "skipped_steps": [
+          "Checkout override repository",
+          "Fetch override repository",
+          "Set DuckDB to ref of calling workflow",
+          "Tag extension",
+          "Tag DuckDB extension",
+          "Install Rust cross compile dependency",
+          "Install Fortran",
+          "Setup go",
+          "Install parser tools",
+          "Inject extra extension config",
+          "install omp (x86)",
+          "install omp (arm)",
+          "Install unixODBC (arm64)",
+          "Install unixODBC (amd64)",
+          "Override AWS CLI",
+          "Install extra vcpkg dependencies",
+          "Test Extension",
+          "Run actions/upload-artifact@v4",
+          "Print Rust logs"
+        ]
+      },
+      {
+        "id": 115261543290,
+        "name": "Load built artifact (osx_arm64)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115261543290",
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 115261543305,
+        "name": "Load built artifact (linux_amd64)",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115261543305",
+        "failed_steps": [
+          "Prepare rehearse and replay three P1 scenarios with bounded failure controls"
+        ],
+        "skipped_steps": [
+          "Verify P1 live entry with mock transport and no provider network",
+          "Verify daily observation MCP against the same artifact",
+          "Rehearse four observation scenes and replay without a model",
+          "Post Run oven-sh/setup-bun@v2"
+        ]
+      },
+      {
+        "id": 115261543315,
+        "name": "MCP round trip",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115261543315",
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 115262209279,
+        "name": "CI gate",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/jacobbubu/duckdb-ossie/actions/runs/38385250440/job/115262209279",
+        "failed_steps": [
+          "Require every gating job to have succeeded"
+        ],
+        "skipped_steps": []
+      }
+    ]
+  },
+  "evidence": {
+    "private_files": 589,
+    "private_manifest_sha256": "bc12e2c8728774323bc0e6a22f2eecd2627eaf0a61ca84abb5969761941c9ff8",
+    "verification_sha256": "b1909c6b937bd186a56b78043562ae3595c5dff65f27a1194c0374f3603b543c",
+    "job_log_sha256": {
+      "linux-artifact-load": "c2c54a3f7d2fd19b2570c0f4b750236840f2abaf11db256fada3d370707d39a9",
+      "mac-artifact-load": "4d3adf0918668a160ead1926b87cb0ba68b2e456e63bbba66f0ef145aaf26fd6",
+      "tidy": "c03b894d46796626e22a0db80ad3f45e707b7829e5ba340d5794579dc6cda67f",
+      "project-controls-final": "ad55c0bd257e81f124cebec2ed79e97d1247085e1d7f145acb98214f2a666aa3"
+    }
+  },
+  "remaining": "Linux copied-fixture permissions need deterministic reproduction and minimum harness correction; fresh cross-platform CI required",
+  "raw_previous_failures_preserved": true
+}

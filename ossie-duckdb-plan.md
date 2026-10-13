@@ -1,5 +1,18 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 4f991db pushed / fresh CI result — 2026-10-13
+
+[推送与新CI验收](docs/research/ossie-req-001/ci-p1-4f991db-controls/review.md)完成：
+4f991db正常push/远端完整SHA一致，run38385250440首次运行终态failure。
+17job中15成功/2失败，九构建/tidy实际src检查/格式/194Bun956/MCP通过；
+Mac独立P1 64离线20传输和观察通过、报告SHA与本run下载产物一致。
+Linux P1末尾changing-source复制副本目录0755不满足0700，权限校验先
+拒绝，来源变化测试错误正则不匹配；后续传输/观察跳过、gate失败。
+本检查包完成/跨平台交付仍阻塞。日志+源码支持测试夹具权限合同问题，
+未独立Linux复现，不反推旧476计时根因。下一先确定性复制权限复现，
+最小修复夹具，维持原归档权限/来源变化拒绝，再无模型与新CI；当前仅
+记录、未改实现/重跑/模型/追加push，原证据保持。本收口文档仅本地。
+
 ## P1 monotonic timing implementation delivery — 2026-10-13
 
 [本地修复与证据](docs/research/ossie-req-001/p1-monotonic-controls/review.md)完成：
