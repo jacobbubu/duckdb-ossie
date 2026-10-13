@@ -1,0 +1,251 @@
+{
+  "schema_version": "ossie-fact-users-request-contract-v1",
+  "applies_to": ["population_fact_users", "population_fact_users_compile"],
+  "construction_notice": "request_json is a String encoding one JSON object: {\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[regular_metric_name],\"cohort\":C}. C is exactly {\"operation\":\"all\"}, {\"operation\":\"predicate\",\"predicate\":P}, or {\"operation\":OP,\"children\":[C,C]}; OP is \"intersection\", \"union\" or \"difference\". Exact fields only; no unknown/duplicate inner keys, NUL, implicit defaults or object-valued outer request_json. Children are exactly two ordered nested cohorts; difference is left set minus right TRUE members, so UNKNOWN on the right is not excluded. Each predicate is one unaliased comparison of an unqualified, unquoted declared regular metric on the left and exact nonNULL numeric constant on the right; comparison kinds =, <>, >, >=, <, <=. Count needs an integral BIGINT constant; currency needs exact DECIMAL(38,2), decimal scale at most2; no DOUBLE, field/window references, functions/casts, metric-to-metric, arithmetic or AND/OR predicates. A predicate metric need not be selected for output. metrics selects1..32 regular names, case-insensitive and no case duplicates, each at most128 UTF8 bytes. Root-inclusive depth<=16, total nodes<=64, original request_json UTF8 bytes<=16384; bounded nesting supported, no self-reference. Read ossie://facts/request-contract for structural schema, full semantics and hypothetical examples, and ossie://facts/program for actual declarations/units/snapshot bindings. A structural schema alone does not bind metrics/predicates or enforce byte/tree budgets.",
+  "outer_argument": {
+    "request_json": "String containing one strict JSON object, not an object argument and not a second JSON-encoded string",
+    "outer_boundary": "Existing MCP backend ignores extra outer keys; current Agent requires exact outer fields. Do not claim backend behavior changed."
+  },
+  "request_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Fact users inner request structural schema; native binding is still required",
+    "type": "object",
+    "required": ["domain", "input_scope", "metrics", "cohort"],
+    "properties": {
+      "domain": {
+        "const": "common"
+      },
+      "input_scope": {
+        "const": "entire_capture"
+      },
+      "metrics": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 32,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000]+$"
+        }
+      },
+      "cohort": {
+        "$ref": "#/$defs/cohort"
+      }
+    },
+    "additionalProperties": false,
+    "$defs": {
+      "cohort": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["operation"],
+            "properties": {
+              "operation": {
+                "const": "all"
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": ["operation", "predicate"],
+            "properties": {
+              "operation": {
+                "const": "predicate"
+              },
+              "predicate": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\u0000]+$"
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": ["operation", "children"],
+            "properties": {
+              "operation": {
+                "enum": ["intersection", "union", "difference"]
+              },
+              "children": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "$ref": "#/$defs/cohort"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  },
+  "semantic_constraints": {
+    "metrics": "1..32 declared regular names, case-insensitive identity, no case duplicates; unknown/window names rejected; request-name UTF8 bytes<=128",
+    "predicate": "One unaliased SQL comparison: a single unqualified, unquoted declared regular metric on the left, exact nonNULL numeric constant on the right; comparison kinds equality, inequality, >, >=, <, <= (examples use = and <>; no exhaustive lexical spelling claim). Native Expression rejects double quotes, NUL, aliases and multiple expressions; binding checks numeric type/scale/range. Count requires an integral constant representable as BIGINT. Currency accepts integral or DECIMAL, decimal scale<=2 and exact DECIMAL(38,2) representation; DOUBLE rejected. No metric-to-metric, field/window reference, arithmetic/composite Boolean predicate, function/cast expression or NULL constant. Metric may be absent from selected output metrics. Unary sign/exponent spellings are not promised without parser verification.",
+    "sets": "Each atomic predicate becomes a TRUE member set within common row-presence domain. NULL/UNKNOWN/FALSE are not atomic members. Intersection/union combine sets; difference is left minus right TRUE members, order-sensitive; all denotes the complete common domain. No nullable NOT substitution.",
+    "strict_json": "Unknown and duplicate inner object fields rejected, required fields explicit, operation case-sensitive, request strings cannot contain NUL",
+    "limits": {
+      "request_json_utf8_bytes": 16384,
+      "cohort_nodes_including_root_and_leaves": 64,
+      "cohort_depth_root_is_one": 16
+    },
+    "schema_limits": "Structural JSON Schema alone does not enforce duplicate raw JSON keys, UTF8 byte budgets, node/depth totals, case-fold name uniqueness, declared metric membership, predicate parsing or numeric binding.",
+    "nested_vs_recursive": "Bounded nested binary JSON trees are supported. Named/self-referential recursion is not expressible by this contract. Clarify the current discovery refusal wording recursive cohorts rather than falsely forbidding nesting."
+  },
+  "generic_examples": {
+    "hypothetical_program": {
+      "order_count": {
+        "unit": "count:Order:user_id",
+        "bound_type": "BIGINT"
+      },
+      "refund_count": {
+        "unit": "count:Refund:user_id",
+        "bound_type": "BIGINT"
+      }
+    },
+    "use": "These names are not declared by the current pilot. Adapt only to actual program-declared regular metrics. No input rows, member sets, counts or calculated answers are supplied. Examples illustrate grammar only; not directly executable on the current snapshot.",
+    "examples": [
+      {
+        "id": "all",
+        "inner_request": {
+          "domain": "common",
+          "input_scope": "entire_capture",
+          "metrics": ["order_count"],
+          "cohort": {
+            "operation": "all"
+          }
+        },
+        "outer_arguments": {
+          "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"all\"}}"
+        }
+      },
+      {
+        "id": "predicate",
+        "inner_request": {
+          "domain": "common",
+          "input_scope": "entire_capture",
+          "metrics": ["order_count"],
+          "cohort": {
+            "operation": "predicate",
+            "predicate": "order_count>=7"
+          }
+        },
+        "outer_arguments": {
+          "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"predicate\",\"predicate\":\"order_count>=7\"}}"
+        }
+      },
+      {
+        "id": "intersection",
+        "inner_request": {
+          "domain": "common",
+          "input_scope": "entire_capture",
+          "metrics": ["order_count"],
+          "cohort": {
+            "operation": "intersection",
+            "children": [
+              {
+                "operation": "predicate",
+                "predicate": "order_count>=7"
+              },
+              {
+                "operation": "predicate",
+                "predicate": "refund_count>2"
+              }
+            ]
+          }
+        },
+        "outer_arguments": {
+          "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"intersection\",\"children\":[{\"operation\":\"predicate\",\"predicate\":\"order_count>=7\"},{\"operation\":\"predicate\",\"predicate\":\"refund_count>2\"}]}}"
+        }
+      },
+      {
+        "id": "union",
+        "inner_request": {
+          "domain": "common",
+          "input_scope": "entire_capture",
+          "metrics": ["order_count"],
+          "cohort": {
+            "operation": "union",
+            "children": [
+              {
+                "operation": "predicate",
+                "predicate": "order_count>=7"
+              },
+              {
+                "operation": "predicate",
+                "predicate": "refund_count>2"
+              }
+            ]
+          }
+        },
+        "outer_arguments": {
+          "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"union\",\"children\":[{\"operation\":\"predicate\",\"predicate\":\"order_count>=7\"},{\"operation\":\"predicate\",\"predicate\":\"refund_count>2\"}]}}"
+        }
+      },
+      {
+        "id": "difference",
+        "inner_request": {
+          "domain": "common",
+          "input_scope": "entire_capture",
+          "metrics": ["order_count"],
+          "cohort": {
+            "operation": "difference",
+            "children": [
+              {
+                "operation": "predicate",
+                "predicate": "order_count>=7"
+              },
+              {
+                "operation": "predicate",
+                "predicate": "refund_count>2"
+              }
+            ]
+          }
+        },
+        "outer_arguments": {
+          "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"difference\",\"children\":[{\"operation\":\"predicate\",\"predicate\":\"order_count>=7\"},{\"operation\":\"predicate\",\"predicate\":\"refund_count>2\"}]}}"
+        }
+      },
+      {
+        "id": "nested",
+        "inner_request": {
+          "domain": "common",
+          "input_scope": "entire_capture",
+          "metrics": ["order_count"],
+          "cohort": {
+            "operation": "union",
+            "children": [
+              {
+                "operation": "intersection",
+                "children": [
+                  {
+                    "operation": "predicate",
+                    "predicate": "order_count>=7"
+                  },
+                  {
+                    "operation": "predicate",
+                    "predicate": "refund_count>2"
+                  }
+                ]
+              },
+              {
+                "operation": "predicate",
+                "predicate": "order_count=1"
+              }
+            ]
+          }
+        },
+        "outer_arguments": {
+          "request_json": "{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[\"order_count\"],\"cohort\":{\"operation\":\"union\",\"children\":[{\"operation\":\"intersection\",\"children\":[{\"operation\":\"predicate\",\"predicate\":\"order_count>=7\"},{\"operation\":\"predicate\",\"predicate\":\"refund_count>2\"}]},{\"operation\":\"predicate\",\"predicate\":\"order_count=1\"}]}}"
+        }
+      }
+    ]
+  },
+  "snapshot_binding": "Contract version/hash identifies static grammar; actual program six bindings identify frozen runtime/data; they are distinct. Discovery client should validate applicability and freeze both in context/replay, not silently infer compatibility.",
+  "validation_boundary": "Explicitly decode request_json once, reject duplicate raw keys and enforce UTF8 budgets. Structural validation is not native predicate binding or execution evidence; contentSchema is not automatic string-content enforcement."
+}

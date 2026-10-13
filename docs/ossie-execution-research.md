@@ -1,5 +1,24 @@
 # OSSIE-REQ-001 本体执行基线研究
 
+### facts最小发现声明及无模型验收完成（2026-10-13）
+
+[声明与分层证据](research/ossie-req-001/p1-fact-discovery-controls/review.md)：
+两users完整构造摘要＋共享contract资源实际返回，严格一行String/内容字节
+匹配并纳入context/new来源封存；4工具3资源6发现RPC，native/String不改。
+通用例子是假想声明，未入pilot；结构不替代谓词数值绑定。37核对48拒绝、
+8场景30篡改、33/20P1控制、170Bun854及质量通过，facts新模拟body32208字节。
+64/27来源、2332旧原件保持，首TEMP失败与测试适配/缺依赖绑定失败另保留。
+无真实模型/配置读取/推送/新native/远端CI。下一候选审新实际上下文、预算
+与命令证据，真实重试另行授权；首次真实失败结论不变，三题验收仍未完成。
+
+### facts最小发现声明实施 checkpoint（2026-10-13）
+
+用户授权两users工具集合语法＋共享资源/通用示例和无模型验证；沿本issue
+与15b8ab2方案，不改原生语义/String/原提示词预算、不调用模型。继续原
+工作树，主目录迁移但为旧checkout；新资源实际载荷冻结并严格核对，client
+发现/新source inventory/replay同时对应，旧原始失败与研究证据不改。
+验证实际工具/资源/context/body、篡改负控、旧fact和P1回归/质量，未推送。
+
 ### facts集合JSON发现合同研究完成（2026-10-13）
 
 [候选及分层验证](research/ossie-req-001/p1-fact-discovery-research/proposal.md)

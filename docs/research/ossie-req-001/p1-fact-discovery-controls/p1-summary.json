@@ -1,0 +1,78 @@
+{
+  "schema": "ossie-p1-public-summary-v2",
+  "derived": true,
+  "mode": "simulated",
+  "status": "complete",
+  "correspondence": "recorded_simulation_or_preparation",
+  "real_model_requests": 0,
+  "request_count_interpretation": "Client transport attempts in live mode; backend execution and billing unverified",
+  "semantic_acceptance": "not_proven",
+  "source_seal_sha256": "49ebe9cba4705a25591016bfbf9e9f578dc1175eb72a5ada282ab38e06a4e1d7",
+  "artifact_sha256": "98b0aeba1f97f2e61d8570be43c671e3270d9ffe36120b15d5e6908ab82dab3a",
+  "source_inventory_sha256": "f06af1d4a046f2c038945c11bc2f5aae7628257369a8e4927df4643060fa3914",
+  "limits": {
+    "rounds": 4,
+    "calls": 3,
+    "milliseconds": 180000,
+    "output_tokens": 4096,
+    "outbound_bytes": 131072,
+    "inbound_bytes": 2097152
+  },
+  "cleanup_policy": {
+    "schema": "ossie-p1-cleanup-policy-v1",
+    "timing": "separate sequential waits",
+    "step_wait_ms": 30000,
+    "normal_steps": [
+      "close",
+      "work"
+    ],
+    "optional_test_step": "cleanupFault between close and work",
+    "maximum_normal_requested_wait_ms": 60000,
+    "maximum_test_requested_wait_ms": 90000,
+    "stop_on_first_failure": true,
+    "hard_realtime": false
+  },
+  "scenes": [
+    {
+      "scene": "facts",
+      "status": "mechanical_pass",
+      "cleanup_failed": false,
+      "constructed_requests": 2,
+      "transport_attempts": 0,
+      "received_responses": 0,
+      "projected_responses": 0,
+      "tool_calls": 1,
+      "maximum_outbound_utf8_bytes": 32208,
+      "semantic_acceptance": "not_proven"
+    },
+    {
+      "scene": "states",
+      "status": "mechanical_pass",
+      "cleanup_failed": false,
+      "constructed_requests": 2,
+      "transport_attempts": 0,
+      "received_responses": 0,
+      "projected_responses": 0,
+      "tool_calls": 1,
+      "maximum_outbound_utf8_bytes": 17327,
+      "semantic_acceptance": "not_proven"
+    },
+    {
+      "scene": "history",
+      "status": "mechanical_pass",
+      "cleanup_failed": false,
+      "constructed_requests": 2,
+      "transport_attempts": 0,
+      "received_responses": 0,
+      "projected_responses": 0,
+      "tool_calls": 1,
+      "maximum_outbound_utf8_bytes": 8964,
+      "semantic_acceptance": "not_proven"
+    }
+  ],
+  "limitations": [
+    "Synthetic fixture; rehearsal responses injected; live mode does not prove backend execution",
+    "No model autonomy, provider authenticity, real business completeness, token sufficiency or billing proof",
+    "Summary is not the original wire or a public replay archive"
+  ]
+}

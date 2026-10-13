@@ -140,6 +140,7 @@ export const FACT_BUDGET = {
 };
 export const FACT_SOURCE_NAMES = [
   "examples/fact_server.sql",
+  "examples/fact_users_request_contract.json",
   ...[
     "core.json",
     "ontology.json",
@@ -152,6 +153,8 @@ export const FACT_SOURCE_NAMES = [
     "fact_agent_rehearsal",
     "fact_agent_replay",
     "fact_mcp",
+    "fact_request_contract",
+    "p1_agent_json",
     "fact_result",
     "fact_oracle",
     "daily_mcp",

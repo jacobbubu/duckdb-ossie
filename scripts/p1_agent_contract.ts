@@ -344,6 +344,7 @@ export function sourceHashes() {
     "scripts/p1_agent_public.ts",
     "scripts/verify_p1_agent_offline.ts",
     "package.json",
+    "examples/fact_users_request_contract.json",
     "bun.lock",
     RESEARCH + "prompts.json",
     RESEARCH + "independent-answers.json",

@@ -4,6 +4,7 @@ import childProcess from "node:child_process";
 import { spyOn } from "bun:test";
 /** Actual stock MCP integration and re-sealed adversarial replay controls; model requests zero. */
 import assert from "node:assert/strict";
+import { isDeepStrictEqual } from "node:util";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { executeP1 } from "./p1_agent.ts";
@@ -223,7 +224,11 @@ export async function verifyP1Offline(
     if (typeof value === "string") {
       if (!/^[\[{]/.test(value.trim())) return value;
       try {
-        return JSON.stringify(coordinated(JSON.parse(value), edit));
+        const parsed = JSON.parse(value);
+        const transformed = coordinated(parsed, edit);
+        return isDeepStrictEqual(parsed, transformed)
+          ? value
+          : JSON.stringify(transformed);
       } catch {
         return value;
       }

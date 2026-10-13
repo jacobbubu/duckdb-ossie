@@ -1,5 +1,6 @@
 /** Actual fact MCP + injected completions + offline replay and re-sealed synthetic forgery controls. */
 import assert from "node:assert/strict";
+import { isDeepStrictEqual } from "node:util";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { rehearseFact } from "./fact_agent_rehearsal.ts";
@@ -47,7 +48,11 @@ export async function verifyFactOffline(
       if (typeof value === "string") {
         if (!/^\s*[\[{]/.test(value)) return value;
         try {
-          return JSON.stringify(transform(JSON.parse(value)));
+          const parsed = JSON.parse(value);
+          const transformed = transform(parsed);
+          return isDeepStrictEqual(parsed, transformed)
+            ? value
+            : JSON.stringify(transformed);
         } catch {
           return value;
         }

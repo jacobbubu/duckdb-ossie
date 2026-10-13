@@ -47,11 +47,11 @@ SELECT * FROM ossie_fact_windows_json(
 独立[MCP示例](../examples/fact_server.sql)只公开`population_fact_users`、
 `population_fact_users_compile`、`population_fact_windows`、
 `population_fact_windows_compile`四工具和`ossie://facts/program`、
-`ossie://facts/surface`两资源。运营者先创建来源并加载bundle；使用包含新函数的
+`ossie://facts/surface`、`ossie://facts/request-contract`三资源。运营者先创建来源并加载bundle；使用包含新函数的
 本地产物时，将示例的community安装/LOAD改为该产物的LOAD，再在项目根目录
 启动标准DuckDB1.5.6客户端。此本地验收不代表community已发布该能力。
 
-客户端先读取program和实际surface，再调用工具。四工具唯一必填参数都是
+客户端先读取program、实际surface和共享请求契约，再调用工具。四工具唯一必填参数都是
 `request_json`字符串，内容与上文SQL请求相同。固定duckdb_mcp上游实际忽略
 外层未知参数且可能转换非字符串；`limit`或外层日期不会限制结果，客户端必须
 把范围放在受native严格校验的内层请求中。通用查询、导入/reload和其他profile
@@ -89,3 +89,13 @@ bun --no-env-file scripts/verify_fact_stock_cli.ts /path/to/duckdb build/release
 ```
 
 各profile的函数/窗口位置与固定规范差异见[兼容矩阵](ossie-sql-compatibility.md)。
+
+共享[请求契约](../examples/fact_users_request_contract.json)单独标识为
+`ossie-fact-users-request-contract-v1`，只适用于users查询及compile；两工具描述
+都包含完整集合构造语法。schema只检查显式解码后的结构，原生负责指标与
+谓词数值绑定，不能把contentSchema当作自动验证。通用例子假设另一个program
+声明order_count/refund_count，不含当前验收答案，也不能直接在本例快照执行。
+载荷在服务启动时读入独立普通表，通过资源返回一行contract_json String；
+客户端核对其内容和原始字节与本地已审文件一致，并封存实际发现/context。
+这不是native六快照绑定的一部分，也不是可由其他宿主自动获取的保证。
+旧原件和源hash保留，新发现必须生成新演练/重放记录，不能重封旧试验。

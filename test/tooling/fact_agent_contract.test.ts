@@ -15,6 +15,11 @@ import {
   hashBytes,
 } from "../../scripts/observation_agent_archive.ts";
 import { FactSession } from "../../scripts/fact_mcp.ts";
+import {
+  FACT_CONTRACT_PATH,
+  FACT_CONTRACT_URI,
+  FACT_USER_TOOLS,
+} from "../../scripts/fact_request_contract.ts";
 import type { RpcProcess } from "../../scripts/mcp_check.ts";
 import { scriptedFact } from "../../scripts/fact_agent_rehearsal.ts";
 import { replayFact } from "../../scripts/fact_agent_replay.ts";
@@ -52,7 +57,10 @@ beforeAll(async () => {
     real_model_requests: 0,
     model: "simulated-fact",
     budget: FACT_BUDGET,
-    runtime: fixture.runtime,
+    runtime: {
+      ...fixture.runtime,
+      server_sha256: digest(join(ROOT, "examples/fact_server.sql")),
+    },
     usage_semantics:
       "Simulated zero usage placeholders, not measured token consumption",
     source_hashes: Object.fromEntries(
@@ -65,6 +73,32 @@ beforeAll(async () => {
   let requests = 0;
   for (const scene of FACT_SCENES) {
     const source = fixture.scenes.find((s: any) => s.scene === scene.id);
+    // Adapt only this synthetic derivative; leave the original public RPC fixture immutable.
+    const replies = structuredClone(source.rpc_replies);
+    const contractText = readFileSync(FACT_CONTRACT_PATH, "utf8");
+    const contract = JSON.parse(contractText);
+    for (const tool of replies[1].result.tools)
+      if (FACT_USER_TOOLS.includes(tool.name))
+        tool.description += " " + contract.construction_notice;
+    replies[2].result.resources.push({
+      uri: FACT_CONTRACT_URI,
+      name: "users request contract",
+      mimeType: "application/json",
+    });
+    for (const reply of replies.slice(5)) reply.id++;
+    replies.splice(5, 0, {
+      jsonrpc: "2.0",
+      id: 6,
+      result: {
+        contents: [
+          {
+            uri: FACT_CONTRACT_URI,
+            mimeType: "application/json",
+            text: JSON.stringify([{ contract_json: contractText }]),
+          },
+        ],
+      },
+    });
     let rpc = 0,
       sequence = 0;
     const events: JsonObject[] = [];
@@ -83,7 +117,7 @@ beforeAll(async () => {
     record({ kind: "scene_start", limits: LIMITS });
     const fake = {
       request: async (id: number) => {
-        const reply = structuredClone(source.rpc_replies[rpc++]);
+        const reply = structuredClone(replies[rpc++]);
         expect(reply.id).toBe(id);
         return reply;
       },
@@ -141,7 +175,7 @@ beforeAll(async () => {
       rounds: final.rounds,
       evaluation,
     });
-    expect(rpc).toBe(source.rpc_replies.length);
+    expect(rpc).toBe(replies.length);
     cases[scene.id] = {
       content: final.content,
       events,

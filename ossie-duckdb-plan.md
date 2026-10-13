@@ -1,5 +1,27 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 facts discovery implementation delivery — 2026-10-13
+
+[最小发现声明](docs/research/ossie-req-001/p1-fact-discovery-controls/review.md)
+本地完成：两users工具完整语法＋共享静态资源，4工具/3资源/6发现RPC，
+String/原生/提示词/预算保持；通用假想示例未入pilot。实际载荷12148字节，
+facts模拟出站32208字节，载荷/context/body/新seal一致。37/48facts MCP、8场景30
+拒绝、33P1离线/20虚拟传输、170Bun854断言及格式/类型/架构通过。
+64P1/27fact来源与2332旧私有原件绑定保持；TEMP失败/旧fixture/计数/协调
+重编码及缺parser绑定先前失败保留，Advisor只读后Lead修必要回归并复验。
+无真实模型/实际配置读取/推送/新native或远端CI。下一建议审新facts实际
+模型上下文/预算/命令证据，再另行决定真实一次；三题真实验收仍未完成。
+
+## P1 facts discovery implementation checkpoint — 2026-10-13
+
+用户授权最小声明实施及无模型验证，真实模型继续禁止。沿OSSIE-REQ-001，
+基线15b8ab2，继续原codex/ossie-execution工作树（迁移后的主目录为另一个旧
+checkout，不混用）。两users工具语法摘要＋共享静态契约JSON资源，保留String
+接口/原生语义/提示词/额度；发现严格校验载荷并纳入新封存/重放来源。
+通用示例标明假想声明，不含oracle/成员答案，不加入pilot数据。验证实际
+MCP list/read/context/body、篡改/结构边界、旧fact/P1演练重放/质量；旧失败
+原件保留，不重封改hash。依赖存在非空，无需重装；不推送/调用模型。
+
 ## P1 facts discovery research delivery — 2026-10-13
 
 [发现契约研究](docs/research/ossie-req-001/p1-fact-discovery-research/proposal.md)

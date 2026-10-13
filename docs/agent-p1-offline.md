@@ -44,7 +44,7 @@ bun --no-env-file scripts/verify_p1_agent_offline.ts \
 
 每场景最多4个模型请求尝试、3个工具调用；三场景至多12/9。输出请求参数4096 tokens，单个出站body128KiB、投影前入站响应体2MiB。入站按实际UTF-8字节流读取、到限即取消；模拟raw仅保存准确字节前缀（base64）、截断标记及synthetic_only标签；显式Response保护层在投影前校验并重建白名单，真实响应只记录provider_projection白名单衍生物，不沿用raw归档；密钥回显先停止，不派发脱敏参数。JSON采用线性重复键检查，避免大字符串令旧token正则失效。内层native结果1MiB与外层carrier8MiB不是出站预算，完整转义后body仍可能先超128KiB；不截断后宣称通过。实际tokens、金额、服务端续接与留存未测，不能据此声称费用硬上限或真实预算充分。
 
-场景180秒含服务setup/discovery/loop及评估前检查；共享固定运行时元数据预检在场景前，失败另封存diagnostic。发现请求固定5/7/5，通知各1次，不自动重试。超时关闭活动MCP、取消等待并等待work收束；迟到模拟响应不能再写业务事件。固定cleanup_policy随run封存并重放核对；close与work收束分别最多主动等待30秒（两个窗口60秒），可选测试callback另有30秒窗口（三个窗口90秒），首清理失败停止后续，没有总计30秒或硬实时的保证；失败单独封存并停止后续。同步文件读写、运行时预检、进程调度和任意外部测试callback不是硬实时或RAM上界保证。
+场景180秒含服务setup/discovery/loop及评估前检查；共享固定运行时元数据预检在场景前，失败另封存diagnostic。facts新增共享请求契约资源后，发现请求固定6/7/5，通知各1次，不自动重试。超时关闭活动MCP、取消等待并等待work收束；迟到模拟响应不能再写业务事件。固定cleanup_policy随run封存并重放核对；close与work收束分别最多主动等待30秒（两个窗口60秒），可选测试callback另有30秒窗口（三个窗口90秒），首清理失败停止后续，没有总计30秒或硬实时的保证；失败单独封存并停止后续。同步文件读写、运行时预检、进程调度和任意外部测试callback不是硬实时或RAM上界保证。
 
 协议失败、task_failed、incomplete、预算失败或清理异常均保留；pending也暂停后续场景。默认模拟器的固定解释仅标scripted_pass，mechanical_pass仍带真实语义审阅pending，不等同人工模型验收。无成功证据的failed回答允许空引用。prepare/rehearse返回failed或pending时退出非零；replay可对失败记录返回正常诊断结果，必须读取status，退出成功不能表示原试验通过。
 

@@ -1,0 +1,63 @@
+{
+  "schema": "ossie-fact-discovery-delivery-v1",
+  "date": "2026-10-13",
+  "baseline": "15b8ab2",
+  "implementation_scope": "facts MCP discovery, strict client carrier checks, source/replay/negative-control and synthetic unit fixture adaptation; no native semantic change",
+  "source_files_current_and_bound": 64,
+  "native_source_files_modified": false,
+  "actual_model_requests": 0,
+  "actual_private_configuration_read": false,
+  "new_actual_discovery_passed": true,
+  "current_fact_oracle_checks": 37,
+  "current_fact_refusals": 48,
+  "current_fact_agent_scenes": 8,
+  "current_fact_agent_forgeries": 30,
+  "current_p1_offline_controls": 33,
+  "current_p1_transport_controls": 20,
+  "current_bun_tests": 170,
+  "current_bun_expectations": 854,
+  "quality_checks": "format/type/architecture pass",
+  "current_archive_source_inventory_exact": true,
+  "original_private_files_preserved": 2332,
+  "new_private_files_bound": 4447,
+  "new_private_manifest_sha256": "d16a0bf14b7a2b3daff57be53e6429fdf463b8132ec5bc7ebf0f8e54451b7675",
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/p1-fact-discovery-controls/p1-summary.json": "dc875e027eda1293478d6ae8f075f2a3d96f89bf787ec0e8d02bca04981f0820",
+    "docs/research/ossie-req-001/p1-fact-discovery-controls/receipt.json": "8e1e871914d71d80949bb4ee2a1fbf9c43d52960c12d3721ee569968dd4afe5f",
+    "docs/research/ossie-req-001/p1-fact-discovery-controls/review.md": "0201c75267d3bae8cb57038c99f4a99c0265cc1a7e1ef2e471f0b55fd719cc99"
+  },
+  "contract_sha256": "a0cecb99962f7fb3e610e0856a065e37ad98e725a2d32fce574cba3daefbea6c",
+  "local_links_checked": 344,
+  "privacy_scan": "bounded new public artifacts/parent documents and generic example markers passed; no actual key/config read; not universal detection",
+  "diff_check": "pass",
+  "advisor": {
+    "skill": "advisor-escalation",
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "high",
+    "effective_backend": "unknown",
+    "effective_effort": "unknown",
+    "usage": "unknown",
+    "billing": "unknown",
+    "rounds": 1,
+    "scope": "read-only implementation follow-up",
+    "lead_actions": [
+      "added p1_agent_json to fact source inventory and test",
+      "added published structural rejection test",
+      "fresh final-source33/20/8-scene checks and170 tests passed",
+      "documented static table separate from native binding; mocks/synthetic derivatives explicitly labeled"
+    ],
+    "production_guard_weakening_found": false,
+    "native_build_required_for_this_change": false
+  },
+  "remaining": [
+    "new facts live context/command/budget review",
+    "real-model retry separately authorized; original failed pilot remains not accepted",
+    "no new remote CI until separately authorized push"
+  ],
+  "tests_not_run": [
+    "new native build or tidy",
+    "real provider",
+    "new remote cross-platform CI"
+  ],
+  "environment": "active original codex/ossie-execution worktree retained; migrated primary checkout not used; parent status excludes stale submodule Git path"
+}

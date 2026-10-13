@@ -243,7 +243,8 @@ export async function replayP1(path: string, artifactSha: string) {
     assert(contextIndex >= 0 && discoveryCursor === contextIndex);
     assert.deepEqual(events[contextIndex].context, c);
     const discovery = events.slice(0, contextIndex);
-    const expectedDiscoveryRequests = scene === "states" ? 7 : 5;
+    const expectedDiscoveryRequests =
+      scene === "states" ? 7 : scene === "facts" ? 6 : 5;
     assert(
       discovery.filter((e) => e.kind === "rpc_request").length ===
         expectedDiscoveryRequests,

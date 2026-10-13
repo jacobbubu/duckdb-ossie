@@ -10,6 +10,11 @@ import type { JsonObject, Tool } from "./agent_loop.ts";
 import { factProgram, factJSON } from "./fact_result.ts";
 import { relationDate } from "./relation_result.ts";
 import { binding } from "./observation_evidence.ts";
+import {
+  FACT_CONTRACT_URI,
+  factRequestContract,
+  factContractToolDescriptions,
+} from "./fact_request_contract.ts";
 export const FACT_SERVER = join(ROOT, "examples/fact_server.sql");
 export const FACT_TOOLS = [
   "population_fact_users",
@@ -17,7 +22,11 @@ export const FACT_TOOLS = [
   "population_fact_windows",
   "population_fact_windows_compile",
 ];
-export const FACT_URIS = ["ossie://facts/program", "ossie://facts/surface"];
+export const FACT_URIS = [
+  "ossie://facts/program",
+  "ossie://facts/surface",
+  FACT_CONTRACT_URI,
+];
 export const factContent = dailyContent;
 export const factRuntime = (cli: string, artifact: string) => ({
   ...runtimeMetadata(cli, artifact),
@@ -53,11 +62,12 @@ export class FactSession extends DailySession {
       );
       assert(t.description?.includes("Unknown outer arguments are ignored"));
     }
+    factContractToolDescriptions(tools);
     const resources = await this.rpc("resources/list");
     assert(!resources.error);
     assert.deepEqual(
       resources.result?.resources?.map((r) => r.uri).sort(),
-      FACT_URIS,
+      [...FACT_URIS].sort(),
     );
     const rows: Record<string, JsonObject[]> = {};
     const raw: Record<string, string> = {};
@@ -71,6 +81,7 @@ export class FactSession extends DailySession {
       assert.equal(rows[uri].length, 1);
     }
     const program = factProgram(raw[FACT_URIS[0]]);
+    factRequestContract(raw[FACT_CONTRACT_URI]);
     const surface = rows[FACT_URIS[1]][0];
     assert.deepEqual(
       Object.keys(surface).sort(),
