@@ -1,0 +1,38 @@
+{
+  "schema": "ossie-p1-fresh-ci-verification-v1",
+  "date": "2026-10-13",
+  "pushed_commit": "476823619da581e7eb0cfe942751caf43a11f098",
+  "run_id": 38367223932,
+  "status": "Inspection complete; Linux replay failure remains delivery blocker",
+  "exact_commit_run_and_artifact_metadata": true,
+  "run_conclusion": "failure",
+  "success_jobs": 15,
+  "total_jobs": 17,
+  "mac_p1_reports_and_binary": "pass; offline33/transport20",
+  "linux_p1": "failure and missing success reports preserved; three subsequent test steps skipped",
+  "tidy": "actual full-src command success",
+  "project_tests": "176/892/0 failures",
+  "repository_execution_sources_verified": 68,
+  "private_manifest_sha256": "fd9d7eae4ee33333c12313ca84f1ee8a8e4e5293f27c1f079d30c64e45af43b8",
+  "private_files_bound": 579,
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/ci-p1-4768236-controls/review.md": "fcc99c01dc9dbb639354d3a9a8839a31042213e907dee04784f88a7a2a5bb8e3",
+    "docs/research/ossie-req-001/ci-p1-4768236-controls/receipt.json": "bbc590c6eba4714e75dbfe01c47380e8ae9c6d2ebfdd46259be3bb94cfabf54d",
+    "docs/research/ossie-req-001/ci-p1-4768236-controls/final-state.json": "9740782e7cd007302c88ea0c5a445b42fe478eaa9774a5814fffc1978d9b1005",
+    "docs/research/ossie-req-001/ci-p1-4768236-controls/advisor.json": "0881383b9201c844d1e833b8025b60dedd75f5f48985e256cd19c7ff31a1be6e",
+    "ossie-duckdb-plan.md": "bf5960c811c4ef4bc4e3ae21a7e1947271bec3ab5e60bdfea68f6e21bdf79a58",
+    "docs/ossie-execution-research.md": "a45dbbb700782f0dd339fbd5df97fa635c15b44725e20ea46ed7fc85b7b73059"
+  },
+  "local_links_checked": 356,
+  "diff_check": "pass",
+  "models_called": 0,
+  "private_config_read": false,
+  "source_changes": false,
+  "rerun": false,
+  "closing_documentation_pushed": false,
+  "remaining": [
+    "Locate and reproduce Linux replay correspondence failure with deterministic boundary and negative controls before scoped fix",
+    "After authorized fix, new cross-platform/tidy CI must pass; current run remains failed",
+    "Closing record local only; old published personal paths and local submodule Git environment remain separate scope"
+  ]
+}

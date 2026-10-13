@@ -1,0 +1,24 @@
+{
+  "schema": "ossie-p1-ci-failure-triage-advice-v1",
+  "skill": "advisor-escalation/SKILL.md",
+  "trigger": "Unexplained cross-platform replay regression",
+  "requested_role": "advisor",
+  "requested_model": "gpt-6-astra",
+  "requested_effort": "high",
+  "effective_model": "unknown",
+  "effective_effort": "unknown",
+  "usage": "unknown",
+  "billing": "unknown",
+  "decision": "Unresolved replay correspondence failure; deadline boundary leading hypothesis, not confirmed CI cause",
+  "lead_decision": "accepted; preserve failed run and skipped steps; no implementation or automatic rerun",
+  "evidence_grade": {
+    "observed": "Exact failed step/assertion; actual next event/control/timing absent",
+    "source_proven": "Replay timeout handling requires failure timestamp >= limit; recording uses Date.now while cancellation uses timers",
+    "inference": "A limit-1 legitimate timeout could produce same symptom",
+    "unproven": "Specific Linux timer rounding, failed control identity and actual event sequence"
+  },
+  "next": "Deterministic boundary derivatives and missing-response/terminal forgery refusals; controlled clock verification; bounded public diagnostics if needed",
+  "writes": false,
+  "child_delegation": false,
+  "provider_requests": 0
+}

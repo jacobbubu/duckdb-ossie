@@ -1,5 +1,23 @@
 # OSSIE-REQ-001 本体执行基线研究
 
+### 当前推送与新 CI 结果（2026-10-13）
+
+[4768236运行及Linux失败边界](research/ossie-req-001/ci-p1-4768236-controls/review.md)：
+当前分支已正常推送，fresh run38367223932终态失败，15/17 job成功；九构建/
+tidy/格式/176Bun892/MCP/Mac独立33离线20传输通过，Linux P1三场景离线
+replay期待simulation_response报错，后续步骤跳过、gate失败。计时器/记录
+阈值为源码领先假设，非已确认Linux根因；原失败与报告保留，不重跑取绿/
+改源码或真实模型。下一受控边界与负控复现、定位缺口后决定修复；本轮
+记录仅本地，交付仍有Linux阻塞，旧限定验收与局限不被CI状态改写。
+
+### 当前分支推送与新 CI checkpoint（2026-10-13）
+
+用户授权推送4768236，远端确认正常fast-forward成功。新主流水线
+[跨平台与tidy运行](https://github.com/jacobbubu/duckdb-ossie/actions/runs/38367223932)
+对应同SHA，正在检查终态和实际入口；不能以旧CI或仅排队视为通过。
+GitHub仓库关闭issues，本轮继续本地OSSIE-REQ-001记录。无真实Agent
+模型/MCP；保留新运行证据，收口文档先本地保存。
+
 ### 当前两路径与未推历史清理完成（2026-10-13）
 
 [清理及原/新提交和文件hash对应](research/ossie-req-001/p1-path-history-cleanup/review.md)

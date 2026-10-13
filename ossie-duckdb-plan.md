@@ -1,5 +1,29 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 pushed branch / fresh CI result — 2026-10-13
+
+[4768236新CI](docs/research/ossie-req-001/ci-p1-4768236-controls/review.md)检查包完成，
+交付仍有Linux回归阻塞：正常push/远端完整SHA确认，新run38367223932终态
+failure，17job中15成功/2失败。九分发构建、实际src tidy、格式、项目176
+Bun892/0失败、MCP roundtrip、Mac独立产物含P1 33/20通过。Linux此前
+原生/各专用MCP/无模型通过，P1三场景replay报ordered simulation_response，
+后续三相关步骤跳过；gate正确失败。原日志/两产物/报告保存，不重跑取绿。
+只读Advisor及Lead源码核对认为deadline记录/重放阈值为领先假设，缺原
+Linux私有轨迹不能确认；不提高timeout/放宽契约/改实现。当前68源与476
+代码相同，老seal/真实限定结论保持，无新真实模型/MCP。本轮收口仅本地
+保存未另推。下一需先受控边界/负控复现与失败定位，再决定必要修复和
+新CI；不能宣称跨平台收口。旧基线路径/子模块环境项仍为原范围。
+
+## P1 pushed branch / fresh CI checkpoint — 2026-10-13
+
+用户授权推送当前分支并检查新跨平台/tidy CI。沿OSSIE-REQ-001，父仓库
+干净，刷新远端仍9dd7956，ahead25/behind0；正常push4768236成功，远端
+查询确认同完整SHA，无force/模型/MCP。新主工作流run38367223932对应
+4768236，开始跟踪两平台artifact-load、原生format/tidy、项目质量与CI gate，
+旧9dd CI不当本轮证据。GitHub仓库关闭issues，沿本地issue继续。下一等待
+本轮终态/具体steps/logs，失败则按同源保留原诊断并处理必要修复。原证据/
+清理对应不改，不运行额外真实模型；本轮收口文档先本地留存。
+
 ## P1 personal-path history cleanup delivery — 2026-10-13
 
 [两路径及未推历史清理](docs/research/ossie-req-001/p1-path-history-cleanup/review.md)
