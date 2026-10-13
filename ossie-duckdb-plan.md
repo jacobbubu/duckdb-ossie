@@ -1,5 +1,25 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 states live review delivery — 2026-10-13
+
+[states审阅](docs/research/ossie-req-001/p1-states-live-review/review.md)完成：实际
+2工具/4资源/7发现RPC，原scope提示/问题与初始输入核对，oracle未加入；
+缺products.mode/values分支结构、compile仅指query及Agent预排序未披露。
+虚拟body17330/12045字节（模拟首17327只差model），纯离线pending重放/
+单题候选参数/固定产物hash/配置元信息通过；66源/1247私有原件保持。
+history用户限定接受另记衍生，旧raw pending/seal保持。状态为全捕获用户域
+User/day，比较为请求内相邻日对含未变，缺失UNKNOWN；日期支持与history
+不同。无模型/新MCP/配置内容读取/实现/预算变化/推送，不重跑全套。包完成，
+下一建议研究states最小完整语法和通用示例，不先真实运行；states未真实验收。
+
+## P1 states live review checkpoint — 2026-10-13
+
+用户接受history限定结论；本轮沿OSSIE-REQ-001、2ccfdb3只审states实际上下文/
+命令/预算/证据，不调用模型、不读配置内容或实施语法补充。接受另存衍生
+记录，原history pending/seal保持。用当前66源封存states实际MCP＋虚拟传输，
+核状态/全域/相邻日口径、products语法披露，纯离线重放/单题参数解析与
+固定产物hash/文件元信息；不新MCP、不重复全套、不推送。
+
 ## P1 revised history one-shot delivery — 2026-10-13
 
 [history一次真实验收](docs/research/ossie-req-001/p1-contract-history-live-controls/review.md)

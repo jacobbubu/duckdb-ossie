@@ -1,0 +1,35 @@
+{
+  "schema": "ossie-p1-states-review-verification-v1",
+  "date": "2026-10-13",
+  "baseline": "2ccfdb3",
+  "production_sources_verified_unchanged": 66,
+  "prior_private_files_preserved": 1247,
+  "private_manifest_sha256": "4b0f75d752de7c18fc3b31b5ac2f876059ffe5d69ed3d1f3e38bd15a7af68e7c",
+  "private_files_bound": 4,
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/p1-states-live-review/receipt.json": "19ebaff7aabc323507fefeb89a5b8c9a0c96edbc5e376b4e7442631a8ff6ae42",
+    "docs/research/ossie-req-001/p1-states-live-review/review.md": "b4555af4dc021b9676aab162249e54e9d9eafb5b703d9fc7f221e90be065857a",
+    "docs/research/ossie-req-001/p1-contract-history-live-controls/user-acceptance.json": "ec24f7bc906fdef6720b4a9551acf5d52efa448041e3aaeb709f70f6c93a6417"
+  },
+  "pure_offline_replay": "consistent pending",
+  "candidate_arguments_parsed": "pass;states only",
+  "candidate_commands_executed": 0,
+  "metadata_only_configuration_check": true,
+  "actual_config_contents_read": false,
+  "actual_model_requests": 0,
+  "new_mcp_sessions": 0,
+  "production_source_changes": false,
+  "push": false,
+  "conclusion": "Products nested grammar and compile standalone construction incomplete; research before live execution",
+  "history_user_acceptance_recorded_as_separate_derivative": true,
+  "original_history_receipt_and_raw_seal_preserved": true,
+  "not_run": [
+    "Live service/config validation",
+    "New MCP/query/compile",
+    "Full tests/native build/tidy/remote CI"
+  ],
+  "local_links_checked": 340,
+  "bounded_public_marker_scan": "pass; actual configuration/secret not read; not universal detection",
+  "final_source_and_derivative_hash_check": "pass",
+  "diff_check": "pass"
+}

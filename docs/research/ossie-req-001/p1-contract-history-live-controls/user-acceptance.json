@@ -1,0 +1,19 @@
+{
+  "schema": "ossie-p1-contract-history-user-acceptance-v1",
+  "date": "2026-10-13",
+  "acceptance": "accepted_limited_conclusion",
+  "authority": "Explicit user message in this conversation",
+  "accepted_scope": "History one-shot synthetic fixture; complete relationship result, date scope, gaps, deduplication, count unit, raw identities and execution evidence reviewed by Lead",
+  "lead_review_receipt_sha256": "722060818fcb0f161b7f8be38502abfe50d57e361dbb8a548613d9b8d5027a9b",
+  "source_seal_sha256": "e03147e0b5855ff2992d1d940e9565fd70a7e66aa502b3a79c75a6b4e3a2947e",
+  "lead_review_status": "limited_pass",
+  "original_raw_status": "pending",
+  "original_receipt_and_raw_archive_preserved": true,
+  "not_claimed": [
+    "General model reliability or sole causal effect of grammar additions",
+    "States live acceptance",
+    "Backend identity, original wire, fees or retention verification"
+  ],
+  "additional_live_calls_authorized": false,
+  "push_authorized": false
+}
