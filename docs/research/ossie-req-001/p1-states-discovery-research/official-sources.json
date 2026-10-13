@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-13",
+  "actual_protocol": "2024-11-05; unchanged",
+  "sources": [
+    {
+      "url": "https://modelcontextprotocol.io/specification/2024-11-05/server/tools",
+      "claim": "description and inputSchema declare tools; outer String schema alone does not describe nested request JSON."
+    },
+    {
+      "url": "https://modelcontextprotocol.io/specification/2024-11-05/server/resources",
+      "claim": "Application determines inclusion of resource content; URI alone is not model context."
+    },
+    {
+      "url": "https://json-schema.org/draft/2020-12/json-schema-validation",
+      "claim": "contentSchema/media keywords annotate String content, not automatic inner decoding/validation."
+    }
+  ],
+  "no_new_resource_or_protocol_upgrade": true
+}

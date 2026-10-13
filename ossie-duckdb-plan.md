@@ -1,5 +1,25 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 states discovery research delivery — 2026-10-13
+
+[states最小完整语法研究](docs/research/ossie-req-001/p1-states-discovery-research/proposal.md)
+完成：推荐两工具同源完整构造声明＋紧凑假想例，不增资源。五根字段/两产品
+分支/String与native/Agent排序区别明确；日期还定义输出日历、compile同样
+做元数据容量门禁，Advisor反证后Lead修候选措辞并整合重复说明的建议。
+8正例/20结构拒绝/5日期词法/5语义差异/8预算/2原始字节及重复键离线通过，
+70来源（66运行源）/1251旧私有原件保持，schema通过不当native绑定/状态真值。
+无实现、配置读取、新MCP/compile/真实模型/推送。本研究包完成；下一候选
+最小两描述实施及无模型回归，须另行授权；再审新版真实上下文/预算，states
+真实验收未执行。facts/history限定接受不证明整体真实自主可靠性。
+
+## P1 states discovery research checkpoint — 2026-10-13
+
+用户授权states最小完整语法和通用示例研究，禁止实现/真实模型。沿
+OSSIE-REQ-001和c7908d8，核五根字段/两产品分支/String参数、原生与客户端
+排序、0001..9999日历/366及资源限制、全域三值与相邻比较单位。推荐先复用
+history两描述共同来源的最小方式，不自动增资源；研究schema/示例与纯离线
+分层验证，一轮Advisor反证。保留66源/旧证据，不读配置或新MCP/compile/推送。
+
 ## P1 states live review delivery — 2026-10-13
 
 [states审阅](docs/research/ossie-req-001/p1-states-live-review/review.md)完成：实际

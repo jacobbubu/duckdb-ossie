@@ -1,0 +1,140 @@
+{
+  "status": "research_only_not_registered",
+  "hypothetical_program": {
+    "qualification_concept": "EligibleVisit",
+    "rule": "Visit.signal >= 7",
+    "notice": "Assumed other frozen daily-observation program declares this exact qualification concept/rule. Current pilot does not declare it; do not execute these outer parameters against pilot. No input rows, state outputs, counts or answers supplied."
+  },
+  "examples": [
+    {
+      "id": "all",
+      "request": {
+        "start_date": "2031-04-05",
+        "end_date": "2031-04-07",
+        "products": {
+          "mode": "all"
+        },
+        "user_domain": "captured_users",
+        "transitions": "within_request_days"
+      },
+      "arguments": {
+        "concept": "EligibleVisit",
+        "request_json": "{\"start_date\":\"2031-04-05\",\"end_date\":\"2031-04-07\",\"products\":{\"mode\":\"all\"},\"user_domain\":\"captured_users\",\"transitions\":\"within_request_days\"}"
+      }
+    },
+    {
+      "id": "subset",
+      "request": {
+        "start_date": "2031-04-05",
+        "end_date": "2031-04-07",
+        "products": {
+          "mode": "subset",
+          "values": ["Catalog-A", "catalog-a", "商品"]
+        },
+        "user_domain": "captured_users",
+        "transitions": "within_request_days"
+      },
+      "arguments": {
+        "concept": "EligibleVisit",
+        "request_json": "{\"start_date\":\"2031-04-05\",\"end_date\":\"2031-04-07\",\"products\":{\"mode\":\"subset\",\"values\":[\"Catalog-A\",\"catalog-a\",\"商品\"]},\"user_domain\":\"captured_users\",\"transitions\":\"within_request_days\"}"
+      }
+    },
+    {
+      "id": "single-day",
+      "request": {
+        "start_date": "2032-06-10",
+        "end_date": "2032-06-10",
+        "products": {
+          "mode": "all"
+        },
+        "user_domain": "captured_users",
+        "transitions": "within_request_days"
+      },
+      "arguments": {
+        "concept": "EligibleVisit",
+        "request_json": "{\"start_date\":\"2032-06-10\",\"end_date\":\"2032-06-10\",\"products\":{\"mode\":\"all\"},\"user_domain\":\"captured_users\",\"transitions\":\"within_request_days\"}"
+      }
+    },
+    {
+      "id": "leap-day",
+      "request": {
+        "start_date": "2032-02-29",
+        "end_date": "2032-03-01",
+        "products": {
+          "mode": "all"
+        },
+        "user_domain": "captured_users",
+        "transitions": "within_request_days"
+      },
+      "arguments": {
+        "concept": "EligibleVisit",
+        "request_json": "{\"start_date\":\"2032-02-29\",\"end_date\":\"2032-03-01\",\"products\":{\"mode\":\"all\"},\"user_domain\":\"captured_users\",\"transitions\":\"within_request_days\"}"
+      }
+    },
+    {
+      "id": "year-boundary",
+      "request": {
+        "start_date": "2031-12-31",
+        "end_date": "2032-01-02",
+        "products": {
+          "mode": "all"
+        },
+        "user_domain": "captured_users",
+        "transitions": "within_request_days"
+      },
+      "arguments": {
+        "concept": "EligibleVisit",
+        "request_json": "{\"start_date\":\"2031-12-31\",\"end_date\":\"2032-01-02\",\"products\":{\"mode\":\"all\"},\"user_domain\":\"captured_users\",\"transitions\":\"within_request_days\"}"
+      }
+    },
+    {
+      "id": "raw-unicode-nul",
+      "request": {
+        "start_date": "2031-04-05",
+        "end_date": "2031-04-07",
+        "products": {
+          "mode": "subset",
+          "values": ["café", "café", "unit\u0000east"]
+        },
+        "user_domain": "captured_users",
+        "transitions": "within_request_days"
+      },
+      "arguments": {
+        "concept": "EligibleVisit",
+        "request_json": "{\"start_date\":\"2031-04-05\",\"end_date\":\"2031-04-07\",\"products\":{\"mode\":\"subset\",\"values\":[\"café\",\"café\",\"unit\\u0000east\"]},\"user_domain\":\"captured_users\",\"transitions\":\"within_request_days\"}"
+      }
+    },
+    {
+      "id": "minimum-year",
+      "request": {
+        "start_date": "0001-01-01",
+        "end_date": "0001-01-01",
+        "products": {
+          "mode": "all"
+        },
+        "user_domain": "captured_users",
+        "transitions": "within_request_days"
+      },
+      "arguments": {
+        "concept": "EligibleVisit",
+        "request_json": "{\"start_date\":\"0001-01-01\",\"end_date\":\"0001-01-01\",\"products\":{\"mode\":\"all\"},\"user_domain\":\"captured_users\",\"transitions\":\"within_request_days\"}"
+      }
+    },
+    {
+      "id": "maximum-year",
+      "request": {
+        "start_date": "9999-12-31",
+        "end_date": "9999-12-31",
+        "products": {
+          "mode": "all"
+        },
+        "user_domain": "captured_users",
+        "transitions": "within_request_days"
+      },
+      "arguments": {
+        "concept": "EligibleVisit",
+        "request_json": "{\"start_date\":\"9999-12-31\",\"end_date\":\"9999-12-31\",\"products\":{\"mode\":\"all\"},\"user_domain\":\"captured_users\",\"transitions\":\"within_request_days\"}"
+      }
+    }
+  ]
+}

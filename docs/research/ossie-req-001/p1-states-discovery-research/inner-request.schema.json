@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "start_date": {
+      "type": "string",
+      "pattern": "^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "end_date": {
+      "type": "string",
+      "pattern": "^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "products": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "all"
+            }
+          },
+          "required": ["mode"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "subset"
+            },
+            "values": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": ["mode", "values"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "user_domain": {
+      "const": "captured_users"
+    },
+    "transitions": {
+      "const": "within_request_days"
+    }
+  },
+  "required": [
+    "start_date",
+    "end_date",
+    "products",
+    "user_domain",
+    "transitions"
+  ],
+  "additionalProperties": false
+}

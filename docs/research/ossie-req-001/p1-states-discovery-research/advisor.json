@@ -1,0 +1,25 @@
+{
+  "schema": "ossie-states-discovery-advice-v1",
+  "skill": "advisor-escalation/SKILL.md",
+  "requested_role": "advisor",
+  "requested_model": "gpt-6-astra",
+  "requested_effort": "high",
+  "effective_model": "unknown",
+  "effective_effort": "unknown",
+  "usage": "unknown",
+  "billing": "unknown",
+  "decision": "Description-only shared-source complete notice; no new resource",
+  "lead_accepted_corrections": [
+    "Date bounds define calendar and observation scope; products only observation scope; neither narrows full captured users",
+    "Query return statements conditional; compile no computed results",
+    "Native sorts subset order preserving decoded strings",
+    "Both query and compile metadata cardinality checks at binding",
+    "Consolidate overlapping prose retaining carrier/schema/API/int-text/current-rule/six-hash boundaries"
+  ],
+  "advisor_validation_limit": "Full stateRequest under Node strip-only blocked by transitive TypeScript parameter property; dailyRequest/serialization succeeded",
+  "lead_validation": "Full current guards for both tools ran with Bun and passed all documented controls",
+  "model_constructibility": "untested",
+  "writes": false,
+  "child_delegation": false,
+  "native_or_mcp_execution": false
+}
