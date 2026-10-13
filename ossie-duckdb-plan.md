@@ -1,5 +1,25 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 revised states live review delivery — 2026-10-13
+
+[新版states审阅](docs/research/ossie-req-001/p1-revised-states-live-review/review.md)
+完成：两完整描述/假想例在实际context/body，2工具4资源/7发现保持；
+原scope说明/问题和初始输入一致，hidden oracle未加入，同源首body只差
+model，虚拟22912/17627字节（模拟首22909）。纯离线pending重放/仅states
+新路径参数/固定产物hash/配置元信息通过；68源/991实施原件保持。原预算/
+清理/公开v2保持，User/day与相邻日比较对单位、三值/全域/日历scope及
+compile门禁明确。无配置内容/新MCP/真实模型/代码/推送，不重跑全套。
+包完成；下一仅建议另定states一次，先脱敏复核配置，结束停下独立审阅；
+states真实语义未验收，facts/history限定接受不证明整体自主可靠性。
+
+## P1 revised states live review checkpoint — 2026-10-13
+
+用户仅授权新版states上下文/单题命令/预算/证据审阅，真实模型继续禁止。
+沿OSSIE-REQ-001基线eeb3cc3，复用68源实际MCP＋虚拟传输和模拟轨迹，
+核两完整描述/假想例/原系统和问题、oracle隔离，纯离线重放/新命令参数。
+只核固定产物hash与配置元信息，不读配置内容、不新MCP/实现/预算/推送；
+991实施私有原件和旧seal保持，不重复全套，下一停在是否授权单题真实启动。
+
 ## P1 states discovery implementation delivery — 2026-10-13
 
 [states两工具完整声明](docs/research/ossie-req-001/p1-states-discovery-controls/review.md)

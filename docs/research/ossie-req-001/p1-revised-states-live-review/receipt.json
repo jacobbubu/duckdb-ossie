@@ -1,0 +1,88 @@
+{
+  "schema": "ossie-p1-revised-states-live-review-v1",
+  "date": "2026-10-13",
+  "baseline": "eeb3cc3",
+  "reviewer": "Codex Lead",
+  "review_status": "review_complete_live_not_run",
+  "source_files_verified": 68,
+  "source_inventory_receipt_sha256": "6e1b9d36d6a78a7b99a70bb5109999f58ff3abb84d4ce59cf01aaf4a7e234fd9",
+  "source_inventory_sha256": "0313b92de4641e4c4b6b3bb65552f9cef513be78e81333f34e660a25dd17f473",
+  "source_seal_sha256": "f2f3f4b8b3884b76262c5de2154db91d24ef29e4121f732240375fc6df08a0e5",
+  "context_sha256": "ae2ec53e38455dde1b63d4e4a69215fd94395cdfa55333de68905597f17ebd9b",
+  "notice_sha256": "2806bfa0113c794a63f2915b5c6b792c00dc4ad95c9b187888426f5468c270b2",
+  "artifact_sha256": "98b0aeba1f97f2e61d8570be43c671e3270d9ffe36120b15d5e6908ab82dab3a",
+  "cli_sha256": "2c75d4758c9d74cb0f4642f4e8d3c1a13e8a888a1e475fffd90934ad5ae3dd17",
+  "installed_mcp_sha256": "4b39fbcd59d164db282c2c2b55535935d931a1a6e9c2185cf95b93a7c6f9f97e",
+  "tool_count": 2,
+  "resource_count": 4,
+  "discovery_rpc_count": 7,
+  "new_resource": false,
+  "complete_common_grammar_and_generic_examples_in_both_actual_descriptions": true,
+  "canonical_context_matches_discovery_and_original_prompts": true,
+  "state_operation_scope_notice_preserved": true,
+  "initial_input_only_discovery_and_original_question": true,
+  "hidden_oracle_not_added_to_initial_input": true,
+  "hypothetical_example_concept_not_declared_in_pilot": true,
+  "current_simulated_first_body_differs_only_in_model": true,
+  "recorded_virtual_body_sizes": [
+    {
+      "round": 1,
+      "utf8_bytes": 22912
+    },
+    {
+      "round": 2,
+      "utf8_bytes": 17627
+    }
+  ],
+  "simulated_first_body_bytes": 22909,
+  "continuation_only_actual_tool_outputs_with_previous_response_id": true,
+  "scripted_parameters_not_corrected_between_proposal_and_rpc": true,
+  "pure_offline_replay_status": "pending",
+  "raw_archive_unchanged": true,
+  "implementation_private_files_preserved": 991,
+  "budgets": {
+    "rounds": 4,
+    "calls": 3,
+    "milliseconds": 180000,
+    "outputTokens": 4096,
+    "inputBytes": 131072
+  },
+  "inbound_bytes": 2097152,
+  "cleanup_policy": {
+    "schema": "ossie-p1-cleanup-policy-v1",
+    "timing": "separate sequential waits",
+    "step_wait_ms": 30000,
+    "normal_steps": [
+      "close",
+      "work"
+    ],
+    "optional_test_step": "cleanupFault between close and work",
+    "maximum_normal_requested_wait_ms": 60000,
+    "maximum_test_requested_wait_ms": 90000,
+    "stop_on_first_failure": true,
+    "hard_realtime": false
+  },
+  "candidate_scene": "states",
+  "candidate_arguments_parsed": true,
+  "candidate_commands_executed": 0,
+  "fresh_output_and_log_paths": true,
+  "configuration_metadata": {
+    "regular_not_symlink": true,
+    "git_ignored": true,
+    "contents_read": false
+  },
+  "fixed_cli_extension_and_installed_mcp_hashes_match": true,
+  "production_source_changes": false,
+  "actual_model_requests": 0,
+  "new_mcp_sessions": 0,
+  "push": false,
+  "remaining": [
+    "Separate authorization for one states entry invocation; redacted effective local configuration recheck before running",
+    "States autonomous request construction and semantic acceptance not tested"
+  ],
+  "limitations": [
+    "Virtual body size/replay does not prove real token sufficiency/backend identity/fees/retention or model reliability",
+    "Original raw pending preserved; future Lead review and user acceptance require separate derivatives",
+    "Budgets per start, not cumulative input tokens or monetary limit"
+  ]
+}
