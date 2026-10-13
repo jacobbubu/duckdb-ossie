@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-13",
+  "actual_protocol": "2024-11-05; unchanged",
+  "sources": [
+    {
+      "url": "https://modelcontextprotocol.io/specification/2024-11-05/server/tools",
+      "claim": "Tool descriptions and inputSchema describe exposed tools; current outer schema remains String parameters."
+    },
+    {
+      "url": "https://modelcontextprotocol.io/specification/2024-11-05/server/resources",
+      "claim": "Resource inclusion is application-driven; publishing a URI alone does not prove model context inclusion."
+    },
+    {
+      "url": "https://json-schema.org/draft/2020-12/json-schema-validation",
+      "claim": "contentSchema/contentMediaType describe string content as annotations; structure schema must be explicitly applied after decoding."
+    }
+  ],
+  "not_claimed": [
+    "Protocol version upgrade",
+    "New resource available",
+    "Native or model execution of generic examples"
+  ]
+}

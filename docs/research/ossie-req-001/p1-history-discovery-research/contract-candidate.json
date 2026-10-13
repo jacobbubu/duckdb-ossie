@@ -1,0 +1,46 @@
+{
+  "schema_version": "ossie-history-request-contract-v1",
+  "status": "research_only_not_registered",
+  "uri": "ossie://population/history-request-contract",
+  "applies_to": [
+    "population_history_links",
+    "population_history_links_compile"
+  ],
+  "profile": "historical-observation-relation-v1",
+  "native_api_version": "1.0.0",
+  "construction_notice": "request_json is a String encoding exactly one JSON object, not an object argument or a JSON string value. Inner shape: {\"dates\":D,\"products\":P}. D is exactly {\"mode\":\"all\"} or {\"mode\":\"range\",\"start_date\":S,\"end_date\":E}; S/E are finite canonical DuckDB DATE strings, at most32 bytes, start<=end, inclusive observation bounds (BC and wide years supported, not infinity). P is exactly {\"mode\":\"all\"} or {\"mode\":\"subset\",\"values\":[string,...]}; 1..64 unique nonempty raw UTF-8 strings, <=256 decoded UTF-8 bytes each, case-sensitive identities including Unicode/control characters. Send subset values sorted by ascending raw UTF-8 bytes for this Agent client; native accepts arbitrary order and normalizes. No omitted/default/unknown/duplicate fields, nulls, numbers or booleans; raw inner JSON <=16384 UTF-8 bytes including whitespace/escapes. relationship is the exact name discovered from history-program, separate from request_json. Query and compile use the identical request grammar. Dates/products filter frozen observations only, not whole-history validation; all does not expand a calendar or carry gaps. Native history intervals remain finite [start,end), different from inclusive request date bounds. Query returns complete executed links/counts; compile only binds/explains, never computes links/counts. Native outer MCP may ignore unknown arguments/coerce values; this Agent sends exactly two Strings.",
+  "outer_parameters": {
+    "relationship": "String; exact discovered history-program relationship",
+    "request_json": "String containing one inner JSON object"
+  },
+  "structural_schema_file": "inner-request.schema.json",
+  "examples_file": "generic-examples.json",
+  "schema_is_not_semantic_validator": true,
+  "semantic_rules": [
+    "Finite canonical DuckDB DATE conversion and start<=end; not a four-digit-year-only format; native text limit32 bytes",
+    "Decoded products are nonempty well-formed raw UTF-8, <=256 bytes, exact duplicates rejected; no trim/case folding/NUL removal",
+    "Original request bytes <=16384 including whitespace/escapes; JSON duplicate fields rejected before decoded schema",
+    "Native normalizes subset raw-byte ordering; current Agent requires pre-sorted subset",
+    "Filters observations only; whole history validated at capture",
+    "Do not infer query link_count from source/index counts or compile",
+    "Complete query links <=10000 and full internal JSON <=1048576 including metadata/escaping; reject, no paging/truncation"
+  ],
+  "frozen_program_separate_binding": true,
+  "production_changes": false,
+  "uri_status": "optional alternative only; no resource selected for minimum remedy",
+  "preferred_delivery": "identical complete shared-source construction notice in both query and compile descriptions; no new resource",
+  "compact_generic_inner_example": {
+    "dates": {
+      "mode": "all"
+    },
+    "products": {
+      "mode": "subset",
+      "values": ["Catalog-A"]
+    }
+  },
+  "compact_generic_outer_example": {
+    "relationship": "membership_at_observation",
+    "request_json": "{\"dates\":{\"mode\":\"all\"},\"products\":{\"mode\":\"subset\",\"values\":[\"Catalog-A\"]}}"
+  },
+  "compact_example_notice": "Hypothetical other program must declare this exact relationship; no data/result/count implied, not executable against the current pilot. Discover actual relationship before use."
+}

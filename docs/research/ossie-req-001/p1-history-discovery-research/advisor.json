@@ -1,0 +1,23 @@
+{
+  "schema": "ossie-history-discovery-advice-v1",
+  "skill": "advisor-escalation/SKILL.md",
+  "trigger": "Minimum disclosure design tradeoff: descriptions only vs new resource",
+  "requested_role": "advisor",
+  "requested_model": "gpt-6-astra",
+  "requested_effort": "high",
+  "effective_model": "unknown",
+  "effective_effort": "unknown",
+  "usage": "unknown",
+  "billing": "unknown",
+  "decision": "Prefer complete identical shared-source descriptions; resource optional when extra consumer need established",
+  "lead_decision": "accepted; remove mandatory resource read; keep eight research examples, propose compact model-visible example",
+  "risks": [
+    "Client presorting must not be attributed to native interface",
+    "Schema only validates structure, not byte/date/relationship/identity semantics",
+    "Resource publication does not prove inclusion",
+    "Model performance remains untested"
+  ],
+  "writes": false,
+  "native_or_mcp_execution": false,
+  "child_delegation": false
+}

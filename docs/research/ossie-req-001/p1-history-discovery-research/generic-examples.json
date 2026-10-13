@@ -1,0 +1,142 @@
+{
+  "status": "research_only_not_registered",
+  "hypothetical_program": {
+    "relationship": "membership_at_observation",
+    "notice": "Assumed exact relation declared by another hypothetical history program. Not declared by current pilot; do not execute these outer arguments against it. Products need not have witnesses; no rows, results, counts or expected membership supplied."
+  },
+  "examples": [
+    {
+      "id": "all-all",
+      "request": {
+        "dates": {
+          "mode": "all"
+        },
+        "products": {
+          "mode": "all"
+        }
+      },
+      "arguments": {
+        "relationship": "membership_at_observation",
+        "request_json": "{\"dates\":{\"mode\":\"all\"},\"products\":{\"mode\":\"all\"}}"
+      }
+    },
+    {
+      "id": "all-subset",
+      "request": {
+        "dates": {
+          "mode": "all"
+        },
+        "products": {
+          "mode": "subset",
+          "values": ["Catalog-A", "catalog-a", "商品"]
+        }
+      },
+      "arguments": {
+        "relationship": "membership_at_observation",
+        "request_json": "{\"dates\":{\"mode\":\"all\"},\"products\":{\"mode\":\"subset\",\"values\":[\"Catalog-A\",\"catalog-a\",\"商品\"]}}"
+      }
+    },
+    {
+      "id": "range-all",
+      "request": {
+        "dates": {
+          "mode": "range",
+          "start_date": "2031-04-05",
+          "end_date": "2031-04-07"
+        },
+        "products": {
+          "mode": "all"
+        }
+      },
+      "arguments": {
+        "relationship": "membership_at_observation",
+        "request_json": "{\"dates\":{\"mode\":\"range\",\"start_date\":\"2031-04-05\",\"end_date\":\"2031-04-07\"},\"products\":{\"mode\":\"all\"}}"
+      }
+    },
+    {
+      "id": "range-subset",
+      "request": {
+        "dates": {
+          "mode": "range",
+          "start_date": "2031-04-05",
+          "end_date": "2031-04-07"
+        },
+        "products": {
+          "mode": "subset",
+          "values": ["Catalog-A", "catalog-a", "商品"]
+        }
+      },
+      "arguments": {
+        "relationship": "membership_at_observation",
+        "request_json": "{\"dates\":{\"mode\":\"range\",\"start_date\":\"2031-04-05\",\"end_date\":\"2031-04-07\"},\"products\":{\"mode\":\"subset\",\"values\":[\"Catalog-A\",\"catalog-a\",\"商品\"]}}"
+      }
+    },
+    {
+      "id": "same-day",
+      "request": {
+        "dates": {
+          "mode": "range",
+          "start_date": "2032-06-10",
+          "end_date": "2032-06-10"
+        },
+        "products": {
+          "mode": "all"
+        }
+      },
+      "arguments": {
+        "relationship": "membership_at_observation",
+        "request_json": "{\"dates\":{\"mode\":\"range\",\"start_date\":\"2032-06-10\",\"end_date\":\"2032-06-10\"},\"products\":{\"mode\":\"all\"}}"
+      }
+    },
+    {
+      "id": "bc-range",
+      "request": {
+        "dates": {
+          "mode": "range",
+          "start_date": "0002-01-01 (BC)",
+          "end_date": "0001-01-01 (BC)"
+        },
+        "products": {
+          "mode": "all"
+        }
+      },
+      "arguments": {
+        "relationship": "membership_at_observation",
+        "request_json": "{\"dates\":{\"mode\":\"range\",\"start_date\":\"0002-01-01 (BC)\",\"end_date\":\"0001-01-01 (BC)\"},\"products\":{\"mode\":\"all\"}}"
+      }
+    },
+    {
+      "id": "wide-year",
+      "request": {
+        "dates": {
+          "mode": "range",
+          "start_date": "12000-01-01",
+          "end_date": "12000-01-02"
+        },
+        "products": {
+          "mode": "all"
+        }
+      },
+      "arguments": {
+        "relationship": "membership_at_observation",
+        "request_json": "{\"dates\":{\"mode\":\"range\",\"start_date\":\"12000-01-01\",\"end_date\":\"12000-01-02\"},\"products\":{\"mode\":\"all\"}}"
+      }
+    },
+    {
+      "id": "raw-identity-unicode-nul",
+      "request": {
+        "dates": {
+          "mode": "all"
+        },
+        "products": {
+          "mode": "subset",
+          "values": ["café", "café", "unit\u0000east"]
+        }
+      },
+      "arguments": {
+        "relationship": "membership_at_observation",
+        "request_json": "{\"dates\":{\"mode\":\"all\"},\"products\":{\"mode\":\"subset\",\"values\":[\"café\",\"café\",\"unit\\u0000east\"]}}"
+      }
+    }
+  ]
+}

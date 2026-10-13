@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "History inner request structural draft",
+  "type": "object",
+  "properties": {
+    "dates": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "all"
+            }
+          },
+          "required": ["mode"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "range"
+            },
+            "start_date": {
+              "type": "string",
+              "minLength": 1
+            },
+            "end_date": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["mode", "start_date", "end_date"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "products": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "all"
+            }
+          },
+          "required": ["mode"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "const": "subset"
+            },
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "maxItems": 64,
+              "uniqueItems": true
+            }
+          },
+          "required": ["mode", "values"],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": ["dates", "products"],
+  "additionalProperties": false
+}
