@@ -1,5 +1,25 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 revised facts one-shot delivery — 2026-10-13
+
+[新版facts一次真实验收](docs/research/ossie-req-001/p1-contract-facts-live-controls/review.md)
+完成：脱敏标准配置/既定目标匹配，2真实客户端尝试/HTTP200/投影、1实际
+查询/回复/解码，完整答案与scope/独立oracle机械相符；Lead解释/分母/单位/
+NULL/TRUE有序差审阅limited_pass，用户接受尚未记录。原pending/seal和旧
+失败保持，离线同源重放通过；64源与4453上轮原件不变，实际body32211/12025
+字节，原4/3/4096预算不改。源码/额度未改，无重试、其他题或推送。
+本样例成功不证明可靠率或语法补充唯一因果，后端/原wire/计费未独立核验。
+下一待用户接受限定结论并另定工作，history/states真实验收仍未执行。
+
+## P1 revised facts one-shot checkpoint — 2026-10-13
+
+用户明确授权新版facts一次，先脱敏复核既定本地配置，原预算/新目录，
+结束后审阅答案/口径/调用证据，禁止自动其他题。沿OSSIE-REQ-001基线
+782cdd7，核对64源/固定CLI和扩展、新out/log未占用，清三标准变量后显式
+加载私有配置；只输出布尔，不存key或内部目标。配置不符则不发请求。
+一次启动后不重试/自动修参，原pending/失败seal保留、衍生结论另存。
+不改源码/提示词/额度，不推送；单题pilot不当整体真实验收完成。
+
 ## P1 revised facts live review delivery — 2026-10-13
 
 [新版单题审阅](docs/research/ossie-req-001/p1-revised-facts-live-review/review.md)

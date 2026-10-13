@@ -1,0 +1,42 @@
+{
+  "schema": "ossie-p1-contract-facts-delivery-v1",
+  "date": "2026-10-13",
+  "baseline": "782cdd7",
+  "source_files_current": 64,
+  "production_sources_changed": false,
+  "actual_client_model_attempts": 2,
+  "actual_mcp_query_dispatches": 1,
+  "additional_model_requests_during_review": 0,
+  "retries": 0,
+  "other_scenes_run": false,
+  "configuration_redacted_check": "pass; check logs bool only; standard names and selected target/model matched; no key recorded",
+  "lead_semantic_review": "limited_pass",
+  "reviewer": "Codex Lead",
+  "user_acceptance": "not_recorded",
+  "raw_status_and_seal_kept": "pending unchanged",
+  "same_source_artifact_offline_replay": "consistent pending",
+  "source_seal_sha256": "ce10e657e973f235823031833d4604c929348245997d99023cc42e9744084aae",
+  "prior_private_files_preserved": 4453,
+  "raw_and_review_private_files_bound": 21,
+  "private_manifest_sha256": "8c460a1fc3aa3704d3df7f9bd046dc8ff097a9f9d552992b2d39f8acdc5ac5c4",
+  "local_links_checked": 329,
+  "public_marker_scan": {
+    "files_checked": 6,
+    "key_literal_absent": true,
+    "selected_model_and_endpoint_absent": true,
+    "provider_requests": 0,
+    "scope": "bounded public delivery candidates; not universal secret detection"
+  },
+  "diff_check": "pass",
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/p1-contract-facts-live-controls/receipt.json": "e43a847f46260d05da41d38cce41b48c07bdaebc0a6d0f48bb720fdee96fc333",
+    "docs/research/ossie-req-001/p1-contract-facts-live-controls/review.md": "0d0308c505ff7cedfd84bfc3f56d732143534071e03c804eb1b823424acbb26d",
+    "docs/research/ossie-req-001/p1-contract-facts-live-controls/summary.json": "7f1b50de33cf139d7c97f55adb3c1c10fe5eda28077afea4866fcd5ac960a44b"
+  },
+  "checks_not_run": [
+    "new full Bun/native/tidy regression or remote CI",
+    "provider identity/wire/billing/retention verification",
+    "other live scene"
+  ],
+  "next": "Stop; user may accept the bounded Lead conclusion and specify next work; no automatic follow-on or push"
+}

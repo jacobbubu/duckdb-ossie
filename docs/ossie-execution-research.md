@@ -1,5 +1,24 @@
 # OSSIE-REQ-001 本体执行基线研究
 
+### 新版facts单次真实验收与Lead审阅完成（2026-10-13）
+
+[执行/口径/证据边界](research/ossie-req-001/p1-contract-facts-live-controls/review.md)：
+先脱敏核对标准配置和既定目标，单次启动2客户端请求/HTTP200/投影、1
+成功native查询；完整答案/scope/oracle机械通过，Lead解释口径limited_pass。
+原raw/replay保持pending，用户接受尚未记录；不自动改原seal或旧失败。
+首输入无独立答案，提议与RPC原样对应，actualbody32211/12025在原预算内。
+64源/4453前轮私有文件保持，同源纯离线重放通过；无重试/修参/其他场景/
+推送。结果限于合成冻结样例，不证明一般可靠率、唯一因果或后台收费。
+下一待用户决定限定接受及后续工作，history/states真实验收仍需另行授权。
+
+### 新版facts限定真实验收 checkpoint（2026-10-13）
+
+用户授权已审新版facts一次，先脱敏配置核对，既定预算/新输出，完成后
+审阅并停下，其他场景不运行。沿本issue固定782cdd7与64源/原产物，配置
+只记存在/合法/既定目标匹配、不写值，失配停止；单次启动/无自动重试。
+原首次失败不覆盖，新raw/seal与人工审阅分开，真实结果/口径逐项核对；
+不改实现、扩大预算或推送。
+
 ### 新版facts实际输入/命令/预算审阅完成（2026-10-13）
 
 [审阅与停点](research/ossie-req-001/p1-revised-facts-live-review/review.md)
