@@ -125,6 +125,7 @@ export const STATE_AGENT_SOURCES = [
     "daily_mcp",
     "fact_result",
     "agent_loop",
+    "agent_deadline",
     "observation_agent_archive",
     "observation_agent_replay",
     "observation_mcp",

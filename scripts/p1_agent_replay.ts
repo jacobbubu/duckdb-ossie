@@ -27,6 +27,7 @@ import {
   fixtureDefinition,
   type Scene,
 } from "./p1_agent_contract.ts";
+import { P1_TIMING } from "./agent_deadline.ts";
 import { DEFINITIONS } from "./p1_agent_simulation.ts";
 import { FactSession } from "./fact_mcp.ts";
 import { StateSession } from "./daily_state_mcp.ts";
@@ -64,8 +65,9 @@ export async function replayP1(path: string, artifactSha: string) {
   assert.deepEqual(
     run.source_hashes,
     sourceHashes(),
-    "current source inventory mismatch",
+    "current source inventory mismatch; legacy archives require original trusted source",
   );
+  assert.deepEqual(run.timing, P1_TIMING, "unsupported timing contract");
   const selected = run.scenes as Scene[];
   if (protectedMode)
     assert(
@@ -264,40 +266,66 @@ export async function replayP1(path: string, artifactSha: string) {
     );
     let cursor = contextIndex + 1;
     const take = (kind: string) => {
-      const e = events[cursor++];
-      assert(e?.kind === kind, "ordered event expected: " + kind);
+      const e = events[cursor];
+      const known = [
+        "failure",
+        "provider_request",
+        "simulation_response",
+        "provider_response",
+        "provider_projection",
+        "provider_failure",
+        "transport_attempt",
+        "transport_response",
+        "tool_request",
+        "tool_response",
+        "rpc_request",
+        "rpc_response",
+        "final_answer",
+        "evaluation",
+        "prepared",
+        "cleanup_failure",
+      ];
+      const observed = !e
+        ? "end"
+        : typeof e.kind === "string" && known.includes(e.kind)
+          ? String(e.kind)
+          : "unknown";
+      const elapsed = Number.isFinite(e?.elapsed_ms)
+        ? Number(e.elapsed_ms)
+        : -1;
+      assert(
+        e?.kind === kind,
+        `ordered event expected: ${kind}; observed=${observed}; scene=${scene}; cursor=${cursor}; elapsed_ms=${elapsed}; budget_ms=${limits.milliseconds}`,
+      );
+      cursor++;
       return e;
     };
-    if (run.mode === "prepared") {
-      take("prepared");
-      assert(cursor === events.length);
-      assert.deepEqual(item, { scene, status: "prepared" });
-      results.push(item);
-      continue;
-    }
+    const recordedDeadline = (stage?: string) => {
+      if (
+        events[cursor]?.kind === "failure" &&
+        Number(events[cursor].elapsed_ms) >= limits.milliseconds
+      ) {
+        const failure = events[cursor].failure as JsonObject;
+        if (stage !== undefined) assert(failure.stage === stage);
+        if (protectedMode) {
+          assert(failure.code === "cancelled");
+          throw new P1ProviderFailure("cancelled");
+        }
+        assert(
+          ["scenario deadline exceeded", "This operation was aborted"].includes(
+            String(failure.reason),
+          ),
+        );
+        const error = new Error(String(failure.reason));
+        error.name = String(failure.category);
+        throw error;
+      }
+    };
     const provider = responsesProvider(
       "https://simulated.invalid/v1/",
       "",
       async (_url, init) => {
-        if (
-          events[cursor]?.kind === "failure" &&
-          Number(events[cursor].elapsed_ms) >= limits.milliseconds
-        ) {
-          const failure = events[cursor].failure as JsonObject;
-          if (protectedMode) {
-            assert(failure.code === "cancelled");
-            throw new P1ProviderFailure("cancelled");
-          }
-          assert(
-            [
-              "scenario deadline exceeded",
-              "This operation was aborted",
-            ].includes(String(failure.reason)),
-          );
-          const error = new Error(String(failure.reason));
-          error.name = String(failure.category);
-          throw error;
-        }
+        recordedDeadline();
         if (protectedMode) {
           const attempt = take("transport_attempt");
           const {
@@ -402,59 +430,70 @@ export async function replayP1(path: string, artifactSha: string) {
     let final: Awaited<ReturnType<typeof agentLoop>> | undefined;
     let caught: unknown;
     try {
-      final = await agentLoop({
-        model: String(run.model),
-        system: c.system,
-        question: c.question,
-        resources: c.resources,
-        tools: c.tools,
-        limits,
-        complete: provider,
-        record: (e) => {
-          const actual = take(String(e.kind));
-          const {
-            scene: _s,
-            sequence: _seq,
-            elapsed_ms: _elapsed,
-            ...payload
-          } = actual;
-          assert.deepEqual(
-            payload,
-            JSON.parse(JSON.stringify(e)),
-            "provider/tool/final exact event mismatch",
+      if (run.mode === "prepared") {
+        recordedDeadline("discovery");
+        take("prepared");
+        recordedDeadline("discovery");
+        const { cleanup_failure: _cleanup, ...withoutCleanup } = item;
+        assert.deepEqual(withoutCleanup, { scene, status: "prepared" });
+      } else {
+        final = await agentLoop({
+          model: String(run.model),
+          system: c.system,
+          question: c.question,
+          resources: c.resources,
+          tools: c.tools,
+          limits,
+          complete: provider,
+          record: (e) => {
+            recordedDeadline();
+            const actual = take(String(e.kind));
+            const {
+              scene: _s,
+              sequence: _seq,
+              elapsed_ms: _elapsed,
+              ...payload
+            } = actual;
+            assert.deepEqual(
+              payload,
+              JSON.parse(JSON.stringify(e)),
+              "provider/tool/final exact event mismatch",
+            );
+            if (e.kind === "provider_response")
+              validateCompletion(e.response as unknown as Completion, d.tools);
+          },
+          call: async (name, args) => {
+            const req = take("rpc_request");
+            assert(req.method === "tools/call");
+            assert.deepEqual(req.params, { name, arguments: args });
+            const response = take("rpc_response");
+            decode(name, args, response.reply, d);
+            return response.reply;
+          },
+        });
+        recordedDeadline();
+        const audit = evaluate(scene, final.content, events, d);
+        const recorded = take("evaluation").result as JsonObject;
+        assert.deepEqual(read(scene + "/evaluation.json"), recorded);
+        const { review, calls, rounds, ...rest } = recorded;
+        assert.deepEqual(rest, audit);
+        assert(calls === final.calls && rounds === final.rounds);
+        assert(["pending", "fail", "scripted_pass"].includes(String(review)));
+        if (protectedMode)
+          assert(
+            review === "pending",
+            "transport semantic review cannot be scripted",
           );
-          if (e.kind === "provider_response")
-            validateCompletion(e.response as unknown as Completion, d.tools);
-        },
-        call: async (name, args) => {
-          const req = take("rpc_request");
-          assert(req.method === "tools/call");
-          assert.deepEqual(req.params, { name, arguments: args });
-          const response = take("rpc_response");
-          decode(name, args, response.reply, d);
-          return response.reply;
-        },
-      });
-      const audit = evaluate(scene, final.content, events, d);
-      const recorded = take("evaluation").result as JsonObject;
-      assert.deepEqual(read(scene + "/evaluation.json"), recorded);
-      const { review, calls, rounds, ...rest } = recorded;
-      assert.deepEqual(rest, audit);
-      assert(calls === final.calls && rounds === final.rounds);
-      assert(["pending", "fail", "scripted_pass"].includes(String(review)));
-      if (protectedMode)
-        assert(
-          review === "pending",
-          "transport semantic review cannot be scripted",
-        );
-      if (review === "scripted_pass")
-        assert(
-          (factJSON(final.content) as JsonObject).definition ===
-            DEFINITIONS[scene],
-          "scripted review mismatch",
-        );
-      const { cleanup_failure: _cleanup, ...withoutCleanup } = item;
-      assert.deepEqual(withoutCleanup, { scene, ...recorded });
+        if (review === "scripted_pass")
+          assert(
+            (factJSON(final.content) as JsonObject).definition ===
+              DEFINITIONS[scene],
+            "scripted review mismatch",
+          );
+        recordedDeadline("evaluation");
+        const { cleanup_failure: _cleanup, ...withoutCleanup } = item;
+        assert.deepEqual(withoutCleanup, { scene, ...recorded });
+      }
     } catch (error) {
       caught = error;
     }
@@ -495,8 +534,8 @@ export async function replayP1(path: string, artifactSha: string) {
     assert(cursor === events.length, "unused events after terminal state");
     results.push(item);
     if (
-      (item as JsonObject).status !== "mechanical_pass" ||
-      (item as JsonObject).review !== "scripted_pass"
+      item.status !== "prepared" &&
+      (item.status !== "mechanical_pass" || item.review !== "scripted_pass")
     )
       assert(index === scenes.length - 1, "continued after failure/pending");
   }

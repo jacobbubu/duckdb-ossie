@@ -91,6 +91,7 @@ export const DAILY_SOURCE_NAMES = [
     "daily_mcp",
     "daily_result",
     "agent_loop",
+    "agent_deadline",
     "mcp_check",
     "artifact_helpers",
     "observation_mcp",

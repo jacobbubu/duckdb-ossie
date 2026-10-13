@@ -1,5 +1,21 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 monotonic timing implementation delivery — 2026-10-13
+
+[本地修复与证据](docs/research/ossie-req-001/p1-monotonic-controls/review.md)完成：
+P1单调elapsed与取消同阈值/未取整，场景共享额度涵盖会话收尾；共享
+cleanup-v2独立30秒顺序等待、首失败停止、不承诺硬实时或杀底层工作。
+194 Bun/956断言、P1 64离线/20模拟传输及六类共享消费者最终来源回归
+通过，69源运行前后不变。prepare/evaluation后close超时只诊断failed，
+阈值/阶段/错误文件/摘要/尾部矛盾负控拒绝；收尾控制为协调衍生记录，
+非实际慢close重现。六清单更新helper依赖，非P1旧elapsed格式不迁移。
+旧四manifest共1714文件不变；可信Git原68源重放positive/deadline分别
+complete/failed，当前新源拒绝旧档案、原seal不改。专属worktree迁移的
+子模块本地配置阻塞已修复并回归，原失败保留。Advisor只读建议已落实，
+后台/用量未知。本包完成不等同整体交付：4768236 Linux CI原具体根因
+仍未知，新跨平台/tidy须新SHA验证。当前不真实模型/推送/native重编；
+下一先审阅交付差异与证据，授权推送后检查新CI，不追加模型调用。
+
 ## P1 Linux replay boundary investigation delivery — 2026-10-13
 
 [确定性调查](docs/research/ossie-req-001/p1-deadline-investigation/review.md)完成：

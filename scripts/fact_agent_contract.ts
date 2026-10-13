@@ -160,6 +160,7 @@ export const FACT_SOURCE_NAMES = [
     "daily_mcp",
     "relation_result",
     "agent_loop",
+    "agent_deadline",
     "mcp_check",
     "artifact_helpers",
     "observation_mcp",

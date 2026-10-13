@@ -1,5 +1,6 @@
 /** Explicit model-originated calls; no business parameters or oracle in this module. */
 import assert from "node:assert/strict";
+import { Deadline } from "./agent_deadline.ts";
 export type JsonObject = Record<string, unknown>;
 export interface Tool {
   name: string;
@@ -28,6 +29,7 @@ export interface Completion {
   error_code?: string;
 }
 export interface LoopOptions {
+  deadline?: Deadline;
   model: string;
   system: string;
   question: string;
@@ -84,8 +86,14 @@ export function toolArguments(call: ToolCall, tools: Tool[]): JsonObject {
 }
 export async function agentLoop(options: LoopOptions) {
   const limits = options.limits ?? LIMITS;
+  const deadline = options.deadline ?? new Deadline(limits.milliseconds);
+  assert(
+    deadline.milliseconds <= limits.milliseconds,
+    "deadline exceeds loop budget",
+  );
+  deadline.assertActive();
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), limits.milliseconds);
+  let disposeTimer = () => {};
   let input: JsonObject[] = [
     {
       role: "system",
@@ -104,24 +112,31 @@ export async function agentLoop(options: LoopOptions) {
   const responseIds = new Set<string>();
   let calls = 0;
   const ids = new Set<string>();
-  async function bounded<T>(promise: Promise<T>): Promise<T> {
+  async function bounded<T>(action: () => Promise<T>): Promise<T> {
     controller.signal.throwIfAborted();
+    deadline.assertActive();
     let abort: () => void = () => {};
     try {
-      return await Promise.race([
-        promise,
-        new Promise<never>((_, reject) => {
-          abort = () => reject(new Error("scenario deadline exceeded"));
-          controller.signal.addEventListener("abort", abort, { once: true });
-        }),
-      ]);
+      const aborted = new Promise<never>((_, reject) => {
+        abort = () => reject(new Error("scenario deadline exceeded"));
+        controller.signal.addEventListener("abort", abort, { once: true });
+      });
+      controller.signal.throwIfAborted();
+      deadline.assertActive();
+      const result = await Promise.race([action(), aborted]);
+      deadline.assertActive();
+      controller.signal.throwIfAborted();
+      return result;
     } finally {
       controller.signal.removeEventListener("abort", abort);
     }
   }
   try {
+    deadline.assertActive();
+    disposeTimer = deadline.onExpiry(() => controller.abort());
     for (let round = 1; round <= limits.rounds; round++) {
       controller.signal.throwIfAborted();
+      deadline.assertActive();
       const body = {
         model: options.model,
         instructions: options.system,
@@ -146,7 +161,9 @@ export async function agentLoop(options: LoopOptions) {
         body,
         serialized_body: JSON.stringify(body),
       });
-      const response = await bounded(options.complete(body, controller.signal));
+      const response = await bounded(() =>
+        options.complete(body, controller.signal),
+      );
       options.record({
         kind: "provider_response",
         round,
@@ -183,6 +200,7 @@ export async function agentLoop(options: LoopOptions) {
           calls,
           rounds: round,
         });
+        deadline.assertActive();
         return { content: message.content, calls, rounds: round };
       }
       assert(
@@ -214,7 +232,9 @@ export async function agentLoop(options: LoopOptions) {
           arguments: args,
           arguments_json: call.function.arguments,
         });
-        const result = await bounded(options.call(call.function.name, args));
+        const result = await bounded(() =>
+          options.call(call.function.name, args),
+        );
         options.record({ kind: "tool_response", evidence_id, result });
         input.push({
           type: "function_call_output",
@@ -225,7 +245,7 @@ export async function agentLoop(options: LoopOptions) {
     }
     throw new Error("model round budget exceeded");
   } finally {
-    clearTimeout(timer);
+    disposeTimer();
     controller.abort();
   }
 }
@@ -245,20 +265,8 @@ export async function beforeDeadline<T>(
 ): Promise<T> {
   const remaining = deadline - Date.now();
   assert(remaining > 0, "scenario deadline exceeded");
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  try {
-    return await Promise.race([
-      action(),
-      new Promise<never>((_, reject) => {
-        timer = setTimeout(
-          () => reject(new Error("scenario deadline exceeded")),
-          remaining,
-        );
-      }),
-    ]);
-  } finally {
-    clearTimeout(timer);
-  }
+  // Compatibility adapter: wall-clock epoch sampled once; waiting itself is monotonic.
+  return new Deadline(remaining).wait(action);
 }
 /** Record model-visible fields only; never persist authentication or private reasoning. */
 export function responsesProvider(

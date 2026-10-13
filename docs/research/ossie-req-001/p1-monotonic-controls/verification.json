@@ -1,0 +1,378 @@
+{
+  "schema": "ossie-p1-monotonic-verification-v1",
+  "scope": "local no-model timing work-package; not cross-platform CI or new Agent acceptance",
+  "quality": {
+    "format_check": "passed",
+    "typecheck": "passed",
+    "architecture": "passed",
+    "bun_tests": 194,
+    "assertions": 956,
+    "failures": 0
+  },
+  "p1_offline": {
+    "controls": 64,
+    "passed": true,
+    "controls_detail": [
+      {
+        "name": "positive+prepare sealed replay has zero fetch and subprocess",
+        "passed": true
+      },
+      {
+        "name": "facts valid wrong scope reaches real MCP unchanged then fails task audit",
+        "passed": true
+      },
+      {
+        "name": "states valid wrong scope reaches real MCP unchanged then fails task audit",
+        "passed": true
+      },
+      {
+        "name": "history valid wrong scope reaches real MCP unchanged then fails task audit",
+        "passed": true
+      },
+      {
+        "name": "duplicate-outer sealed failure/pending stops subsequent scenes and replays",
+        "passed": true
+      },
+      {
+        "name": "inbound-limit sealed failure/pending stops subsequent scenes and replays",
+        "passed": true
+      },
+      {
+        "name": "incomplete sealed failure/pending stops subsequent scenes and replays",
+        "passed": true
+      },
+      {
+        "name": "round-limit sealed failure/pending stops subsequent scenes and replays",
+        "passed": true
+      },
+      {
+        "name": "call-limit sealed failure/pending stops subsequent scenes and replays",
+        "passed": true
+      },
+      {
+        "name": "outbound-limit sealed failure/pending stops subsequent scenes and replays",
+        "passed": true
+      },
+      {
+        "name": "model-declared-failure sealed failure/pending stops subsequent scenes and replays",
+        "passed": true
+      },
+      {
+        "name": "review-pending sealed failure/pending stops subsequent scenes and replays",
+        "passed": true
+      },
+      {
+        "name": "review-fail sealed failure/pending stops subsequent scenes and replays",
+        "passed": true
+      },
+      {
+        "name": "cleanup failure is sealed, cannot continue or pass",
+        "passed": true
+      },
+      {
+        "name": "deadline closes scene, late simulator cannot write to sealed archive, diagnostic replay",
+        "passed": true
+      },
+      {
+        "name": "discovery failure preserved before context and no model/tool calls",
+        "passed": true
+      },
+      {
+        "name": "deadline-boundary-249 strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "deadline-boundary-250 strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "deadline-boundary-251 strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "missing-response-next-completion strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "missing-response-eof strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "forged-timeout-in-success strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "non-timeout-terminal strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "terminal-file-mismatch strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "terminal-summary-mismatch strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "event-after-terminal strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "prepared-close-timeout-valid strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "prepared-close-timeout-early strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "prepared-close-timeout-reason strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "prepared-close-timeout-file strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "prepared-close-timeout-summary strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "prepared-close-timeout-stage strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "prepared-close-timeout-trailing strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "evaluation-close-timeout-valid strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "evaluation-close-timeout-early strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "evaluation-close-timeout-reason strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "evaluation-close-timeout-file strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "evaluation-close-timeout-summary strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "evaluation-close-timeout-stage strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "evaluation-close-timeout-trailing strict terminal correspondence",
+        "passed": true
+      },
+      {
+        "name": "limited semantically equal predicate spelling allowed without parameter rewriting",
+        "passed": true
+      },
+      {
+        "name": "runtime preflight failure sealed before any scene, diagnostic only",
+        "passed": true
+      },
+      {
+        "name": "startup missing-timing refused before diagnostic acceptance",
+        "passed": true
+      },
+      {
+        "name": "startup mixed-cleanup refused before diagnostic acceptance",
+        "passed": true
+      },
+      {
+        "name": "missing-timing re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "unknown-timing re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "rounded-elapsed re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "mixed-cleanup-v1 re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "cleanup-wall-clock re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "context-oracle-injection re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "serialized-outbound-change re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "coordinated-wrong-amount re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "coordinated-concept-name re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "coordinated-relationship-name re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "discovery-resource-list-replaced re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "inbound-budget-increase re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "event-after-deadline re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "missing-last-scene re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "source-hash-change re-sealed forgery rejected",
+        "passed": true
+      },
+      {
+        "name": "reasoning and metadata stripped before recorded completions; synthetic-only raw replays",
+        "passed": true
+      },
+      {
+        "name": "public summary exact fixed fields, no business/raw fields, no overwrite/source/symlink writes",
+        "passed": true
+      },
+      {
+        "name": "public export drops re-sealed free metadata and rejects coordinated semantic forgery",
+        "passed": true
+      },
+      {
+        "name": "startup export is diagnostic only, no runtime/execution proof",
+        "passed": true
+      },
+      {
+        "name": "source copy changed during asynchronous export is rejected; no output written (not a filesystem race guarantee)",
+        "passed": true
+      }
+    ]
+  },
+  "transport": {
+    "controls": 20,
+    "passed": true,
+    "network_requests": 0,
+    "model_requests": 0,
+    "provider_config_read": false,
+    "env_test_read": false
+  },
+  "shared_profiles": [
+    {
+      "name": "state",
+      "status": 0
+    },
+    {
+      "name": "history",
+      "status": 0
+    },
+    {
+      "name": "fact",
+      "status": 0
+    },
+    {
+      "name": "daily",
+      "status": 0
+    },
+    {
+      "name": "relation",
+      "status": 0
+    },
+    {
+      "name": "observation",
+      "status": 0
+    }
+  ],
+  "source_files": 69,
+  "source_unchanged_during_regressions": true,
+  "legacy": {
+    "trusted_git_source": "3d78592",
+    "results": [
+      {
+        "name": "positive",
+        "status": "complete",
+        "seal": "74c7fb17c22e6e4da05072bffa4c740b1d9e8303b1f2432aa3baf29fd5005ae2"
+      },
+      {
+        "name": "deadline",
+        "status": "failed",
+        "seal": "e38ce84565a594d354ee4e44e278059fe724f8832712c6da1fb4232c13ee2e7b"
+      }
+    ],
+    "network": 0,
+    "subprocess_during_replay": 0
+  },
+  "current_entry_boundary": {
+    "zero_scene_budget": "failed before context/RPC/provider calls",
+    "zero_failure_elapsed_ms": 0.6586660000000393,
+    "legacy_current_entry": [
+      {
+        "name": "positive",
+        "current_replay": "refused_original_source_inventory",
+        "seal": "74c7fb17c22e6e4da05072bffa4c740b1d9e8303b1f2432aa3baf29fd5005ae2"
+      },
+      {
+        "name": "deadline",
+        "current_replay": "refused_original_source_inventory",
+        "seal": "e38ce84565a594d354ee4e44e278059fe724f8832712c6da1fb4232c13ee2e7b"
+      }
+    ],
+    "replay_network": 0,
+    "replay_subprocess": 0,
+    "model_calls": 0
+  },
+  "historical_integrity": [
+    {
+      "archive": "p1-states-discovery-implementation",
+      "files": 991,
+      "manifest_sha256": "90cc460c4685bc7cb4dba8f21abd55dca3e388ae6e46fcf4b21ef5d9398643ce",
+      "unchanged": true
+    },
+    {
+      "archive": "ci-p1-4768236-controls",
+      "files": 579,
+      "manifest_sha256": "fd9d7eae4ee33333c12313ca84f1ee8a8e4e5293f27c1f079d30c64e45af43b8",
+      "unchanged": true
+    },
+    {
+      "archive": "p1-path-history-cleanup",
+      "files": 32,
+      "manifest_sha256": "1edf7926d85bebbc2b32a73a85bb6a1aa011007834cad4c9d7d4341799d2fa3d",
+      "unchanged": true
+    },
+    {
+      "archive": "p1-deadline-investigation",
+      "files": 112,
+      "manifest_sha256": "67ae0a51ccd9c8bef7a50de17253c4521f4a6f6ee2c8da9a19f0ef64ad8e48d6",
+      "unchanged": true
+    }
+  ],
+  "limitations": [
+    "macOS ARM64 existing native artifact only; no native rebuild",
+    "finalization timeout traces are coordinated derivatives, not measured slow session.close reproductions",
+    "original Linux CI cause unconfirmed; new cross-platform and tidy CI pending",
+    "no new real Agent/model invocation or push"
+  ]
+}

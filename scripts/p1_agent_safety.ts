@@ -1,13 +1,15 @@
 /** Explicit response injection only. No network, credentials or raw-response recorder. */
 import assert from "node:assert/strict";
-import { beforeDeadline, type JsonObject } from "./agent_loop.ts";
+import { type JsonObject } from "./agent_loop.ts";
+import { Deadline } from "./agent_deadline.ts";
 import { boundedResponse } from "./p1_agent_simulation.ts";
 import { p1JSON } from "./p1_agent_json.ts";
 export const STATE_SCOPE_NOTICE =
   "操作适用范围：当前可调用工具以实际tools/list为准。每日状态查询以state-program、state-surface及population_daily_states专用工具合同为准；通用capabilities/concepts中的稀疏观察查询、请求内User投影、无日历补齐及旧结果schema描述其他操作，不能覆盖每日状态合同。program的mcp_registered字段是原生声明，不代表本次tools/list注册状态。";
 export const CLEANUP_POLICY = {
-  schema: "ossie-p1-cleanup-policy-v1",
+  schema: "ossie-p1-cleanup-policy-v2",
   timing: "separate sequential waits",
+  clock: "performance.now monotonic milliseconds",
   step_wait_ms: 30000,
   normal_steps: ["close", "work"],
   optional_test_step: "cleanupFault between close and work",
@@ -21,7 +23,7 @@ export async function cleanupSteps(
   waitMs = CLEANUP_POLICY.step_wait_ms as number,
 ) {
   assert(Number.isInteger(waitMs) && waitMs > 0 && waitMs <= 30000);
-  for (const step of steps) await beforeDeadline(Date.now() + waitMs, step);
+  for (const step of steps) await new Deadline(waitMs).wait(step);
 }
 function numericFields(value: unknown, keys: string[]) {
   const output: JsonObject = {};

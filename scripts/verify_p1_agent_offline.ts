@@ -191,6 +191,221 @@ export async function verifyP1Offline(
     name: "discovery failure preserved before context and no model/tool calls",
     passed: true,
   });
+  const terminalControls: [
+    string,
+    string,
+    (files: Map<string, any>) => void,
+    "failed" | "reject",
+  ][] = [];
+  for (const elapsed of [249, 250, 251])
+    terminalControls.push([
+      "deadline-boundary-" + elapsed,
+      "deadline",
+      (f) => {
+        f
+          .get("facts/events.jsonl")
+          .find((e: JsonObject) => e.kind === "failure").elapsed_ms = elapsed;
+      },
+      elapsed < 250 ? "reject" : "failed",
+    ]);
+  terminalControls.push(
+    [
+      "missing-response-next-completion",
+      "positive",
+      (f) => {
+        const e = f.get("facts/events.jsonl");
+        e.splice(
+          e.findIndex((v: JsonObject) => v.kind === "simulation_response"),
+          1,
+        );
+        e.forEach((v: JsonObject, i: number) => (v.sequence = i + 1));
+      },
+      "reject",
+    ],
+    [
+      "missing-response-eof",
+      "positive",
+      (f) => {
+        const e = f.get("facts/events.jsonl");
+        f.set(
+          "facts/events.jsonl",
+          e.slice(
+            0,
+            e.findIndex((v: JsonObject) => v.kind === "simulation_response"),
+          ),
+        );
+      },
+      "reject",
+    ],
+    [
+      "forged-timeout-in-success",
+      "positive",
+      (f) => {
+        const e = f.get("facts/events.jsonl"),
+          i = e.findIndex((v: JsonObject) => v.kind === "simulation_response");
+        e[i] = {
+          scene: "facts",
+          sequence: e[i].sequence,
+          elapsed_ms: e[i].elapsed_ms,
+          kind: "failure",
+          failure: {
+            stage: "loop",
+            category: "Error",
+            reason: "scenario deadline exceeded",
+          },
+        };
+      },
+      "reject",
+    ],
+    [
+      "non-timeout-terminal",
+      "deadline",
+      (f) => {
+        const e = f
+          .get("facts/events.jsonl")
+          .find((v: JsonObject) => v.kind === "failure");
+        e.failure.reason = "Synthetic non-timeout failure";
+        f.set("facts/failure.json", structuredClone(e.failure));
+        f.get("summary.json").scenes[0].failure = structuredClone(e.failure);
+      },
+      "reject",
+    ],
+    [
+      "terminal-file-mismatch",
+      "deadline",
+      (f) => {
+        f.get("facts/failure.json").reason = "different failure";
+      },
+      "reject",
+    ],
+    [
+      "terminal-summary-mismatch",
+      "deadline",
+      (f) => {
+        f.get("summary.json").scenes[0].failure.reason = "different failure";
+      },
+      "reject",
+    ],
+    [
+      "event-after-terminal",
+      "deadline",
+      (f) => {
+        const e = f.get("facts/events.jsonl");
+        e.push({
+          scene: "facts",
+          sequence: e.length + 1,
+          elapsed_ms: Number(e.at(-1).elapsed_ms) + 1,
+          kind: "provider_request",
+        });
+      },
+      "reject",
+    ],
+  );
+  // Coherent derivatives model expiry while the producer awaits session.close()
+  // after its successful prepared/evaluation event. They are diagnostic failures.
+  for (const boundary of ["prepared", "evaluation"] as const) {
+    for (const variant of [
+      "valid",
+      "early",
+      "reason",
+      "file",
+      "summary",
+      "stage",
+      "trailing",
+    ] as const) {
+      terminalControls.push([
+        boundary + "-close-timeout-" + variant,
+        boundary === "prepared" ? "prepare" : "positive",
+        (f) => {
+          const run = f.get("run.json"),
+            summary = f.get("summary.json");
+          const events = f.get("facts/events.jsonl");
+          const failure = {
+            stage: boundary === "prepared" ? "discovery" : "evaluation",
+            category: "Error",
+            reason: "scenario deadline exceeded",
+          };
+          if (variant === "reason") failure.reason = "unrelated close failure";
+          if (variant === "stage") failure.stage = "loop";
+          events.push({
+            scene: "facts",
+            sequence: events.length + 1,
+            elapsed_ms: run.limits.milliseconds - (variant === "early" ? 1 : 0),
+            kind: "failure",
+            failure,
+          });
+          f.set("facts/failure.json", structuredClone(failure));
+          summary.status = "failed";
+          summary.scenes = [
+            {
+              scene: "facts",
+              status: boundary === "prepared" ? "failed" : "task_failed",
+              failure: structuredClone(failure),
+            },
+          ];
+          // Only the first scene was reached. Keep the first-scene accounting.
+          for (const key of [
+            "transport_attempts",
+            "constructed_requests",
+            "received_responses",
+            "projected_responses",
+          ])
+            summary[key] = boundary === "prepared" ? 0 : summary[key] / 3;
+          for (const key of [...f.keys()])
+            if (key.startsWith("states/") || key.startsWith("history/"))
+              f.delete(key);
+          if (variant === "file")
+            f.get("facts/failure.json").reason = "different failure";
+          if (variant === "summary")
+            summary.scenes[0].failure.reason = "different failure";
+          if (variant === "trailing")
+            events.push({
+              scene: "facts",
+              sequence: events.length + 1,
+              elapsed_ms: run.limits.milliseconds + 1,
+              kind: "prepared",
+            });
+        },
+        variant === "valid" ? "failed" : "reject",
+      ]);
+    }
+  }
+  for (const [name, original, edit, expected] of terminalControls) {
+    const source = join(out, original),
+      sealed = verifyArchive(source),
+      files = new Map<string, any>();
+    for (const file of Object.keys(sealed.files)) {
+      const text = readFileSync(join(source, file), "utf8");
+      files.set(
+        file,
+        file.endsWith(".jsonl")
+          ? text
+              .trim()
+              .split("\n")
+              .map((v) => JSON.parse(v))
+          : JSON.parse(text),
+      );
+    }
+    edit(files);
+    const target = join(out, "terminal-" + name),
+      archive = PrivateArchive.create(target);
+    for (const [file, value] of files) {
+      if (file.endsWith(".jsonl")) {
+        const s = file.split("/")[0];
+        archive.startEvents(s);
+        for (const e of value) archive.record(s, e);
+      } else archive.save(file, value);
+    }
+    archive.seal();
+    if (expected === "reject")
+      await assert.rejects(() => replayP1(target, sha));
+    else assert((await replayP1(target, sha)).status === "failed");
+    assert(verifyArchive(source).seal_sha256 === sealed.seal_sha256);
+    controls.push({
+      name: name + " strict terminal correspondence",
+      passed: true,
+    });
+  }
   const equivalent = await run("equivalent-order", {
     simulate: scriptedSimulation({ predicate: " EXPENSE > 50.00 " }),
   });
@@ -213,6 +428,26 @@ export async function verifyP1Offline(
     name: "runtime preflight failure sealed before any scene, diagnostic only",
     passed: true,
   });
+  for (const mode of ["missing-timing", "mixed-cleanup"]) {
+    const source = join(out, "startup-failure");
+    const sealed = verifyArchive(source);
+    const target = join(out, "startup-" + mode);
+    const archive = PrivateArchive.create(target);
+    for (const file of Object.keys(sealed.files)) {
+      const value = JSON.parse(readFileSync(join(source, file), "utf8"));
+      if (file === "run.json") {
+        if (mode === "missing-timing") delete value.timing;
+        else value.cleanup_policy.schema = "ossie-p1-cleanup-policy-v1";
+      }
+      archive.save(file, value);
+    }
+    archive.seal();
+    await assert.rejects(() => replayP1(target, sha));
+    controls.push({
+      name: "startup " + mode + " refused before diagnostic acceptance",
+      passed: true,
+    });
+  }
   const original = verifyArchive(join(out, "positive"));
   type Mutator = (files: Map<string, unknown>) => void;
   const eventsOf = (f: Map<string, unknown>) =>
@@ -287,6 +522,41 @@ export async function verifyP1Offline(
     }
   }
   const tampering: [string, Mutator][] = [
+    [
+      "missing-timing",
+      (f) => {
+        delete (f.get("run.json") as JsonObject).timing;
+      },
+    ],
+    [
+      "unknown-timing",
+      (f) => {
+        ((f.get("run.json") as JsonObject).timing as JsonObject).schema =
+          "unknown";
+      },
+    ],
+    [
+      "rounded-elapsed",
+      (f) => {
+        ((f.get("run.json") as JsonObject).timing as JsonObject).elapsed =
+          "floor milliseconds";
+      },
+    ],
+    [
+      "mixed-cleanup-v1",
+      (f) => {
+        (
+          (f.get("run.json") as JsonObject).cleanup_policy as JsonObject
+        ).schema = "ossie-p1-cleanup-policy-v1";
+      },
+    ],
+    [
+      "cleanup-wall-clock",
+      (f) => {
+        ((f.get("run.json") as JsonObject).cleanup_policy as JsonObject).clock =
+          "Date.now";
+      },
+    ],
     [
       "context-oracle-injection",
       (f) => {

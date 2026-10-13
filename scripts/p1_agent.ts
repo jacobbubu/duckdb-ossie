@@ -11,13 +11,13 @@ import {
   p1ResponseBoundary,
 } from "./p1_agent_safety.ts";
 import { digest } from "./artifact_helpers.ts";
+import { Deadline, P1_TIMING } from "./agent_deadline.ts";
 /** Prepare + simulated orchestration only. There is deliberately no --run/live branch. */
 import assert from "node:assert/strict";
 import { resolve } from "node:path";
 import {
   agentLoop,
   responsesProvider,
-  beforeDeadline,
   type JsonObject,
   type Completion,
 } from "./agent_loop.ts";
@@ -171,6 +171,7 @@ export async function executeP1(options: P1Options) {
         };
     archive.save("run.json", {
       schema: "ossie-p1-agent-run-v1",
+      timing: P1_TIMING,
       mode: options.mode,
       real_model_requests: 0,
       provider_config_read: providerConfigRead,
@@ -208,6 +209,7 @@ export async function executeP1(options: P1Options) {
   }
   archive.save("run.json", {
     schema: "ossie-p1-agent-run-v1",
+    timing: P1_TIMING,
     mode: options.mode,
     real_model_requests: 0,
     provider_config_read: providerConfigRead,
@@ -236,8 +238,7 @@ export async function executeP1(options: P1Options) {
   const summary: JsonObject[] = [];
   let status = "complete";
   for (const scene of selected) {
-    const started = Date.now();
-    const deadline = started + limits.milliseconds;
+    const deadline = new Deadline(limits.milliseconds);
     let acceptEvents = true;
     let work: Promise<JsonObject> | undefined;
     let sequence = 0;
@@ -249,7 +250,7 @@ export async function executeP1(options: P1Options) {
         ...e,
         scene,
         sequence: ++sequence,
-        elapsed_ms: Date.now() - started,
+        elapsed_ms: deadline.elapsed(),
       };
       if (e.kind === "provider_request") constructedRequests++;
       if (e.kind === "transport_attempt") transportAttempts++;
@@ -269,7 +270,7 @@ export async function executeP1(options: P1Options) {
         active = session.server;
         const d = await session.discover();
         fixtureDefinition(scene, d);
-        assert(Date.now() <= deadline, "scene deadline exceeded");
+        deadline.assertActive();
         const c = context(scene, d);
         archive.save(scene + "/context.json", c);
         archive.save(scene + "/setup.json", {
@@ -331,7 +332,8 @@ export async function executeP1(options: P1Options) {
           question: c.question,
           resources: c.resources,
           tools: c.tools,
-          limits: { ...limits, milliseconds: deadline - Date.now() },
+          limits,
+          deadline,
           complete: provider,
           record: (e) => {
             record(e);
@@ -339,14 +341,15 @@ export async function executeP1(options: P1Options) {
               validateCompletion(e.response as unknown as Completion, d.tools);
           },
           call: async (name, args) => {
-            assert(acceptEvents && Date.now() <= deadline, "scene terminated");
+            assert(acceptEvents, "scene terminated");
+            deadline.assertActive();
             const reply = await session.call(name, args);
             decode(name, args, reply, d);
             return reply;
           },
         });
         stage = "evaluation";
-        assert(Date.now() <= deadline, "scene deadline exceeded");
+        deadline.assertActive();
         const evaluation = evaluate(scene, final.content, events, d);
         let review: Review = "pending";
         if (!protectedMode && evaluation.status === "mechanical_pass") {
@@ -368,32 +371,34 @@ export async function executeP1(options: P1Options) {
         return result;
       };
       const callback = (e: JsonObject) => record(e);
-      work =
-        scene === "facts"
-          ? withFactSession(
-              options.cli,
-              options.artifact,
-              "original",
-              action,
-              callback,
-            )
-          : scene === "states"
-            ? withStateSession(
+      const result = await deadline.wait(() => {
+        work =
+          scene === "facts"
+            ? withFactSession(
                 options.cli,
                 options.artifact,
-                10,
-                "extended",
+                "original",
                 action,
                 callback,
               )
-            : withHistorySession(
-                options.cli,
-                options.artifact,
-                "extended",
-                action,
-                callback,
-              );
-      const result = await beforeDeadline(deadline, () => work!);
+            : scene === "states"
+              ? withStateSession(
+                  options.cli,
+                  options.artifact,
+                  10,
+                  "extended",
+                  action,
+                  callback,
+                )
+              : withHistorySession(
+                  options.cli,
+                  options.artifact,
+                  "extended",
+                  action,
+                  callback,
+                );
+        return work;
+      });
       summary.push({ scene, ...result });
       if (
         options.mode !== "prepared" &&
@@ -452,7 +457,7 @@ export async function executeP1(options: P1Options) {
           kind: "cleanup_failure",
           scene,
           sequence: ++sequence,
-          elapsed_ms: Date.now() - started,
+          elapsed_ms: deadline.elapsed(),
           failure,
         });
         archive.save(scene + "/cleanup-failure.json", failure);

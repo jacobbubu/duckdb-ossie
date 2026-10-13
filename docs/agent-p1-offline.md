@@ -20,6 +20,8 @@ bun --no-env-file scripts/p1_agent_replay.ts \
 
 重放的产物SHA必须来自调用者可信来源。重放不跟随档案中的install_path、CLI路径或端点，不读取`.env_test`；源码/fixture/提示词/独立答案清单与当前文件逐项对应。源码改变会拒绝旧记录，不能重写旧source_hashes冒充新代码已验证。初始失败与后续成功记录分别保留。
 
+旧归档只可用调用者可信Git来源中的原匹配源码、原依赖与可信产物SHA进行诊断重放。当前入口拒绝旧来源或缺失/混搭计时合同；不会自动执行归档内代码。原字节、seal和source_hashes保持不变，不把旧限定验收迁移为新计时版本的证据。共享epoch截止API只在入场采样剩余量后转单调等待，其他六类profile的旧elapsed归档格式本轮不迁移。
+
 完整离线控制入口：
 
 ```sh
@@ -28,7 +30,7 @@ bun --no-env-file scripts/verify_p1_agent_offline.ts \
   .local-agent-evidence/p1-new-controls /tmp/p1-new-controls-report.json
 ```
 
-该入口检查实际MCP正路径、错误查询、预算/失败停止、协调重封存篡改，以及重放时fetch/子进程调用均为0。CI已为Linux AMD64和macOS ARM64产物验收配置此命令；新提交尚未推送，因此没有本增量的远端CI结论。
+[单调计时修复与本地验证](research/ossie-req-001/p1-monotonic-controls/review.md)记录本轮计时合同、共享消费者与旧归档边界。该入口检查实际MCP正路径、错误查询、预算/失败停止、协调重封存篡改，以及重放时fetch/子进程调用均为0。CI已为Linux AMD64和macOS ARM64产物验收配置此命令；新提交尚未推送，因此没有本增量的远端CI结论。
 
 ## 运行与独立评估
 
@@ -44,7 +46,7 @@ bun --no-env-file scripts/verify_p1_agent_offline.ts \
 
 每场景最多4个模型请求尝试、3个工具调用；三场景至多12/9。输出请求参数4096 tokens，单个出站body128KiB、投影前入站响应体2MiB。入站按实际UTF-8字节流读取、到限即取消；模拟raw仅保存准确字节前缀（base64）、截断标记及synthetic_only标签；显式Response保护层在投影前校验并重建白名单，真实响应只记录provider_projection白名单衍生物，不沿用raw归档；密钥回显先停止，不派发脱敏参数。JSON采用线性重复键检查，避免大字符串令旧token正则失效。内层native结果1MiB与外层carrier8MiB不是出站预算，完整转义后body仍可能先超128KiB；不截断后宣称通过。实际tokens、金额、服务端续接与留存未测，不能据此声称费用硬上限或真实预算充分。
 
-场景180秒含服务setup/discovery/loop及评估前检查；共享固定运行时元数据预检在场景前，失败另封存diagnostic。facts新增共享请求契约资源后，发现请求固定6/7/5，通知各1次，不自动重试。超时关闭活动MCP、取消等待并等待work收束；迟到模拟响应不能再写业务事件。固定cleanup_policy随run封存并重放核对；close与work收束分别最多主动等待30秒（两个窗口60秒），可选测试callback另有30秒窗口（三个窗口90秒），首清理失败停止后续，没有总计30秒或硬实时的保证；失败单独封存并停止后续。同步文件读写、运行时预检、进程调度和任意外部测试callback不是硬实时或RAM上界保证。
+当前采用`ossie-p1-timing-v2`与`ossie-p1-cleanup-policy-v2`，取消判定和elapsed记录共享`performance.now()`单调时钟，保留小数，不取整；唯一到期条件是`elapsed_ms >= budget_ms`。提前触发的计时回调复查剩余量，回调延迟不会允许接受已到期的完成结果。场景180秒含服务setup/discovery/loop、评估和会话收尾；场景内各阶段共用同一额度，不在模型循环入口重置。共享固定运行时元数据预检在场景前，失败另封存diagnostic。facts新增共享请求契约资源后，发现请求固定6/7/5，通知各1次，不自动重试。超时关闭活动MCP、取消等待并等待work收束；迟到模拟响应不能再写业务事件。固定cleanup_policy随run封存并重放核对；close与work收束分别最多主动等待30秒（两个窗口60秒），可选测试callback另有30秒窗口（三个窗口90秒），每一步在开始时取得独立的单调等待额度，等待到期只停止调用方等待，不保证终止底层操作。首清理失败停止后续，没有总计30秒或硬实时的保证；失败单独封存并停止后续。同步文件读写、运行时预检、进程调度和任意外部测试callback不是硬实时或RAM上界保证。
 
 协议失败、task_failed、incomplete、预算失败或清理异常均保留；pending也暂停后续场景。默认模拟器的固定解释仅标scripted_pass，mechanical_pass仍带真实语义审阅pending，不等同人工模型验收。无成功证据的failed回答允许空引用。prepare/rehearse返回failed或pending时退出非零；replay可对失败记录返回正常诊断结果，必须读取status，退出成功不能表示原试验通过。
 

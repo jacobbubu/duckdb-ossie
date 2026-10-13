@@ -13,6 +13,7 @@ export const AGENT_SOURCE_FILES = [
     "observation_agent_replay",
     "observation_agent_archive",
     "agent_loop",
+    "agent_deadline",
     "observation_mcp",
     "observation_evidence",
     "population_result",
