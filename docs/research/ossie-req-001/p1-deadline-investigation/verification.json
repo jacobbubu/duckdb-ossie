@@ -1,0 +1,39 @@
+{
+  "schema": "ossie-p1-deadline-investigation-verification-v1",
+  "date": "2026-10-13",
+  "baseline": "5ffc96a",
+  "current_sources_unchanged": 68,
+  "original_seals_and_prior_manifests_preserved": true,
+  "prior_file_hash_checks": 1602,
+  "replay_derivatives": 10,
+  "negative_refusals": 7,
+  "controlled_producer_mismatches": 2,
+  "private_candidate_controls": 6,
+  "expired_start_refused": true,
+  "additional_clock_and_action_controls": 3,
+  "candidate_applied": false,
+  "original_linux_root_cause_confirmed": false,
+  "private_manifest_sha256": "67ae0a51ccd9c8bef7a50de17253c4521f4a6f6ee2c8da9a19f0ef64ad8e48d6",
+  "private_files_bound": 112,
+  "public_files_sha256": {
+    "docs/research/ossie-req-001/p1-deadline-investigation/review.md": "9f656629095783b75c783b2d68b33e798ef55a8a9f7edfb51050241b23960b71",
+    "docs/research/ossie-req-001/p1-deadline-investigation/receipt.json": "d3ae73a89edae16cd6233398df5c3e437326dfd9defe91ddc4804a4a1bc9de53",
+    "docs/research/ossie-req-001/p1-deadline-investigation/advisor.json": "4f00df66e799ae2b001148d1583e14d6ec93464ebf018c9f52cb8898463105d2",
+    "docs/research/ossie-req-001/p1-deadline-investigation/official-sources.json": "6a837d281074cabf447135fb43dc5da42573b472b12e30b12ca5853a58ab57d6",
+    "docs/research/ossie-req-001/p1-deadline-investigation/candidate.patch.txt": "86f4578836b332765812c8ee1735840985dd3f59a8b8c6569c13e1bd047e7ba4",
+    "ossie-duckdb-plan.md": "21ad858c4fcc6f797a18ac96b12cd682b1d0e7737f52407b5117326fc72c9302",
+    "docs/ossie-execution-research.md": "f23a7e88920a2851f2dc6821ce57d2f952525ffd96f6ccdbe9a052f067754e20"
+  },
+  "local_links_checked": 359,
+  "diff_check": "pass",
+  "provider_config_read": false,
+  "real_agent_model_calls": 0,
+  "mcp_calls": 0,
+  "push": false,
+  "ci_rerun": false,
+  "remaining": [
+    "Define coherent P1 cancellation/elapsed clock, legacy-archive correspondence and shared cleanup limits before integration",
+    "Integrate the minimal justified fix with deterministic shared-helper and no-model consumer regressions",
+    "Only new successful cross-platform/tidy CI can close delivery blocker; preserve original failed CI"
+  ]
+}

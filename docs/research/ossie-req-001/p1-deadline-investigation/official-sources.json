@@ -1,0 +1,24 @@
+{
+  "schema": "ossie-timing-primary-references-v1",
+  "accessed": "2026-10-13",
+  "sources": [
+    {
+      "title": "ECMAScript Date.now",
+      "url": "https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date.now",
+      "supports": "Date.now is UTC time at call",
+      "does_not_prove": "Monotonic elapsed time or Bun CI failure cause"
+    },
+    {
+      "title": "Node timers",
+      "url": "https://nodejs.org/api/timers.html#settimeoutcallback-delay-args",
+      "supports": "Node callback timing is not guaranteed exact",
+      "does_not_prove": "Bun 1.3.11 timer implementation or actual early callback in Linux CI"
+    },
+    {
+      "title": "Bun dates and times tests",
+      "url": "https://bun.com/docs/test/dates-times",
+      "supports": "Current documentation describes Date.now and test-time control",
+      "does_not_prove": "Version-pinned old fake-timer behavior; experiments used installed spyOn"
+    }
+  ]
+}

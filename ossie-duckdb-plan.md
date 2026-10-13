@@ -1,5 +1,28 @@
 # duckdb_ossie — Implementation Plan
 
+## P1 Linux replay boundary investigation delivery — 2026-10-13
+
+[确定性调查](docs/research/ossie-req-001/p1-deadline-investigation/review.md)完成：
+原68源timeout/positive另制10衍生，249ms拒绝且复现CI相同断言，250/251
+返回failed；七缺响应/终止/文件摘要/伪造负控拒绝，fetch/重放子进程0，
+原两seal保持。两受控生产计时器都可在记录9/预算10取消，确认可达契约
+缺口，非原Linux根因证明。共享timer私有候选六控制+过期拒绝通过，不
+提高预算/改replay；三额外控制实证回拨会追加等待，稳定时钟窄修复不
+是完整时间合同。Advisor只读复核后保留候选未集成，68正式源不变。
+调查包完成/CI阻塞未解；下一统一取消/记录单调时钟、旧归档与共享cleanup
+合同，再最小正式修复及共享消费者无模型回归。原CI/旧档案/接受保持，
+无MCP/真实模型/全套/native/推送/CI重跑，不将合成复现冒充原运行。
+
+## P1 Linux replay boundary investigation checkpoint — 2026-10-13
+
+沿OSSIE-REQ-001、5ffc96a继续上一步确定性边界复现/定位。先用68源匹配的
+旧成功timeout/positive封存制作明确衍生249/250/251与缺响应/非timeout/
+摘要不符/终止后事件负控；原seal不改，所有重放fetch/子进程拒绝。再以
+受控时钟/调度器验证执行是否能在记录阈值前取消，不用墙钟概率取绿。
+没有原Linux私有轨迹，复现同症状不能冒充确认其具体场景/根因。若发现
+共享计时器契约缺口，先保存可审阅最小私有候选及Advisor只读复核，再
+决定正式实施边界；不提高预算/放宽重放，不调用真实模型/MCP或推送。
+
 ## P1 pushed branch / fresh CI result — 2026-10-13
 
 [4768236新CI](docs/research/ossie-req-001/ci-p1-4768236-controls/review.md)检查包完成，

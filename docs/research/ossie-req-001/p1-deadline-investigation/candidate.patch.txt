@@ -1,0 +1,68 @@
+diff --git a/scripts/agent_loop.ts b/scripts/agent_loop.ts
+index 7277dbb..397eff9 100644
+--- a/scripts/agent_loop.ts
++++ b/scripts/agent_loop.ts
+@@ -82,10 +82,30 @@ export function toolArguments(call: ToolCall, tools: Tool[]): JsonObject {
+   }
+   return args as JsonObject;
+ }
++/** Publication candidate only: retain the same deadline; recheck before cancellation. */
++function deadlineTimer(deadline: number, fire: () => void) {
++  let stopped = false;
++  let timer: ReturnType<typeof setTimeout>;
++  const check = () => {
++    if (stopped) return;
++    const remaining = deadline - Date.now();
++    if (remaining > 0) {
++      timer = setTimeout(check, remaining);
++      return;
++    }
++    stopped = true;
++    fire();
++  };
++  timer = setTimeout(check, Math.max(0, deadline - Date.now()));
++  return () => {
++    stopped = true;
++    clearTimeout(timer);
++  };
++}
+ export async function agentLoop(options: LoopOptions) {
+   const limits = options.limits ?? LIMITS;
+   const controller = new AbortController();
+-  const timer = setTimeout(() => controller.abort(), limits.milliseconds);
++  const cancelTimer = deadlineTimer(Date.now() + limits.milliseconds, () => controller.abort());
+   let input: JsonObject[] = [
+     {
+       role: "system",
+@@ -225,7 +245,7 @@ export async function agentLoop(options: LoopOptions) {
+     }
+     throw new Error("model round budget exceeded");
+   } finally {
+-    clearTimeout(timer);
++    cancelTimer();
+     controller.abort();
+   }
+ }
+@@ -245,19 +265,16 @@ export async function beforeDeadline<T>(
+ ): Promise<T> {
+   const remaining = deadline - Date.now();
+   assert(remaining > 0, "scenario deadline exceeded");
+-  let timer: ReturnType<typeof setTimeout> | undefined;
++  let cancelTimer = () => {};
+   try {
+     return await Promise.race([
+       action(),
+       new Promise<never>((_, reject) => {
+-        timer = setTimeout(
+-          () => reject(new Error("scenario deadline exceeded")),
+-          remaining,
+-        );
++        cancelTimer = deadlineTimer(deadline, () => reject(new Error("scenario deadline exceeded")));
+       }),
+     ]);
+   } finally {
+-    clearTimeout(timer);
++    cancelTimer();
+   }
+ }
+ /** Record model-visible fields only; never persist authentication or private reasoning. */

@@ -1,0 +1,28 @@
+{
+  "schema": "ossie-p1-deadline-candidate-advice-v1",
+  "skill": "advisor-escalation/SKILL.md",
+  "trigger": "Shared timing/cancellation and archival correspondence tradeoff",
+  "requested_role": "advisor",
+  "requested_model": "gpt-6-astra",
+  "requested_effort": "high",
+  "effective_model": "unknown",
+  "effective_effort": "unknown",
+  "usage": "unknown",
+  "billing": "unknown",
+  "decision": "Candidate prevents early callback cancellation under stable wall clock; not complete clock correspondence or confirmed CI root cause",
+  "lead_decision": "Retain private candidate; independently demonstrate backward/forward clock behavior; do not integrate before coherent timing and shared-cleanup contract",
+  "risks": [
+    "Wall-clock rollback can add real waiting; configured limits unchanged is not identical elapsed bound",
+    "Clock movement between cutoff check and failure recording remains possible",
+    "Shared consumers include cleanup, observation and all Agent rehearsal/replay entry points",
+    "Old early-clock archives remain rejected"
+  ],
+  "integration_verification_needed": [
+    "Action rejection/throw and timer disposal",
+    "Delayed callbacks and backward/forward clock policy",
+    "Sequential cleanup budgets, first failure stopping",
+    "Fresh source-bound shared no-model regressions without rewriting historical seals"
+  ],
+  "writes": false,
+  "child_delegation": false
+}
