@@ -1,0 +1,188 @@
+{
+  "roles": {
+    "fact_table": "si_b_f",
+    "dimension_table": "si_b_d",
+    "fact_logical": "shipments",
+    "dimension_logical": "batches",
+    "id": "shipment_id",
+    "fk": "batch_id",
+    "dk": "batch_id",
+    "selection": "ready",
+    "value_column": "expires",
+    "value_attribute": "expiry",
+    "value_type": "DATE",
+    "value_scope": "dimension",
+    "root": "Shipment",
+    "metric": "shipment_count",
+    "root_threshold": "2024-01-01",
+    "priority": "express"
+  },
+  "facts": [
+    {
+      "id": "b1",
+      "active": true,
+      "priority": true,
+      "value": "1900-01-01",
+      "key": "1"
+    },
+    {
+      "id": "b2",
+      "active": true,
+      "priority": true,
+      "value": "1900-01-01",
+      "key": "01"
+    },
+    {
+      "id": "b3",
+      "active": false,
+      "priority": true,
+      "value": "1900-01-01",
+      "key": "n\u0000x"
+    },
+    {
+      "id": "b4",
+      "active": null,
+      "priority": true,
+      "value": "1900-01-01",
+      "key": "n"
+    },
+    {
+      "id": "b5",
+      "active": true,
+      "priority": true,
+      "value": "1900-01-01",
+      "key": "é"
+    },
+    {
+      "id": "b6",
+      "active": true,
+      "priority": false,
+      "value": "1900-01-01",
+      "key": "1"
+    },
+    {
+      "id": "b7",
+      "active": true,
+      "priority": null,
+      "value": "1900-01-01",
+      "key": "é"
+    },
+    {
+      "id": "b8",
+      "active": false,
+      "priority": false,
+      "value": "1900-01-01",
+      "key": ""
+    }
+  ],
+  "dimensions": [
+    {
+      "key": "1",
+      "value": "2026-02-01",
+      "label": "one"
+    },
+    {
+      "key": "01",
+      "value": "2025-06-01",
+      "label": "zero-one"
+    },
+    {
+      "key": "n\u0000x",
+      "value": "2026-03-01",
+      "label": "nul"
+    },
+    {
+      "key": "n",
+      "value": "2026-04-01",
+      "label": "prefix"
+    },
+    {
+      "key": "é",
+      "value": null,
+      "label": "composed"
+    },
+    {
+      "key": "é",
+      "value": "2026-05-01",
+      "label": "decomposed"
+    },
+    {
+      "key": "",
+      "value": "2025-09-01",
+      "label": null
+    },
+    {
+      "key": "unused",
+      "value": "2024-01-01",
+      "label": "unused"
+    }
+  ],
+  "children": [
+    {
+      "name": "ReadyShipment",
+      "parent": "Shipment",
+      "kind": "active",
+      "threshold": "2025-01-01",
+      "allow_null": true
+    },
+    {
+      "name": "CurrentReadyShipment",
+      "parent": "ReadyShipment",
+      "kind": "lower",
+      "threshold": "2026-01-15",
+      "allow_null": false,
+      "rule_threshold": "2026-01-01"
+    },
+    {
+      "name": "ExpressCurrentShipment",
+      "parent": "CurrentReadyShipment",
+      "kind": "priority",
+      "threshold": "2026-02-01",
+      "allow_null": false
+    },
+    {
+      "name": "CurrentShipment",
+      "parent": "Shipment",
+      "kind": "lower",
+      "threshold": null,
+      "allow_null": false,
+      "rule_threshold": "2026-01-01"
+    }
+  ],
+  "independent_anchors": {
+    "root_ids": [
+      "b1",
+      "b2",
+      "b3",
+      "b4",
+      "b5",
+      "b6",
+      "b7",
+      "b8"
+    ],
+    "children": {
+      "ReadyShipment": [
+        "b1",
+        "b2",
+        "b5",
+        "b6",
+        "b7"
+      ],
+      "CurrentReadyShipment": [
+        "b1",
+        "b6",
+        "b7"
+      ],
+      "ExpressCurrentShipment": [
+        "b1"
+      ],
+      "CurrentShipment": [
+        "b1",
+        "b3",
+        "b4",
+        "b6",
+        "b7"
+      ]
+    }
+  }
+}

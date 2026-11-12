@@ -1,0 +1,128 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "shipment_rules_ontology",
+  "ontology": [
+    {
+      "concept": "Shipment",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne",
+          "verbalizes": [
+            "{Shipment} has id {String}"
+          ]
+        },
+        {
+          "name": "ready",
+          "roles": [
+            {
+              "concept": "Boolean"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{Shipment} has ready {Boolean}"
+          ]
+        },
+        {
+          "name": "expiry",
+          "roles": [
+            {
+              "concept": "Date"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{Shipment} has expiry {Date}"
+          ]
+        },
+        {
+          "name": "label",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{Shipment} has label {String}"
+          ]
+        },
+        {
+          "name": "express",
+          "roles": [
+            {
+              "concept": "Boolean"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{Shipment} has express {Boolean}"
+          ]
+        }
+      ],
+      "requires": [
+        "Shipment.expiry IS NULL OR Shipment.expiry >= DATE '2024-01-01'"
+      ]
+    },
+    {
+      "concept": "ReadyShipment",
+      "type": "EntityType",
+      "extends": [
+        "Shipment"
+      ],
+      "derived_by": [
+        "Shipment.ready"
+      ],
+      "requires": [
+        "ReadyShipment.expiry IS NULL OR ReadyShipment.expiry >= DATE '2025-01-01'"
+      ]
+    },
+    {
+      "concept": "CurrentReadyShipment",
+      "type": "EntityType",
+      "extends": [
+        "ReadyShipment"
+      ],
+      "derived_by": [
+        "ReadyShipment.expiry >= DATE '2026-01-01'"
+      ],
+      "requires": [
+        "CurrentReadyShipment.expiry IS NOT NULL AND CurrentReadyShipment.expiry >= DATE '2026-01-15'"
+      ]
+    },
+    {
+      "concept": "ExpressCurrentShipment",
+      "type": "EntityType",
+      "extends": [
+        "CurrentReadyShipment"
+      ],
+      "derived_by": [
+        "CurrentReadyShipment.express"
+      ],
+      "requires": [
+        "ExpressCurrentShipment.expiry IS NOT NULL AND ExpressCurrentShipment.expiry >= DATE '2026-02-01'"
+      ]
+    },
+    {
+      "concept": "CurrentShipment",
+      "type": "EntityType",
+      "extends": [
+        "Shipment"
+      ],
+      "derived_by": [
+        "Shipment.expiry >= DATE '2026-01-01'"
+      ],
+      "requires": []
+    }
+  ]
+}

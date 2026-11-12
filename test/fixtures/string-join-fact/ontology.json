@@ -1,0 +1,79 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "device_rules_ontology",
+  "ontology": [
+    {
+      "concept": "Device",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne",
+          "verbalizes": [
+            "{Device} has id {String}"
+          ]
+        },
+        {
+          "name": "capacity",
+          "roles": [
+            {
+              "concept": "Integer"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{Device} has capacity {Integer}"
+          ]
+        },
+        {
+          "name": "active",
+          "roles": [
+            {
+              "concept": "Boolean"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{Device} has active {Boolean}"
+          ]
+        },
+        {
+          "name": "label",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{Device} has label {String}"
+          ]
+        }
+      ],
+      "requires": [
+        "Device.capacity IS NULL OR Device.capacity >= 0"
+      ]
+    },
+    {
+      "concept": "ActiveDevice",
+      "type": "EntityType",
+      "extends": [
+        "Device"
+      ],
+      "derived_by": [
+        "Device.active"
+      ],
+      "requires": [
+        "ActiveDevice.capacity IS NOT NULL AND ActiveDevice.capacity >= 1"
+      ]
+    }
+  ]
+}

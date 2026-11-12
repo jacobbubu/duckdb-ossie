@@ -1,0 +1,236 @@
+{
+  "roles": {
+    "fact_table": "sj_a_f",
+    "dimension_table": "sj_a_d",
+    "fact_logical": "assets",
+    "dimension_logical": "lookup",
+    "id": "asset_id",
+    "fk": "join_key",
+    "dk": "lookup_key",
+    "selection": "active",
+    "value_column": "capacity",
+    "value_type": "INTEGER",
+    "value_scope": "fact",
+    "root": "Device",
+    "child": "ActiveDevice",
+    "metric": "device_count",
+    "root_threshold": "0",
+    "child_threshold": "1"
+  },
+  "facts": [
+    {
+      "id": "a01",
+      "key": "1",
+      "active": true,
+      "value": 1
+    },
+    {
+      "id": "a02",
+      "key": "01",
+      "active": false,
+      "value": 2
+    },
+    {
+      "id": "a03",
+      "key": "A",
+      "active": true,
+      "value": 3
+    },
+    {
+      "id": "a04",
+      "key": "a",
+      "active": false,
+      "value": 4
+    },
+    {
+      "id": "a05",
+      "key": "x ",
+      "active": true,
+      "value": 5
+    },
+    {
+      "id": "a06",
+      "key": "x",
+      "active": false,
+      "value": 6
+    },
+    {
+      "id": "a07",
+      "key": "é",
+      "active": true,
+      "value": 7
+    },
+    {
+      "id": "a08",
+      "key": "é",
+      "active": false,
+      "value": 8
+    },
+    {
+      "id": "a09",
+      "key": "",
+      "active": true,
+      "value": 9
+    },
+    {
+      "id": "a10",
+      "key": "n\u0000x",
+      "active": false,
+      "value": 10
+    },
+    {
+      "id": "a11",
+      "key": "n",
+      "active": true,
+      "value": 11
+    },
+    {
+      "id": "a12",
+      "key": "中文",
+      "active": false,
+      "value": 12
+    },
+    {
+      "id": "a13",
+      "key": "quote'\\",
+      "active": true,
+      "value": 13
+    },
+    {
+      "id": "a14",
+      "key": "\u0000",
+      "active": false,
+      "value": 14
+    },
+    {
+      "id": "a15",
+      "key": "\u0000\u0000",
+      "active": false,
+      "value": null
+    },
+    {
+      "id": "a16",
+      "key": "1",
+      "active": false,
+      "value": 1
+    }
+  ],
+  "dimensions": [
+    {
+      "key": "1",
+      "label": "dim:1",
+      "value": -999
+    },
+    {
+      "key": "01",
+      "label": "dim:01",
+      "value": -999
+    },
+    {
+      "key": "A",
+      "label": "dim:A",
+      "value": -999
+    },
+    {
+      "key": "a",
+      "label": "dim:a",
+      "value": -999
+    },
+    {
+      "key": "x ",
+      "label": "dim:x ",
+      "value": -999
+    },
+    {
+      "key": "x",
+      "label": "dim:x",
+      "value": -999
+    },
+    {
+      "key": "é",
+      "label": "dim:é",
+      "value": -999
+    },
+    {
+      "key": "é",
+      "label": "dim:é",
+      "value": -999
+    },
+    {
+      "key": "",
+      "label": null,
+      "value": -999
+    },
+    {
+      "key": "n\u0000x",
+      "label": "dim:n\u0000x",
+      "value": -999
+    },
+    {
+      "key": "n",
+      "label": "dim:n",
+      "value": -999
+    },
+    {
+      "key": "中文",
+      "label": "dim:中文",
+      "value": -999
+    },
+    {
+      "key": "quote'\\",
+      "label": "dim:quote'\\",
+      "value": -999
+    },
+    {
+      "key": "\u0000",
+      "label": "dim:\u0000",
+      "value": -999
+    },
+    {
+      "key": "\u0000\u0000",
+      "label": "dim:\u0000\u0000",
+      "value": -999
+    },
+    {
+      "key": "unused",
+      "label": "unused",
+      "value": -999
+    }
+  ],
+  "independent_anchors": {
+    "root_ids": [
+      "a01",
+      "a02",
+      "a03",
+      "a04",
+      "a05",
+      "a06",
+      "a07",
+      "a08",
+      "a09",
+      "a10",
+      "a11",
+      "a12",
+      "a13",
+      "a14",
+      "a15",
+      "a16"
+    ],
+    "child_ids": [
+      "a01",
+      "a03",
+      "a05",
+      "a07",
+      "a09",
+      "a11",
+      "a13"
+    ],
+    "key_1_members": [
+      "a01",
+      "a16"
+    ],
+    "key_01_members": [
+      "a02"
+    ]
+  }
+}

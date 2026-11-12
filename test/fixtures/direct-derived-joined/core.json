@@ -1,0 +1,135 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "shipment_rules",
+  "datasets": [
+    {
+      "name": "shipments",
+      "source": "memory.main.dd_b_f",
+      "primary_key": [
+        "shipment_id"
+      ],
+      "fields": [
+        {
+          "name": "shipment_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "shipment_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "batch_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "batch_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ready",
+          "datatype": "Boolean",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "ready"
+              }
+            ]
+          }
+        },
+        {
+          "name": "expires",
+          "datatype": "Date",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "expires"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "batches",
+      "source": "memory.main.dd_b_d",
+      "primary_key": [
+        "batch_id"
+      ],
+      "fields": [
+        {
+          "name": "batch_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "batch_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "expires",
+          "datatype": "Date",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "expires"
+              }
+            ]
+          }
+        },
+        {
+          "name": "label",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "label"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "shipment_batch",
+      "from": "shipments",
+      "to": "batches",
+      "from_columns": [
+        "batch_id"
+      ],
+      "to_columns": [
+        "batch_id"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "shipment_count",
+      "datatype": "Integer",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(shipments.shipment_id)"
+          }
+        ]
+      }
+    }
+  ]
+}

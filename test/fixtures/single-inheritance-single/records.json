@@ -1,0 +1,147 @@
+{
+  "roles": {
+    "fact_table": "si_a_f",
+    "dimension_table": null,
+    "fact_logical": "assets",
+    "dimension_logical": null,
+    "id": "asset_id",
+    "fk": null,
+    "dk": null,
+    "selection": "active",
+    "value_column": "capacity",
+    "value_attribute": "capacity",
+    "value_type": "INTEGER",
+    "value_scope": "fact",
+    "root": "Device",
+    "metric": "device_count",
+    "root_threshold": "0",
+    "priority": "priority"
+  },
+  "facts": [
+    {
+      "id": "a1",
+      "active": true,
+      "priority": true,
+      "value": 20,
+      "key": null
+    },
+    {
+      "id": "a2",
+      "active": true,
+      "priority": true,
+      "value": 5,
+      "key": null
+    },
+    {
+      "id": "a3",
+      "active": false,
+      "priority": true,
+      "value": 30,
+      "key": null
+    },
+    {
+      "id": "a4",
+      "active": null,
+      "priority": true,
+      "value": 40,
+      "key": null
+    },
+    {
+      "id": "a5",
+      "active": true,
+      "priority": true,
+      "value": null,
+      "key": null
+    },
+    {
+      "id": "a6",
+      "active": true,
+      "priority": false,
+      "value": 20,
+      "key": null
+    },
+    {
+      "id": "a7",
+      "active": true,
+      "priority": null,
+      "value": 20,
+      "key": null
+    },
+    {
+      "id": "a8",
+      "active": false,
+      "priority": false,
+      "value": 2,
+      "key": null
+    }
+  ],
+  "dimensions": [],
+  "children": [
+    {
+      "name": "ActiveDevice",
+      "parent": "Device",
+      "kind": "active",
+      "threshold": "1",
+      "allow_null": true
+    },
+    {
+      "name": "LargeActiveDevice",
+      "parent": "ActiveDevice",
+      "kind": "lower",
+      "threshold": "15",
+      "allow_null": false,
+      "rule_threshold": "10"
+    },
+    {
+      "name": "PriorityDevice",
+      "parent": "LargeActiveDevice",
+      "kind": "priority",
+      "threshold": "18",
+      "allow_null": false
+    },
+    {
+      "name": "LargeDevice",
+      "parent": "Device",
+      "kind": "lower",
+      "threshold": null,
+      "allow_null": false,
+      "rule_threshold": "10"
+    }
+  ],
+  "independent_anchors": {
+    "root_ids": [
+      "a1",
+      "a2",
+      "a3",
+      "a4",
+      "a5",
+      "a6",
+      "a7",
+      "a8"
+    ],
+    "children": {
+      "ActiveDevice": [
+        "a1",
+        "a2",
+        "a5",
+        "a6",
+        "a7"
+      ],
+      "LargeActiveDevice": [
+        "a1",
+        "a6",
+        "a7"
+      ],
+      "PriorityDevice": [
+        "a1"
+      ],
+      "LargeDevice": [
+        "a1",
+        "a3",
+        "a4",
+        "a6",
+        "a7"
+      ]
+    }
+  }
+}

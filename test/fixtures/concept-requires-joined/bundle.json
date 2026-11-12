@@ -1,0 +1,28 @@
+{
+  "profile": "fact-dimension-population-v1",
+  "capabilities": [
+    "concept-scalar-requires-v1"
+  ],
+  "join": {
+    "fact": "shipments",
+    "dimension": "batches",
+    "relationship": "shipment_batch",
+    "type": "INNER",
+    "missing": "reject"
+  },
+  "core": {
+    "path": "core.json",
+    "name": "shipment_rules",
+    "sha256": "dd5ce97bd4898a71250fa6b8b9bc99a4018fe801c416bdafab8e368c0e5d9c49"
+  },
+  "ontology": {
+    "path": "ontology.json",
+    "name": "shipment_rules_ontology",
+    "sha256": "12278b66e29df40c8bf900b64472f52b3b9011ff374847caf5473ddbc35b58b1"
+  },
+  "mapping": {
+    "path": "mapping.json",
+    "name": "shipment_rules_mapping",
+    "sha256": "8e9d3f576c72344b47a8c2e848c9469e03943d5a5db0ac5291ae9c8f987d00ca"
+  }
+}

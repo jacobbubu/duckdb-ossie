@@ -1,0 +1,25 @@
+{
+  "profile": "fact-dimension-population-v1",
+  "join": {
+    "fact": "fact",
+    "dimension": "dimension",
+    "relationship": "fact_dimension",
+    "type": "INNER",
+    "missing": "reject"
+  },
+  "core": {
+    "path": "core.json",
+    "name": "joined_population",
+    "sha256": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878"
+  },
+  "ontology": {
+    "path": "ontology.json",
+    "name": "joined_ontology",
+    "sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613"
+  },
+  "mapping": {
+    "path": "mapping.json",
+    "name": "joined_mapping",
+    "sha256": "fede2d077986e8c46162973f87b750afcd1420e8229d480d175a6c7acee4dcfd"
+  }
+}

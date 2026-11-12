@@ -77,7 +77,7 @@ datasets:
               expression: "'héllo → wörld'"
 
       - name: numeric_desc
-        description: 1.5                          # UNQUOTED: YAML types this as a float.
+        description: "1.5"                        # Quoted text agrees with the JSON counterpart.
         expression: {dialects: [{dialect: ANSI_SQL, expression: k}]}
 
       - name: empty_syn

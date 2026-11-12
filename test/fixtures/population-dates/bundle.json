@@ -1,0 +1,18 @@
+{
+  "profile": "gaap-scalar-population-v1",
+  "core": {
+    "path": "core.json",
+    "name": "gaap_demo",
+    "sha256": "7f1777266e03628dd2e6db3f4b9952c341dd3ac3bff7d6fdcf034185dad620dd"
+  },
+  "ontology": {
+    "path": "ontology.json",
+    "name": "gaap_population",
+    "sha256": "b7e1fe5e2c7bff95ef827d07d5ea64d855694453e89f73d67d9cffb8967aab13"
+  },
+  "mapping": {
+    "path": "mapping.json",
+    "name": "gaap_binding",
+    "sha256": "ae665e55852932f48a1bfbb0f5d8bfa6cf13e34274a7a6f923cb8c0db9617807"
+  }
+}

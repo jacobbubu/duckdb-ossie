@@ -1,0 +1,150 @@
+# name: test/sql/ossie_population_dates.test
+# description: DATE calendar boundaries, half-open record scope, conversions and temporal refusals
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE dws_gaap_di(ds DATE, product VARCHAR, region VARCHAR, user_type VARCHAR, user_id VARCHAR, gaap_val DECIMAL(18,2), ytd_gaap DECIMAL(18,2));
+
+statement ok
+INSERT INTO dws_gaap_di VALUES
+(DATE '2023-12-31','X','A','control','year_end',1,20),
+(DATE '2024-01-01','X','A','control','year_start',2,20),
+(DATE '2024-02-01','X','A','control','feb_start',3,20),
+(DATE '2024-02-28','X','A','control','feb_low',4,0),
+(DATE '2024-02-29','X','B','control','leap_day',5,20),
+(DATE '2024-03-01','X','B','control','march_start',6,20),
+(DATE '2024-04-01','X','B','control','april_start',7,20),
+(DATE '2025-02-28','X','B','control','nonleap_feb',8,20),
+(NULL,'X','B','control','null_date',9,20),
+(DATE 'infinity','X','B','control','positive_infinity',10,20),
+(DATE '-infinity','X','B','control','negative_infinity',11,20);
+
+query I
+SELECT records FROM ossie_bundle_load('test/fixtures/population-dates/bundle.json');
+----
+11
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('ValidUser',[]);
+----
+feb_start
+leap_day
+
+query IT
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','gaap_sum'],[],[]);
+----
+2	8.00
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('User',['User.date >= DATE ''2024-02-01'' AND User.date < DATE ''2024-03-01''']);
+----
+feb_low
+feb_start
+leap_day
+
+query IT
+SELECT * FROM ossie_concept_query('User',['record_count','gaap_sum'],[],['User.date >= DATE ''2024-02-01'' AND User.date < DATE ''2024-03-01''']);
+----
+3	12.00
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('User',['User.date BETWEEN DATE ''2024-02-01'' AND DATE ''2024-03-01''']);
+----
+feb_low
+feb_start
+leap_day
+march_start
+
+query TIT rowsort
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','gaap_sum'],['dws_gaap_di.ds'],[]);
+----
+2024-02-01	1	3.00
+2024-02-29	1	5.00
+
+query IT
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','gaap_sum'],[],['User.date >= DATE ''2024-03-01''']);
+----
+0	NULL
+
+query T
+SELECT entity_id FROM ossie_objects('User',['User.date IS NULL']);
+----
+null_date
+
+query I
+SELECT COUNT(*) FROM ossie_objects('User',['User.date = NULL']);
+----
+0
+
+query TT rowsort
+SELECT entity_id, CAST("dws_gaap_di.ds" AS VARCHAR) FROM ossie_objects('User',['User.date = DATE ''infinity'' OR User.date = DATE ''-infinity''']);
+----
+negative_infinity	-infinity
+positive_infinity	infinity
+
+query T
+SELECT entity_id FROM ossie_objects('User',['1 + User.date = DATE ''2024-03-01''']);
+----
+leap_day
+
+query T
+SELECT entity_id FROM ossie_objects('User',['User.date - 1 = DATE ''2024-02-29''']);
+----
+march_start
+
+query T
+SELECT entity_id FROM ossie_objects('User',['User.date - DATE ''2024-02-28'' = 2']);
+----
+march_start
+
+query I
+SELECT COUNT(*) FROM ossie_objects('User',['User.date = TRY_CAST(''2023-02-29'' AS DATE)']);
+----
+0
+
+query T
+SELECT entity_id FROM ossie_objects('User',['User.date = CAST(''2024-02-29 23:30:00-12:00'' AS DATE)']);
+----
+leap_day
+
+query T
+SELECT entity_id FROM ossie_objects('User',['User.date = ''2024-02-29garbage''']);
+----
+leap_day
+
+statement error
+SELECT * FROM ossie_objects('User',['User.date = CAST(''2023-02-29'' AS DATE)']);
+----
+date
+
+statement error
+SELECT * FROM ossie_objects('User',['User.date = CURRENT_DATE']);
+----
+qualified
+
+statement error
+SELECT * FROM ossie_objects('User',['User.date = CURRENT_DATE()']);
+----
+unsupported
+
+statement error
+SELECT * FROM ossie_objects('User',['User.date = TIMESTAMP ''2024-02-29 00:00:00''']);
+----
+unsupported cast
+
+statement error
+SELECT * FROM ossie_objects('User',['User.date = CAST(CAST(''2024-02-29 00:00:00'' AS TIMESTAMP) AS DATE)']);
+----
+unsupported cast
+
+statement error
+SELECT * FROM ossie_objects('User',['DATE_TRUNC(''month'',User.date) IS NOT NULL']);
+----
+unsupported
+
+query IT
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','gaap_sum'],[],[]);
+----
+2	8.00

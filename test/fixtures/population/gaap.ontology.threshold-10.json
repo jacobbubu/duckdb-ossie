@@ -1,0 +1,99 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "gaap_population",
+  "description": "Research draft: derivation by recorded fiscal YTD GAAP; active and paying statuses are not established.",
+  "ontology": [
+    {
+      "concept": "User",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne",
+          "verbalizes": [
+            "{User} has id {String}"
+          ]
+        },
+        {
+          "name": "date",
+          "roles": [
+            {
+              "concept": "Date"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{User} has date {Date}"
+          ]
+        },
+        {
+          "name": "product",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{User} has product {String}"
+          ]
+        },
+        {
+          "name": "region",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{User} has region {String}"
+          ]
+        },
+        {
+          "name": "user_type",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{User} has user_type {String}"
+          ]
+        },
+        {
+          "name": "ytd_gaap",
+          "roles": [
+            {
+              "concept": "Decimal"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{User} has ytd_gaap {Decimal}"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "ValidUser",
+      "type": "EntityType",
+      "extends": [
+        "User"
+      ],
+      "derived_by": [
+        "User.ytd_gaap >= 10"
+      ],
+      "description": "Derived from the proposed recorded GAAP predicate on the bound observation; inherits User identity."
+    }
+  ]
+}

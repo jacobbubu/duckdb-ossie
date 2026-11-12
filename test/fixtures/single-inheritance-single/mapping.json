@@ -1,0 +1,67 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "device_rules_mapping",
+  "ontology_ref": {
+    "name": "device_rules_ontology"
+  },
+  "semantic_model_ref": {
+    "name": "device_rules"
+  },
+  "concept_mappings": [
+    {
+      "concept": "Device",
+      "object_mappings": [
+        {
+          "referent_mappings": [
+            {
+              "relationship": "id",
+              "expression": "assets.asset_id"
+            }
+          ]
+        }
+      ],
+      "link_mappings": [
+        {
+          "object_mapping": {
+            "referent_mappings": [
+              {
+                "relationship": "id",
+                "expression": "assets.asset_id"
+              }
+            ]
+          },
+          "children": [
+            {
+              "relationship": "id",
+              "object_mapping": {
+                "concept": "String",
+                "expression": "assets.asset_id"
+              }
+            },
+            {
+              "relationship": "capacity",
+              "object_mapping": {
+                "concept": "Integer",
+                "expression": "assets.capacity"
+              }
+            },
+            {
+              "relationship": "active",
+              "object_mapping": {
+                "concept": "Boolean",
+                "expression": "assets.active"
+              }
+            },
+            {
+              "relationship": "priority",
+              "object_mapping": {
+                "concept": "Boolean",
+                "expression": "assets.priority"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

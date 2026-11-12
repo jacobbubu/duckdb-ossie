@@ -5,6 +5,56 @@ back, so a plausible wrong number is worse than an error. Everything below is a 
 model, the request, or the format underdetermines the query — and the extension declines rather
 than picking.
 
+## Bounded population profile
+
+The separate `ossie_bundle_load` path has a stricter expression and source contract
+than the live core APIs described below. Its single-table profile and bounded
+fact/dimension profile, whole-batch identity/key checks, frozen data lifetime and
+explicit refusals are listed in [population-profile.md](population-profile.md).
+The fact/dimension profile validates both captured inputs and an explicit
+`INNER`/`missing=reject` policy before publishing a frozen result. General ontology
+execution, arbitrary joins, mixed-grain aggregates and calendar completion remain
+outside these profiles. The live core join/filter behavior below is a separate
+contract; it does not describe the stricter population path.
+
+The opt-in [two-fact profile](population-facts.md) has a separate contract: independently
+reduce User/date and User/date/product facts before combining same-unit SUM measures,
+apply bounded TRUE cohorts, or compute explicit User/date observation windows before
+display filtering. Its dedicated SQL query/compile/discovery functions do not relax the
+generic core refusals below. The generic core limits below still apply.
+
+## Loader string arrays
+
+AI `synonyms`/`examples`, dataset `primary_key` and relationship
+`from_columns`/`to_columns` accept string members only in JSON and YAML.
+Numbers, Booleans, null and containers are refused, with a zero-based member
+index; a failed load preserves the previous model or frozen bundle. Quote
+numeric or Boolean-looking text when it is intended as a string. `unique_keys`
+already rejects non-string column members. AI strings preserve their bytes,
+including control characters; this does not grant those characters permission
+in executable expressions or identifiers. The loader is not a full JSON Schema
+validator. Single-value string fields also require actual strings: required
+fields must be present, and optional fields may be omitted but cannot explicitly
+contain null, numbers, Booleans or containers. Quote numeric or Boolean-looking
+text in JSON/YAML. Missing optional values retain their existing empty or SQL
+NULL discovery representation; other field-specific checks still apply.
+
+Core descriptive strings and unique-key members are read using their actual
+length, so NUL does not truncate metadata. Model expression variants containing
+NUL are refused before SQL parsing because DuckDB otherwise parses only the
+prefix. The bounded population profiles continue to reject NUL in their
+complete definition documents.
+
+Core model, dataset, field, metric and relationship names, dataset source and
+relationship endpoints must be nonempty strings. Whitespace is not trimmed.
+Unknown properties in the core model, datasets, fields, metrics, relationships,
+dimension objects, expressions and dialect variants are refused. Property keys
+are case-sensitive and matched in full. AI context objects still permit and
+preserve additional descriptive properties. Custom extensions must be arrays
+of objects containing only the required string fields vendor_name and data.
+Both strings may be empty; data content is preserved without additional JSON
+content validation. Extensions are descriptive and do not execute vendor code.
+
 ## Grain
 
 **Metrics that aggregate at more than one grain.** `store_productivity` is
@@ -62,6 +112,10 @@ tables the model never declared.
 
 ## Model conformance
 
+The [P1 function and window matrix](ossie-sql-compatibility.md) separates pinned
+language definitions, profile AST boundaries and actual execution evidence.
+It does not claim complete OSSIE_SQL_2026 conformance.
+
 **The pre-0.2 `semantic_model` array.** Ossie 0.2.0.dev0 puts exactly one model at the root of each
 document and removed the `semantic_model` array rather than deprecating it. A document that still
 wraps its model is refused at load with the migration spelled out: move the model's properties to
@@ -70,7 +124,9 @@ the top level, delete the wrapper, and split a multi-model file into one file pe
 **Two executable dialects.** An expression runs if it has an `OSSIE_SQL_2026` or an `ANSI_SQL`
 variant; when it has both, `OSSIE_SQL_2026` wins, since the spec defines what it means. A field or
 metric carrying only a `SNOWFLAKE`, `DATABRICKS` or `MDX` expression fails at load rather than
-being guessed at.
+being guessed at. Every variant must use an exact, case-sensitive name from
+the pinned eleven-name dialect enum, including unused variants. An unknown or
+noncanonical name refuses the document even if a valid fallback is present.
 
 **OSSIE_SQL_2026 constructs with no defined result.** The expression language
 (`core-spec/expression_language.md`) is lowered to DuckDB at load. Where it leaves a result

@@ -1,0 +1,152 @@
+{
+  "roles": {
+    "fact_table": "dd_b_f",
+    "dimension_table": "dd_b_d",
+    "fact_logical": "shipments",
+    "dimension_logical": "batches",
+    "id": "shipment_id",
+    "fk": "batch_id",
+    "dk": "batch_id",
+    "selection": "ready",
+    "value_column": "expires",
+    "value_attribute": "expiry",
+    "value_type": "DATE",
+    "value_scope": "dimension",
+    "root": "Shipment",
+    "metric": "shipment_count",
+    "root_threshold": "2025-01-01"
+  },
+  "facts": [
+    {
+      "id": "s1",
+      "key": "1",
+      "active": true,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "s2",
+      "key": "01",
+      "active": true,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "s3",
+      "key": "n\u0000x",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "s4",
+      "key": "n",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "s5",
+      "key": "é",
+      "active": null,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "s6",
+      "key": "é",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "s7",
+      "key": "",
+      "active": true,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "s8",
+      "key": "1",
+      "active": false,
+      "value": "1900-01-01"
+    }
+  ],
+  "dimensions": [
+    {
+      "key": "1",
+      "value": "2026-02-01",
+      "label": "one"
+    },
+    {
+      "key": "01",
+      "value": "2025-06-01",
+      "label": "zero-one"
+    },
+    {
+      "key": "n\u0000x",
+      "value": "2026-03-01",
+      "label": "nul"
+    },
+    {
+      "key": "n",
+      "value": "2025-03-01",
+      "label": "prefix"
+    },
+    {
+      "key": "é",
+      "value": "2026-04-01",
+      "label": "composed"
+    },
+    {
+      "key": "é",
+      "value": null,
+      "label": "decomposed"
+    },
+    {
+      "key": "",
+      "value": "2025-05-01",
+      "label": null
+    },
+    {
+      "key": "unused",
+      "value": "2024-01-01",
+      "label": "unused"
+    }
+  ],
+  "children": [
+    {
+      "name": "ReadyShipment",
+      "kind": "active",
+      "threshold": "2025-01-01"
+    },
+    {
+      "name": "CurrentShipment",
+      "kind": "lower",
+      "threshold": "2026-02-01",
+      "rule_threshold": "2026-01-01"
+    }
+  ],
+  "independent_anchors": {
+    "root_ids": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8"
+    ],
+    "children": {
+      "ReadyShipment": [
+        "s1",
+        "s2",
+        "s7"
+      ],
+      "CurrentShipment": [
+        "s1",
+        "s3",
+        "s5",
+        "s8"
+      ]
+    },
+    "intersection": [
+      "s1"
+    ]
+  }
+}

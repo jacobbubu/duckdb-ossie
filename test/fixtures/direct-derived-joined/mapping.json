@@ -1,0 +1,67 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "shipment_rules_mapping",
+  "ontology_ref": {
+    "name": "shipment_rules_ontology"
+  },
+  "semantic_model_ref": {
+    "name": "shipment_rules"
+  },
+  "concept_mappings": [
+    {
+      "concept": "Shipment",
+      "object_mappings": [
+        {
+          "referent_mappings": [
+            {
+              "relationship": "id",
+              "expression": "shipments.shipment_id"
+            }
+          ]
+        }
+      ],
+      "link_mappings": [
+        {
+          "object_mapping": {
+            "referent_mappings": [
+              {
+                "relationship": "id",
+                "expression": "shipments.shipment_id"
+              }
+            ]
+          },
+          "children": [
+            {
+              "relationship": "id",
+              "object_mapping": {
+                "concept": "String",
+                "expression": "shipments.shipment_id"
+              }
+            },
+            {
+              "relationship": "ready",
+              "object_mapping": {
+                "concept": "Boolean",
+                "expression": "shipments.ready"
+              }
+            },
+            {
+              "relationship": "expiry",
+              "object_mapping": {
+                "concept": "Date",
+                "expression": "batches.expires"
+              }
+            },
+            {
+              "relationship": "label",
+              "object_mapping": {
+                "concept": "String",
+                "expression": "batches.label"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "nul_metadata",
+  "description": "before\u0000after",
+  "ai_context": "before\u0000after",
+  "datasets": [
+    {
+      "name": "facts",
+      "source": "memory.main.facts",
+      "unique_keys": [
+        [
+          "before\u0000after",
+          "中文"
+        ]
+      ],
+      "fields": [
+        {
+          "name": "amount",
+          "label": "before\u0000after",
+          "description": "before\u0000after",
+          "ai_context": {
+            "instructions": "before\u0000after"
+          },
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "amount"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

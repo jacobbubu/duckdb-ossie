@@ -6,7 +6,11 @@
 #include "duckdb/parser/parsed_data/create_table_function_info.hpp"
 
 namespace duckdb {
+class ExtensionLoader;
 namespace ossie {
+
+void RegisterDescribe(ExtensionLoader &loader, TableFunction function, const string &description,
+                      const string &example);
 
 //! Builds the metadata DuckDB exposes through duckdb_functions(). This is not cosmetic: the
 //! community-extensions registry generates each extension's documentation page by snapshotting

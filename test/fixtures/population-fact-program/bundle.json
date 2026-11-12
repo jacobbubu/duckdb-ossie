@@ -1,0 +1,36 @@
+{
+  "profile": "multi-fact-user-program-v1",
+  "core": {
+    "path": "core.json",
+    "name": "two_fact_demo",
+    "sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942"
+  },
+  "ontology": {
+    "path": "ontology.json",
+    "name": "two_fact_ontology",
+    "sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0"
+  },
+  "mapping": {
+    "path": "mapping.json",
+    "name": "two_fact_mapping",
+    "sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f"
+  },
+  "program": {
+    "facts": [
+      {
+        "dataset": "revenue",
+        "concept": "RevenueObservation",
+        "currency": "USD"
+      },
+      {
+        "dataset": "cost",
+        "concept": "CostObservation",
+        "currency": "USD"
+      }
+    ],
+    "windows": [
+      "previous",
+      "rolling"
+    ]
+  }
+}

@@ -1,0 +1,97 @@
+# name: test/sql/ossie_join_research.test
+# description: Existing core fact-grain join research, not joined population implementation
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE r6_fact(id VARCHAR, dim_id INTEGER, amount DECIMAL(18,2), active BOOLEAN);
+
+statement ok
+CREATE TABLE r6_dimension(id INTEGER, label VARCHAR, eligible BOOLEAN);
+
+statement ok
+INSERT INTO r6_fact VALUES ('f1',1,10.01,true),('f2',1,20.02,true),('f3',2,30.03,false),('f4',2,NULL,true),('f5',3,-5.05,true),('f6',3,0,true);
+
+statement ok
+INSERT INTO r6_dimension VALUES (1,'North',true),(2,'South',false),(3,'North',true),(4,'Unused',true);
+
+statement ok
+CALL ossie_load('test/fixtures/safe-join-research/core.json');
+
+query IT
+SELECT * FROM ossie_query(['record_count','amount_sum'],[],[]);
+----
+6	55.01
+
+query TIT rowsort
+SELECT * FROM ossie_query(['record_count','amount_sum'],['dimension.label'],[]);
+----
+North	4	24.98
+South	2	30.03
+
+query IR
+SELECT * FROM ossie_query(['value_count','amount_avg'],[],[]);
+----
+5	11.002
+
+query TIR rowsort
+SELECT * FROM ossie_query(['value_count','amount_avg'],['dimension.label'],[]);
+----
+North	4	6.245
+South	1	30.03
+
+query TI rowsort
+SELECT * FROM ossie_query(['record_count'],['fact.id'],['fact.active AND dimension.eligible']);
+----
+f1	1
+f2	1
+f5	1
+f6	1
+
+query IT
+SELECT * FROM ossie_query(['record_count','amount_sum'],[],['fact.active AND dimension.eligible']);
+----
+4	24.98
+
+statement error
+SELECT ossie_compile(['amount_sum','dimension_count'],[],[]);
+----
+different grains
+
+statement error
+SELECT ossie_compile(['dimension_count'],['fact.id'],[]);
+----
+repeats each
+
+# Core declarations do not validate the data. Research exposes this gap; v1 still refuses multi-table population.
+statement ok
+BEGIN;
+
+statement ok
+INSERT INTO r6_dimension VALUES(1,'North',true);
+
+query TIT rowsort
+SELECT * FROM ossie_query(['record_count','amount_sum'],['dimension.label'],[]);
+----
+North	6	55.01
+South	2	30.03
+
+query IT
+SELECT * FROM ossie_query(['record_count','amount_sum'],[],[]);
+----
+6	55.01
+
+query I
+SELECT COUNT(*) FROM (SELECT id FROM r6_dimension GROUP BY id HAVING COUNT(*)>1);
+----
+1
+
+statement ok
+ROLLBACK;
+
+query TIT rowsort
+SELECT * FROM ossie_query(['record_count','amount_sum'],['dimension.label'],[]);
+----
+North	4	24.98
+South	2	30.03

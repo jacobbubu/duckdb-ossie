@@ -1,0 +1,29 @@
+{
+  "profile": "fact-dimension-population-v1",
+  "capabilities": [
+    "native-string-join-v1",
+    "concept-scalar-requires-v1"
+  ],
+  "core": {
+    "path": "core.json",
+    "name": "device_rules",
+    "sha256": "a955c75f01bbe1a3cb5b5020076f49069dd7ff043292e4de851b9626178acc15"
+  },
+  "ontology": {
+    "path": "ontology.json",
+    "name": "device_rules_ontology",
+    "sha256": "d7b9fbec67611a3317a59e1286e5c878f44b2c7729289304aab68162e3ea0c98"
+  },
+  "mapping": {
+    "path": "mapping.json",
+    "name": "device_rules_mapping",
+    "sha256": "9d6e681cc6b312ebe834088538dc5a852fd1c17068381905d9b1afa81480e218"
+  },
+  "join": {
+    "fact": "assets",
+    "dimension": "lookup",
+    "relationship": "asset_lookup",
+    "type": "INNER",
+    "missing": "reject"
+  }
+}

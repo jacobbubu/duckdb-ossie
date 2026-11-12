@@ -1,0 +1,22 @@
+{
+  "profile": "gaap-scalar-population-v1",
+  "capabilities": [
+    "bounded-single-inheritance-v1",
+    "concept-scalar-requires-v1"
+  ],
+  "core": {
+    "path": "core.json",
+    "name": "device_rules",
+    "sha256": "a738e5029e1ca8f10898bbf8148e43fa4b026e5f70a003bd3c99bbf9d0ed4b25"
+  },
+  "ontology": {
+    "path": "ontology.json",
+    "name": "device_rules_ontology",
+    "sha256": "5a952186201f5a3245b0975ae8f083a5d4c6e86ec3af9fccec30e19b821d4ba6"
+  },
+  "mapping": {
+    "path": "mapping.json",
+    "name": "device_rules_mapping",
+    "sha256": "ad5fa2d65b1348cb3286e5c6db19fad98030f0589dfd6c416429d1bd923e73df"
+  }
+}

@@ -15,7 +15,8 @@ namespace {
 void CompileFunction(DataChunk &args, ExpressionState &state, Vector &result) {
 	auto &context = state.GetContext();
 	auto &ossie_state = OssieState::Get(context);
-	auto model = ossie_state.GetModel();
+	auto snapshot = ossie_state.GetSnapshot();
+	auto &model = snapshot.model;
 	if (!model) {
 		throw InvalidInputException("ossie_compile: no Ossie model is loaded -- call ossie_load('model.json') first");
 	}
@@ -25,7 +26,7 @@ void CompileFunction(DataChunk &args, ExpressionState &state, Vector &result) {
 		auto dimensions = ToStringList(args.data[1].GetValue(row), "ossie_compile");
 		auto filters = ToStringList(args.data[2].GetValue(row), "ossie_compile");
 		CompileOptions options;
-		options.allow_filter_functions = ossie_state.AllowFilterFunctions();
+		options.allow_filter_functions = snapshot.allow_filter_functions;
 		auto sql = CompileToSQL(*model, metrics, dimensions, filters, options);
 		result.SetValue(row, Value(sql));
 	}
@@ -51,6 +52,9 @@ void RegisterCompileFunction(ExtensionLoader &loader) {
 	auto string_list = LogicalType::LIST(LogicalType::VARCHAR);
 	ScalarFunction ossie_compile("ossie_compile", {string_list, string_list, string_list}, LogicalType::VARCHAR,
 	                             CompileFunction);
+
+	// Model/policy is captured at execution per scalar chunk, never constant-folded at PREPARE.
+	ossie_compile.SetVolatile();
 
 	CreateScalarFunctionInfo info(ossie_compile);
 	info.descriptions.push_back(

@@ -1,0 +1,164 @@
+# name: test/sql/ossie_concept_requires.test
+# description: opt-in concept constraints are validation, never membership filters
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE req_devices(asset_id VARCHAR, capacity TINYINT, active BOOLEAN);
+
+statement ok
+INSERT INTO req_devices VALUES ('d1', 2, TRUE);
+
+statement ok
+INSERT INTO req_devices VALUES ('d2', NULL, FALSE);
+
+statement ok
+INSERT INTO req_devices VALUES ('d3', 0, FALSE);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/concept-requires-single/bundle.json');
+
+query I
+SELECT count(*) FROM ossie_objects('Device',[]);
+----
+3
+
+query T
+SELECT string_agg(entity_id,',' ORDER BY entity_id) FROM ossie_objects('ActiveDevice',[]);
+----
+d1
+
+query T
+SELECT api_version FROM ossie_population_capabilities();
+----
+2.3.0
+
+statement ok
+UPDATE req_devices SET capacity=-1 WHERE asset_id='d3';
+
+statement error
+CALL ossie_bundle_load('test/fixtures/concept-requires-single/bundle.json');
+----
+CONSTRAINT_VIOLATION
+
+query I
+SELECT count(*) FROM ossie_objects('Device',[]);
+----
+3
+
+statement ok
+UPDATE req_devices SET capacity=0 WHERE asset_id='d3';
+
+statement ok
+UPDATE req_devices SET active=TRUE WHERE asset_id='d2';
+
+statement error
+CALL ossie_bundle_load('test/fixtures/concept-requires-single/bundle.json');
+----
+CONSTRAINT_VIOLATION
+
+query T
+SELECT string_agg(entity_id,',' ORDER BY entity_id) FROM ossie_objects('ActiveDevice',[]);
+----
+d1
+
+statement ok
+UPDATE req_devices SET active=FALSE;
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/concept-requires-single/bundle.json');
+
+query I
+SELECT count(*) FROM ossie_objects('ActiveDevice',[]);
+----
+0
+
+statement ok
+CREATE TABLE req_shipments(shipment_id VARCHAR, batch_id INTEGER, ready BOOLEAN, expires DATE);
+
+statement ok
+CREATE TABLE req_batches(batch_id INTEGER, expires DATE);
+
+statement ok
+INSERT INTO req_shipments VALUES ('s1', 10, TRUE, DATE '2000-01-01');
+
+statement ok
+INSERT INTO req_shipments VALUES ('s2', 10, TRUE, DATE '2000-01-01');
+
+statement ok
+INSERT INTO req_shipments VALUES ('s3', 20, FALSE, DATE '2000-01-01');
+
+statement ok
+INSERT INTO req_shipments VALUES ('s4', 30, FALSE, DATE '2000-01-01');
+
+statement ok
+INSERT INTO req_batches VALUES (10, DATE '2026-06-30');
+
+statement ok
+INSERT INTO req_batches VALUES (20, NULL);
+
+statement ok
+INSERT INTO req_batches VALUES (30, DATE '2025-12-31');
+
+statement ok
+INSERT INTO req_batches VALUES (99, DATE '2024-12-31');
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/concept-requires-joined/bundle.json');
+
+query I
+SELECT count(*) FROM ossie_objects('Shipment',[]);
+----
+4
+
+query T
+SELECT string_agg(entity_id,',' ORDER BY entity_id) FROM ossie_objects('ReadyShipment',[]);
+----
+s1,s2
+
+query T
+SELECT api_version FROM ossie_population_capabilities();
+----
+2.3.0
+
+statement ok
+UPDATE req_batches SET expires=DATE '2024-12-31' WHERE batch_id=30;
+
+statement error
+CALL ossie_bundle_load('test/fixtures/concept-requires-joined/bundle.json');
+----
+CONSTRAINT_VIOLATION
+
+query I
+SELECT count(*) FROM ossie_objects('Shipment',[]);
+----
+4
+
+statement ok
+UPDATE req_batches SET expires=DATE '2025-12-31' WHERE batch_id=30;
+
+statement ok
+UPDATE req_shipments SET ready=TRUE WHERE shipment_id='s3';
+
+statement error
+CALL ossie_bundle_load('test/fixtures/concept-requires-joined/bundle.json');
+----
+CONSTRAINT_VIOLATION
+
+query T
+SELECT string_agg(entity_id,',' ORDER BY entity_id) FROM ossie_objects('ReadyShipment',[]);
+----
+s1,s2
+
+statement ok
+UPDATE req_shipments SET ready=FALSE;
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/concept-requires-joined/bundle.json');
+
+query I
+SELECT count(*) FROM ossie_objects('ReadyShipment',[]);
+----
+0
+

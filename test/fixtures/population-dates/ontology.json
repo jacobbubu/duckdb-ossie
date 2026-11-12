@@ -1,0 +1,99 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "gaap_population",
+  "description": "Synthetic February 2024 record scope and explicit YTD threshold.",
+  "ontology": [
+    {
+      "concept": "User",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne",
+          "verbalizes": [
+            "{User} has id {String}"
+          ]
+        },
+        {
+          "name": "date",
+          "roles": [
+            {
+              "concept": "Date"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{User} has date {Date}"
+          ]
+        },
+        {
+          "name": "product",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{User} has product {String}"
+          ]
+        },
+        {
+          "name": "region",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{User} has region {String}"
+          ]
+        },
+        {
+          "name": "user_type",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{User} has user_type {String}"
+          ]
+        },
+        {
+          "name": "ytd_gaap",
+          "roles": [
+            {
+              "concept": "Decimal"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{User} has ytd_gaap {Decimal}"
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "ValidUser",
+      "type": "EntityType",
+      "extends": [
+        "User"
+      ],
+      "derived_by": [
+        "User.date >= DATE '2024-02-01' AND User.date < DATE '2024-03-01' AND User.ytd_gaap >= 10"
+      ],
+      "description": "Synthetic per-record half-open February 2024 scope; no cross-date entity classification."
+    }
+  ]
+}
