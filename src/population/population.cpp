@@ -1902,9 +1902,7 @@ void ObservationDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping
 	b.derived = Text(derived, "concept");
 	if (program) {
 		for (auto constraint : Array(observation, "requires")) {
-			b.relation_input.
-			    requires
-			    .push_back(ArrayText(constraint));
+			b.relation_input.requires.push_back(ArrayText(constraint));
 		}
 	}
 	b.user_id_relation = ArrayText(Array(user, "identify_by", true)[0]);
@@ -1960,9 +1958,7 @@ void ObservationDefinitions(Bundle &b, yyjson_val *ontology, yyjson_val *mapping
 				declaration.derived_by.push_back(ArrayText(rule));
 			}
 			for (auto constraint : Array(r, "requires")) {
-				declaration.
-				    requires
-				    .push_back(ArrayText(constraint));
+				declaration.requires.push_back(ArrayText(constraint));
 			}
 			b.relation_input.declarations.push_back(std::move(declaration));
 			continue;
