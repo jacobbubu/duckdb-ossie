@@ -117,7 +117,10 @@ jobs:
           EXT=build/release/extension/ossie/ossie.duckdb_extension
           test -f "$EXT" || { echo "::error::artifact missing at $EXT"; exit 1; }
 
-          out=$(./scripts/full_functionality_check.sh); status=$?
+          # The default step shell is bash -e, which would exit at the assignment on a red run
+          # before the output is echoed.
+          status=0
+          out=$(./scripts/full_functionality_check.sh) || status=$?
           echo "$out"
 
           # The script falls back to the build-tree binary when the artifact will not load. That

@@ -51,7 +51,9 @@ LOAD_T="CALL ossie_load('$FIX/tpcds_semantic_model.json', rebind => MAP{'tpcds.p
 # --------------------------------------------------------------- J0
 g "J0  installable, and the surface registers"
 eq "extension reports loaded"      "true" "SELECT loaded FROM duckdb_extensions() WHERE extension_name='ossie';"
-eq "7 ossie functions registered"  "7"    "SELECT count(DISTINCT function_name) FROM duckdb_functions() WHERE starts_with(function_name, 'ossie_');"
+eq "the 7 core ossie functions registered" "7" "SELECT count(DISTINCT function_name) FROM duckdb_functions()
+   WHERE function_name IN ('ossie_load','ossie_datasets','ossie_fields','ossie_metrics','ossie_relationships','ossie_query','ossie_compile');"
+eq "population entry point registered" "true" "SELECT count(*) > 0 FROM duckdb_functions() WHERE function_name = 'ossie_bundle_load';"
 
 # --------------------------------------------------------------- J1
 g "J1  using it wrong fails usefully"
