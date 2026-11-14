@@ -82,6 +82,7 @@ records every such refusal and why it exists.
 | `ossie_fields()` | Fields with datatype, `is_time`, `is_computed`, expression, synonyms |
 | `ossie_metrics()` | Metrics with datatype, expression, synonyms |
 | `ossie_relationships()` | Relationships with derived cardinality |
+| `ossie_metadata()` | Descriptions, labels, AI instructions/synonyms/examples, preserved JSON and expression dialects |
 | `ossie_query(metrics, dimensions, filters)` | Compile the request and execute it |
 | `ossie_compile(metrics, dimensions, filters)` | Return the SQL without running it |
 
@@ -91,6 +92,19 @@ records every such refusal and why it exists.
 `ossie_compile` is a first-class output, not a debug aid — it is the useful surface wherever DuckDB
 is not the executor. It runs the identical compiler `ossie_query` does, so the SQL you inspect is
 the SQL that would run.
+
+## Population profiles
+
+A separate, opt-in path executes bounded *population* profiles: a hash-bound core/ontology/mapping
+bundle is loaded with `ossie_bundle_load(manifest_path)`, the committed source batch is captured and
+frozen, and the frozen population is then queried through its own functions: `ossie_concepts()`,
+`ossie_objects(...)`, `ossie_concept_query(...)` and `ossie_concept_compile(...)`, plus the
+relation, fact, daily and history program functions each profile declares. These profiles never
+relax the generic core refusals above; what each one supports, and refuses, is written down in
+[docs/population-profile.md](docs/population-profile.md), with the discovery, plan, result and
+error contracts in the neighbouring `docs/population-*.md` files. The frozen profiles are also
+served over MCP by [examples/population_server.sql](examples/population_server.sql) and the other
+`examples/*_server.sql` files.
 
 ## Serving a model to an AI agent
 

@@ -1,0 +1,135 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "device_rules",
+  "datasets": [
+    {
+      "name": "assets",
+      "source": "memory.main.sj_a_f",
+      "primary_key": [
+        "asset_id"
+      ],
+      "fields": [
+        {
+          "name": "asset_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "capacity",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "capacity"
+              }
+            ]
+          }
+        },
+        {
+          "name": "active",
+          "datatype": "Boolean",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "active"
+              }
+            ]
+          }
+        },
+        {
+          "name": "join_key",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "join_key"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "lookup",
+      "source": "memory.main.sj_a_d",
+      "primary_key": [
+        "lookup_key"
+      ],
+      "fields": [
+        {
+          "name": "lookup_key",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "lookup_key"
+              }
+            ]
+          }
+        },
+        {
+          "name": "label",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "label"
+              }
+            ]
+          }
+        },
+        {
+          "name": "capacity",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "capacity"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "device_count",
+      "datatype": "Integer",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(assets.asset_id)"
+          }
+        ]
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "name": "asset_lookup",
+      "from": "assets",
+      "to": "lookup",
+      "from_columns": [
+        "join_key"
+      ],
+      "to_columns": [
+        "lookup_key"
+      ]
+    }
+  ]
+}

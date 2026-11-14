@@ -1,0 +1,21 @@
+{
+  "profile": "gaap-scalar-population-v1",
+  "capabilities": [
+    "concept-scalar-requires-v1"
+  ],
+  "core": {
+    "path": "core.json",
+    "name": "device_rules",
+    "sha256": "ce2bdd085f9ad3cf3d8763d4d0d26ee068ec50dd712b3848e1f3a65f345a1914"
+  },
+  "ontology": {
+    "path": "ontology.json",
+    "name": "device_rules_ontology",
+    "sha256": "f765ee815e3d1e3e9f2160fefdd12685e92676a09d8a8997bcb5a9c9790b3f1b"
+  },
+  "mapping": {
+    "path": "mapping.json",
+    "name": "device_rules_mapping",
+    "sha256": "0660741073788af202711205a346061c6f4d47c6c7d11476ef1f3bf89185e646"
+  }
+}

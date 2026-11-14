@@ -56,10 +56,13 @@ void ValidateFieldExpression(const Dataset &dataset, const Field &field) {
 	});
 }
 
-void ValidateMetricExpression(const Model &model, const Metric &metric) {
+void ValidateMetricExpression(const Model &model, const Metric &metric, MetricReferencePolicy policy) {
 	auto context = StringUtil::Format("metric \"%s\"", metric.name);
 	VisitColumnRefs(*metric.expression.tree, [&](const ColumnRefExpression &colref) {
 		auto &names = colref.column_names;
+		if (policy == MetricReferencePolicy::DECLARED_METRICS && names.size() == 1 && model.FindMetric(names[0])) {
+			return; // The explicit FactProgram binder subsequently checks leaf source, DAG and units.
+		}
 		if (names.size() != 2) {
 			throw InvalidInputException("ossie_load: %s references \"%s\"; a metric must qualify every column "
 			                            "as dataset.field so its grain is unambiguous",
@@ -88,7 +91,7 @@ void ValidateRelationship(const Model &model, const Relationship &relationship) 
 
 } // namespace
 
-void ValidateModel(const Model &model) {
+void ValidateModel(const Model &model, MetricReferencePolicy policy) {
 	for (auto &dataset : model.datasets) {
 		ValidateKeys(dataset);
 		for (auto &field : dataset.fields) {
@@ -106,7 +109,7 @@ void ValidateModel(const Model &model) {
 	}
 
 	for (auto &metric : model.metrics) {
-		ValidateMetricExpression(model, metric);
+		ValidateMetricExpression(model, metric, policy);
 	}
 }
 

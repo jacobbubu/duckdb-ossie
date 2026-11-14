@@ -1,0 +1,173 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "two_fact_mapping",
+  "ontology_ref": {
+    "name": "two_fact_ontology"
+  },
+  "semantic_model_ref": {
+    "name": "two_fact_demo"
+  },
+  "concept_mappings": [
+    {
+      "concept": "RevenueObservation",
+      "object_mappings": [
+        {
+          "concept": "RevenueObservation",
+          "referent_mappings": [
+            {
+              "relationship": "user",
+              "referent_mappings": [
+                {
+                  "relationship": "id",
+                  "expression": "revenue.user_id"
+                }
+              ]
+            },
+            {
+              "relationship": "date",
+              "expression": "revenue.ds"
+            }
+          ]
+        }
+      ],
+      "link_mappings": [
+        {
+          "object_mapping": {
+            "concept": "RevenueObservation",
+            "referent_mappings": [
+              {
+                "relationship": "user",
+                "referent_mappings": [
+                  {
+                    "relationship": "id",
+                    "expression": "revenue.user_id"
+                  }
+                ]
+              },
+              {
+                "relationship": "date",
+                "expression": "revenue.ds"
+              }
+            ]
+          },
+          "children": [
+            {
+              "relationship": "user",
+              "object_mapping": {
+                "concept": "User",
+                "referent_mappings": [
+                  {
+                    "relationship": "id",
+                    "expression": "revenue.user_id"
+                  }
+                ]
+              }
+            },
+            {
+              "relationship": "date",
+              "object_mapping": {
+                "concept": "Date",
+                "expression": "revenue.ds"
+              }
+            },
+            {
+              "relationship": "amount",
+              "object_mapping": {
+                "concept": "Decimal",
+                "expression": "revenue.amount"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "concept": "CostObservation",
+      "object_mappings": [
+        {
+          "concept": "CostObservation",
+          "referent_mappings": [
+            {
+              "relationship": "user",
+              "referent_mappings": [
+                {
+                  "relationship": "id",
+                  "expression": "cost.user_id"
+                }
+              ]
+            },
+            {
+              "relationship": "date",
+              "expression": "cost.ds"
+            },
+            {
+              "relationship": "product",
+              "expression": "cost.product"
+            }
+          ]
+        }
+      ],
+      "link_mappings": [
+        {
+          "object_mapping": {
+            "concept": "CostObservation",
+            "referent_mappings": [
+              {
+                "relationship": "user",
+                "referent_mappings": [
+                  {
+                    "relationship": "id",
+                    "expression": "cost.user_id"
+                  }
+                ]
+              },
+              {
+                "relationship": "date",
+                "expression": "cost.ds"
+              },
+              {
+                "relationship": "product",
+                "expression": "cost.product"
+              }
+            ]
+          },
+          "children": [
+            {
+              "relationship": "user",
+              "object_mapping": {
+                "concept": "User",
+                "referent_mappings": [
+                  {
+                    "relationship": "id",
+                    "expression": "cost.user_id"
+                  }
+                ]
+              }
+            },
+            {
+              "relationship": "date",
+              "object_mapping": {
+                "concept": "Date",
+                "expression": "cost.ds"
+              }
+            },
+            {
+              "relationship": "product",
+              "object_mapping": {
+                "concept": "String",
+                "expression": "cost.product"
+              }
+            },
+            {
+              "relationship": "amount",
+              "object_mapping": {
+                "concept": "Decimal",
+                "expression": "cost.amount"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

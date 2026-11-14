@@ -1,0 +1,179 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "joined_population",
+  "description": "Bounded frozen fact-dimension fixture",
+  "datasets": [
+    {
+      "name": "fact",
+      "source": "memory.main.r6_fact",
+      "primary_key": [
+        "id"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "dim_id",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "dim_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "amount",
+          "datatype": "Decimal",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "amount"
+              }
+            ]
+          }
+        },
+        {
+          "name": "active",
+          "datatype": "Boolean",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "active"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "dimension",
+      "source": "memory.main.r6_dimension",
+      "primary_key": [
+        "id"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "label",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "label"
+              }
+            ]
+          }
+        },
+        {
+          "name": "eligible",
+          "datatype": "Boolean",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "eligible"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "fact_dimension",
+      "from": "fact",
+      "to": "dimension",
+      "from_columns": [
+        "dim_id"
+      ],
+      "to_columns": [
+        "id"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "amount_sum",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(fact.amount)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "record_count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(fact.id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "eligible_amount",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "SUM(CASE WHEN dimension.eligible THEN fact.amount END)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "value_count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(fact.amount)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "amount_avg",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "AVG(fact.amount)"
+          }
+        ]
+      }
+    }
+  ]
+}

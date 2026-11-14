@@ -25,7 +25,7 @@
         {"name": "larger", "datatype": "Decimal", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "GREATEST(amount, discount)"}]}},
         {"name": "smaller", "datatype": "Decimal", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "LEAST(amount, discount)"}]}},
         {"name": "launch", "datatype": "Date", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "TO_DATE('2024-01-15')"}]}},
-        {"name": "launch_ts", "datatype": "Timestamp", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "CAST('2024-01-15 10:30:00' AS TIMESTAMP_NTZ)"}]}},
+        {"name": "launch_ts", "datatype": "DateTime", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "CAST('2024-01-15 10:30:00' AS TIMESTAMP_NTZ)"}]}},
         {"name": "preferred", "datatype": "String", "expression": {"dialects": [{"dialect": "ANSI_SQL", "expression": "'ansi'"}, {"dialect": "OSSIE_SQL_2026", "expression": "'ossie_sql_2026'"}]}}
       ]
     }

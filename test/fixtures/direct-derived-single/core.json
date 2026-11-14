@@ -1,0 +1,65 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "device_rules",
+  "datasets": [
+    {
+      "name": "assets",
+      "source": "memory.main.dd_a_f",
+      "primary_key": [
+        "asset_id"
+      ],
+      "fields": [
+        {
+          "name": "asset_id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "capacity",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "capacity"
+              }
+            ]
+          }
+        },
+        {
+          "name": "active",
+          "datatype": "Boolean",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "active"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "device_count",
+      "datatype": "Integer",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "COUNT(assets.asset_id)"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+# name: test/sql/ossie_history_links.test
+# description: half-open history, gaps, overlapping same-target witnesses, bound frozen queries
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE observations(user_id VARCHAR,ds DATE,product VARCHAR);
+
+statement ok
+CREATE TABLE history(record_id VARCHAR,user_id VARCHAR,team_id VARCHAR,starts DATE,ends DATE);
+
+statement ok
+INSERT INTO observations VALUES ('u','2024-02-28','X'),('u','2024-02-29','X'),('u','2024-03-01','X'),('u','2024-03-02','X'),('u','2024-03-03','Y'),('absent','2024-02-29','X');
+
+statement ok
+INSERT INTO history VALUES ('a','u','T','2024-02-28','2024-03-01'),('b','u','T','2024-02-29','2024-03-01'),('c','u','V','2024-03-01','2024-03-02'),('d','u','T','2024-03-03','2024-03-04');
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population-history-program/bundle.json');
+
+query T
+SELECT regexp_extract(result_json,'"links":(\[.*\])',1) FROM ossie_history_links_json('team_at_observation','{"dates":{"mode":"all"},"products":{"mode":"all"}}');
+----
+[["u","2024-02-28","X","T"],["u","2024-02-29","X","T"],["u","2024-03-01","X","V"],["u","2024-03-03","Y","T"]]
+
+query T
+SELECT regexp_extract(result_json,'"links":(\[.*\])',1) FROM ossie_history_links_json('team_at_observation','{"dates":{"mode":"range","start_date":"2024-02-29","end_date":"2024-03-01"},"products":{"mode":"subset","values":["X"]}}');
+----
+[["u","2024-02-29","X","T"],["u","2024-03-01","X","V"]]
+
+query TTT
+SELECT regexp_extract(plan_json,'"executed":(false|true)',1),regexp_extract(plan_json,'"links_computed":(false|true)',1),regexp_extract(plan_json,'"input_types":(\[[^]]*\])',1) FROM ossie_history_links_compile('team_at_observation','{"dates":{"mode":"all"},"products":{"mode":"all"}}');
+----
+false	false	["VARCHAR","DATE","VARCHAR"]
+
+statement error
+SELECT * FROM ossie_history_links_json(NULL,'{"dates":{"mode":"all"},"products":{"mode":"all"}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_history_links_compile('team_at_observation',NULL);
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_history_links_json('other','{"dates":{"mode":"all"},"products":{"mode":"all"}}');
+----
+INVALID_REQUEST
+
+statement error
+SELECT * FROM ossie_history_links_compile('team_at_observation','{"dates":{"mode":"all"},"products":{"mode":"all"},"limit":1}');
+----
+INVALID_REQUEST
+
+statement ok
+PREPARE previous_links AS SELECT regexp_extract(result_json,'"links":(\[.*\])',1) FROM ossie_history_links_json('team_at_observation','{"dates":{"mode":"all"},"products":{"mode":"all"}}');
+
+statement ok
+UPDATE history SET team_id='NEW';
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/population-history-program/bundle.json');
+
+statement ok
+DROP TABLE observations;
+
+statement ok
+DROP TABLE history;
+
+query T
+EXECUTE previous_links;
+----
+[["u","2024-02-28","X","T"],["u","2024-02-29","X","T"],["u","2024-03-01","X","V"],["u","2024-03-03","Y","T"]]
+
+query T
+SELECT regexp_extract(result_json,'"links":(\[.*\])',1) FROM ossie_history_links_json('team_at_observation','{"dates":{"mode":"all"},"products":{"mode":"all"}}');
+----
+[["u","2024-02-28","X","NEW"],["u","2024-02-29","X","NEW"],["u","2024-03-01","X","NEW"],["u","2024-03-03","Y","NEW"]]

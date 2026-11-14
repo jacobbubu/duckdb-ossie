@@ -1,0 +1,373 @@
+# name: test/sql/ossie_joined_population.test
+# description: Frozen exact-key fact-dimension population and atomic refusal
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE r6_fact(id VARCHAR, dim_id INTEGER, amount DECIMAL(18,2), active BOOLEAN);
+
+statement ok
+CREATE TABLE r6_dimension(id INTEGER, label VARCHAR, eligible BOOLEAN);
+
+statement ok
+INSERT INTO r6_fact VALUES ('f1',1,10.01,true),('f2',1,20.02,true),('f3',2,30.03,false),('f4',2,NULL,true),('f5',3,-5.05,true),('f6',3,0,true);
+
+statement ok
+INSERT INTO r6_dimension VALUES (1,'North',true),(2,'South',false),(3,'North',true),(4,'Unused',true);
+
+query TI
+SELECT profile,records FROM ossie_bundle_load('test/fixtures/joined-population/bundle.json');
+----
+fact-dimension-population-v1	6
+
+query IITR
+SELECT * FROM ossie_concept_query('User',['record_count','value_count','amount_sum','amount_avg'],[],[]);
+----
+6	5	55.01	11.002
+
+query TIT rowsort
+SELECT * FROM ossie_concept_query('User',['record_count','amount_sum'],['dimension.label'],[]);
+----
+North	4	24.98
+South	2	30.03
+
+query TT rowsort
+SELECT entity_id,record_id FROM ossie_objects('ValidUser',[]);
+----
+f1	f1
+f2	f2
+f5	f5
+f6	f6
+
+query IT
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','amount_sum'],[],[]);
+----
+4	24.98
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('User',['dimension.label = ''South''']);
+----
+f3
+f4
+
+query T
+SELECT * FROM ossie_concept_query('User',['eligible_amount'],[],[]);
+----
+24.98
+
+statement ok
+CREATE TABLE previous AS SELECT snapshot_id,content_sha256 FROM ossie_concepts();
+
+statement ok
+INSERT INTO r6_dimension VALUES(4,'unused duplicate',false);
+
+statement error
+CALL ossie_bundle_load('test/fixtures/joined-population/bundle.json');
+----
+entire dimension batch requires nonnull unique key
+
+query I
+SELECT count(*) FROM (SELECT snapshot_id,content_sha256 FROM ossie_concepts() EXCEPT ALL SELECT * FROM previous);
+----
+0
+
+query IT
+SELECT * FROM ossie_concept_query('User',['record_count','amount_sum'],[],[]);
+----
+6	55.01
+
+statement ok
+DELETE FROM r6_dimension WHERE label='unused duplicate';
+
+statement ok
+UPDATE r6_fact SET amount=999 WHERE id='f1';
+
+statement ok
+UPDATE r6_dimension SET eligible=false WHERE id=1;
+
+query IT
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','amount_sum'],[],[]);
+----
+4	24.98
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/joined-population/bundle.json');
+
+query IT
+SELECT * FROM ossie_concept_query('ValidUser',['record_count','amount_sum'],[],[]);
+----
+2	-5.05
+
+statement ok
+DROP TABLE r6_fact;
+
+statement ok
+DROP TABLE r6_dimension;
+
+query TT rowsort
+SELECT entity_id,record_id FROM ossie_objects('ValidUser',[]);
+----
+f5	f5
+f6	f6
+
+query T
+SELECT identity_field FROM ossie_concepts() WHERE concept='User';
+----
+fact.id
+
+statement error
+SELECT * FROM ossie_objects('User',['fact._ossie_field_0 = ''f1''']);
+----
+unknown original dataset.field
+
+query I
+SELECT CASE WHEN contains(execution_target,'"metric_grain":"fact"') THEN 1 ELSE 0 END FROM ossie_concept_compile('User',['amount_sum'],[],[]);
+----
+1
+
+# Explicit String-key capability: byte-sensitive association, independent constraints,
+# full dimension validation, and frozen objects after source removal.
+statement ok
+CREATE TABLE sj_a_f(asset_id VARCHAR,join_key VARCHAR,capacity INTEGER,active BOOLEAN);
+
+statement ok
+CREATE TABLE sj_a_d(lookup_key VARCHAR,label VARCHAR,capacity INTEGER);
+
+statement ok
+INSERT INTO sj_a_f VALUES('a','1',1,true),('b','01',NULL,false),('c','n'||chr(0)||'x',3,true),('d','n',4,false),('e','',5,true);
+
+statement ok
+INSERT INTO sj_a_d VALUES('1','one',-999),('01','zero-one',-999),('n'||chr(0)||'x','nul',-999),('n','prefix',-999),('','empty',-999),('unused','unused',-999);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/string-join-fact/bundle.json');
+
+query T
+SELECT api_version FROM ossie_population_capabilities();
+----
+2.4.0
+
+query TTI rowsort
+SELECT entity_id,"lookup.label","assets.capacity" FROM ossie_objects('Device',[]);
+----
+a	one	1
+b	zero-one	NULL
+c	nul	3
+d	prefix	4
+e	empty	5
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('ActiveDevice',[]);
+----
+a
+c
+e
+
+query I
+SELECT CASE WHEN contains(capabilities_json,'"schema_version":"ossie-native-string-join-v1"') AND contains(capabilities_json,'"actual_key_type":"VARCHAR"') THEN 1 ELSE 0 END FROM ossie_population_capabilities();
+----
+1
+
+statement ok
+PREPARE string_keys_held AS SELECT entity_id,"lookup.label" FROM ossie_objects('Device',[]) ORDER BY entity_id;
+
+statement ok
+CREATE TABLE string_snapshot_before AS SELECT snapshot_id FROM ossie_population_capabilities();
+
+statement ok
+INSERT INTO sj_a_d VALUES('unused','duplicate',0);
+
+statement error
+CALL ossie_bundle_load('test/fixtures/string-join-fact/bundle.json');
+----
+entire dimension batch requires nonnull unique key
+
+query I
+SELECT count(*) FROM (SELECT snapshot_id FROM ossie_population_capabilities() EXCEPT ALL SELECT * FROM string_snapshot_before);
+----
+0
+
+statement ok
+DELETE FROM sj_a_d WHERE label='duplicate';
+
+statement ok
+UPDATE sj_a_f SET join_key='missing' WHERE asset_id='b';
+
+statement error
+CALL ossie_bundle_load('test/fixtures/string-join-fact/bundle.json');
+----
+every fact foreign key must match a dimension before filtering
+
+statement ok
+UPDATE sj_a_f SET join_key='01' WHERE asset_id='b';
+
+statement ok
+UPDATE sj_a_d SET label='new';
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/string-join-fact/bundle.json');
+
+statement ok
+DROP TABLE sj_a_f;
+
+statement ok
+DROP TABLE sj_a_d;
+
+query TT
+EXECUTE string_keys_held;
+----
+a	one
+b	zero-one
+c	nul
+d	prefix
+e	empty
+
+statement ok
+DEALLOCATE string_keys_held;
+
+# Multiple direct subsets share root identities, can overlap and need not cover root.
+statement ok
+CREATE TABLE dd_a_f(asset_id VARCHAR,capacity INTEGER,active BOOLEAN);
+
+statement ok
+INSERT INTO dd_a_f VALUES('d1',12,true),('d2',2,true),('d3',20,false),('d4',0,false);
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/direct-derived-single/bundle.json');
+
+query TT
+SELECT api_version,plan_schema FROM ossie_population_capabilities();
+----
+2.5.0	ossie-population-plan-v3
+
+query TT rowsort
+SELECT concept,parent FROM ossie_concepts();
+----
+ActiveDevice	Device
+Device	NULL
+LargeDevice	Device
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('Device',[]);
+----
+d1
+d2
+d3
+d4
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('ActiveDevice',[]);
+----
+d1
+d2
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('LargeDevice',[]);
+----
+d1
+d3
+
+query I
+SELECT count(*) FROM (SELECT entity_id FROM ossie_objects('ActiveDevice',[]) UNION SELECT entity_id FROM ossie_objects('LargeDevice',[]));
+----
+3
+
+query I
+SELECT CASE WHEN contains(plan_json,'"formal_rule":null') THEN 1 ELSE 0 END FROM ossie_concept_compile('Device',['device_count'],[],[]);
+----
+1
+
+query I
+SELECT CASE WHEN contains(plan_json,'"owner":"LargeDevice","applied":true') THEN 1 ELSE 0 END FROM ossie_concept_compile('LargeDevice',['device_count'],[],[]);
+----
+1
+
+statement error
+SELECT * FROM ossie_objects('ActiveDevice',['LargeDevice.active IS TRUE']);
+----
+other derived concept references prohibited
+
+statement ok
+PREPARE held_direct_ids AS SELECT entity_id FROM ossie_objects('LargeDevice',[]) ORDER BY entity_id;
+
+statement ok
+CREATE TABLE direct_before AS SELECT snapshot_id FROM ossie_population_capabilities();
+
+statement ok
+UPDATE dd_a_f SET capacity=10 WHERE asset_id='d3';
+
+statement error
+CALL ossie_bundle_load('test/fixtures/direct-derived-single/bundle.json');
+----
+CONSTRAINT_VIOLATION
+
+query I
+SELECT count(*) FROM (SELECT snapshot_id FROM ossie_population_capabilities() EXCEPT ALL SELECT * FROM direct_before);
+----
+0
+
+statement ok
+UPDATE dd_a_f SET capacity=0,active=false;
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/direct-derived-single/bundle.json');
+
+query I
+SELECT count(*) FROM ossie_objects('LargeDevice',[]);
+----
+0
+
+statement ok
+DROP TABLE dd_a_f;
+
+query T
+EXECUTE held_direct_ids;
+----
+d1
+d3
+
+statement ok
+DEALLOCATE held_direct_ids;
+
+# Bounded single inheritance: middle and leaf require all ancestors.
+statement ok
+CREATE TABLE si_a_f(asset_id VARCHAR,capacity INTEGER,active BOOLEAN,priority BOOLEAN)
+
+statement ok
+INSERT INTO si_a_f VALUES ('a1',20,true,true),('a2',5,true,true),('a3',30,false,true),('a4',20,true,false)
+
+statement ok
+CALL ossie_bundle_load('test/fixtures/single-inheritance-single/bundle.json')
+
+query T rowsort
+SELECT entity_id FROM ossie_objects('LargeActiveDevice',[])
+----
+a1
+a4
+
+query T
+SELECT entity_id FROM ossie_objects('PriorityDevice',[])
+----
+a1
+
+query TT
+SELECT api_version,plan_schema FROM ossie_population_capabilities()
+----
+2.6.0	ossie-population-plan-v4
+
+statement ok
+UPDATE si_a_f SET capacity=12 WHERE asset_id='a4'
+
+statement error
+CALL ossie_bundle_load('test/fixtures/single-inheritance-single/bundle.json')
+----
+CONSTRAINT_VIOLATION
+
+query T
+SELECT entity_id FROM ossie_objects('PriorityDevice',[])
+----
+a1
+
+statement ok
+DROP TABLE si_a_f

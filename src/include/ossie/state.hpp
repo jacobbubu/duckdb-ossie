@@ -9,6 +9,12 @@ class ClientContext;
 
 namespace ossie {
 
+//! Published model and policy are captured together; readers never mutate a published model.
+struct OssieSnapshot {
+	shared_ptr<const Model> model;
+	bool allow_filter_functions = false;
+};
+
 //! The loaded model, held per database rather than per connection: an MCP server answers on its own
 //! connection, and a model loaded by the init script has to be visible there.
 class OssieState : public ObjectCacheEntry {
@@ -19,10 +25,10 @@ public:
 
 	void SetModel(shared_ptr<Model> new_model, bool allow_filter_functions);
 
-	//! Set at load so a caller supplying filters cannot widen its own policy.
-	bool AllowFilterFunctions();
-	//! nullptr until a model is loaded. Shared so a reader survives a concurrent replace.
-	shared_ptr<Model> GetModel();
+	//! One lock captures both components. Null model until loaded; old readers survive replacement.
+	OssieSnapshot GetSnapshot();
+	//! Discovery needs only the model; never use this accessor with a separately read policy.
+	shared_ptr<const Model> GetModel();
 
 	static string ObjectType() {
 		return "ossie_model";
@@ -37,7 +43,7 @@ public:
 
 private:
 	mutex lock;
-	shared_ptr<Model> model;
+	shared_ptr<const Model> model;
 	bool allow_filter_functions = false;
 };
 

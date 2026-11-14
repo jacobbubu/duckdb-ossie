@@ -1,0 +1,74 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "joined_mapping",
+  "ontology_ref": {
+    "name": "joined_ontology"
+  },
+  "semantic_model_ref": {
+    "name": "joined_population"
+  },
+  "concept_mappings": [
+    {
+      "concept": "User",
+      "object_mappings": [
+        {
+          "referent_mappings": [
+            {
+              "relationship": "id",
+              "expression": "fact.id"
+            }
+          ]
+        }
+      ],
+      "link_mappings": [
+        {
+          "object_mapping": {
+            "referent_mappings": [
+              {
+                "relationship": "id",
+                "expression": "fact.id"
+              }
+            ]
+          },
+          "children": [
+            {
+              "relationship": "id",
+              "object_mapping": {
+                "concept": "String",
+                "expression": "fact.id"
+              }
+            },
+            {
+              "relationship": "amount",
+              "object_mapping": {
+                "concept": "Decimal",
+                "expression": "fact.amount"
+              }
+            },
+            {
+              "relationship": "active",
+              "object_mapping": {
+                "concept": "Boolean",
+                "expression": "fact.active"
+              }
+            },
+            {
+              "relationship": "label",
+              "object_mapping": {
+                "concept": "String",
+                "expression": "dimension.label"
+              }
+            },
+            {
+              "relationship": "eligible",
+              "object_mapping": {
+                "concept": "Boolean",
+                "expression": "dimension.eligible"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

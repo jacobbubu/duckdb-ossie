@@ -1,0 +1,30 @@
+{
+  "profile": "fact-dimension-population-v1",
+  "capabilities": [
+    "bounded-single-inheritance-v1",
+    "concept-scalar-requires-v1",
+    "native-string-join-v1"
+  ],
+  "join": {
+    "fact": "shipments",
+    "dimension": "batches",
+    "relationship": "shipment_batch",
+    "type": "INNER",
+    "missing": "reject"
+  },
+  "core": {
+    "path": "core.json",
+    "name": "shipment_rules",
+    "sha256": "a4f3324c235c5aac01c954eebcc2fef2b810be560207b6b6dcda1f69d5d6da19"
+  },
+  "ontology": {
+    "path": "ontology.json",
+    "name": "shipment_rules_ontology",
+    "sha256": "a09b24ca95617b1d58f7545b57c1043aa2cfdf2156d77ab3a68a0c08b9897bf1"
+  },
+  "mapping": {
+    "path": "mapping.json",
+    "name": "shipment_rules_mapping",
+    "sha256": "f453b62258df0adddac5b2657a6915628e4f90b0eaa9a032158923173175746c"
+  }
+}

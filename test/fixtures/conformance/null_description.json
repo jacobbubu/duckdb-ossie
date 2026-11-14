@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "scalar_contract",
+  "datasets": [
+    {
+      "name": "facts",
+      "source": "memory.main.facts",
+      "fields": [
+        {
+          "name": "amount",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "ANSI_SQL",
+                "expression": "amount"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "description": null
+}

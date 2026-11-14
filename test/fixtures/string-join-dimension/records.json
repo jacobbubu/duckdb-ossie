@@ -1,0 +1,236 @@
+{
+  "roles": {
+    "fact_table": "sj_b_f",
+    "dimension_table": "sj_b_d",
+    "fact_logical": "shipments",
+    "dimension_logical": "batches",
+    "id": "shipment_id",
+    "fk": "batch_id",
+    "dk": "batch_id",
+    "selection": "ready",
+    "value_column": "expires",
+    "value_type": "DATE",
+    "value_scope": "dimension",
+    "root": "Shipment",
+    "child": "ReadyShipment",
+    "metric": "shipment_count",
+    "root_threshold": "2025-01-01",
+    "child_threshold": "2026-01-01"
+  },
+  "facts": [
+    {
+      "id": "b01",
+      "key": "1",
+      "active": true,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b02",
+      "key": "01",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b03",
+      "key": "A",
+      "active": true,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b04",
+      "key": "a",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b05",
+      "key": "x ",
+      "active": true,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b06",
+      "key": "x",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b07",
+      "key": "é",
+      "active": true,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b08",
+      "key": "é",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b09",
+      "key": "",
+      "active": true,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b10",
+      "key": "n\u0000x",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b11",
+      "key": "n",
+      "active": true,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b12",
+      "key": "中文",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b13",
+      "key": "quote'\\",
+      "active": true,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b14",
+      "key": "\u0000",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b15",
+      "key": "\u0000\u0000",
+      "active": false,
+      "value": "1900-01-01"
+    },
+    {
+      "id": "b16",
+      "key": "1",
+      "active": false,
+      "value": "1900-01-01"
+    }
+  ],
+  "dimensions": [
+    {
+      "key": "1",
+      "label": "dim:1",
+      "value": "2026-01-01"
+    },
+    {
+      "key": "01",
+      "label": "dim:01",
+      "value": "2025-02-01"
+    },
+    {
+      "key": "A",
+      "label": "dim:A",
+      "value": "2026-01-01"
+    },
+    {
+      "key": "a",
+      "label": "dim:a",
+      "value": "2025-02-01"
+    },
+    {
+      "key": "x ",
+      "label": "dim:x ",
+      "value": "2026-01-01"
+    },
+    {
+      "key": "x",
+      "label": "dim:x",
+      "value": "2025-02-01"
+    },
+    {
+      "key": "é",
+      "label": "dim:é",
+      "value": "2026-01-01"
+    },
+    {
+      "key": "é",
+      "label": "dim:é",
+      "value": "2025-02-01"
+    },
+    {
+      "key": "",
+      "label": null,
+      "value": "2026-01-01"
+    },
+    {
+      "key": "n\u0000x",
+      "label": "dim:n\u0000x",
+      "value": "2025-02-01"
+    },
+    {
+      "key": "n",
+      "label": "dim:n",
+      "value": "2026-01-01"
+    },
+    {
+      "key": "中文",
+      "label": "dim:中文",
+      "value": "2025-02-01"
+    },
+    {
+      "key": "quote'\\",
+      "label": "dim:quote'\\",
+      "value": "2026-01-01"
+    },
+    {
+      "key": "\u0000",
+      "label": "dim:\u0000",
+      "value": "2025-02-01"
+    },
+    {
+      "key": "\u0000\u0000",
+      "label": "dim:\u0000\u0000",
+      "value": null
+    },
+    {
+      "key": "unused",
+      "label": "unused",
+      "value": "2024-12-31"
+    }
+  ],
+  "independent_anchors": {
+    "root_ids": [
+      "b01",
+      "b02",
+      "b03",
+      "b04",
+      "b05",
+      "b06",
+      "b07",
+      "b08",
+      "b09",
+      "b10",
+      "b11",
+      "b12",
+      "b13",
+      "b14",
+      "b15",
+      "b16"
+    ],
+    "child_ids": [
+      "b01",
+      "b03",
+      "b05",
+      "b07",
+      "b09",
+      "b11",
+      "b13"
+    ],
+    "key_1_members": [
+      "b01",
+      "b16"
+    ],
+    "key_01_members": [
+      "b02"
+    ]
+  }
+}

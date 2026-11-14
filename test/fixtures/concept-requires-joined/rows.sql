@@ -1,0 +1,10 @@
+CREATE TABLE req_shipments(shipment_id VARCHAR, batch_id INTEGER, ready BOOLEAN, expires DATE);
+CREATE TABLE req_batches(batch_id INTEGER, expires DATE);
+INSERT INTO req_shipments VALUES ('s1', 10, TRUE, DATE '2000-01-01');
+INSERT INTO req_shipments VALUES ('s2', 10, TRUE, DATE '2000-01-01');
+INSERT INTO req_shipments VALUES ('s3', 20, FALSE, DATE '2000-01-01');
+INSERT INTO req_shipments VALUES ('s4', 30, FALSE, DATE '2000-01-01');
+INSERT INTO req_batches VALUES (10, DATE '2026-06-30');
+INSERT INTO req_batches VALUES (20, NULL);
+INSERT INTO req_batches VALUES (30, DATE '2025-12-31');
+INSERT INTO req_batches VALUES (99, DATE '2024-12-31');

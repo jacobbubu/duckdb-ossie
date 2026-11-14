@@ -1,0 +1,116 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "device_rules_ontology",
+  "ontology": [
+    {
+      "concept": "Device",
+      "type": "EntityType",
+      "identify_by": [
+        "id"
+      ],
+      "relationships": [
+        {
+          "name": "id",
+          "roles": [
+            {
+              "concept": "String"
+            }
+          ],
+          "multiplicity": "OneToOne",
+          "verbalizes": [
+            "{Device} has id {String}"
+          ]
+        },
+        {
+          "name": "capacity",
+          "roles": [
+            {
+              "concept": "Integer"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{Device} has capacity {Integer}"
+          ]
+        },
+        {
+          "name": "active",
+          "roles": [
+            {
+              "concept": "Boolean"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{Device} has active {Boolean}"
+          ]
+        },
+        {
+          "name": "priority",
+          "roles": [
+            {
+              "concept": "Boolean"
+            }
+          ],
+          "multiplicity": "ManyToOne",
+          "verbalizes": [
+            "{Device} has priority {Boolean}"
+          ]
+        }
+      ],
+      "requires": [
+        "Device.capacity IS NULL OR Device.capacity >= 0"
+      ]
+    },
+    {
+      "concept": "ActiveDevice",
+      "type": "EntityType",
+      "extends": [
+        "Device"
+      ],
+      "derived_by": [
+        "Device.active"
+      ],
+      "requires": [
+        "ActiveDevice.capacity IS NULL OR ActiveDevice.capacity >= 1"
+      ]
+    },
+    {
+      "concept": "LargeActiveDevice",
+      "type": "EntityType",
+      "extends": [
+        "ActiveDevice"
+      ],
+      "derived_by": [
+        "ActiveDevice.capacity >= 10"
+      ],
+      "requires": [
+        "LargeActiveDevice.capacity IS NOT NULL AND LargeActiveDevice.capacity >= 15"
+      ]
+    },
+    {
+      "concept": "PriorityDevice",
+      "type": "EntityType",
+      "extends": [
+        "LargeActiveDevice"
+      ],
+      "derived_by": [
+        "LargeActiveDevice.priority"
+      ],
+      "requires": [
+        "PriorityDevice.capacity IS NOT NULL AND PriorityDevice.capacity >= 18"
+      ]
+    },
+    {
+      "concept": "LargeDevice",
+      "type": "EntityType",
+      "extends": [
+        "Device"
+      ],
+      "derived_by": [
+        "Device.capacity >= 10"
+      ],
+      "requires": []
+    }
+  ]
+}

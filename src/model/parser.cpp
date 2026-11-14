@@ -17,6 +17,9 @@
 
 #include "yyjson.hpp"
 
+#include <initializer_list>
+
+// Local adapter for DuckDB's vendored C API names; no project-wide naming/check exemption.
 using namespace duckdb_yyjson; // NOLINT
 
 namespace duckdb {
@@ -46,72 +49,34 @@ yyjson_val *Member(yyjson_val *obj, const char *key) {
 	return yyjson_obj_get(obj, key);
 }
 
-//! Renders a scalar as text. Every value the Ossie schema calls a string is read through here.
-//!
-//! Numbers and booleans are accepted rather than rejected because a model can easily arrive with
-//! them by accident, and the author's intent is unambiguous. `version: 1.5` in YAML is a float --
-//! quoting is what makes it a string, and nothing prompts you to quote it. The same is true of
-//! `"version": 1.5` in JSON. Before this, both silently produced an empty string: the value was
-//! neither used nor reported, which is the worst of the three options.
-//!
-//! Null and containers return false; the caller decides whether that is an error or an absent
-//! optional field.
-//!
-//! One caveat: a float's text is normalised by the round trip, so `1.50` reads back as `1.5`. The
-//! original spelling is gone by the time yyjson sees it. Quote the value to preserve it exactly.
-bool ScalarText(yyjson_val *val, string &out) {
-	if (!val) {
-		return false;
-	}
-	if (yyjson_is_str(val)) {
-		out = string(yyjson_get_str(val));
-		return true;
-	}
-	if (yyjson_is_bool(val)) {
-		out = yyjson_get_bool(val) ? "true" : "false";
-		return true;
-	}
-	if (yyjson_is_int(val)) {
-		out = to_string(yyjson_get_sint(val));
-		return true;
-	}
-	if (yyjson_is_uint(val)) {
-		out = to_string(yyjson_get_uint(val));
-		return true;
-	}
-	if (yyjson_is_real(val)) {
-		// %.17g round-trips a double exactly; trim the trailing zeros it can leave behind.
-		auto text = StringUtil::Format("%.17g", yyjson_get_real(val));
-		if (text.find('.') != string::npos && text.find('e') == string::npos && text.find('E') == string::npos) {
-			while (!text.empty() && text.back() == '0') {
-				text.pop_back();
-			}
-			if (!text.empty() && text.back() == '.') {
-				text.pop_back();
-			}
-		}
-		out = text;
-		return true;
-	}
-	return false;
-}
-
 string RequiredString(yyjson_val *obj, const char *key, const string &context) {
 	auto val = Member(obj, key);
-	string text;
 	if (!val || yyjson_is_null(val)) {
 		throw InvalidInputException("ossie_load: %s is missing required string field '%s'", context, key);
 	}
-	if (!ScalarText(val, text)) {
-		throw InvalidInputException("ossie_load: %s field '%s' must be a string, but is a %s", context, key,
-		                            yyjson_is_arr(val) ? "list" : "nested object");
+	if (!yyjson_is_str(val)) {
+		throw InvalidInputException("ossie_load: %s field '%s' must be a string", context, key);
 	}
-	return text;
+	return string(yyjson_get_str(val), yyjson_get_len(val));
 }
 
-string OptionalString(yyjson_val *obj, const char *key) {
-	string text;
-	return ScalarText(Member(obj, key), text) ? text : string();
+string RequiredNonEmptyString(yyjson_val *obj, const char *key, const string &context) {
+	auto value = RequiredString(obj, key, context);
+	if (value.empty()) {
+		throw InvalidInputException("ossie_load: %s field '%s' must be a nonempty string", context, key);
+	}
+	return value;
+}
+
+string OptionalString(yyjson_val *obj, const char *key, const string &context) {
+	auto val = Member(obj, key);
+	if (!val) {
+		return string();
+	}
+	if (!yyjson_is_str(val)) {
+		throw InvalidInputException("ossie_load: %s field '%s' must be a string", context, key);
+	}
+	return string(yyjson_get_str(val), yyjson_get_len(val));
 }
 
 vector<string> StringArray(yyjson_val *obj, const char *key, const string &context) {
@@ -126,13 +91,98 @@ vector<string> StringArray(yyjson_val *obj, const char *key, const string &conte
 	size_t idx, max;
 	yyjson_val *item;
 	yyjson_arr_foreach(arr, idx, max, item) {
-		string text;
-		if (!ScalarText(item, text)) {
-			throw InvalidInputException("ossie_load: %s field '%s' must contain only strings", context, key);
+		if (!yyjson_is_str(item)) {
+			throw InvalidInputException("ossie_load: %s field '%s' member at index %s must be a string", context, key,
+			                            to_string(idx));
 		}
-		result.emplace_back(std::move(text));
+		result.emplace_back(yyjson_get_str(item), yyjson_get_len(item));
 	}
 	return result;
+}
+
+struct JSONTextDeleter {
+	void operator()(char *buffer) const {
+		free(buffer);
+	}
+};
+
+string JSONText(yyjson_val *value) {
+	if (!value) {
+		return string();
+	}
+	unique_ptr<char, JSONTextDeleter> serialized(yyjson_val_write(value, 0, nullptr));
+	if (!serialized) {
+		throw InvalidInputException("ossie_load: could not preserve metadata JSON");
+	}
+	return string(serialized.get());
+}
+
+void ValidateKnownFields(yyjson_val *obj, std::initializer_list<const char *> allowed, const string &context) {
+	if (!yyjson_is_obj(obj)) {
+		throw InvalidInputException("ossie_load: %s must be an object", context);
+	}
+	size_t idx, max;
+	yyjson_val *key, *value;
+	yyjson_obj_foreach(obj, idx, max, key, value) {
+		string name(yyjson_get_str(key), yyjson_get_len(key));
+		bool known = false;
+		for (auto field : allowed) {
+			if (name == field) {
+				known = true;
+				break;
+			}
+		}
+		if (!known) {
+			throw InvalidInputException("ossie_load: %s has unknown field %s", context, JSONText(key));
+		}
+	}
+}
+
+string ParseCustomExtensions(yyjson_val *parent, const string &context) {
+	auto extensions = Member(parent, "custom_extensions");
+	if (!extensions) {
+		return string();
+	}
+	if (!yyjson_is_arr(extensions)) {
+		throw InvalidInputException("ossie_load: %s field 'custom_extensions' must be an array", context);
+	}
+	size_t idx, max;
+	yyjson_val *item;
+	yyjson_arr_foreach(extensions, idx, max, item) {
+		auto member_context = context + " custom_extensions member at index " + to_string(idx);
+		ValidateKnownFields(item, {"vendor_name", "data"}, member_context);
+		RequiredString(item, "vendor_name", member_context);
+		RequiredString(item, "data", member_context);
+	}
+	return JSONText(extensions);
+}
+
+bool IsKnownDialect(const string &dialect) {
+	for (auto allowed : {"ANSI_SQL", "SNOWFLAKE", "MDX", "TABLEAU", "DATABRICKS", "MAQL", "BIGQUERY", "SIGMA",
+	                     "THOUGHTSPOT", "DAX", "OSSIE_SQL_2026"}) {
+		if (dialect == allowed) {
+			return true;
+		}
+	}
+	return false;
+}
+
+string ParseDatatype(yyjson_val *parent, const string &context) {
+	auto value = Member(parent, "datatype");
+	if (!value) {
+		return string();
+	}
+	if (yyjson_is_str(value)) {
+		string datatype(yyjson_get_str(value), yyjson_get_len(value));
+		for (auto allowed :
+		     {"String", "Integer", "Decimal", "Float", "Boolean", "Date", "Time", "DateTime", "DateTimeTz", "Opaque"}) {
+			if (datatype == allowed) {
+				return datatype;
+			}
+		}
+	}
+	throw InvalidInputException("ossie_load: %s has an unsupported datatype; use the Ossie logical type vocabulary",
+	                            context);
 }
 
 AIContext ParseAIContext(yyjson_val *parent, const string &context) {
@@ -141,8 +191,21 @@ AIContext ParseAIContext(yyjson_val *parent, const string &context) {
 	if (!ai_context) {
 		return result;
 	}
+	if (!yyjson_is_str(ai_context) && !yyjson_is_obj(ai_context)) {
+		throw InvalidInputException("ossie_load: %s ai_context must be a string or object", context);
+	}
+	result.raw_json = JSONText(ai_context);
+	if (yyjson_is_str(ai_context)) {
+		result.instructions = string(yyjson_get_str(ai_context), yyjson_get_len(ai_context));
+		return result;
+	}
+	auto instructions = Member(ai_context, "instructions");
+	if (instructions && !yyjson_is_str(instructions)) {
+		throw InvalidInputException("ossie_load: %s ai_context.instructions must be a string", context);
+	}
 	result.synonyms = StringArray(ai_context, "synonyms", context);
-	result.instructions = OptionalString(ai_context, "instructions");
+	result.examples = StringArray(ai_context, "examples", context);
+	result.instructions = OptionalString(ai_context, "instructions", context);
 	return result;
 }
 
@@ -156,6 +219,7 @@ ModelExpression ParseModelExpression(yyjson_val *parent, const string &context) 
 	if (!expression_obj) {
 		throw InvalidInputException("ossie_load: %s is missing required field 'expression'", context);
 	}
+	ValidateKnownFields(expression_obj, {"dialects"}, context + " expression");
 	auto dialects = Member(expression_obj, "dialects");
 	if (!dialects || !yyjson_is_arr(dialects)) {
 		throw InvalidInputException("ossie_load: %s has an 'expression' with no 'dialects' array", context);
@@ -166,15 +230,25 @@ ModelExpression ParseModelExpression(yyjson_val *parent, const string &context) 
 	size_t idx, max;
 	yyjson_val *item;
 	yyjson_arr_foreach(dialects, idx, max, item) {
+		ValidateKnownFields(item, {"dialect", "expression"}, context + " dialect variant");
 		auto dialect = RequiredString(item, "dialect", context);
+		if (!IsKnownDialect(dialect)) {
+			throw InvalidInputException(
+			    "ossie_load: %s has an unsupported dialect name %s; use the exact Ossie dialect vocabulary", context,
+			    JSONText(Member(item, "dialect")));
+		}
 		auto sql = RequiredString(item, "expression", context);
+		// DuckDB's text parser stops at NUL; accepting a prefix would change the model formula.
+		if (sql.find('\0') != string::npos) {
+			throw InvalidInputException("ossie_load: %s expression must not contain NUL", context);
+		}
 		result.available_dialects.push_back(dialect);
 		variants.emplace_back(dialect, sql);
 	}
 
 	for (auto executable : EXECUTABLE_DIALECTS) {
 		for (auto &variant : variants) {
-			if (result.dialect.empty() && StringUtil::CIEquals(variant.first, executable)) {
+			if (result.dialect.empty() && variant.first == executable) {
 				result.dialect = executable;
 				result.sql = variant.second;
 			}
@@ -218,21 +292,33 @@ bool IsPlainReferenceTo(const ParsedExpression &expr, const string &field_name) 
 }
 
 Field ParseField(yyjson_val *field_obj, const string &dataset_name) {
+	ValidateKnownFields(
+	    field_obj,
+	    {"name", "expression", "dimension", "label", "description", "datatype", "ai_context", "custom_extensions"},
+	    StringUtil::Format("dataset \"%s\" field", dataset_name));
 	Field result;
-	result.name = RequiredString(field_obj, "name", StringUtil::Format("dataset \"%s\" field", dataset_name));
+	result.name = RequiredNonEmptyString(field_obj, "name", StringUtil::Format("dataset \"%s\" field", dataset_name));
 	auto context = StringUtil::Format("field \"%s.%s\"", dataset_name, result.name);
 
 	result.expression = ParseModelExpression(field_obj, context);
-	result.datatype = OptionalString(field_obj, "datatype");
-	result.label = OptionalString(field_obj, "label");
-	result.description = OptionalString(field_obj, "description");
+	result.datatype = ParseDatatype(field_obj, context);
+	result.label = OptionalString(field_obj, "label", context);
+	result.description = OptionalString(field_obj, "description", context);
 	result.ai_context = ParseAIContext(field_obj, context);
+	result.custom_extensions_json = ParseCustomExtensions(field_obj, context);
 
+	result.is_time = result.datatype == "Date" || result.datatype == "Time" || result.datatype == "DateTime" ||
+	                 result.datatype == "DateTimeTz";
 	auto dimension = Member(field_obj, "dimension");
 	if (dimension) {
 		auto is_time = Member(dimension, "is_time");
-		if (is_time && yyjson_is_bool(is_time)) {
+		if (!yyjson_is_obj(dimension) || (is_time && !yyjson_is_bool(is_time))) {
+			throw InvalidInputException("ossie_load: %s dimension must be an object with a boolean is_time", context);
+		}
+		ValidateKnownFields(dimension, {"is_time"}, context + " dimension");
+		if (is_time) {
 			result.is_time = yyjson_get_bool(is_time);
+			result.is_time_explicit = true;
 		}
 	}
 
@@ -265,7 +351,7 @@ vector<vector<string>> ParseUniqueKeys(yyjson_val *dataset_obj, const string &co
 			if (!yyjson_is_str(col)) {
 				throw InvalidInputException("ossie_load: %s has a non-string column in 'unique_keys'", context);
 			}
-			key.emplace_back(yyjson_get_str(col));
+			key.emplace_back(yyjson_get_str(col), yyjson_get_len(col));
 		}
 		result.push_back(std::move(key));
 	}
@@ -351,18 +437,23 @@ void ExpandFieldReferences(Dataset &dataset, const string &context) {
 }
 
 Dataset ParseDataset(yyjson_val *dataset_obj, const RebindMap &rebind) {
+	ValidateKnownFields(
+	    dataset_obj,
+	    {"name", "source", "primary_key", "unique_keys", "description", "ai_context", "fields", "custom_extensions"},
+	    "dataset");
 	Dataset result;
-	result.name = RequiredString(dataset_obj, "name", "dataset");
+	result.name = RequiredNonEmptyString(dataset_obj, "name", "dataset");
 	auto context = StringUtil::Format("dataset \"%s\"", result.name);
 
-	result.source_raw = RequiredString(dataset_obj, "source", context);
+	result.source_raw = RequiredNonEmptyString(dataset_obj, "source", context);
 	ValidateSourceShape(result.source_raw, context);
 	result.source_bound = rebind.Apply(result.source_raw);
 
 	result.primary_key = StringArray(dataset_obj, "primary_key", context);
 	result.unique_keys = ParseUniqueKeys(dataset_obj, context);
-	result.description = OptionalString(dataset_obj, "description");
+	result.description = OptionalString(dataset_obj, "description", context);
 	result.ai_context = ParseAIContext(dataset_obj, context);
+	result.custom_extensions_json = ParseCustomExtensions(dataset_obj, context);
 
 	auto fields = Member(dataset_obj, "fields");
 	if (fields) {
@@ -386,15 +477,18 @@ Dataset ParseDataset(yyjson_val *dataset_obj, const RebindMap &rebind) {
 }
 
 Relationship ParseRelationship(yyjson_val *obj) {
+	ValidateKnownFields(obj, {"name", "from", "to", "from_columns", "to_columns", "ai_context", "custom_extensions"},
+	                    "relationship");
 	Relationship result;
-	result.name = RequiredString(obj, "name", "relationship");
+	result.name = RequiredNonEmptyString(obj, "name", "relationship");
 	auto context = StringUtil::Format("relationship \"%s\"", result.name);
 
-	result.from_dataset = RequiredString(obj, "from", context);
-	result.to_dataset = RequiredString(obj, "to", context);
+	result.from_dataset = RequiredNonEmptyString(obj, "from", context);
+	result.to_dataset = RequiredNonEmptyString(obj, "to", context);
 	result.from_columns = StringArray(obj, "from_columns", context);
 	result.to_columns = StringArray(obj, "to_columns", context);
 	result.ai_context = ParseAIContext(obj, context);
+	result.custom_extensions_json = ParseCustomExtensions(obj, context);
 
 	if (result.from_columns.empty() || result.to_columns.empty()) {
 		throw InvalidInputException("ossie_load: %s must declare both 'from_columns' and 'to_columns'", context);
@@ -433,7 +527,7 @@ string RebindMap::Apply(const string &source) const {
 	return *replacement + source.substr(matched_length);
 }
 
-Model ParseModel(const string &json_text, const RebindMap &rebind) {
+Model ParseModel(const string &json_text, const RebindMap &rebind, MetricReferencePolicy policy) {
 	JSONDocument document(yyjson_read(json_text.c_str(), json_text.size(), 0));
 	if (!document.doc) {
 		throw InvalidInputException("ossie_load: file is not valid JSON");
@@ -456,17 +550,31 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 	}
 
 	Model result;
-	result.spec_version = OptionalString(root, "version");
+	auto version = Member(root, "version");
+	if (!yyjson_is_str(version) || string(yyjson_get_str(version), yyjson_get_len(version)) != "0.2.0.dev0") {
+		throw InvalidInputException("ossie_load: version must be the supported string '0.2.0.dev0'");
+	}
+	for (auto key : {"ontology", "concept_mappings", "ontology_ref", "semantic_model_ref", "ontology_mappings"}) {
+		if (Member(root, key)) {
+			throw InvalidInputException("ossie_load: core model cannot contain ontology/mapping field '%s'", key);
+		}
+	}
+	ValidateKnownFields(
+	    root,
+	    {"version", "name", "description", "ai_context", "datasets", "relationships", "metrics", "custom_extensions"},
+	    "semantic model");
+	result.spec_version = yyjson_get_str(version);
 
 	auto model_obj = root;
-	result.name = RequiredString(model_obj, "name", "the semantic model");
+	result.name = RequiredNonEmptyString(model_obj, "name", "the semantic model");
 	auto context = StringUtil::Format("semantic model \"%s\"", result.name);
-	result.description = OptionalString(model_obj, "description");
+	result.description = OptionalString(model_obj, "description", context);
 	result.ai_context = ParseAIContext(model_obj, context);
+	result.custom_extensions_json = ParseCustomExtensions(model_obj, context);
 
 	auto datasets = Member(model_obj, "datasets");
-	if (!datasets || !yyjson_is_arr(datasets)) {
-		throw InvalidInputException("ossie_load: %s has no 'datasets' array", context);
+	if (!datasets || !yyjson_is_arr(datasets) || yyjson_arr_size(datasets) == 0) {
+		throw InvalidInputException("ossie_load: %s requires a nonempty 'datasets' array", context);
 	}
 	size_t idx, max;
 	yyjson_val *item;
@@ -495,13 +603,16 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 			throw InvalidInputException("ossie_load: %s field 'metrics' must be an array", context);
 		}
 		yyjson_arr_foreach(metrics, idx, max, item) {
+			ValidateKnownFields(
+			    item, {"name", "expression", "description", "datatype", "ai_context", "custom_extensions"}, "metric");
 			Metric metric;
-			metric.name = RequiredString(item, "name", "metric");
+			metric.name = RequiredNonEmptyString(item, "name", "metric");
 			auto metric_context = StringUtil::Format("metric \"%s\"", metric.name);
 			metric.expression = ParseModelExpression(item, metric_context);
-			metric.datatype = OptionalString(item, "datatype");
-			metric.description = OptionalString(item, "description");
+			metric.datatype = ParseDatatype(item, metric_context);
+			metric.description = OptionalString(item, "description", metric_context);
 			metric.ai_context = ParseAIContext(item, metric_context);
+			metric.custom_extensions_json = ParseCustomExtensions(item, metric_context);
 
 			if (result.metric_index.find(metric.name) != result.metric_index.end()) {
 				throw InvalidInputException("ossie_load: %s declares metric \"%s\" more than once", context,
@@ -512,7 +623,7 @@ Model ParseModel(const string &json_text, const RebindMap &rebind) {
 		}
 	}
 
-	ValidateModel(result);
+	ValidateModel(result, policy);
 	ComputeCardinality(result);
 	return result;
 }

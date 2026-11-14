@@ -34,3 +34,18 @@ tidy-check:
 	cmake $(GENERATOR) $(BUILD_FLAGS) $(EXT_DEBUG_FLAGS) -DDISABLE_UNITY=1 -DCLANG_TIDY=1 -S $(DUCKDB_SRCDIR) -B build/tidy
 	cp duckdb/.clang-tidy build/tidy/.clang-tidy
 	cd build/tidy && python3 ../../duckdb/scripts/run-clang-tidy.py '$(PROJ_DIR)src/' -header-filter '$(PROJ_DIR)src/' -quiet ${TIDY_THREAD_PARAMETER} ${TIDY_BINARY_PARAMETER} ${TIDY_PERFORM_CHECKS}
+
+# Standalone C++ test executables (EXCLUDE_FROM_ALL in CMakeLists.txt, so neither CTest nor
+# ENABLE_UNITTEST_CPP_TESTS discovers them). Each takes the project root; those that need no
+# argument ignore it. `make test_<cfg>` runs them before the SQL logic tests.
+CPP_TESTS := state metric-grain population-capture relation-program fact-program fact-capture history-program
+define cpp_test_rules
+.PHONY: $(1)-test-release $(1)-test-debug $(1)-test-reldebug
+$(1)-test-release $(1)-test-debug $(1)-test-reldebug: $(1)-test-%:
+	cmake --build build/$$* --target ossie_$(subst -,_,$(1))_test
+	./build/$$*/extension/ossie/ossie_$(subst -,_,$(1))_test "$$(PROJ_DIR)"
+endef
+$(foreach t,$(CPP_TESTS),$(eval $(call cpp_test_rules,$(t))))
+test_release_internal: $(foreach t,$(CPP_TESTS),$(t)-test-release)
+test_debug_internal: $(foreach t,$(CPP_TESTS),$(t)-test-debug)
+test_reldebug_internal: $(foreach t,$(CPP_TESTS),$(t)-test-reldebug)

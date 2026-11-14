@@ -1,0 +1,110 @@
+{
+  "roles": {
+    "fact_table": "dd_a_f",
+    "dimension_table": null,
+    "fact_logical": "assets",
+    "dimension_logical": null,
+    "id": "asset_id",
+    "fk": null,
+    "dk": null,
+    "selection": "active",
+    "value_column": "capacity",
+    "value_attribute": "capacity",
+    "value_type": "INTEGER",
+    "value_scope": "fact",
+    "root": "Device",
+    "metric": "device_count",
+    "root_threshold": "0"
+  },
+  "facts": [
+    {
+      "id": "d1",
+      "key": null,
+      "active": true,
+      "value": 12
+    },
+    {
+      "id": "d2",
+      "key": null,
+      "active": true,
+      "value": 2
+    },
+    {
+      "id": "d3",
+      "key": null,
+      "active": false,
+      "value": 20
+    },
+    {
+      "id": "d4",
+      "key": null,
+      "active": false,
+      "value": 3
+    },
+    {
+      "id": "d5",
+      "key": null,
+      "active": null,
+      "value": 30
+    },
+    {
+      "id": "d6",
+      "key": null,
+      "active": false,
+      "value": null
+    },
+    {
+      "id": "d7",
+      "key": null,
+      "active": true,
+      "value": 1
+    },
+    {
+      "id": "d8",
+      "key": null,
+      "active": false,
+      "value": 0
+    }
+  ],
+  "dimensions": [],
+  "children": [
+    {
+      "name": "ActiveDevice",
+      "kind": "active",
+      "threshold": "1"
+    },
+    {
+      "name": "LargeDevice",
+      "kind": "lower",
+      "threshold": "11",
+      "rule_threshold": "10"
+    }
+  ],
+  "independent_anchors": {
+    "root_ids": [
+      "d1",
+      "d2",
+      "d3",
+      "d4",
+      "d5",
+      "d6",
+      "d7",
+      "d8"
+    ],
+    "children": {
+      "ActiveDevice": [
+        "d1",
+        "d2",
+        "d7"
+      ],
+      "LargeDevice": [
+        "d1",
+        "d3",
+        "d5"
+      ]
+    },
+    "intersection": [
+      "d1"
+    ]
+  }
+}
