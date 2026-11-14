@@ -10,8 +10,7 @@ JSON object. DuckDB can add its exception-type prefix and SQL location afterward
 MCP can carry the message in JSON-RPC `error.message` or `result.isError` content.
 Inspect both MCP error carriers, decode their string contents first, and parse
 the framed object rather than the whole reply or the entire SQL diagnostic.
-`scripts/population_error.ts` demonstrates quote-aware framing. Error strings
-are diagnostics from a known failure carrier, not proof of trusted origin.
+Framing must be quote-aware. Error strings are diagnostics from a known failure carrier, not proof of trusted origin.
 
 | Field | Meaning |
 |---|---|
@@ -79,12 +78,3 @@ including decoded NUL, are preserved with length-aware reads; expression/name
 validation happens downstream. Native MCP arrays remain accepted when the adapter
 serializes them as valid JSON string arrays. This does not make the MCP adapter a
 full JSON Schema validator. No failure becomes an unrestricted query.
-
-The stock error verifier checks loaded/unloaded calls, core resolution, parser,
-AST, request limits, runtime conversion, definition/hash/identity failures, failed
-publication, escaped inputs, external bindings and explicit transaction recovery.
-The production native capture runner checks structured native missing-file loads,
-unstructured unknown system failures and native cancellation with task draining.
-Actual MCP checks parse callback errors while retaining external missing-parameter
-and unknown-tool refusals. None of these checks certifies lossless numeric transport,
-unbounded message sizes, autonomous Agent reasoning or remote CI.

@@ -31,7 +31,7 @@ CREATE TABLE observations(
   observation_id VARCHAR, user_id VARCHAR, ds DATE, product VARCHAR,
   amount_usd DECIMAL(18,2), classification_value INTEGER);
 INSERT INTO observations SELECT * FROM read_csv(
-  'docs/research/ossie-req-001/multi-period-research/observations.csv', header=true);
+  'test/fixtures/population-data/observations.csv', header=true);
 CALL ossie_bundle_load('test/fixtures/population-observation/bundle-10.json');
 ```
 
@@ -129,50 +129,20 @@ function/schema, permitted group fields and User/mean scope. The new profile's
 true) separately from the referenced User (false), and states the internal binary
 string comparison. Old profiles still produce
 `ossie-population-plan-v1`. Both plans describe generated ASTs, not executed or
-physical plans; typed result evidence establishes actual execution.
+physical plans; only the execution result and its trace show that a query ran.
 
 The separate [concept constraint capability](population-constraints.md) uses
 an opt-in 2.3.0 batch contract only for the scalar and joined profiles. It does
 not enable concept requires here or change this observation profile's 2.2.0
-contract. That new native capability is not yet execution-verified.
+contract.
 
 ## Validation and limits
 
-The pinned local schemas are checked by `scripts/check_fixed_schema.ts` with
-Ajv Draft2020 and format validation. Upstream `$ref` URLs resolve only to locally
-registered byte-hash-verified schemas; no remote schema loader is installed.
-Run the following from the repository root, choosing a new report path:
-
-```sh
-node scripts/check_fixed_schema.ts \
-  --core test/fixtures/population-observation/core.json \
-  --ontology test/fixtures/population-observation/ontology.json \
-  --mapping test/fixtures/population-observation/mapping.json \
-  --out /tmp/observation-schema-report.json
-node scripts/verify_observation_artifact.ts \
-  build/release/extension/ossie/ossie.duckdb_extension \
-  --output /tmp/observation-artifact-report.json
-```
-
-JSON Schema acceptance is a tooling gate; the C++ loader separately enforces its
-bounded profile, actual source types and data identities. Schema acceptance does
-not prove business binding, calculation or execution. The schema validator is
-not embedded in the extension and does not broaden production capabilities.
-[Ajv's official Draft2020 documentation](https://ajv.js.org/json-schema.html)
-explains the separate `Ajv2020` validator used here.
-
-The local artifact verifier independently derives tuples, distinct User sets and
-bigint-cent sums from the research CSV, tests typed output and normalized
-refusals, and records source/artifact hashes. Native controls cover atomic
-publication, concurrent readers, post-capture source mutation, cancellation and
-prepared snapshots. Existing P0 checks separately protect both legacy profiles,
-including their current MCP example. CI repeats observation artifact checks on
-its existing Linux/macOS matrix; this local run does not establish those remote
-results. New-profile MCP wiring and four isolated no-model preparations are now locally
-verified; see [the MCP/Agent preparation guide](agent-observation-acceptance.md).
-A real observation Agent trial remains unrun.
-No pagination, automatic calendar completion or arbitrary ontology execution is
-added.
+The C++ loader enforces the bounded profile, actual source types and data
+identities itself. Validating the three documents against the upstream Ossie
+JSON Schemas is a separate tooling step; schema acceptance does not prove
+business binding, calculation or execution. No pagination, automatic calendar
+completion or arbitrary ontology execution is added.
 
 The dedicated [daily User set SQL operation](population-daily-users.md) computes
 intersection over explicitly requested consecutive calendar dates. Existing

@@ -1,9 +1,8 @@
 # 历史关系双源加载、查询与解释
 
-`historical-observation-relation-v1` 已实现 typed 双源加载、完整历史校验、冻结索引、
+`historical-observation-relation-v1` 提供 typed 双源加载、完整历史校验、冻结索引、
 `ossie_history_program()`、`ossie_history_links_json()` 与 `ossie_history_links_compile()`。
 program 明确 `query_supported=true`、`compile_supported=true`、`mcp_registered=false`。
-历史独立 MCP 与七场景无模型演练/严格重放、有限 P1 验收及c5eb47e 新跨平台 CI已通过。
 
 [fixture](../test/fixtures/population-history-program/bundle.json) 有两份数据集：
 观察实体按 User/DATE/product 标识，历史实体按全局 record_id 标识。User 与 Team
@@ -14,8 +13,8 @@ physical primary_key 顺序须与实体身份一致。
 
 Manifest 的 `history_at_observation` 是项目算子；关系声明为 Observation→Team
 ManyToOne。此 profile 不执行上游通用 derived_by：非空而未执行的规则/约束与另一个
-直接生成关系映射拒绝。固定三份文件通过上游离线 schema，program 属本项目扩展，
-不能把 schema 接受理解为执行了所有 OSSIE 表达式。
+直接生成关系映射拒绝。program 属本项目扩展；三份标准文件符合上游 schema
+不等于执行了所有 OSSIE 表达式。
 
 ```sql
 CREATE TABLE observations(user_id VARCHAR, ds DATE, product VARCHAR);
@@ -66,16 +65,7 @@ compile 只绑定冻结观察的 VARCHAR/DATE/VARCHAR 投影，不扫描来源�
 候选全部成功后才原子替换父快照。第二源失败、冲突、超限或两处确定性取消均
 保留旧状态；并发修改两表在一个事务提交不会令本次双捕获混合新旧。prepared 的
 program、links 与 compile 保留旧父，重载及删两表后仍可读取原先完整结果/计划；
-取消查询后可恢复。这些证明不代表所有引用释放后的无泄漏证明。私有 binary Engine 不改调用者
-设置。旧五 profile 保持原行为；新 profile 的旧通用人口入口明确拒绝，不给错误声明。
-
-加载与生命周期证据包含两源
-各 10,000 行完整载入/各自多一行拒绝、失败保留、原生取消、同事务及 prepared 控制。
-旧加载报告覆盖当时 macOS 产物；后续双平台当前功能与 tidy已通过，完整 P1 逐项本地审计已通过；c5eb47e GitHub AMD64/macOS 产物验收与 tidy也已通过，历史产物报告保持原版本边界。
-
-查询与解释证据另以新产物
-核对逐记录枚举的完整关系、有限日期极值、10,000 完整 links、精确字节预算及
-prepared/原生取消。旧加载报告保留当时的 SHA 和接口状态，不改写历史证据。
+取消查询后可恢复。私有 binary Engine 不改调用者设置。旧五 profile 保持原行为；新 profile 的旧通用人口入口明确拒绝，不给错误声明。
 
 独立 [MCP 示例](../examples/history_server.sql) 由操作者加载两来源，再公布两个只读
 工具 `population_history_links` / `population_history_links_compile`，外层参数为 String
@@ -85,22 +75,6 @@ prepared/原生取消。旧加载报告保留当时的 SHA 和接口状态，不
 的 mcp_registered=false 不是运行中 registry 探测；实际 tools/list 才证明工具暴露。
 不公布旧通用概念/人口工具或任意 SQL、加载/重载工具。
 
-固定上游 MCP 实测忽略未知外层参数，并可把 object 参数转 String；辅助调用者
+固定上游 MCP 忽略未知外层参数，并可把 object 参数转 String；辅助调用者
 发送 String，不把这两个行为伪称原生严格参数契约。内部 request 与完整返回值仍
-按本 profile 严格校验。MCP 证据
-包含完整 10,000 link 身份、超限拒绝恢复、28 项损坏 carrier，以及与原始观察/历史
-记录对应的独立逐记录匹配。结构合法不证明关系成员正确。
-
-历史无模型演练覆盖全部观察、
-日期范围、产品 Y、缺口、最小有限日期、空来源及只解释。执行场景最多三轮/两
-工具调用，只解释最多两轮/一次 compile，实际没有查询。模拟 Responses 来自注入
-回调，工具使用真实 stock MCP；旁路逐记录 oracle 不放进模型可见上下文。
-验证最终回答与实际完整查询、请求、来源计数、定义及六 hash 对应；不代表模型
-自主规划、真实业务结论或来源完整性。
-
-运行与校验入口为 `scripts/verify_history_agent_offline.ts CLI ARTIFACT PRIVATE_OUT OUT_JSON`，
-私人原件必须在未跟踪的 `.local-agent-evidence` 内；默认不读模型配置、不调用模型。
-封存后 `replayHistory(path, expectedArtifactSha)` 严格消费全部有序记录，重算来源/定义
-对应和最终成员；可绑定调用者指定产物 SHA。离线不启动 MCP/子进程或 fetch，不打开
-归档中的安装路径，也不执行归档代码。缺记录、改范围、错误证据 ID、重封伪造、
-只解释伪装查询、结构合法但语义错误等拒绝；完整源 seal 保持不变。新 C++ Linux/tidy 已有当前证据；整体 P1 逐项本地审计及待推历史私有信息预检已通过。
+按本 profile 严格校验。结构合法不证明关系成员正确。

@@ -20,7 +20,7 @@ For example, duplicate metric aliases can appear as separate ordered projections
 in a diagnostic plan, while the table query binder rejects duplicate output names.
 The execution result and its trace remain the evidence that a query actually ran.
 
-## Fields and evidence source
+## Fields and source
 
 | Field | Meaning and source |
 |---|---|
