@@ -468,51 +468,62 @@ struct Bundle {
 };
 
 const DirectConcept *DirectChild(const Bundle &b, const string &name) {
-	for (auto &child : b.direct_concepts)
-		if (child.name == name)
+	for (auto &child : b.direct_concepts) {
+		if (child.name == name) {
 			return &child;
+		}
+	}
 	return nullptr;
 }
 vector<string> ConceptLineage(const Bundle &b, const string &name) {
 	vector<string> result {name};
 	while (result.back() != b.root) {
 		auto child = DirectChild(b, result.back());
-		if (!child)
+		if (!child) {
 			Fail(result.back(), "bind", "unknown parent concept");
-		if (std::find(result.begin(), result.end(), child->parent) != result.end())
+		}
+		if (std::find(result.begin(), result.end(), child->parent) != result.end()) {
 			Fail(name, "bind", "inheritance cycle prohibited");
+		}
 		result.push_back(child->parent);
-		if (b.single_inheritance && result.size() > 4)
+		if (b.single_inheritance && result.size() > 4) {
 			Fail(name, "resource", "at most three inheritance edges");
+		}
 	}
 	std::reverse(result.begin(), result.end());
 	return result;
 }
 bool AncestorAlias(const Bundle &b, const string &owner, const string &name) {
-	if (!b.single_inheritance || owner.empty())
+	if (!b.single_inheritance || owner.empty()) {
 		return false;
-	for (auto &ancestor : ConceptLineage(b, owner))
-		if (StringUtil::CIEquals(ancestor, name))
+	}
+	for (auto &ancestor : ConceptLineage(b, owner)) {
+		if (StringUtil::CIEquals(ancestor, name)) {
 			return true;
+		}
+	}
 	return false;
 }
 void LineageBudget(const ParsedExpression &e, idx_t depth, idx_t &nodes) {
-	if (++nodes > 4096 || depth > 40)
+	if (++nodes > 4096 || depth > 40) {
 		Fail("lineage", "resource", "lineage predicate exceeds 4096 nodes or depth 40");
+	}
 	ParsedExpressionIterator::EnumerateChildren(
 	    e, [&](const ParsedExpression &child) { LineageBudget(child, depth + 1, nodes); });
 }
 unique_ptr<ParsedExpression> EffectiveMembership(const Bundle &b, const string &name) {
 	unique_ptr<ParsedExpression> result;
 	for (auto &ancestor : ConceptLineage(b, name)) {
-		if (ancestor == b.root)
+		if (ancestor == b.root) {
 			continue;
+		}
 		auto rule = DirectChild(b, ancestor)->rule->Copy();
-		if (result)
+		if (result) {
 			result =
 			    make_uniq<ConjunctionExpression>(ExpressionType::CONJUNCTION_AND, std::move(result), std::move(rule));
-		else
+		} else {
 			result = std::move(rule);
+		}
 	}
 	if (result) {
 		idx_t nodes = 0;
@@ -521,20 +532,25 @@ unique_ptr<ParsedExpression> EffectiveMembership(const Bundle &b, const string &
 	return result;
 }
 bool ConceptNamespace(const Bundle &b, const string &name) {
-	if (StringUtil::CIEquals(name, b.root) || (!b.derived.empty() && StringUtil::CIEquals(name, b.derived)))
+	if (StringUtil::CIEquals(name, b.root) || (!b.derived.empty() && StringUtil::CIEquals(name, b.derived))) {
 		return true;
-	for (auto &child : b.direct_concepts)
-		if (StringUtil::CIEquals(name, child.name))
+	}
+	for (auto &child : b.direct_concepts) {
+		if (StringUtil::CIEquals(name, child.name)) {
 			return true;
+		}
+	}
 	return false;
 }
 vector<string> ExecutableConcepts(const Bundle &b) {
-	if (!b.direct_derived)
+	if (!b.direct_derived) {
 		return b.profile == OBSERVATION_PROFILE ? vector<string> {b.user_concept, b.root, b.derived}
 		                                        : vector<string> {b.root, b.derived};
+	}
 	vector<string> names {b.root};
-	for (auto &child : b.direct_concepts)
+	for (auto &child : b.direct_concepts) {
 		names.push_back(child.name);
+	}
 	return names;
 }
 const char *PopulationPlanSchema(const Bundle &b) {
@@ -856,8 +872,9 @@ void Definitions(Bundle &bundle, yyjson_val *ontology, yyjson_val *mapping) {
 				if (constraint.original.size() > 16384 || total_bytes > 131072) {
 					Fail(constraint.owner, "resource", "concept requires exceed 16KiB each or 128KiB total");
 				}
-				if (bundle.direct_derived && bundle.concept_constraints.size() >= 16)
+				if (bundle.direct_derived && bundle.concept_constraints.size() >= 16) {
 					Fail(constraint.owner, "resource", "at most sixteen total concept requires");
+				}
 				bundle.concept_constraints.push_back(std::move(constraint));
 			}
 		}
@@ -871,51 +888,61 @@ void Definitions(Bundle &bundle, yyjson_val *ontology, yyjson_val *mapping) {
 			parent = component;
 		} else {
 			if (bundle.direct_derived) {
-				if (children.size() >= 8)
+				if (children.size() >= 8) {
 					Fail("ontology", "resource", "at most eight direct derived concepts");
+				}
 				children.push_back(component);
 			} else {
-				if (child)
+				if (child) {
 					Fail("ontology", "capability", "exactly one derived entity required");
+				}
 				child = component;
 			}
 		}
 	}
 	if (bundle.direct_derived) {
-		if (!parent || children.empty() || components.size() != children.size() + 1)
+		if (!parent || children.empty() || components.size() != children.size() + 1) {
 			Fail("ontology", "capability", "one root and one to eight direct children required");
+		}
 		bundle.root = Text(parent, "concept");
 		case_insensitive_set_t names;
 		names.insert(bundle.root);
 		for (auto entry : children) {
 			DirectConcept concept;
 			concept.name = Text(entry, "concept");
-			if (!names.insert(concept.name).second)
+			if (!names.insert(concept.name).second) {
 				Fail(concept.name, "bind", "duplicate concept name");
+			}
 			auto parents = Array(entry, "extends");
-			if (parents.size() != 1 || (!bundle.single_inheritance && ArrayText(parents[0]) != bundle.root))
+			if (parents.size() != 1 || (!bundle.single_inheritance && ArrayText(parents[0]) != bundle.root)) {
 				Fail(concept.name, "capability", "single direct inheritance from root required");
+			}
 			concept.parent = ArrayText(parents[0]);
 			Empty(entry, "identify_by", concept.name);
 			Empty(entry, "relationships", concept.name);
 			bundle.direct_concepts.push_back(std::move(concept));
 		}
 	} else {
-		if (!parent || !child || components.size() != 2)
+		if (!parent || !child || components.size() != 2) {
 			Fail("ontology", "capability", "profile requires one root and one derived entity");
+		}
 		bundle.root = Text(parent, "concept");
 		bundle.derived = Text(child, "concept");
-		if (StringUtil::CIEquals(bundle.root, bundle.derived))
+		if (StringUtil::CIEquals(bundle.root, bundle.derived)) {
 			Fail(bundle.root, "bind", "duplicate concept name");
+		}
 		auto extends = Array(child, "extends");
-		if (extends.size() != 1 || ArrayText(extends[0]) != bundle.root)
+		if (extends.size() != 1 || ArrayText(extends[0]) != bundle.root) {
 			Fail(bundle.derived, "capability", "single inheritance from root required");
+		}
 		Empty(child, "identify_by", bundle.derived);
 		Empty(child, "relationships", bundle.derived);
 	}
-	if (bundle.single_inheritance)
-		for (auto &concept : bundle.direct_concepts)
+	if (bundle.single_inheritance) {
+		for (auto &concept : bundle.direct_concepts) {
 			concept.depth = ConceptLineage(bundle, concept.name).size() - 1;
+		}
+	}
 	Empty(parent, "derived_by", bundle.root);
 	auto identity = Array(parent, "identify_by", true);
 	if (identity.size() != 1) {
@@ -1028,12 +1055,14 @@ void Definitions(Bundle &bundle, yyjson_val *ontology, yyjson_val *mapping) {
 		for (idx_t i = 0; i < children.size(); i++) {
 			auto &concept = bundle.direct_concepts[i];
 			auto rules = Array(children[i], "derived_by", true);
-			if (rules.size() != 1)
+			if (rules.size() != 1) {
 				Fail(concept.name, "rule", "exactly one scalar derivation required");
+			}
 			concept.original_rule = ArrayText(rules[0]);
 			bytes += concept.original_rule.size();
-			if (bytes > 131072)
+			if (bytes > 131072) {
 				Fail(concept.name, "resource", "direct derived rules exceed 128KiB total");
+			}
 			concept.rule = Parse(concept.original_rule);
 			Strict(*concept.rule);
 			Resolve(bundle, concept.rule, true, concept.name);
@@ -1042,8 +1071,9 @@ void Definitions(Bundle &bundle, yyjson_val *ontology, yyjson_val *mapping) {
 		if (bundle.single_inheritance) {
 			std::stable_sort(bundle.direct_concepts.begin(), bundle.direct_concepts.end(),
 			                 [](const DirectConcept &a, const DirectConcept &b) { return a.depth < b.depth; });
-			for (auto &concept : bundle.direct_concepts)
+			for (auto &concept : bundle.direct_concepts) {
 				EffectiveMembership(bundle, concept.name);
+			}
 		}
 		return;
 	}
@@ -1336,8 +1366,9 @@ void ValidateConceptConstraints(ClientContext &context, Bundle &bundle, Connecti
 		auto rule = bundle.direct_derived && constraint.derived ? DirectChild(bundle, constraint.owner)->rule.get()
 		                                                        : bundle.rule.get();
 		auto effective = bundle.single_inheritance ? EffectiveMembership(bundle, constraint.owner) : nullptr;
-		if (bundle.single_inheritance)
+		if (bundle.single_inheritance) {
 			rule = effective.get();
+		}
 		auto population = constraint.derived ? "(" + rule->ToString() + ") IS TRUE AND " : string();
 		auto sql = "SELECT count(*) FROM main.ossie_snapshot AS " + Quote(bundle.model.datasets[0].name) + " WHERE " +
 		           population + "(" + constraint.predicate->ToString() + ") IS DISTINCT FROM TRUE";
@@ -3136,21 +3167,25 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		auto capabilities = Array(root, "capabilities", true);
 		bool direct = false, hierarchy = false;
 		for (auto value : capabilities) {
-			if (yyjson_is_str(value) && ArrayText(value) == DIRECT_DERIVED)
+			if (yyjson_is_str(value) && ArrayText(value) == DIRECT_DERIVED) {
 				direct = true;
-			if (yyjson_is_str(value) && ArrayText(value) == SINGLE_INHERITANCE)
+			}
+			if (yyjson_is_str(value) && ArrayText(value) == SINGLE_INHERITANCE) {
 				hierarchy = true;
+			}
 		}
-		if (direct && hierarchy)
+		if (direct && hierarchy) {
 			Fail("capabilities", "capability", "one inheritance mode required");
+		}
 		if (direct || hierarchy) {
 			case_insensitive_set_t seen;
 			for (auto value : capabilities) {
 				auto name = ArrayText(value);
 				if ((name != CONCEPT_REQUIRES && name != STRING_JOIN && name != DIRECT_DERIVED &&
 				     name != SINGLE_INHERITANCE) ||
-				    !seen.insert(name).second)
+				    !seen.insert(name).second) {
 					Fail("capabilities", "capability", "distinct supported capabilities required");
+				}
 				bundle->concept_requires |= name == CONCEPT_REQUIRES;
 				bundle->string_join |= name == STRING_JOIN;
 			}
@@ -3171,8 +3206,9 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		if (!bundle->concept_requires && !bundle->string_join && !bundle->direct_derived) {
 			Fail("capabilities", "capability", "exactly concept-scalar-requires-v1 required");
 		}
-		if (bundle->direct_derived && bundle->profile != PROFILE && bundle->profile != JOIN_PROFILE)
+		if (bundle->direct_derived && bundle->profile != PROFILE && bundle->profile != JOIN_PROFILE) {
 			Fail("capabilities", "capability", "direct-derived-concepts-v1 requires scalar or joined profile");
+		}
 		if (bundle->string_join && bundle->profile != JOIN_PROFILE) {
 			Fail("capabilities", "capability", "native-string-join-v1 requires fact-dimension-population-v1");
 		}
@@ -3391,10 +3427,12 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		bundle->metric_types[metric.name] = bound->GetTypes()[0].ToString();
 	}
 	if (bundle->direct_derived) {
-		for (auto &child : bundle->direct_concepts)
+		for (auto &child : bundle->direct_concepts) {
 			CheckBoolean(*bundle, *child.rule);
-	} else
+		}
+	} else {
 		CheckBoolean(*bundle, *bundle->rule);
+	}
 	if (bundle->profile == OBSERVATION_PROFILE || bundle->profile == RELATION_PROFILE) {
 		ObservationIdentityPreflight(context, *bundle, *engine);
 		if (bundle->profile == RELATION_PROFILE) {
@@ -3472,8 +3510,9 @@ unique_ptr<ParsedExpression> Population(Bundle &bundle, const string &concept, c
 	}
 	unique_ptr<ParsedExpression> predicate;
 	if (bundle.direct_derived) {
-		if (selected)
+		if (selected) {
 			predicate = bundle.single_inheritance ? EffectiveMembership(bundle, concept) : selected->rule->Copy();
+		}
 	} else if (concept == bundle.derived) {
 		predicate = bundle.rule->Copy();
 	}
@@ -3625,8 +3664,9 @@ string PlanJSON(const Bundle &bundle, const SelectStatement &statement, const st
 		Fail("grain", "explain", "population input lacks definition provenance");
 	}
 	auto rule = bundle.direct_derived ? (selected ? selected->rule->Copy() : nullptr) : bundle.rule->Copy();
-	if (rule)
+	if (rule) {
 		EngineFunctions(*rule);
+	}
 	string formal_rule = "null";
 	if (!bundle.direct_derived || selected) {
 		formal_rule = "{\"owner\":" + JSONString(bundle.direct_derived ? selected->name : bundle.derived) +
@@ -3746,13 +3786,15 @@ string PlanJSON(const Bundle &bundle, const SelectStatement &statement, const st
 		    ",\"membership_semantics\":\"parent population intersection; every lineage rule TRUE\",\"applied_rules\":[";
 		bool first = true;
 		for (auto &name : ConceptLineage(bundle, concept)) {
-			if (name == bundle.root)
+			if (name == bundle.root) {
 				continue;
+			}
 			auto child = DirectChild(bundle, name);
 			auto resolved = child->rule->Copy();
 			EngineFunctions(*resolved);
-			if (!first)
+			if (!first) {
 				result += ",";
+			}
 			first = false;
 			result += "{\"owner\":" + JSONString(name) + ",\"parent\":" + JSONString(child->parent) +
 			          ",\"declared_sql\":" + JSONString(child->original_rule) +
@@ -4764,8 +4806,9 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 			    "false,\"multilevel\":false,\"multiple_inheritance\":false,\"children\":[";
 			for (idx_t i = 0; i < b.direct_concepts.size(); i++) {
 				auto &child = b.direct_concepts[i];
-				if (i)
+				if (i) {
 					capabilities += ",";
+				}
 				capabilities += "{\"name\":" + JSONString(child.name) + ",\"parent\":" + JSONString(b.root) +
 				                ",\"declared_rule\":" + JSONString(child.original_rule) + "}";
 			}
@@ -4781,10 +4824,11 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 			    "\"sibling_references\":false,\"descendant_references\":false,\"multiple_inheritance\":false,\"nodes\":"
 			    "[{\"name\":" +
 			    JSONString(b.root) + ",\"parent\":null,\"depth\":0,\"declared_rule\":null}";
-			for (auto &child : b.direct_concepts)
+			for (auto &child : b.direct_concepts) {
 				capabilities += ",{\"name\":" + JSONString(child.name) + ",\"parent\":" + JSONString(child.parent) +
 				                ",\"depth\":" + to_string(child.depth) +
 				                ",\"declared_rule\":" + JSONString(child.original_rule) + "}";
+			}
 			capabilities += "]}";
 		}
 		capabilities += ",\"concept_discovery\":{\"function\":" +
@@ -4833,8 +4877,9 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 		if (b.string_join) {
 			api_version = STRING_JOIN_API_VERSION;
 		}
-		if (b.direct_derived)
+		if (b.direct_derived) {
 			api_version = b.single_inheritance ? SINGLE_INHERITANCE_API_VERSION : DIRECT_DERIVED_API_VERSION;
+		}
 		append({Value(api_version), Value("ossie-population-discovery-v1"), Value(PopulationPlanSchema(b)),
 		        Value(b.definition_model.spec_version), Value(capabilities)});
 	}
