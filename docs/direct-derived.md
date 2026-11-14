@@ -64,69 +64,10 @@ queries retain all their bound concepts, rules, metadata and data across reload,
 child addition/removal and source deletion; failed/cancelled loads retain the
 previous snapshot.
 
-## Resources and verification
+## Resource limits
 
 Each rule is limited to 16 KiB, 1,024 AST nodes and depth 32; total direct-rule SQL
 is capped at 128 KiB. Requires remain at most eight per concept, **16 total** and
 128 KiB total, not eight times the expanded concept count. Capture still allows
 at most 10,000 rows per input, 256 columns and 16 MiB canonical bytes. These are
 acceptance limits, not measured peak memory or throughput guarantees.
-
-The two new fixtures differ structurally: one classifies Integer values from a
-single fact table, the other classifies a dimension's DATE via String keys while
-retaining a conflicting fact DATE, repeated FK values and unused dimensions.
-Each has overlapping, exclusive, unclassified and NULL records. Independent
-full identity/value/group answers and hand-written SQL are used; a total count
-or renamed business example is insufficient.
-
-Offline tests open no DB. The separate controlled entry point imports without
-starting any process:
-
-```sh
-node --test --test-concurrency=1 test/tooling/direct_derived.test.ts test/tooling/direct_derived_native.test.ts
-node scripts/run_direct_derived_native.ts prepare --output .local-agent-evidence/direct-derived-prepared-001
-node scripts/run_direct_derived_native.ts build --prepared .local-agent-evidence/direct-derived-prepared-001/prepared.json --sha256 '<prepared SHA-256>'
-node scripts/run_direct_derived_native.ts run --prepared .local-agent-evidence/direct-derived-prepared-001/prepared.json --sha256 '<prepared SHA-256>' --build-receipt .local-agent-evidence/direct-derived-native-build-001/summary.json --build-sha256 '<build summary SHA-256>' --artifact-sha256 '<extension SHA-256>'
-```
-
-The fixed suite runs direct-derived checks, the full String suite, then all six
-original stages including the 20-stage regression. It keeps existing assertions,
-probes, postflight byte guards, failure sealing and unknown-cleanup rejection.
-The default entry point, quality commands and CI are unchanged. New paths must
-be fresh; build is fixed to `build/direct-derived-001`. Source, dependency,
-tool and 14 output byte pins are reviewed before execution; no installs or
-automatic query/data corrections occur.
-
-The new worker permits 10,000 explicit SQL calls and 120 seconds of work, with
-150 seconds outer supervision and 16 MiB each for raw event stream/report.
-There are zero retries. Shared build allows 1,800 seconds; whole run 1,500 seconds,
-cleanup 10 seconds and seal 60 seconds. Raw process output is capped at 64 MiB
-and evidence at 512 MiB. These are separate deadlines, not an end-to-end SLO.
-
-## Limited local acceptance
-
-Frozen candidate-001 passed one controlled Mac ARM64 build and one eight-stage
-native run, without retries, on DuckDB 1.5.6 and Bun 1.3.11. The new family passed
-142 empty/nonempty scopes and 7,713 explicit SQL calls: 48 successful loads,
-94 expected load refusals, and 88 expected sibling-reference request refusals.
-Independent full identities, values and groups matched hand-written SQL. Plans,
-constraint owners, complete discovery, typed JSON and prepared preservation after
-reload/removal/source deletion were checked from the raw events.
-
-The complete prior String family (128 scopes/3,428 SQL), requires boundaries
-(408 scopes/9,017 SQL), original A/B, capture (874 checks, threads=4/1), all 31 SQL
-files (1,206 assertions) and the 20-stage regression passed. Targeted offline
-checks passed 166 new and 386 existing Bun tests. These are fixed local proofs,
-not exhaustive ontology, capacity, cross-platform, CLI/MCP or Agent acceptance.
-
-Accepted extension SHA-256: `558fb0d03a8c7a7060fc6b549348dbcfe0c3a44d2a7924beac4bb1c698cad3c8`.
-The 24-file frozen candidate and original prepared/build/run receipts remain
-immutable. This subsequent five-document status update has separate before/after
-pins and preserved copies; it does not re-sign old receipts or make the old
-strict prepared byte check accept changed documentation. Repeating execution
-requires fresh reviewed binding and directories.
- Existing
-requires/String/Agent/CLI/MCP results apply only to their own bound versions.
-Old snapshots and public anchors are preserved, not re-signed. AMD64, new-model
-calls, public target-tree delivery and cross-platform CI of unpushed work are
-outside this local feature slice; the whole Ontology/P1 is not complete.
