@@ -2832,6 +2832,35 @@ void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 	b.snapshot_id = b.content_hash + ":" + to_string(NextBatchSequence());
 }
 
+string InferProfile(yyjson_val *root, const Ontology &ontology) {
+	auto program = Member(root, "program");
+	if (Member(root, "join") && program) {
+		Fail("bundle manifest", "capability", "join and program sections are mutually exclusive");
+	}
+	if (Member(root, "join")) {
+		return JOIN_PROFILE;
+	}
+	if (program) {
+		return Member(program, "operator") ? HISTORY_PROFILE : FACT_PROFILE;
+	}
+	bool observation = false, relation = false;
+	for (auto &c : ontology.concepts) {
+		if (c.identify_by.size() == 3) {
+			observation = true;
+			relation |= !c.
+			                 requires
+			                .empty();
+		}
+		for (auto &r : c.relationships) {
+			relation |= !r.derived_by.empty();
+		}
+	}
+	if (!observation) {
+		return PROFILE;
+	}
+	return relation ? RELATION_PROFILE : OBSERVATION_PROFILE;
+}
+
 shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_path) {
 	if (!context.transaction.IsAutoCommit()) {
 		Fail("bundle", "snapshot", "load requires committed native tables outside an explicit transaction");
@@ -2843,21 +2872,52 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	Document manifest(manifest_bytes);
 	manifest.NoNUL();
 	auto root = manifest.Root();
-	bundle->profile = Text(root, "profile");
-	Keys(root,
-	     bundle->profile == PROFILE
-	         ? std::initializer_list<const char *> {"profile", "core", "ontology", "mapping", "capabilities"}
-	     : (bundle->profile == FACT_PROFILE || bundle->profile == HISTORY_PROFILE)
-	         ? std::initializer_list<const char *> {"profile", "core", "ontology", "mapping", "program"}
-	     : bundle->profile == JOIN_PROFILE
-	         ? std::initializer_list<const char *> {"profile", "core", "ontology", "mapping", "join", "capabilities"}
-	         : std::initializer_list<const char *> {"profile", "core", "ontology", "mapping"},
-	     "bundle manifest");
-	if (bundle->profile != PROFILE && bundle->profile != JOIN_PROFILE && bundle->profile != OBSERVATION_PROFILE &&
-	    bundle->profile != RELATION_PROFILE && bundle->profile != FACT_PROFILE && bundle->profile != HISTORY_PROFILE) {
-		Fail("profile", "capability", "unknown implementation profile");
+	Keys(root, {"profile", "core", "ontology", "mapping", "capabilities", "join", "program"}, "bundle manifest");
+	auto engine = Engine(*bundle);
+	bundle->manifest_hash = Hash(*engine, manifest_bytes);
+	auto &fs = FileSystem::GetFileSystem(context);
+	auto slash = manifest_path.find_last_of("/\\");
+	auto directory = slash == string::npos ? string(".") : manifest_path.substr(0, slash);
+	auto read_definition = [&](const char *kind, string &digest) {
+		auto spec = Member(root, kind);
+		Keys(spec, {"path", "name", "sha256"}, kind);
+		auto path = Text(spec, "path");
+		path = fs.IsPathAbsolute(path) ? path : fs.JoinPath(directory, path);
+		auto bytes = Read(context, path);
+		digest = Hash(*engine, bytes);
+		if (Text(spec, "sha256") != digest) {
+			Fail(kind, "hash", "definition SHA-256 mismatch");
+		}
+		Document document(bytes);
+		document.NoNUL();
+		if (Text(document.Root(), "name") != Text(spec, "name")) {
+			Fail(kind, "bind", "manifest document name mismatch");
+		}
+		return bytes;
+	};
+	auto core_bytes = read_definition("core", bundle->core_hash);
+	auto ontology_bytes = read_definition("ontology", bundle->ontology_hash);
+	auto mapping_bytes = read_definition("mapping", bundle->mapping_hash);
+	auto core_json = LooksLikeYaml(core_bytes) ? YamlToJson(core_bytes, "core") : core_bytes;
+	Ontology ontology;
+	Mapping mapping;
+	{
+		Document ontology_document(ontology_bytes), mapping_document(mapping_bytes);
+		ontology = ParseOntology(ontology_document.Root());
+		mapping = ParseMapping(mapping_document.Root());
+	}
+	bundle->ontology_name = ontology.name;
+	bundle->ontology_version = ontology.version;
+	bundle->mapping_name = mapping.name;
+	bundle->mapping_version = mapping.version;
+	bundle->profile = InferProfile(root, ontology);
+	if (Member(root, "profile") && Text(root, "profile") != bundle->profile) {
+		Fail("profile", "capability", "declared profile does not match the manifest sections and ontology shape");
 	}
 	if (Member(root, "capabilities")) {
+		if (bundle->profile != PROFILE && bundle->profile != JOIN_PROFILE) {
+			Fail("capabilities", "capability", "capabilities apply only to scalar and joined populations");
+		}
 		auto capabilities = Array(root, "capabilities", true);
 		bool direct = false, hierarchy = false;
 		for (auto value : capabilities) {
@@ -2907,43 +2967,6 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 			Fail("capabilities", "capability", "native-string-join-v1 requires fact-dimension-population-v1");
 		}
 	}
-	auto engine = Engine(*bundle);
-	bundle->manifest_hash = Hash(*engine, manifest_bytes);
-	auto &fs = FileSystem::GetFileSystem(context);
-	auto slash = manifest_path.find_last_of("/\\");
-	auto directory = slash == string::npos ? string(".") : manifest_path.substr(0, slash);
-	auto read_definition = [&](const char *kind, string &digest) {
-		auto spec = Member(root, kind);
-		Keys(spec, {"path", "name", "sha256"}, kind);
-		auto path = Text(spec, "path");
-		path = fs.IsPathAbsolute(path) ? path : fs.JoinPath(directory, path);
-		auto bytes = Read(context, path);
-		digest = Hash(*engine, bytes);
-		if (Text(spec, "sha256") != digest) {
-			Fail(kind, "hash", "definition SHA-256 mismatch");
-		}
-		Document document(bytes);
-		document.NoNUL();
-		if (Text(document.Root(), "name") != Text(spec, "name")) {
-			Fail(kind, "bind", "manifest document name mismatch");
-		}
-		return bytes;
-	};
-	auto core_bytes = read_definition("core", bundle->core_hash);
-	auto ontology_bytes = read_definition("ontology", bundle->ontology_hash);
-	auto mapping_bytes = read_definition("mapping", bundle->mapping_hash);
-	auto core_json = LooksLikeYaml(core_bytes) ? YamlToJson(core_bytes, "core") : core_bytes;
-	Ontology ontology;
-	Mapping mapping;
-	{
-		Document ontology_document(ontology_bytes), mapping_document(mapping_bytes);
-		ontology = ParseOntology(ontology_document.Root());
-		mapping = ParseMapping(mapping_document.Root());
-	}
-	bundle->ontology_name = ontology.name;
-	bundle->ontology_version = ontology.version;
-	bundle->mapping_name = mapping.name;
-	bundle->mapping_version = mapping.version;
 	if (bundle->profile == HISTORY_PROFILE) {
 		Document core(core_json);
 		HistoryCoreBudget(core.Root());

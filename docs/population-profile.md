@@ -45,6 +45,15 @@ those same bytes. It checks cross-document names and exact versions. The checked
 [threshold-10 manifest](../test/fixtures/population/bundle-10.json) references the
 reviewed standard definitions.
 
+`profile` is optional. The loader derives the population shape from the manifest
+sections and the ontology: a `join` section selects the
+[joined profile](population-joined.md), a `program` section selects the
+[fact](population-facts.md) or [history](population-history.md) program, an
+ontology with a three-component observation identity selects the
+[observation](population-observation.md) or [relation](population-relations.md)
+profile, and anything else is the scalar profile. A declared `profile` must
+match the derived one; otherwise the load is refused.
+
 First create the native table named by the core source. The GAAP fixture uses
 `memory.main.dws_gaap_di` with DATE, VARCHAR and DECIMAL(18,2) columns. Then:
 

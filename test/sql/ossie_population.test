@@ -23,6 +23,21 @@ SELECT profile, records FROM ossie_bundle_load('test/fixtures/population/bundle-
 ----
 gaap-scalar-population-v1	11
 
+query TI
+SELECT profile, records FROM ossie_bundle_load('test/fixtures/population/bundle-inferred.json');
+----
+gaap-scalar-population-v1	11
+
+statement error
+SELECT * FROM ossie_bundle_load('test/fixtures/population/bundle-mismatch.json');
+----
+declared profile does not match
+
+query TI
+SELECT profile, records FROM ossie_bundle_load('test/fixtures/population/bundle-10.json');
+----
+gaap-scalar-population-v1	11
+
 query TTT rowsort
 SELECT concept, parent, derived_by FROM ossie_concepts();
 ----
