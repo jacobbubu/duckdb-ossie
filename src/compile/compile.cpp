@@ -263,10 +263,35 @@ case_insensitive_set_t SafelyReachable(const Model &model, const string &root) {
 //! Named aggregates recognised in a filter, which routes the predicate to HAVING. Not exhaustive:
 //! anything missed lands in WHERE and DuckDB rejects it with its own message.
 bool IsAggregateName(const string &name) {
-	static const case_insensitive_set_t AGGREGATES {
-	    "sum",     "count",    "avg",        "min",      "max",        "stddev",  "median",
-	    "mode",    "variance", "string_agg", "list",     "first",      "last",    "bool_and",
-	    "bool_or", "arg_max",  "arg_min",    "quantile", "count_star", "product", "histogram"};
+	static const case_insensitive_set_t AGGREGATES {"sum",
+	                                                "count",
+	                                                "avg",
+	                                                "min",
+	                                                "max",
+	                                                "stddev",
+	                                                "stddev_pop",
+	                                                "stddev_samp",
+	                                                "median",
+	                                                "mode", //
+	                                                "variance",
+	                                                "var_pop",
+	                                                "var_samp",
+	                                                "string_agg",
+	                                                "list",
+	                                                "first",
+	                                                "last",
+	                                                "bool_and",
+	                                                "bool_or", //
+	                                                "arg_max",
+	                                                "arg_min",
+	                                                "quantile",
+	                                                "quantile_cont",
+	                                                "quantile_disc",
+	                                                "approx_quantile", //
+	                                                "approx_count_distinct",
+	                                                "count_star",
+	                                                "product",
+	                                                "histogram"};
 	return AGGREGATES.find(name) != AGGREGATES.end();
 }
 

@@ -1,0 +1,36 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "quoted_field",
+  "datasets": [
+    {
+      "name": "o",
+      "source": "memory.main.quoted",
+      "fields": [
+        {
+          "name": "id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "region",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "UPPER(\"region\")"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

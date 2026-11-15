@@ -22,12 +22,14 @@ src/
   model/       parser.cpp     JSON -> Model, expressions parsed to trees here
                validate.cpp   structural checks over the parsed model
                graph.cpp      relationship cardinality
-               catalog.cpp    source name splitting and catalog lookup
+               catalog.cpp    source name splitting, catalog lookup, quoted-column check
+               dialect.cpp    OSSIE_SQL_2026 -> DuckDB trees; refuses what the language omits
   compile/     compile.cpp    resolve -> grain -> plan joins -> rewrite -> emit
   functions/   load.cpp       ossie_load, plus OssieState
                describe.cpp   the four description table functions
                compile.cpp    ossie_compile (scalar)
                query.cpp      ossie_query (bind_replace)
+               dates.cpp      ossie_date_trunc / ossie_dateadd, DATE in, DATE out
 ```
 
 ## Load time

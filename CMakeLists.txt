@@ -33,6 +33,7 @@ set(EXTENSION_SOURCES
     src/functions/compile.cpp
     src/functions/describe.cpp
     src/functions/query.cpp
+    src/functions/dates.cpp
     src/population/population.cpp
     src/population/population_error.cpp
     src/population/ontology.cpp

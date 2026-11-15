@@ -57,11 +57,14 @@ catalog，compile 的 `sql_replayable=false` 不能被忽略。Prepare 成功只
 | NVL、IFF、NVL2、ZEROIFNULL、NULLIFZERO | 降为 COALESCE/CASE/NULLIF 等树 | 不覆盖任意 coercion 组合 |
 | CHARINDEX、STARTSWITH、ENDSWITH | 转为 DuckDB 对应函数 | |
 | CONCAT、GREATEST、LEAST | 显式传播任一参数 NULL，不采用 DuckDB 默认跳过 NULL 的行为 | 这是项目对固定语言的解释，见 limitations |
-| DATE_TRUNC、DATEADD、DATEDIFF、单参 TO_DATE、CAST | 明确日期部分/类型 lowering；DATE_TRUNC/DATEADD 的 DATE 输入得到 DuckDB TIMESTAMP | 结果类型偏离记录于 limitations |
-| REGEXP_LIKE、格式参数 TO_DATE/TO_TIMESTAMP、非法参数数或日期部分 | 语义未定义/实验性或参数不匹配，加载时拒绝 | 可以提供定义明确的 ANSI_SQL variant，不能猜引擎语义 |
-| 30天与1个月同时投影 | 固定 DuckDB 的 common_subexpressions 优化错误可能合并不同 interval | limitations 记录禁用该优化器的办法；不宣称本项目修复了引擎 |
-| 未识别普通函数 | 通用core可能保留到DuckDB binder，不属于本页验证子集；严格人口profile独立拒绝 | 不把“未拒绝加载”称已支持，不扩大完整语言符合性 |
+| DATE_TRUNC、DATEADD、DATEDIFF、单参 TO_DATE、CAST | 明确日期部分/类型 lowering；year..day 部分的 DATE_TRUNC/DATEADD 降为扩展自带的 `ossie_date_trunc`/`ossie_dateadd`，DATE 输入得到 DATE，TIMESTAMP 得到 TIMESTAMP | hour/minute/second 部分走 DuckDB `date_add`，DATE 升为 TIMESTAMP；编译 SQL 引用这两个扩展函数，只能在已加载扩展处运行 |
+| REGEXP_LIKE、格式参数 TO_DATE/TO_TIMESTAMP、TO_CHAR、非法参数数或日期部分 | 语义未定义/实验性或参数不匹配，加载时拒绝 | 可以提供定义明确的 ANSI_SQL variant，不能猜引擎语义 |
+| REGEXP_COUNT、TRUNCATE、APPROX_PERCENTILE、EXTRACT、POSITION、PERCENTILE_CONT/DISC | 降为 DuckDB 对应函数（`len(regexp_extract_all)`、`trunc`、`approx_quantile`、`date_part`、`strpos`、`quantile_cont/disc`） | |
+| 30天与1个月同时投影 | 固定 DuckDB 的 common_subexpressions 优化错误可能合并不同 interval，只影响 ANSI_SQL；OSSIE_SQL_2026 的 DATEADD 以字符串传日期部分，不受影响 | limitations 记录禁用该优化器的办法；不宣称本项目修复了引擎 |
+| 语言外函数、INTERVAL 字面量、语言外窗口函数 | 通用 core 加载时拒绝，过滤器同样拒绝；严格人口 profile 独立拒绝 | 拒绝信息建议改写为 ANSI_SQL variant；白名单是规范列出的函数，不扩大完整语言符合性 |
 
-通用 core 带引号标识符仍随 DuckDB 大小写不敏感；与规范 exact identifier 有
-偏离。固定11个方言名称严格校验；两个可执行 variant 中 OSSIE_SQL_2026 优先。
+通用 core 带引号标识符：来源表或视图在 catalog 中时，加载时按规范 exact identifier
+核对列名，仅大小写不同的引号引用拒绝并给出真实拼写；来源不在 catalog 时不核对，
+查询时随 DuckDB 大小写不敏感。模型级名称（数据集、字段、指标）仍大小写不敏感。
+固定11个方言名称严格校验；两个可执行 variant 中 OSSIE_SQL_2026 优先。
 其他合法方言仅保留描述，单独出现不支持执行。

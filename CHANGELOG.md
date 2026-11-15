@@ -62,11 +62,27 @@ breaking, that 0.1.1 predates.
   requested, which the metric cannot express: grouped by date and item category, upstream's
   `cumulative_sales` ran across categories, and 10,047 of 10,049 rows differed from a per-category
   running total. 0.1.1 passed such metrics through; they now fail when queried, naming the metric
+- **`DATE_TRUNC` and `DATEADD` keep a `DATE` a `DATE`.** DuckDB's `date_trunc` and `date_add`
+  return a `TIMESTAMP` at midnight for a `DATE` input; the language keeps the input type. Year,
+  quarter, month, week and day parts now lower to the extension's own `ossie_date_trunc` and
+  `ossie_dateadd`, so a daily field groups and compares as a `DATE`. The compiled SQL names those
+  functions, so it runs only where the extension is loaded
+- **A function outside OSSIE_SQL_2026 is refused at load, not passed to DuckDB.** An
+  `OSSIE_SQL_2026` field, metric or request filter that calls a function the language does not
+  list (`MD5`, `STRING_AGG`, an `INTERVAL` literal, `TO_CHAR`) fails at load naming it, and
+  suggests an `ANSI_SQL` variant. Previously it reached DuckDB's binder and meant whatever DuckDB
+  said. `REGEXP_COUNT`, `TRUNCATE`, `APPROX_PERCENTILE`, `PERCENTILE_CONT`/`DISC`, `EXTRACT` and
+  `POSITION` gained lowerings so that the listed functions all load
+- **Quoted column names match exactly.** When a dataset's source is a table or view in the catalog,
+  a quoted column reference in a field or metric that matches a column only by ignoring case is
+  refused at load with the column's real spelling, as the language requires. A source that is not
+  present at load is not checked
 
 ### Known issues
 - A DuckDB optimizer defect, present in 1.5.5 and 1.5.6 without this extension, treats
-  `INTERVAL 30 DAY` and `INTERVAL 1 MONTH` as the same expression, so a query asking for both gets
-  one answer twice. See docs/limitations.md
+  `INTERVAL 30 DAY` and `INTERVAL 1 MONTH` as the same expression, so an `ANSI_SQL` query asking
+  for both gets one answer twice. `OSSIE_SQL_2026`'s `DATEADD` no longer hits it. See
+  docs/limitations.md
 
 ## [0.1.1] - 2026-09-07
 

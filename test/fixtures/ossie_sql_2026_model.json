@@ -20,12 +20,17 @@
         {"name": "created_month", "datatype": "Date", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "DATE_TRUNC(month, created)"}]}},
         {"name": "due", "datatype": "Date", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "DATEADD(day, 30, created)"}]}},
         {"name": "month_later", "datatype": "Date", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "DATEADD(month, 1, created)"}]}},
+        {"name": "due_hour", "datatype": "DateTime", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "DATEADD(hour, 1, created)"}]}},
         {"name": "days_to_ship", "datatype": "Integer", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "DATEDIFF(day, created, shipped)"}]}},
         {"name": "label", "datatype": "String", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "CONCAT(region, '-', code)"}]}},
         {"name": "larger", "datatype": "Decimal", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "GREATEST(amount, discount)"}]}},
         {"name": "smaller", "datatype": "Decimal", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "LEAST(amount, discount)"}]}},
         {"name": "launch", "datatype": "Date", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "TO_DATE('2024-01-15')"}]}},
         {"name": "launch_ts", "datatype": "DateTime", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "CAST('2024-01-15 10:30:00' AS TIMESTAMP_NTZ)"}]}},
+        {"name": "digit_count", "datatype": "Integer", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "REGEXP_COUNT(code, '[0-9]')"}]}},
+        {"name": "third", "datatype": "Decimal", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "TRUNCATE(amount / 3, 1)"}]}},
+        {"name": "created_year", "datatype": "Integer", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "EXTRACT(YEAR FROM created)"}]}},
+        {"name": "dash_position_std", "datatype": "Integer", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "POSITION('-' IN code)"}]}},
         {"name": "preferred", "datatype": "String", "expression": {"dialects": [{"dialect": "ANSI_SQL", "expression": "'ansi'"}, {"dialect": "OSSIE_SQL_2026", "expression": "'ossie_sql_2026'"}]}}
       ]
     }
@@ -33,6 +38,8 @@
   "metrics": [
     {"name": "order_count", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "COUNT(o.id)"}]}},
     {"name": "discount_total_ossie", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "SUM(ZEROIFNULL(o.discount))"}]}},
+    {"name": "amount_median", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY o.amount)"}]}},
+    {"name": "amount_median_approx", "expression": {"dialects": [{"dialect": "OSSIE_SQL_2026", "expression": "APPROX_PERCENTILE(o.amount, 0.5)"}]}},
     {"name": "discount_total_ansi", "expression": {"dialects": [{"dialect": "ANSI_SQL", "expression": "SUM(COALESCE(o.discount, 0))"}]}}
   ]
 }
