@@ -34,6 +34,7 @@ set(EXTENSION_SOURCES
     src/functions/describe.cpp
     src/functions/query.cpp
     src/population/population.cpp
+    src/population/population_error.cpp
     src/population/relation_program.cpp
     src/population/fact_program.cpp
     src/population/history_program.cpp)
