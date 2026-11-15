@@ -35,7 +35,8 @@ struct FactAggregate {
 };
 struct FactMetric {
 	string name, unit;
-	unique_ptr<ParsedExpression> expression; // Only references already reduced components.
+	//! Metric references expanded away: SUM/COUNT over dataset.field names, combined with +/-.
+	unique_ptr<ParsedExpression> expression;
 };
 struct FactWindow {
 	string name;
@@ -60,6 +61,9 @@ struct FactCohort {
 FactProgram BindFactProgram(const FactProgramInput &input);
 // Every source TableRef is supplied explicitly. The loader must supply frozen
 // AST dependencies from one validated batch, rather than a raw fact-to-fact join.
+// Users and the common count are compiled by the core multi-grain compiler: each fact is reduced
+// by User on its own, and the reductions are INNER joined on the shared User key. Windows are a
+// row-level projection the core does not express, so they stay here.
 // Counts the row-presence common User domain without evaluating monetary metrics.
 unique_ptr<SelectStatement> CompileFactCommonCount(const FactProgram &program, vector<unique_ptr<TableRef>> sources);
 unique_ptr<SelectStatement> CompileFactUsers(const FactProgram &program, const vector<string> &metrics,

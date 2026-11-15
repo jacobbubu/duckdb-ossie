@@ -1,4 +1,5 @@
 #include "ossie/fact_program.hpp"
+#include "ossie/compile.hpp"
 #include "duckdb/common/exception.hpp"
 #include "duckdb/common/case_insensitive_map.hpp"
 #include "duckdb/common/string_util.hpp"
@@ -13,7 +14,6 @@
 #include "duckdb/parser/expression/window_expression.hpp"
 #include "duckdb/parser/query_node/select_node.hpp"
 #include "duckdb/parser/tableref/subqueryref.hpp"
-#include "duckdb/parser/tableref/joinref.hpp"
 
 namespace duckdb {
 namespace ossie {
@@ -73,7 +73,7 @@ unique_ptr<ParsedExpression> Expression(const string &sql) {
 	Nodes(*exprs[0]);
 	return std::move(exprs[0]);
 }
-const FactField &Field(const FactSource &s, const string &name) {
+const FactField &MappedField(const FactSource &s, const string &name) {
 	for (auto &f : s.fields) {
 		if (StringUtil::CIEquals(f.name, name)) {
 			return f;
@@ -94,7 +94,7 @@ pair<idx_t, const FactField *> SourceField(const FactProgram &p, const ParsedExp
 	}
 	for (idx_t i = 0; i < p.sources.size(); i++) {
 		if (StringUtil::CIEquals(p.sources[i].dataset, names[0])) {
-			return {i, &Field(p.sources[i], names[1])};
+			return {i, &MappedField(p.sources[i], names[1])};
 		}
 	}
 	Reject("undeclared source dataset");
@@ -230,7 +230,9 @@ struct Binder {
 			program.aggregates.push_back({field.first, field.second->name, name, unit, std::move(aggregate)});
 		}
 		budget.Charge();
-		return make_uniq<ColumnRefExpression>("c" + to_string(index), "f" + to_string(field.first));
+		vector<unique_ptr<ParsedExpression>> leaf;
+		leaf.push_back(make_uniq<ColumnRefExpression>(field.second->name, source.dataset));
+		return make_uniq<FunctionExpression>("system", "main", name, std::move(leaf));
 	}
 	void Window(const FactDefinition &definition) {
 		auto e = Expression(definition.sql);
@@ -372,7 +374,7 @@ string Cohort(const FactProgram &p, const FactCohort &c, idx_t depth, idx_t &nod
 			Reject("comparison constant outside measure type");
 		}
 		cmp.right = make_uniq<ConstantExpression>(std::move(represented));
-		cmp.left = make_uniq<ColumnRefExpression>(metric.name, "combined");
+		cmp.left = make_uniq<ColumnRefExpression>(metric.name);
 		return "(" + e->ToString() + ") IS TRUE";
 	}
 	if (!c.predicate.empty() || c.children.size() != 2 ||
@@ -395,6 +397,55 @@ vector<string> SelectNames(const vector<string> &names) {
 		}
 	}
 	return names;
+}
+//! The program as a core model: one dataset per fact whose fields map to physical columns, and the
+//! expanded metrics. Sources are never bound by name; the caller's frozen ASTs replace them.
+Model CoreModel(const FactProgram &p) {
+	Model model;
+	model.name = "fact_program";
+	for (auto &s : p.sources) {
+		Dataset dataset;
+		dataset.name = s.dataset;
+		dataset.source_raw = s.dataset;
+		dataset.source_bound = s.dataset;
+		for (auto &f : s.fields) {
+			Field field;
+			field.name = f.name;
+			field.expression.sql = f.physical_column;
+			field.expression.tree = make_uniq<ColumnRefExpression>(f.physical_column);
+			field.is_computed = false;
+			dataset.AddField(std::move(field));
+		}
+		model.dataset_index[dataset.name] = model.datasets.size();
+		model.datasets.push_back(std::move(dataset));
+	}
+	for (auto &m : p.metrics) {
+		Metric metric;
+		metric.name = m.name;
+		metric.expression.sql = m.expression->ToString();
+		metric.expression.tree = m.expression->Copy();
+		model.metric_index[metric.name] = model.metrics.size();
+		model.metrics.push_back(std::move(metric));
+	}
+	return model;
+}
+//! user_id and the metrics, each fact reduced on its own and the reductions INNER joined on the
+//! User key, so the row set is the common User domain and no fact row is ever repeated.
+unique_ptr<SelectStatement> CoreUsers(const FactProgram &p, const vector<string> &metrics,
+                                      const vector<string> &filters, vector<unique_ptr<TableRef>> &sources) {
+	auto model = CoreModel(p);
+	CompileOptions options;
+	SharedKey user;
+	user.name = "user_id";
+	for (idx_t i = 0; i < p.sources.size(); i++) {
+		auto &s = p.sources[i];
+		user.fields[s.dataset] = s.user_field;
+		options.population_sources[s.dataset] = sources[i].get();
+		options.required_grains.push_back(s.dataset);
+	}
+	options.shared_keys.push_back(std::move(user));
+	options.grain_join = JoinType::INNER;
+	return Compile(model, metrics, {"user_id"}, filters, options);
 }
 } // namespace
 
@@ -457,18 +508,19 @@ FactProgram BindFactProgram(const FactProgramInput &input) {
 				Reject("duplicate declared field");
 			}
 		}
-		if (Field(s, s.user_field).type != LogicalType::VARCHAR || Field(s, s.date_field).type != LogicalType::DATE ||
-		    Field(s, s.amount_field).type != LogicalType::DECIMAL(18, 2) ||
-		    (!s.product_field.empty() && Field(s, s.product_field).type != LogicalType::VARCHAR)) {
+		if (MappedField(s, s.user_field).type != LogicalType::VARCHAR ||
+		    MappedField(s, s.date_field).type != LogicalType::DATE ||
+		    MappedField(s, s.amount_field).type != LogicalType::DECIMAL(18, 2) ||
+		    (!s.product_field.empty() && MappedField(s, s.product_field).type != LogicalType::VARCHAR)) {
 			Reject("actual role types must be VARCHAR/DATE[/VARCHAR]/DECIMAL18,2");
 		}
 		case_insensitive_set_t roles;
 		for (auto &n : identity) {
-			if (!roles.insert(Field(s, n).physical_column).second) {
+			if (!roles.insert(MappedField(s, n).physical_column).second) {
 				Reject("identity roles cannot share physical column");
 			}
 		}
-		if (!roles.insert(Field(s, s.amount_field).physical_column).second) {
+		if (!roles.insert(MappedField(s, s.amount_field).physical_column).second) {
 			Reject("amount cannot alias identity column");
 		}
 	}
@@ -518,25 +570,12 @@ unique_ptr<SelectStatement> CompileFactCommonCount(const FactProgram &p, vector<
 	if (sources.size() != 2 || !sources[0] || !sources[1]) {
 		Reject("two source ASTs required for common count");
 	}
-	auto statement = SQL("SELECT COUNT(*) AS common_user_count FROM (SELECT 1) AS f0 INNER JOIN (SELECT 1) AS f1 ON "
-	                     "f0.user_id=f1.user_id");
+	auto statement = SQL("SELECT COUNT(*) AS common_user_count FROM placeholder AS combined");
 	auto &count = statement->node->Cast<SelectNode>().select_list[0]->Cast<FunctionExpression>();
 	count.catalog = "system";
 	count.schema = "main";
-	auto &join = statement->node->Cast<SelectNode>().from_table->Cast<JoinRef>();
-	for (idx_t i = 0; i < 2; i++) {
-		auto &s = p.sources[i];
-		auto user = Q(s.dataset) + "." + Q(Field(s, s.user_field).physical_column);
-		auto reduction = SQL("SELECT " + user + " AS user_id FROM placeholder GROUP BY " + user);
-		sources[i]->alias = s.dataset;
-		reduction->node->Cast<SelectNode>().from_table = std::move(sources[i]);
-		auto table = make_uniq<SubqueryRef>(std::move(reduction), "f" + to_string(i));
-		if (i == 0) {
-			join.left = std::move(table);
-		} else {
-			join.right = std::move(table);
-		}
-	}
+	statement->node->Cast<SelectNode>().from_table =
+	    make_uniq<SubqueryRef>(CoreUsers(p, {p.metrics[0].name}, {}, sources), "combined");
 	return statement;
 }
 
@@ -546,46 +585,21 @@ unique_ptr<SelectStatement> CompileFactUsers(const FactProgram &p, const vector<
 	if (domain != "common" || sources.size() != 2 || !sources[0] || !sources[1]) {
 		Reject("explicit common domain and two source ASTs required");
 	}
-	string sql = "SELECT ";
-	for (idx_t i = 0; i < p.metrics.size(); i++) {
-		if (i) {
-			sql += ",";
-		}
-		sql += p.metrics[i].expression->ToString() + " AS " + Q(p.metrics[i].name);
-	}
-	sql += ", f0.user_id AS user_id FROM ";
-	auto statement = SQL("SELECT * FROM (SELECT 1) AS f0 INNER JOIN (SELECT 1) AS f1 ON f0.user_id=f1.user_id");
-	auto &join = statement->node->Cast<SelectNode>().from_table->Cast<JoinRef>();
-	for (idx_t i = 0; i < 2; i++) {
-		auto &s = p.sources[i];
-		string reduced = "SELECT " + Q(s.dataset) + "." + Q(Field(s, s.user_field).physical_column) + " AS user_id";
-		for (idx_t a = 0; a < p.aggregates.size(); a++) {
-			if (p.aggregates[a].source == i) {
-				reduced += "," + p.aggregates[a].expression->ToString() + " AS c" + to_string(a);
-			}
-		}
-		reduced += " FROM placeholder GROUP BY " + Q(s.dataset) + "." + Q(Field(s, s.user_field).physical_column);
-		auto reduction = SQL(reduced);
-		sources[i]->alias = s.dataset;
-		reduction->node->Cast<SelectNode>().from_table = std::move(sources[i]);
-		auto table = make_uniq<SubqueryRef>(std::move(reduction), "f" + to_string(i));
-		if (i == 0) {
-			join.left = std::move(table);
-		} else {
-			join.right = std::move(table);
-		}
-	}
-	auto combined = SQL(sql + "placeholder");
-	combined->node->Cast<SelectNode>().from_table = std::move(statement->node->Cast<SelectNode>().from_table);
-	idx_t nodes = 0;
-	auto where = Cohort(p, cohort, 1, nodes);
+	vector<string> metrics;
 	string projection = "SELECT combined.user_id";
 	for (auto &name : names) {
-		projection += ",combined." + Q(FindMetric(p, name).name);
+		metrics.push_back(FindMetric(p, name).name);
+		projection += ",combined." + Q(metrics.back());
 	}
-	auto result =
-	    SQL(projection + " FROM placeholder AS combined WHERE " + where + " ORDER BY combined.user_id ASC NULLS LAST");
-	result->node->Cast<SelectNode>().from_table = make_uniq<SubqueryRef>(std::move(combined), "combined");
+	idx_t nodes = 0;
+	auto where = Cohort(p, cohort, 1, nodes);
+	vector<string> filters;
+	if (where != "TRUE") {
+		filters.push_back(where);
+	}
+	auto result = SQL(projection + " FROM placeholder AS combined ORDER BY combined.user_id ASC NULLS LAST");
+	result->node->Cast<SelectNode>().from_table =
+	    make_uniq<SubqueryRef>(CoreUsers(p, metrics, filters, sources), "combined");
 	return result;
 }
 
@@ -620,9 +634,9 @@ unique_ptr<SelectStatement> CompileFactWindows(const FactProgram &p, const vecto
 	}
 	auto i = source_index.GetIndex();
 	auto &s = p.sources[i];
-	auto inner =
-	    SQL("SELECT " + Q(s.dataset) + "." + Q(Field(s, s.user_field).physical_column) + " AS user_id," + Q(s.dataset) +
-	        "." + Q(Field(s, s.date_field).physical_column) + " AS ds" + projection + " FROM placeholder");
+	auto inner = SQL("SELECT " + Q(s.dataset) + "." + Q(MappedField(s, s.user_field).physical_column) + " AS user_id," +
+	                 Q(s.dataset) + "." + Q(MappedField(s, s.date_field).physical_column) + " AS ds" + projection +
+	                 " FROM placeholder");
 	// DuckDB 1.5.6 WindowExpression::ToString omits catalog. Keep the typed
 	// tree rather than reparsing rendered windows and losing system binding.
 	for (idx_t w = 0; w < window_trees.size(); w++) {

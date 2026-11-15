@@ -14,6 +14,8 @@ SELECT * FROM ossie_population_json(
 
 共同域按两张捕获中都存在User行定义，与金额是否NULL无关。例中A收入375、成本85、差额290；B为80/30/50；C两边金额全NULL但仍在共同域；单侧D/E不在共同域。金额SUM全NULL保持NULL。COUNT(User)为来源行数，COUNT(amount)为非NULL金额值数，C分别是1/0。
 
+users查询与共同域人数由核心多粒度编译器生成：两个dataset各自按映射的User字段归约为一个粒度子查询，再以共享键 `user_id` INNER join（`IS NOT DISTINCT FROM`；捕获已拒绝NULL User，故与等值join等价），指标在外层由各粒度聚合组合，人群条件作为外层筛选作用于已归约的指标。计划中的projection_sql/common_count_sql即为该核心输出。windows是行级投影而非粒度聚合，核心编译器不表达，仍由fact模块本地生成。
+
 返回一行 `result_json`，内层schema为 `ossie-fact-users-result-v1`。columns保留规范名、实际bound_type、encoding和单位；rows第一列为完整原始User，其后按请求顺序返回指标。金额/整数精确字符串编码，NULL为null。`common_user_count`是cohort之前共同User人数，`selected_user_count`为筛选后的完整User人数；两者及row_count都是整数文本。空筛选仍返回实际共同域人数，不能把结果为空解释为分母为零。没有比例指标。
 
 人群条件只允许一个已声明regular指标与一个精确数字的比较：=、<>、>、>=、<、<=。COUNT条件常量必须是整数，金额常量最多2位小数，不能使用浮点、NULL、其他列、函数、任意SQL或窗口指标。允许使用没有投影的regular指标。选择名大小写不敏感，返回声明中的规范拼写，大小写重复选择拒绝。

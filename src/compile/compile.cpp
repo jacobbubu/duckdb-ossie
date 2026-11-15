@@ -128,21 +128,50 @@ vector<string> DimensionNames(const Model &model) {
 	return names;
 }
 
-unique_ptr<TableRef> BindTable(const Dataset &dataset) {
+unique_ptr<TableRef> BindTable(const Dataset &dataset, const CompileOptions &options) {
+	auto frozen = options.population_sources.find(dataset.name);
+	if (frozen != options.population_sources.end()) {
+		auto table_ref = frozen->second->Copy();
+		table_ref->alias = AliasFor(dataset);
+		return table_ref;
+	}
 	auto table_ref = make_uniq<BaseTableRef>();
 	SplitSource(dataset.source_bound, table_ref->catalog_name, table_ref->schema_name, table_ref->table_name);
 	table_ref->alias = AliasFor(dataset);
 	return std::move(table_ref);
 }
 
-//! A dimension request e.g. "item.i_brand".
+//! A dimension request: "item.i_brand", or the bare name of a shared key.
 struct Dimension {
-	const Dataset *dataset;
+	//! nullptr for a shared key, which names a field on every grain rather than one dataset
+	const Dataset *dataset = nullptr;
+	const SharedKey *shared_key = nullptr;
 	unique_ptr<ParsedExpression> expr;
 	string alias;
 };
 
-Dimension ResolveDimension(const Model &model, const string &request) {
+//! The dimension's expression over `grain`: a shared key resolves to that grain's own field.
+unique_ptr<ParsedExpression> DimensionAt(const Dimension &dimension, const Dataset &grain) {
+	if (!dimension.shared_key) {
+		return dimension.expr->Copy();
+	}
+	auto entry = dimension.shared_key->fields.find(grain.name);
+	if (entry == dimension.shared_key->fields.end()) {
+		throw InvalidInputException("ossie: shared key \"%s\" declares no field on dataset \"%s\"",
+		                            dimension.shared_key->name, grain.name);
+	}
+	auto field = grain.FindField(entry->second);
+	if (!field) {
+		throw InvalidInputException(
+		    "ossie: shared key \"%s\" names field \"%s\", which dataset \"%s\" does not declare",
+		    dimension.shared_key->name, entry->second, grain.name);
+	}
+	auto expr = field->expression.tree->Copy();
+	QualifyColumns(expr, AliasFor(grain));
+	return expr;
+}
+
+Dimension ResolveDimension(const Model &model, const string &request, const CompileOptions &options) {
 	vector<unique_ptr<ParsedExpression>> parsed;
 	try {
 		parsed = Parser::ParseExpressionList(request);
@@ -153,6 +182,16 @@ Dimension ResolveDimension(const Model &model, const string &request) {
 		throw InvalidInputException("ossie: dimension \"%s\" must be a dataset.field name", request);
 	}
 	auto &colref = parsed[0]->Cast<ColumnRefExpression>();
+	if (colref.column_names.size() == 1) {
+		for (auto &key : options.shared_keys) {
+			if (StringUtil::CIEquals(key.name, colref.column_names[0])) {
+				Dimension result;
+				result.shared_key = &key;
+				result.alias = key.name;
+				return result;
+			}
+		}
+	}
 	if (colref.column_names.size() != 2) {
 		throw InvalidInputException("ossie: dimension \"%s\" must be qualified as dataset.field", request);
 	}
@@ -546,7 +585,7 @@ unique_ptr<TableRef> JoinRequired(const Model &model, const Dataset &root, const
 		// where the foreign key is NULL; left_joins keeps them.
 		join->type = options.left_joins ? JoinType::LEFT : JoinType::INNER;
 		join->left = std::move(from);
-		join->right = BindTable(*planned.dataset);
+		join->right = BindTable(*planned.dataset, options);
 		join->condition = JoinCondition(*planned.relationship);
 		from = std::move(join);
 	}
@@ -653,7 +692,7 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
                                               vector<unique_ptr<ParsedExpression>> metric_expressions,
                                               const vector<string> &dimensions, const vector<string> &filters,
                                               const CompileOptions &options) {
-	if (options.population_source || options.population_predicate) {
+	if (options.population_predicate) {
 		throw InvalidInputException("ossie: a population request cannot aggregate at more than one grain");
 	}
 	vector<GrainQuery> grain_queries;
@@ -672,9 +711,11 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 
 	vector<Dimension> resolved_dimensions;
 	for (auto &request : dimensions) {
-		auto dimension = ResolveDimension(model, request);
-		for (auto &query : grain_queries) {
-			RequireReachable(query, dimension.dataset->name, "dimension", request, grains);
+		auto dimension = ResolveDimension(model, request, options);
+		if (dimension.dataset) {
+			for (auto &query : grain_queries) {
+				RequireReachable(query, dimension.dataset->name, "dimension", request, grains);
+			}
 		}
 		resolved_dimensions.push_back(std::move(dimension));
 	}
@@ -705,7 +746,7 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 	for (auto &query : grain_queries) {
 		auto select = make_uniq<SelectNode>();
 		for (idx_t i = 0; i < resolved_dimensions.size(); i++) {
-			auto expr = resolved_dimensions[i].expr->Copy();
+			auto expr = DimensionAt(resolved_dimensions[i], *query.dataset);
 			expr->SetAlias("dim_" + to_string(i));
 			select->select_list.push_back(std::move(expr));
 		}
@@ -716,7 +757,8 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 			select->select_list.push_back(std::move(expr));
 		}
 		select->where_clause = std::move(query.where_clause);
-		select->from_table = JoinRequired(model, *query.dataset, query.required, BindTable(*query.dataset), options);
+		select->from_table =
+		    JoinRequired(model, *query.dataset, query.required, BindTable(*query.dataset, options), options);
 		select->aggregate_handling = AggregateHandling::STANDARD_HANDLING;
 		auto statement = make_uniq<SelectStatement>();
 		statement->node = std::move(select);
@@ -726,7 +768,7 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 			from = std::move(subquery);
 		} else {
 			auto join = make_uniq<JoinRef>(resolved_dimensions.empty() ? JoinRefType::CROSS : JoinRefType::REGULAR);
-			join->type = JoinType::OUTER;
+			join->type = options.grain_join;
 			join->left = std::move(from);
 			for (idx_t i = 0; i < resolved_dimensions.size(); i++) {
 				vector<unique_ptr<ParsedExpression>> seen;
@@ -817,6 +859,12 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 		expr->SetAlias(metric->name);
 		metric_expressions.push_back(std::move(expr));
 	}
+	for (auto &grain : options.required_grains) {
+		if (!model.FindDataset(grain)) {
+			throw InvalidInputException("ossie: required grain \"%s\" is not a declared dataset", grain);
+		}
+		grains.insert(grain);
+	}
 
 	// One query has one set of rows to group, so when aggregates sit at several grains each grain gets
 	// its own subquery.
@@ -853,10 +901,13 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 		AddRequired(required, required_seen, name, root.name);
 	}
 	for (auto &request : dimensions) {
-		auto dimension = ResolveDimension(model, request);
-		AddRequired(required, required_seen, dimension.dataset->name, root.name);
-		dimension.expr->SetAlias(dimension.alias);
-		select->select_list.push_back(std::move(dimension.expr));
+		auto dimension = ResolveDimension(model, request, options);
+		if (dimension.dataset) {
+			AddRequired(required, required_seen, dimension.dataset->name, root.name);
+		}
+		auto expr = DimensionAt(dimension, root);
+		expr->SetAlias(dimension.alias);
+		select->select_list.push_back(std::move(expr));
 	}
 	GroupByAll(*select, select->select_list.size());
 
@@ -877,8 +928,7 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 		AndInto(target, std::move(filter.expr));
 	}
 
-	unique_ptr<TableRef> from = options.population_source ? options.population_source->Copy() : BindTable(root);
-	select->from_table = JoinRequired(model, root, required, std::move(from), options);
+	select->from_table = JoinRequired(model, root, required, BindTable(root, options), options);
 	select->aggregate_handling = AggregateHandling::STANDARD_HANDLING;
 
 	auto statement = make_uniq<SelectStatement>();

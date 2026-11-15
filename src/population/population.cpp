@@ -3186,7 +3186,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	for (auto &metric : bundle->model.metrics) {
 		auto source_ref = SnapshotTable(*bundle);
 		CompileOptions options;
-		options.population_source = source_ref.get();
+		options.population_sources[bundle->model.datasets[0].name] = source_ref.get();
 		auto statement = Compile(bundle->model, {metric.name}, {}, {}, options);
 		for (auto &expression : statement->node->Cast<SelectNode>().select_list) {
 			EngineFunctions(*expression);
@@ -3316,7 +3316,7 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 		CompileOptions options;
 		options.population_predicate = predicate.get();
 		auto source = SnapshotTable(bundle);
-		options.population_source = source.get();
+		options.population_sources[bundle.model.datasets[0].name] = source.get();
 		vector<string> translated;
 		for (auto &dimension : dimensions) {
 			if (bundle.profile == OBSERVATION_PROFILE) {

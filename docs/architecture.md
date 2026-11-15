@@ -62,6 +62,11 @@ every aggregate in a query agrees on one grain, that grain becomes the root of t
 they do not, each grain gets its own grouped subquery, rooted at that grain, and the subqueries are
 joined on the dimension values; the metric expressions then run over the hoisted aggregate columns.
 An aggregate with no column reference, like `COUNT(*)`, inherits the grain when exactly one exists.
+`CompileOptions` lets a caller extend this path without a second compiler: `shared_keys` declare a
+bare dimension name that resolves to a different field on each grain, `required_grains` force a
+grain subquery for a dataset that contributes only row presence, `grain_join` picks INNER over the
+default OUTER join, and `population_sources` substitute a frozen `TableRef` for a dataset's declared
+source. The population fact profile builds its per-User reductions and common-domain count this way.
 
 **Plan joins.** BFS outward from the root over the relationship graph. Reaching a required dataset
 by a second, non-tree edge means two routes exist that could produce different numbers, so it
