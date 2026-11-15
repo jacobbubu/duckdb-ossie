@@ -1380,6 +1380,27 @@ CapturedTable CaptureTable(ClientContext &context, Connection &source, const Dat
 	return capture;
 }
 
+unique_ptr<ColumnDataCollection> Collect(ClientContext &context, const CapturedTable &capture) {
+	auto collection = make_uniq<ColumnDataCollection>(context, capture.types);
+	DataChunk chunk;
+	chunk.Initialize(Allocator::Get(context), capture.types);
+	for (idx_t r = 0; r < capture.rows.size(); r++) {
+		if (context.IsInterrupted()) {
+			throw InterruptException();
+		}
+		idx_t slot = r % STANDARD_VECTOR_SIZE;
+		for (idx_t c = 0; c < capture.types.size(); c++) {
+			chunk.SetValue(c, slot, capture.rows[r][c]);
+		}
+		chunk.SetCardinality(slot + 1);
+		if (slot + 1 == STANDARD_VECTOR_SIZE || r + 1 == capture.rows.size()) {
+			collection->Append(chunk);
+			chunk.Reset();
+		}
+	}
+	return collection;
+}
+
 void ExpandOriginal(const Model &model, unique_ptr<ParsedExpression> &expression) {
 	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
 		auto names = expression->Cast<ColumnRefExpression>().column_names;
@@ -2410,23 +2431,7 @@ void FreezeFacts(ClientContext &context, Bundle &b, Connection &engine) {
 		child->model.datasets[0].source_bound = "memory.main.ossie_snapshot";
 		child->physical_names = capture.names;
 		child->rows = capture.rows.size();
-		child->collection = make_uniq<ColumnDataCollection>(context, capture.types);
-		DataChunk chunk;
-		chunk.Initialize(Allocator::Get(context), capture.types);
-		for (idx_t r = 0; r < capture.rows.size(); r++) {
-			if (context.IsInterrupted()) {
-				throw InterruptException();
-			}
-			idx_t slot = r % STANDARD_VECTOR_SIZE;
-			for (idx_t c = 0; c < capture.types.size(); c++) {
-				chunk.SetValue(c, slot, capture.rows[r][c]);
-			}
-			chunk.SetCardinality(slot + 1);
-			if (slot + 1 == STANDARD_VECTOR_SIZE || r + 1 == capture.rows.size()) {
-				child->collection->Append(chunk);
-				chunk.Reset();
-			}
-		}
+		child->collection = Collect(context, capture);
 		child->content_hash = Hash(engine, capture.canonical);
 		b.rows += child->rows;
 		b.inputs.push_back({fact.dataset, dataset.source_bound, child->content_hash, child->rows});
@@ -2801,23 +2806,7 @@ void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 		child->model.datasets[0].source_bound = "memory.main.ossie_snapshot";
 		child->physical_names = capture.names;
 		child->rows = capture.rows.size();
-		child->collection = make_uniq<ColumnDataCollection>(context, capture.types);
-		DataChunk chunk;
-		chunk.Initialize(Allocator::Get(context), capture.types);
-		for (idx_t r = 0; r < capture.rows.size(); r++) {
-			if (context.IsInterrupted()) {
-				throw InterruptException();
-			}
-			idx_t slot = r % STANDARD_VECTOR_SIZE;
-			for (idx_t c = 0; c < capture.types.size(); c++) {
-				chunk.SetValue(c, slot, capture.rows[r][c]);
-			}
-			chunk.SetCardinality(slot + 1);
-			if (slot + 1 == STANDARD_VECTOR_SIZE || r + 1 == capture.rows.size()) {
-				child->collection->Append(chunk);
-				chunk.Reset();
-			}
-		}
+		child->collection = Collect(context, capture);
 		child->content_hash = Hash(engine, capture.canonical);
 		b.rows += child->rows;
 		b.inputs.push_back({src.dataset, ds.source_bound, child->content_hash, child->rows});
@@ -3021,64 +3010,16 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 	}
 	if (bundle->profile == PROFILE || bundle->profile == OBSERVATION_PROFILE || bundle->profile == RELATION_PROFILE) {
 		bundle->original_source = dataset.source_bound;
-	}
-	if (bundle->profile == PROFILE || bundle->profile == OBSERVATION_PROFILE || bundle->profile == RELATION_PROFILE) {
-		auto parts = QualifiedName::ParseComponents(dataset.source_bound);
-		if (parts.size() != 3) {
-			Fail(dataset.name, "snapshot", "fully qualified catalog.schema.table source required");
-		}
 		Connection source(DatabaseInstance::GetDatabase(context));
 		Run(context, source, "BEGIN TRANSACTION");
-		auto entry =
-		    Catalog::GetEntry(*source.context, parts[0], parts[1], EntryLookupInfo(CatalogType::TABLE_ENTRY, parts[2]),
-		                      OnEntryNotFound::RETURN_NULL);
-		if (!entry || entry->type != CatalogType::TABLE_ENTRY || entry->temporary ||
-		    !entry->Cast<TableCatalogEntry>().IsDuckTable()) {
-			Fail(dataset.name, "snapshot", "only committed native tables supported; TEMP/view/external source refused");
-		}
-		for (auto &column : entry->Cast<TableCatalogEntry>().GetColumns().Logical()) {
-			if (column.Generated()) {
-				Fail(dataset.name, "snapshot", "generated source columns not supported");
-			}
-		}
-		auto capture = Run(context, source,
-		                   "SELECT * FROM " + Quote(parts[0]) + "." + Quote(parts[1]) + "." + Quote(parts[2]) +
-		                       " LIMIT " + to_string(MAX_ROWS + 1));
+		optional_ptr<Catalog> catalog;
+		optional_ptr<CatalogEntry> previous;
+		auto capture = CaptureTable(context, source, dataset, catalog, previous);
 		Run(context, source, "COMMIT");
-		auto &materialized = capture->Cast<MaterializedQueryResult>();
-		bundle->rows = materialized.RowCount();
-		if (bundle->rows > MAX_ROWS || capture->types.size() > 256) {
-			Fail(dataset.name, "snapshot", "batch exceeds 10000 rows or 256 physical columns; no truncation performed");
-		}
-		bundle->physical_names = capture->names;
-		string content =
-		    "ossie-observation-v1:" + to_string(bundle->rows) + ":" + to_string(capture->types.size()) + ":";
-		auto frame = [&](const string &text) {
-			content += to_string(text.size()) + ":" + text;
-		};
-		for (idx_t col = 0; col < capture->types.size(); col++) {
-			if (!Portable(capture->types[col]) || (capture->types[col].id() == LogicalTypeId::VARCHAR &&
-			                                       !StringType::GetCollation(capture->types[col]).empty())) {
-				Fail(capture->names[col], "snapshot", "unsupported physical column type or collation");
-			}
-			frame(capture->names[col]);
-			frame(capture->types[col].ToString());
-		}
-		while (auto chunk = capture->Fetch()) {
-			if (context.IsInterrupted()) {
-				throw InterruptException();
-			}
-			for (idx_t row = 0; row < chunk->size(); row++) {
-				for (idx_t col = 0; col < chunk->ColumnCount(); col++) {
-					frame(chunk->GetValue(col, row).ToSQLString());
-					if (content.size() > MAX_BYTES) {
-						Fail(dataset.name, "snapshot", "batch exceeds 16 MiB canonical value limit");
-					}
-				}
-			}
-		}
-		bundle->collection = materialized.TakeCollection();
-		bundle->content_hash = Hash(*engine, content);
+		bundle->rows = capture.rows.size();
+		bundle->physical_names = capture.names;
+		bundle->collection = Collect(context, capture);
+		bundle->content_hash = Hash(*engine, capture.canonical);
 		bundle->snapshot_id = bundle->content_hash + ":" + to_string(NextBatchSequence());
 		bundle->inputs.push_back({dataset.name, bundle->original_source, bundle->content_hash, bundle->rows});
 	}
