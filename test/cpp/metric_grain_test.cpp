@@ -64,8 +64,10 @@ void Run(const std::string &root) {
 		Refuse([&] { RequireMetricGrain(model, {name}, "fact"); }, "without a dataset",
 		       "reject grainless aggregate: " + string(name));
 	}
-	Refuse([&] { RequireMetricGrain(model, {"amount_sum", "star"}, "fact"); }, "without a dataset",
-	       "new checker does not infer standalone COUNT(*) grain from another metric");
+	auto both = [&] {
+		RequireMetricGrain(model, {"amount_sum", "star"}, "fact");
+	};
+	Refuse(both, "without a dataset", "new checker does not infer standalone COUNT(*) grain from another metric");
 	Check(CompileToSQL(model, {"amount_sum", "star"}, {}, {}, options).find("count_star()") != string::npos,
 	      "existing core grainless inheritance retained");
 	Check(CompileToSQL(model, {"with_star"}, {}, {}, options).find("count_star()") != string::npos,
