@@ -5,7 +5,6 @@
 #include "ossie/population_testing.hpp"
 #include "ossie/relation_program.hpp"
 #include "ossie/fact_program.hpp"
-#include "ossie/history_program.hpp"
 #include "ossie/dialect.hpp"
 #include "ossie/yaml.hpp"
 #include "ossie/ontology.hpp"
@@ -45,6 +44,8 @@
 #include "duckdb/parser/query_node/select_node.hpp"
 #include "duckdb/parser/statement/select_statement.hpp"
 #include "duckdb/parser/tableref/basetableref.hpp"
+#include "duckdb/parser/tableref/joinref.hpp"
+#include "duckdb/parser/tableref/subqueryref.hpp"
 #include "duckdb/storage/object_cache.hpp"
 #include "yyjson.hpp"
 #include <atomic>
@@ -257,9 +258,10 @@ struct Bundle {
 	string join_key_type;
 	bool concept_requires = false;
 	vector<ConceptConstraint> concept_constraints;
-	unique_ptr<HistoryIndex> history_index;
 	vector<HistorySource> history_sources;
 	vector<shared_ptr<Bundle>> history_children;
+	shared_ptr<Bundle> history_segments;
+	idx_t history_segment_count = 0, history_user_count = 0;
 	string history_relationship, history_target;
 	unique_ptr<FactProgram> fact_program;
 	FactProgramInput fact_input;
@@ -1023,6 +1025,11 @@ void EngineFunctions(ParsedExpression &expression) {
 		function.catalog = "system";
 		function.schema = "main";
 	}
+	if (expression.GetExpressionClass() == ExpressionClass::WINDOW) {
+		auto &window = expression.Cast<WindowExpression>();
+		window.catalog = "system";
+		window.schema = "main";
+	}
 	ParsedExpressionIterator::EnumerateChildren(expression, [&](ParsedExpression &child) { EngineFunctions(child); });
 }
 unique_ptr<SQLStatement> FrozenSQL(Bundle &bundle, const string &sql) {
@@ -1034,6 +1041,55 @@ unique_ptr<SQLStatement> FrozenSQL(Bundle &bundle, const string &sql) {
 	for (auto &expression : select.select_list) {
 		EngineFunctions(*expression);
 	}
+	return statement;
+}
+
+unique_ptr<TableRef> ProgramSources(unique_ptr<TableRef> ref, Bundle &parent,
+                                    const vector<shared_ptr<Bundle>> &children) {
+	switch (ref->type) {
+	case TableReferenceType::BASE_TABLE: {
+		auto &base = ref->Cast<BaseTableRef>();
+		for (auto &child : children) {
+			if (child->model.datasets[0].name == base.table_name) {
+				auto table = SnapshotTable(*child);
+				table->external_dependency->AddDependency("ossie_program_parent",
+				                                          make_shared_ptr<SnapshotDependency>(parent.owner.lock()));
+				if (!base.alias.empty()) {
+					table->alias = base.alias;
+				}
+				return std::move(table);
+			}
+		}
+		Fail(base.table_name, "bind", "unknown frozen program source");
+	}
+	case TableReferenceType::JOIN: {
+		auto &join = ref->Cast<JoinRef>();
+		join.left = ProgramSources(std::move(join.left), parent, children);
+		join.right = ProgramSources(std::move(join.right), parent, children);
+		return ref;
+	}
+	case TableReferenceType::SUBQUERY: {
+		auto &node = *ref->Cast<SubqueryRef>().subquery->node;
+		if (node.type == QueryNodeType::SELECT_NODE && node.Cast<SelectNode>().from_table) {
+			auto &select = node.Cast<SelectNode>();
+			select.from_table = ProgramSources(std::move(select.from_table), parent, children);
+		}
+		return ref;
+	}
+	default:
+		return ref;
+	}
+}
+
+// Program SQL names frozen children by dataset; every function pins to system.main.
+unique_ptr<SelectStatement> ProgramSQL(Bundle &parent, const vector<shared_ptr<Bundle>> &children, const string &sql) {
+	Parser parser;
+	parser.ParseQuery(sql);
+	auto statement = unique_ptr_cast<SQLStatement, SelectStatement>(std::move(parser.statements[0]));
+	auto &select = statement->node->Cast<SelectNode>();
+	select.from_table = ProgramSources(std::move(select.from_table), parent, children);
+	ParsedExpressionIterator::EnumerateQueryNodeChildren(
+	    *statement->node, [&](unique_ptr<ParsedExpression> &expression) { EngineFunctions(*expression); });
 	return statement;
 }
 
@@ -2732,6 +2788,73 @@ void HistoryDefinitions(Bundle &b, const Ontology &ontology, const Mapping &mapp
 	}
 	b.root = b.history_sources[0].concept;
 }
+const char *const HISTORY_SEGMENTS = "_ossie_history_segments";
+
+string HistoryRoleColumn(const Bundle &b, idx_t source, const string &role) {
+	auto &src = b.history_sources[source];
+	auto &ds = *b.model.FindDataset(src.dataset);
+	auto position = std::find(src.roles.begin(), src.roles.end(), role) - src.roles.begin();
+	return Quote(FactPhysicalField(ds, *ds.FindField(src.fields[position])));
+}
+
+// Validates the complete history witnesses and merges them into per-User half-open
+// target segments; the segments become a frozen child source for the ASOF link join.
+void BuildHistorySegments(ClientContext &context, Bundle &b) {
+	auto &hist = b.history_sources[1];
+	auto records = "(SELECT " + HistoryRoleColumn(b, 1, "record_id") + " AS record_id, " +
+	               HistoryRoleColumn(b, 1, "user") + " AS user_id, " + HistoryRoleColumn(b, 1, "team") +
+	               " AS target, " + HistoryRoleColumn(b, 1, "starts") + " AS starts, " +
+	               HistoryRoleColumn(b, 1, "ends") + " AS ends FROM " + Quote(hist.dataset) + ") AS records";
+	auto engine = Engine(b);
+	auto checks = Run(context, *engine,
+	                  ProgramSQL(b, b.history_children,
+	                             "SELECT count(*) - count(DISTINCT record_id), count(*) FILTER (WHERE starts >= ends) "
+	                             "FROM " +
+	                                 records));
+	auto chunk = checks->Fetch();
+	if (chunk->GetValue(0, 0).GetValue<int64_t>() != 0) {
+		Fail("history", "identity", "duplicate history record_id across complete capture");
+	}
+	if (chunk->GetValue(1, 0).GetValue<int64_t>() != 0) {
+		Fail("history", "constraint", "finite history DATE endpoints require start<end");
+	}
+	auto segments = Run(
+	    context, *engine,
+	    ProgramSQL(b, b.history_children,
+	               "SELECT user_id, target, min(starts) AS starts, max(ends) AS ends FROM (SELECT user_id, target, "
+	               "starts, ends, sum(CASE WHEN previous_end IS NULL OR starts > previous_end THEN 1 ELSE 0 END) OVER "
+	               "(PARTITION BY user_id, target ORDER BY starts, ends ROWS UNBOUNDED PRECEDING) AS island FROM "
+	               "(SELECT user_id, target, starts, ends, max(ends) OVER (PARTITION BY user_id, target ORDER BY "
+	               "starts, ends ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS previous_end FROM " +
+	                   records +
+	                   ") AS marked) AS islands GROUP BY user_id, target, island ORDER BY user_id, starts, target"));
+	auto child = make_shared_ptr<Bundle>();
+	child->owner = child;
+	child->database = b.database;
+	child->profile = HISTORY_PROFILE;
+	Dataset dataset;
+	dataset.name = HISTORY_SEGMENTS;
+	dataset.source_bound = "memory.main.ossie_snapshot";
+	child->model.datasets.push_back(dataset);
+	child->physical_names = {"user_id", "target", "starts", "ends"};
+	child->collection = segments->Cast<MaterializedQueryResult>().TakeCollection();
+	child->rows = child->collection->Count();
+	b.history_segments = std::move(child);
+	auto summary = Run(context, *engine,
+	                   ProgramSQL(b, {b.history_segments},
+	                              "SELECT count(*) FILTER (WHERE starts < previous_end), count(*), count(DISTINCT "
+	                              "user_id) FROM (SELECT user_id, starts, max(ends) OVER (PARTITION BY user_id ORDER "
+	                              "BY starts, ends ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS previous_end "
+	                              "FROM " +
+	                                  Quote(HISTORY_SEGMENTS) + ") AS ordered"));
+	chunk = summary->Fetch();
+	if (chunk->GetValue(0, 0).GetValue<int64_t>() != 0) {
+		Fail("history", "constraint", "different history targets overlap for the same raw User");
+	}
+	b.history_segment_count = chunk->GetValue(1, 0).GetValue<int64_t>();
+	b.history_user_count = chunk->GetValue(2, 0).GetValue<int64_t>();
+}
+
 void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 	Connection source(DatabaseInstance::GetDatabase(context));
 	Run(context, source, "BEGIN TRANSACTION");
@@ -2749,7 +2872,6 @@ void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 		}
 	}
 	Run(context, source, "COMMIT");
-	std::vector<HistoryRecord> records;
 	string evidence = "ossie-frozen-history-v1:";
 	for (auto &v : {b.profile, b.manifest_hash, b.core_hash, b.ontology_hash, b.mapping_hash, b.history_relationship,
 	                b.user_concept, b.history_target}) {
@@ -2792,10 +2914,6 @@ void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 				if (!obs_keys.insert(key).second) {
 					Fail(src.concept, "identity", "duplicate full observation tuple");
 				}
-			} else {
-				records.push_back({row[columns[0]].GetValue<string>(), row[columns[1]].GetValue<string>(),
-				                   row[columns[2]].GetValue<string>(), row[columns[3]].GetValue<date_t>(),
-				                   row[columns[4]].GetValue<date_t>()});
 			}
 		}
 		auto child = make_shared_ptr<Bundle>();
@@ -2818,15 +2936,7 @@ void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 		}
 		b.history_children.push_back(std::move(child));
 	}
-	try {
-		b.history_index = make_uniq<HistoryIndex>(BuildHistoryIndex(records, [&] {
-			if (context.IsInterrupted()) {
-				throw InterruptException();
-			}
-		}));
-	} catch (const HistoryValidationError &error) {
-		Fail("history", error.stage, error.what());
-	}
+	BuildHistorySegments(context, b);
 	b.definition_model = b.model;
 	b.content_hash = Hash(engine, evidence);
 	b.snapshot_id = b.content_hash + ":" + to_string(NextBatchSequence());
@@ -5367,19 +5477,41 @@ unique_ptr<FunctionData> HistoryBind(ClientContext &context, TableFunctionBindIn
 	data->history_query = true;
 	data->history_compile = input.table_function.name == "ossie_history_links_compile";
 	data->history_request = ParseHistoryRequest(input.inputs[1].GetValue<string>());
-	auto &child = *b.history_children[0];
-	auto &src = b.history_sources[0];
-	auto select = make_uniq<SelectNode>();
-	for (auto &field : src.fields) {
-		select->select_list.push_back(make_uniq<ColumnRefExpression>(
-		    FactPhysicalField(*b.model.FindDataset(src.dataset), *b.model.FindDataset(src.dataset)->FindField(field)),
-		    src.dataset));
+	auto &r = data->history_request;
+	auto &obs = b.history_sources[0];
+	auto observation = Quote(obs.dataset);
+	auto user = observation + "." + HistoryRoleColumn(b, 0, "user");
+	auto date = observation + "." + HistoryRoleColumn(b, 0, "date");
+	auto product = observation + "." + HistoryRoleColumn(b, 0, "product");
+	data->statement =
+	    ProgramSQL(b, {b.history_children[0], b.history_segments},
+	               "SELECT " + user + ", " + date + ", " + product + ", seg.target FROM " + observation +
+	                   " ASOF JOIN " + Quote(HISTORY_SEGMENTS) + " AS seg ON " + user + " = seg.user_id AND " + date +
+	                   " >= seg.starts WHERE " + date + " < seg.ends ORDER BY 1, 2, 3, 4");
+	auto &select = data->statement->node->Cast<SelectNode>();
+	auto column = [&](const string &role) {
+		auto &ds = *b.model.FindDataset(obs.dataset);
+		auto position = std::find(obs.roles.begin(), obs.roles.end(), role) - obs.roles.begin();
+		return make_uniq<ColumnRefExpression>(FactPhysicalField(ds, *ds.FindField(obs.fields[position])), obs.dataset);
+	};
+	auto conjoin = [&](unique_ptr<ParsedExpression> predicate) {
+		select.where_clause = make_uniq<ConjunctionExpression>(ExpressionType::CONJUNCTION_AND,
+		                                                       std::move(select.where_clause), std::move(predicate));
+	};
+	if (!r.all_dates) {
+		conjoin(make_uniq<ComparisonExpression>(ExpressionType::COMPARE_GREATERTHANOREQUALTO, column("date"),
+		                                        make_uniq<ConstantExpression>(Value::DATE(r.start))));
+		conjoin(make_uniq<ComparisonExpression>(ExpressionType::COMPARE_LESSTHANOREQUALTO, column("date"),
+		                                        make_uniq<ConstantExpression>(Value::DATE(r.end))));
 	}
-	select->from_table = SnapshotTable(child);
-	select->from_table->external_dependency->AddDependency("ossie_program_parent",
-	                                                       make_shared_ptr<SnapshotDependency>(data->bundle));
-	data->statement = make_uniq<SelectStatement>();
-	data->statement->node = std::move(select);
+	if (!r.all_products) {
+		auto in = make_uniq<OperatorExpression>(ExpressionType::COMPARE_IN);
+		in->children.push_back(column("product"));
+		for (auto &item : r.products) {
+			in->children.push_back(make_uniq<ConstantExpression>(Value(item)));
+		}
+		conjoin(std::move(in));
+	}
 	lock_guard<mutex> guard(b.query_lock);
 	auto engine = Engine(b);
 	auto prepared = engine->Prepare(data->statement->Copy());
@@ -5387,8 +5519,9 @@ unique_ptr<FunctionData> HistoryBind(ClientContext &context, TableFunctionBindIn
 		NormalizeError(prepared->GetErrorObject(), "history", "bind", ExceptionType::INVALID_INPUT);
 	}
 	data->result_types = prepared->GetTypes();
-	if (data->result_types != vector<LogicalType> {LogicalType::VARCHAR, LogicalType::DATE, LogicalType::VARCHAR}) {
-		Fail("history", "bind", "actual projection must be User/DATE/product VARCHAR/DATE/VARCHAR");
+	if (data->result_types !=
+	    vector<LogicalType> {LogicalType::VARCHAR, LogicalType::DATE, LogicalType::VARCHAR, LogicalType::VARCHAR}) {
+		Fail("history", "bind", "actual link projection must be User/DATE/product/target VARCHAR/DATE/VARCHAR/VARCHAR");
 	}
 	types = {LogicalType::VARCHAR};
 	names = {data->history_compile ? "plan_json" : "result_json"};
@@ -5411,8 +5544,8 @@ void HistoryMetadata(DailyJSONWriter &json, const Bundle &b) {
 		json.Field(f.first, f.second);
 	}
 	json.Field("observation_rows", to_string(b.inputs[0].rows));
-	json.Field("history_record_count", to_string(b.history_index->source_rows));
-	json.Field("index_segment_count", to_string(b.history_index->segment_count));
+	json.Field("history_record_count", to_string(b.inputs[1].rows));
+	json.Field("history_segment_count", to_string(b.history_segment_count));
 	json.Append(",\"root_identity_relationships\":[\"user\",\"date\",\"product\"],\"root_identity_fields\":" +
 	            JSONStrings(b.history_sources[0].fields));
 	json.Append(",\"link_role_concepts\":" + JSONStrings({b.user_concept, "Date", "String", b.history_target}));
@@ -5454,89 +5587,55 @@ string HistoryQueryJSON(ClientContext &context, const PopulationBind &data) {
 	HistoryScope(json, data);
 	if (data.history_compile) {
 		json.Append(",\"links_computed\":false,\"physical_plan\":false,\"sql_replayable\":false,\"input_projection_"
-		            "binding\":true,\"input_types\":[\"VARCHAR\",\"DATE\",\"VARCHAR\"],\"projection_sql\":");
+		            "binding\":true,\"input_types\":[\"VARCHAR\",\"DATE\",\"VARCHAR\"],\"link_sql\":");
 		json.Quoted(data.statement->ToString());
 		json.Append(
-		    ",\"operators\":[\"frozen full observation projection\",\"explicit observation date/product "
-		    "scope\",\"immutable per-User interval binary lookup\",\"start inclusive and end exclusive; gap no "
-		    "link\",\"complete Observation to typed target set\",\"raw User/product/target bytes and DATE value "
-		    "ordering\",\"complete bounded "
+		    ",\"operators\":[\"frozen full observation source\",\"frozen merged per-User target segments\",\"explicit "
+		    "observation date/product scope predicates\",\"ASOF JOIN on raw User and observation date >= segment "
+		    "start\",\"start inclusive and end exclusive; gap no link\",\"complete Observation to typed target "
+		    "set\",\"raw User/product/target bytes and DATE value ordering\",\"complete bounded "
 		    "JSON\"],\"limits\":{\"links\":10000,\"request_utf8_bytes\":16384,\"complete_json_utf8_bytes\":1048576},"
-		    "\"limitations\":[\"Compile binds projection but never scans or matches links\",\"Input and index counts "
-		    "are load metadata\",\"Rendered projection excludes C++ scope/index matching and cannot replay "
-		    "independently\",\"Compile does not guarantee execution completion or encoded result size\"]}");
+		    "\"limitations\":[\"Compile binds the link statement but never executes it\",\"Input and segment counts "
+		    "are load metadata\",\"Rendered SQL names frozen snapshots that only the bound statement can reach, so it "
+		    "cannot replay independently\",\"Compile does not guarantee execution completion or encoded result "
+		    "size\"]}");
 		return json.Finish();
 	}
 	struct Link {
-		string user, product;
-		const string *target;
+		string user, product, target;
 		date_t date;
 	};
 	vector<Link> links;
-	idx_t scanned = 0;
 	ObserveHistory(context, PopulationHistoryCheckpoint::BEFORE_EXECUTE);
 	{
 		lock_guard<mutex> guard(b.query_lock);
 		auto engine = Engine(b);
 		auto query = Run(context, *engine, data.statement->Copy());
 		if (query->types != data.result_types) {
-			Fail("history", "execute", "projection types changed");
+			Fail("history", "execute", "link projection types changed");
 		}
 		while (auto chunk = query->Fetch()) {
 			for (idx_t row = 0; row < chunk->size(); row++) {
 				if (context.IsInterrupted()) {
 					throw InterruptException();
 				}
-				if (++scanned > b.inputs[0].rows) {
-					Fail("history", "execute", "projection exceeds captured observation count");
+				if (links.size() >= MAX_ROWS) {
+					Fail("history.links", "resource", "complete link count exceeds10000");
 				}
-				auto user = chunk->GetValue(0, row), date = chunk->GetValue(1, row), product = chunk->GetValue(2, row);
-				if (user.IsNull() || date.IsNull() || product.IsNull()) {
+				auto user = chunk->GetValue(0, row), date = chunk->GetValue(1, row), product = chunk->GetValue(2, row),
+				     target = chunk->GetValue(3, row);
+				if (user.IsNull() || date.IsNull() || product.IsNull() || target.IsNull()) {
 					Fail("history", "execute", "frozen identity changed to NULL");
 				}
-				auto day = date.GetValue<date_t>();
-				auto item = product.GetValue<string>();
-				if ((!r.all_dates && (day < r.start || day > r.end)) || (!r.all_products && !r.products.count(item))) {
-					continue;
-				}
-				auto id = user.GetValue<string>();
-				auto target = b.history_index->Find(id, day, [&] {
-					if (context.IsInterrupted()) {
-						throw InterruptException();
-					}
-				});
-				if (target) {
-					if (links.size() >= MAX_ROWS) {
-						Fail("history.links", "resource", "complete link count exceeds10000");
-					}
-					links.push_back({id, item, target, day});
-				}
+				links.push_back({user.GetValue<string>(), product.GetValue<string>(), target.GetValue<string>(),
+				                 date.GetValue<date_t>()});
 			}
 		}
 		if (query->HasError()) {
 			NormalizeError(query->GetErrorObject(), "history", "execute", ExceptionType::INVALID_INPUT);
 		}
 	}
-	if (scanned != b.inputs[0].rows) {
-		Fail("history", "execute", "full observation scan differs from frozen count");
-	}
 	ObserveHistory(context, PopulationHistoryCheckpoint::BEFORE_SORT);
-	HistoryByteLess less;
-	std::sort(links.begin(), links.end(), [&](const Link &a, const Link &c) {
-		if (context.IsInterrupted()) {
-			throw InterruptException();
-		}
-		if (a.user != c.user) {
-			return less(a.user, c.user);
-		}
-		if (a.date != c.date) {
-			return a.date < c.date;
-		}
-		if (a.product != c.product) {
-			return less(a.product, c.product);
-		}
-		return less(*a.target, *c.target);
-	});
 	ObserveHistory(context, PopulationHistoryCheckpoint::BEFORE_ENCODE);
 	json.Field("link_count", to_string(links.size()));
 	json.Append(",\"complete\":true,\"paging\":false,\"truncated\":false,\"link_columns\":[\"user_id\",\"date\","
@@ -5558,7 +5657,7 @@ string HistoryQueryJSON(ClientContext &context, const PopulationBind &data) {
 		json.Append(",");
 		json.Quoted(l.product);
 		json.Append(",");
-		json.Quoted(*l.target);
+		json.Quoted(l.target);
 		json.Append("]");
 	}
 	json.Append("]}");
@@ -5584,9 +5683,9 @@ string HistoryProgramJSON(ClientContext &context, const Bundle &b) {
 		json.Field(f.first, f.second);
 	}
 	json.Field("total_source_rows", to_string(b.rows));
-	json.Field("history_record_count", to_string(b.history_index->source_rows));
-	json.Field("index_segment_count", to_string(b.history_index->segment_count));
-	json.Field("history_User_count", to_string(b.history_index->users.size()));
+	json.Field("history_record_count", to_string(b.inputs[1].rows));
+	json.Field("history_segment_count", to_string(b.history_segment_count));
+	json.Field("history_User_count", to_string(b.history_user_count));
 	json.Append(",\"functions\":[\"ossie_history_program\",\"ossie_history_links_json\",\"ossie_history_links_"
 	            "compile\"],\"query_limits\":{\"links\":10000,\"request_utf8_bytes\":16384,\"subset_products\":64,"
 	            "\"product_utf8_bytes\":256,\"complete_json_utf8_bytes\":1048576},\"request_dates\":\"explicit all or "
@@ -5636,7 +5735,7 @@ string HistoryProgramJSON(ClientContext &context, const Bundle &b) {
 	json.Append("]");
 	json.Append(
 	    ",\"limits\":{\"rows_per_source\":10000,\"combined_source_rows\":20000,\"physical_columns_per_source\":256,"
-	    "\"combined_canonical_bytes\":16777216,\"index_segments\":10000,\"complete_json_utf8_bytes\":1048576},"
+	    "\"combined_canonical_bytes\":16777216,\"history_segments\":10000,\"complete_json_utf8_bytes\":1048576},"
 	    "\"validity\":\"finite DuckDB DATE [start,end), start<end\",\"conflict\":\"whole-history same User "
 	    "different-target overlap rejects entire load\",\"source_identity\":\"global raw record_id, duplicates "
 	    "rejected\",\"same_target_overlap\":\"distinct sources retained; derived coverage merged without "

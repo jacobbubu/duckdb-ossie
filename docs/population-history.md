@@ -1,6 +1,6 @@
 # 历史关系双源加载、查询与解释
 
-`historical-observation-relation-v1` 提供 typed 双源加载、完整历史校验、冻结索引、
+`historical-observation-relation-v1` 提供 typed 双源加载、完整历史校验、冻结区间段、
 `ossie_history_program()`、`ossie_history_links_json()` 与 `ossie_history_links_compile()`。
 program 明确 `query_supported=true`、`compile_supported=true`、`mcp_registered=false`。
 
@@ -34,7 +34,7 @@ SELECT plan_json FROM ossie_history_links_compile(
 字段等沿现捕获限制拒绝。来源各最多 10,000 行/256 物理列，共同 canonical 最多
 16 MiB，含全部行列与元数据；超过上限整体拒绝，不截断。加载输出 batch_rows 是
 两来源行数合计，不是用户人数或链接数。program 分别给出源行数/hash、原始历史
-record 数、派生 index 段数和历史 User 域计数；这些是载入元数据，未执行查询。
+record 数、派生区间段数和历史 User 域计数；这些是载入元数据，未执行查询。
 program 内部完整 JSON 仍限 1 MiB，包含转义/元数据；限制不承诺 RSS、并发或时间。
 
 原始观察身份、record_id、User 和 target 必须非 NULL/非空，保留大小写、Unicode、
@@ -44,9 +44,11 @@ INT32_MIN 日，不缩为四位年份。有效期 `[start,end)`，起点包含�
 最大有限日期没有更大的有限 exclusive end；不补无限端点或默默延长覆盖。
 
 完整历史中同 User 的不同目标区间重叠拒绝整批，包含没有观察的 User；查询不能
-过滤隐藏冲突。不同 ID 的同目标重叠保留原始捕获，派生索引合并连续覆盖并保留
-缺口。原始 collection/hash 不被索引替换。父 hash 绑定双源及定义，索引段数最多
-历史行数，查找不构造观察×历史 bag。查询返回完整 `[User,DATE,product,target]`
+过滤隐藏冲突。不同 ID 的同目标重叠保留原始捕获，派生区间段合并连续覆盖并保留
+缺口。原始 collection/hash 不被区间段替换。父 hash 绑定双源及定义，区间段数最多
+历史行数。校验与合并在私有 binary 排序连接上以 SQL 窗口函数完成，查询用 ASOF JOIN
+将每条观察匹配到同 User 中起点不晚于观察日期的区间段，再以 end 排除；不构造
+观察×历史 bag。查询返回完整 `[User,DATE,product,target]`
 关系集合；不同 record_id 的同目标重叠只产生一条完整 link，缺口不产生 link。
 
 查询日期支持 `{"mode":"all"}` 或 `{"mode":"range","start_date":"2024-02-28",
@@ -57,10 +59,10 @@ UTF-8 字节。日期/产品只筛观察，不筛掉已载入的历史冲突；�
 10,000 links、1 MiB UTF-8，字节含转义、元数据与请求范围；超限整体报错，不分页、
 不截断。按原始 User 字节、DATE 值、产品与目标字节排序。
 
-compile 只绑定冻结观察的 VARCHAR/DATE/VARCHAR 投影，不扫描来源、查找目标或
-计算 link 数；输出逻辑算子、限制及与查询一致的范围/六项追踪值，不是物理计划
-或可重放 SQL。计划 JSON 同样限 1 MiB。program 的源行数、历史 record 数及 index
-段数不能替代查询的 link 数。
+compile 只绑定冻结观察与区间段上的 ASOF JOIN 语句（范围谓词已作为常量绑定），
+不执行、不计算 link 数；输出渲染 SQL、逻辑算子、限制及与查询一致的范围/六项追踪
+值。渲染 SQL 引用只有绑定语句能到达的冻结快照，不是可独立重放的 SQL。计划 JSON
+同样限 1 MiB。program 的源行数、历史 record 数及区间段数不能替代查询的 link 数。
 
 候选全部成功后才原子替换父快照。第二源失败、冲突、超限或两处确定性取消均
 保留旧状态；并发修改两表在一个事务提交不会令本次双捕获混合新旧。prepared 的

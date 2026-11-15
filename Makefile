@@ -38,7 +38,7 @@ tidy-check:
 # Standalone C++ test executables (EXCLUDE_FROM_ALL in CMakeLists.txt, so neither CTest nor
 # ENABLE_UNITTEST_CPP_TESTS discovers them). Each takes the project root; those that need no
 # argument ignore it. `make test_<cfg>` runs them before the SQL logic tests.
-CPP_TESTS := state metric-grain population-capture relation-program fact-program fact-capture history-program
+CPP_TESTS := state metric-grain population-capture relation-program fact-program fact-capture
 define cpp_test_rules
 .PHONY: $(1)-test-release $(1)-test-debug $(1)-test-reldebug
 $(1)-test-release $(1)-test-debug $(1)-test-reldebug: $(1)-test-%:
