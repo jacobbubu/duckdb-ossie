@@ -101,9 +101,12 @@ the SQL that would run.
 
 A separate, opt-in path executes bounded *population* profiles: a hash-bound core/ontology/mapping
 bundle is loaded with `ossie_bundle_load(manifest_path)`, the committed source batch is captured and
-frozen, and the frozen population is then queried through its own functions: `ossie_concepts()`,
-`ossie_objects(...)`, `ossie_concept_query(...)` and `ossie_concept_compile(...)`, plus the
-relation, fact, daily and history program functions each profile declares. These profiles never
+frozen, and the frozen population is then queried through its own functions: `ossie_program()`
+describes the loaded profile, `ossie_population_compile(request_json)` and
+`ossie_population_json(request_json)` take one JSON request whose `kind` selects objects, metrics,
+daily_users, daily_states, relation_links, fact_users, fact_windows or history_links, and
+`ossie_concepts()`, `ossie_objects(...)` and `ossie_concept_query(...)` return native tables for the
+objects/metrics profiles. These profiles never
 relax the generic core refusals above; what each one supports, and refuses, is written down in
 [docs/population-profile.md](docs/population-profile.md), with the discovery, plan, result and
 error contracts in the neighbouring `docs/population-*.md` files. The frozen profiles are also

@@ -17,26 +17,26 @@ statement ok
 CALL ossie_bundle_load('test/fixtures/population-fact-program/bundle.json');
 
 query T
-SELECT regexp_extract(result_json,'"rows":(\[.*\])',1) FROM ossie_fact_windows_json('{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"5877642-06-23 (BC)","end_date":"5877642-06-23 (BC)"}}');
+SELECT regexp_extract(result_json,'"rows":(\[.*\])',1) FROM ossie_population_json('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"5877642-06-23 (BC)","end_date":"5877642-06-23 (BC)"}}');
 ----
 [["u","5877642-06-23 (BC)",null,"1.01"]]
 
 query T
-SELECT regexp_extract(result_json,'"rows":(\[.*\])',1) FROM ossie_fact_windows_json('{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"5877642-06-25 (BC)","end_date":"5877642-06-25 (BC)"}}');
+SELECT regexp_extract(result_json,'"rows":(\[.*\])',1) FROM ossie_population_json('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"5877642-06-25 (BC)","end_date":"5877642-06-25 (BC)"}}');
 ----
 [["u","5877642-06-25 (BC)","1.01","3.03"]]
 
 query T
-SELECT regexp_extract(plan_json,'"executed":(false|true)',1) FROM ossie_fact_windows_compile('{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"5877642-06-23 (BC)","end_date":"5877642-06-23 (BC)"}}');
+SELECT regexp_extract(plan_json,'"executed":(false|true)',1) FROM ossie_population_compile('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"5877642-06-23 (BC)","end_date":"5877642-06-23 (BC)"}}');
 ----
 false
 
 statement error
-SELECT * FROM ossie_fact_windows_json('{"input_scope":"entire_capture","windows":["previous"],"display":{"mode":"date_range","start_date":"5877642-06-24 (BC)","end_date":"2024-01-01"}}');
+SELECT * FROM ossie_population_json('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous"],"display":{"mode":"date_range","start_date":"5877642-06-24 (BC)","end_date":"2024-01-01"}}');
 ----
 INVALID_REQUEST
 
 statement error
-SELECT * FROM ossie_fact_windows_compile('{"input_scope":"entire_capture","windows":["previous"],"display":{"mode":"date_range","start_date":"5877642-06-22 (BC)","end_date":"2024-01-01"}}');
+SELECT * FROM ossie_population_compile('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous"],"display":{"mode":"date_range","start_date":"5877642-06-22 (BC)","end_date":"2024-01-01"}}');
 ----
 INVALID_REQUEST

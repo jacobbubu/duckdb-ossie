@@ -20,7 +20,7 @@ namespace ossie {
 namespace {
 constexpr idx_t RULE_BYTES = 16384, TOTAL_BYTES = 131072, NODE_LIMIT = 1024, TOTAL_NODES = 32768;
 [[noreturn]] void Reject(const string &why) {
-	throw InvalidInputException("ossie_fact_program: %s", why);
+	throw InvalidInputException("ossie_program: %s", why);
 }
 string Q(const string &s) {
 	return "\"" + StringUtil::Replace(s, "\"", "\"\"") + "\"";

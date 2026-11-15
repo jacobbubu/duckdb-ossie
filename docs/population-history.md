@@ -1,7 +1,7 @@
 # 历史关系双源加载、查询与解释
 
 `historical-observation-relation-v1` 提供 typed 双源加载、完整历史校验、冻结区间段、
-`ossie_history_program()`、`ossie_history_links_json()` 与 `ossie_history_links_compile()`。
+`ossie_program()` 以及 `ossie_population_json` / `ossie_population_compile` 的 `kind=history_links` 请求。
 program 明确 `query_supported=true`、`compile_supported=true`、`mcp_registered=false`。
 
 [fixture](../test/fixtures/population-history-program/bundle.json) 有两份数据集：
@@ -23,11 +23,11 @@ CREATE TABLE history(record_id VARCHAR, user_id VARCHAR, team_id VARCHAR,
 INSERT INTO observations VALUES ('u', DATE '2024-02-29', 'X');
 INSERT INTO history VALUES ('a', 'u', 'T', DATE '2024-02-28', DATE '2024-03-01');
 CALL ossie_bundle_load('test/fixtures/population-history-program/bundle.json');
-SELECT program_json FROM ossie_history_program();
-SELECT result_json FROM ossie_history_links_json(
-  'team_at_observation', '{"dates":{"mode":"all"},"products":{"mode":"all"}}');
-SELECT plan_json FROM ossie_history_links_compile(
-  'team_at_observation', '{"dates":{"mode":"all"},"products":{"mode":"all"}}');
+SELECT program_json FROM ossie_program();
+SELECT result_json FROM ossie_population_json(
+  '{"kind":"history_links","relationship":"team_at_observation","dates":{"mode":"all"},"products":{"mode":"all"}}');
+SELECT plan_json FROM ossie_population_compile(
+  '{"kind":"history_links","relationship":"team_at_observation","dates":{"mode":"all"},"products":{"mode":"all"}}');
 ```
 
 同一源事务捕获两个不同的已提交 native 表，TEMP/view/external/generated/collated
@@ -67,11 +67,11 @@ compile 只绑定冻结观察与区间段上的 ASOF JOIN 语句（范围谓词�
 候选全部成功后才原子替换父快照。第二源失败、冲突、超限或两处确定性取消均
 保留旧状态；并发修改两表在一个事务提交不会令本次双捕获混合新旧。prepared 的
 program、links 与 compile 保留旧父，重载及删两表后仍可读取原先完整结果/计划；
-取消查询后可恢复。私有 binary Engine 不改调用者设置。旧五 profile 保持原行为；新 profile 的旧通用人口入口明确拒绝，不给错误声明。
+取消查询后可恢复。私有 binary Engine 不改调用者设置。其他 profile 保持原行为；本 profile 对 objects/metrics 等其他 kind 明确拒绝，不给错误声明。
 
 独立 [MCP 示例](../examples/history_server.sql) 由操作者加载两来源，再公布两个只读
-工具 `population_history_links` / `population_history_links_compile`，外层参数为 String
-`relationship` 与 String `request_json`，范围只放在 request_json 中。只有
+工具 `population_history_links` / `population_history_links_compile`，外层参数只有 String
+`request_json`，kind、relationship 与范围都放在 request_json 中。只有
 `ossie://population/history-program` 和 `ossie://population/history-surface` 两项资源；
 前者公布原生角色、身份、来源计数与限制，后者说明实际工具范围。原生 program
 的 mcp_registered=false 不是运行中 registry 探测；实际 tools/list 才证明工具暴露。

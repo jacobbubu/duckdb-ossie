@@ -1,21 +1,25 @@
 # Frozen bundle discovery
 
-The population APIs expose original model vocabulary and successful load
-preflight results from the same immutable bundle as concept execution. These
-functions are independent of `ossie_metrics()`/`ossie_fields()`, which describe
-the separately loaded core model.
+`ossie_program()` exposes original model vocabulary and successful load
+preflight results from the same immutable bundle as concept execution. It is
+independent of `ossie_metrics()`/`ossie_fields()`, which describe the separately
+loaded core model.
 
 ```sql
-SELECT * FROM ossie_population_metrics();
-SELECT * FROM ossie_population_fields();
-SELECT * FROM ossie_population_capabilities();
+SELECT program_json FROM ossie_program();
 ```
 
-All three require a loaded bundle. Each bind captures one bundle; prepared
-discovery retains it after reload. Discovery neither reads definition files again
-nor prepares or executes business queries. Failed loads preserve the old bundle.
-Every row carries `profile`, `snapshot_id`, `content_sha256`, `core_sha256`,
-`ontology_sha256`, `mapping_sha256`, and `manifest_sha256`.
+The single `program_json` row is `ossie-program-v1`: `profile`, `snapshot_id`,
+`content_sha256`, `core_sha256`, `ontology_sha256`, `mapping_sha256`,
+`manifest_sha256`, the `request_kinds` the loaded profile accepts, the
+capability identities below, `concepts` (the `ossie_concepts()` rows, with the
+compound-identity columns for observation profiles), `vocabulary.metrics`,
+`vocabulary.fields`, `capabilities` and the profile-specific `program` object
+for relation, daily-state, fact and history profiles. Sections a profile does
+not declare are JSON `null`. It requires a loaded bundle. Each bind captures one
+bundle; prepared discovery retains it after reload. Discovery neither reads
+definition files again nor prepares or executes business queries. Failed loads
+preserve the old bundle.
 
 Metrics return `name`, declared `datatype`, actual `bound_type`, `description`,
 declared selected `expression`, `selected_dialect`, `available_dialects_json`,
@@ -36,8 +40,8 @@ and field columns retain provenance even when names contain dots or quotes.
 Joined bundles retain original namespaces and computed definitions, rather than
 generated flattened names. No ontology attribute catalogue is added here;
 formal concept rules and identities remain in `ossie_concepts()` for scalar/join
-profiles and [`ossie_concepts_v2()`](population-observation.md) for compound
-observation identities. Field declarations do not establish grouping capability;
+profiles and in the [`concepts` section of `ossie_program()`](population-observation.md)
+for compound observation identities. Field declarations do not establish grouping capability;
 the observation profile permits only its date/product fields as dimensions.
 
 `load_preflight_validated=true` means fields passed the existing combined field
@@ -51,7 +55,7 @@ output names and other request combinations still require request binding.
 Unsupported declarations reject the whole load; no unavailable-definition list
 is synthesized. Time flags describe declared/defaulted roles, not calendar support.
 
-Capabilities return one row with `api_version=2.2.0` for legacy manifests
+The capability identities are `api_version=2.2.0` for legacy manifests
 (`2.3.0` for sole [concept constraint capability](population-constraints.md),
 `2.4.0` for explicit [native String join capability](string-join.md), alone or
 combined with concept constraints;
@@ -59,7 +63,7 @@ combined with concept constraints;
 `discovery_schema=ossie-population-discovery-v1`,
 `plan_schema=ossie-population-plan-v1` for scalar/join profiles (`plan-v2` for
 the observation profile), `ossie_spec_version=0.2.0.dev0`,
-`capabilities_json`, and the shared trace columns. These are separate identities:
+and the `capabilities` object. These are separate identities:
 
 - API version describes this project's public population SQL contract and its
   documented MCP example. Compatible additive functions/columns use a minor
@@ -83,7 +87,7 @@ the observation profile), `ossie_spec_version=0.2.0.dev0`,
 - Engine version/source ID identify the actual DuckDB runtime; definition hashes
   and snapshot identify loaded inputs. None is a build-revision identifier.
 
-`capabilities_json` separates supported profiles from the active profile column,
+`capabilities` separates supported profiles from the active profile field,
 lists the active concepts, checked capture-join policy, input/request limits,
 frozen source/reload behavior, sparse/unsorted/unpaged results and compile-stage
 limits. MCP list encoding and transport uncertainty are explicitly properties of
@@ -104,7 +108,7 @@ reversed datasets and computed/quoted names test discovery-driven requests witho
 GAAP vocabulary. Separate resource calls can observe different bundles
 across operator reload; consumers must compare hashes. The example exposes no reload.
 
-API2.2.0 adds the separate `daily_user_set` operation declaration. See
+API2.2.0 adds the separate `daily_users` request kind. See
 [the daily User set contract](population-daily-users.md) for its independent result
 schema, exact UTF-8 budgets and singleton qualified concept. The generic
 results/compile metadata above continues to describe existing objects/metrics;

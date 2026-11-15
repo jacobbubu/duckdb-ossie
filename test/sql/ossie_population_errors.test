@@ -1,45 +1,40 @@
 # name: test/sql/ossie_population_errors.test
-# description: structured population errors and strict JSON list adapter
+# description: structured population errors on the unified request entry
 # group: [sql]
 
 require ossie
 
 statement error
-SELECT * FROM ossie_population_fields();
+SELECT * FROM ossie_program();
 ----
 "schema_version":"ossie-population-error-v1"
 
-query I
-SELECT len(ossie_population_strings('[]'));
-----
-0
-
-query T
-SELECT ossie_population_strings('["a,b;value","second"]')[1];
-----
-a,b;value
-
 statement error
-SELECT ossie_population_strings(NULL);
+SELECT * FROM ossie_population_json(NULL);
 ----
 "stage":"arguments"
 
 statement error
-SELECT ossie_population_strings('null');
+SELECT * FROM ossie_population_json('{');
 ----
-JSON array of strings required
+strict JSON object request required
 
 statement error
-SELECT ossie_population_strings('["valid",null]');
+SELECT * FROM ossie_population_json('[]');
 ----
-"object":"list[1]"
+"object":"ossie_population_json"
 
 statement error
-SELECT ossie_population_strings('[1]');
+SELECT * FROM ossie_population_json('{"concept":"ValidUser"}');
+----
+"kind"
+
+statement error
+SELECT * FROM ossie_population_json('{"kind":"windows","concept":"ValidUser"}');
 ----
 "missing_capability":null
 
 statement error
-SELECT ossie_population_strings('{');
+SELECT * FROM ossie_population_compile('{"kind":"objects","concept":"ValidUser","filters":[1]}');
 ----
-malformed JSON
+"object":"filters[0]"

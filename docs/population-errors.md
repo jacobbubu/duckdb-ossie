@@ -1,9 +1,9 @@
 # Population error contract
 
 Population API 1.1.0 adds a project error schema, `ossie-population-error-v1`,
-for recoverable errors inside public population bind/load/execute/scan callbacks
-and `ossie_population_strings(VARCHAR)`. Successful object, query, compile,
-concept and vocabulary columns are unchanged. This is not an Ossie or MCP standard.
+for recoverable errors inside public population bind/load/execute/scan callbacks,
+including unified request parsing. Successful object, query, compile,
+concept and program columns are unchanged. This is not an Ossie or MCP standard.
 
 The SQL exception message contains `ossie_population_error_v1: ` followed by one
 JSON object. DuckDB can add its exception-type prefix and SQL location afterward;
@@ -58,7 +58,7 @@ standard exceptions and cancellation/internal/fatal/OOM errors propagate nativel
 failure decoding preserves the original exception. Pending-query cancellation
 still interrupts and drains nested tasks before their context is destroyed.
 
-`capabilities_json.uniform_errors=true` is scoped by the added `error_contract`
+`capabilities.uniform_errors=true` is scoped by the added `error_contract`
 object, which names the schema and lists excluded boundaries:
 
 - SQL parsing, function arity, argument conversion and output binding outside
@@ -70,11 +70,11 @@ object, which names the schema and lists excluded boundaries:
 These errors must not be relabeled as population validation merely because they
 occur during a population call. Compile still does not certify final output binding.
 
-The MCP example now calls `ossie_population_strings` instead of an example-only
-JSON macro. SQL NULL, JSON null, malformed/trailing JSON, wrong top-level types
-and non-string members fail with stage `arguments`; a member error identifies
-its zero-based `list[n]`. Valid `[]` remains empty explicitly. String bytes,
-including decoded NUL, are preserved with length-aware reads; expression/name
-validation happens downstream. Native MCP arrays remain accepted when the adapter
-serializes them as valid JSON string arrays. This does not make the MCP adapter a
-full JSON Schema validator. No failure becomes an unrestricted query.
+`ossie_population_json` and `ossie_population_compile` take one JSON object.
+SQL NULL fails with stage `arguments`; malformed JSON or a non-object top level
+fails with `strict JSON object request required`; a missing `kind` names object
+`kind`; an unknown `kind` lists the accepted kinds; undeclared keys name the key;
+a non-string list member identifies its zero-based `filters[n]`. Valid `[]`
+remains empty explicitly. String bytes, including decoded NUL, are preserved
+with length-aware reads; expression/name validation happens downstream. No
+failure becomes an unrestricted query.

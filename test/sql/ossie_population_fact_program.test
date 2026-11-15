@@ -5,7 +5,7 @@
 require ossie
 
 statement error
-SELECT * FROM ossie_fact_program();
+SELECT * FROM (SELECT regexp_extract(program_json,'"program":(\{.*\})\}$',1) AS program_json FROM ossie_program());
 ----
 no bundle loaded
 
@@ -25,37 +25,37 @@ statement ok
 CALL ossie_bundle_load('test/fixtures/population-fact-program/bundle.json');
 
 query IIII
-SELECT contains(result_json,'"rows":[["A","290.00"],["B","50.00"],["C",null]]')::INTEGER, contains(result_json,'"common_user_count":"3"')::INTEGER, contains(result_json,'"selected_user_count":"3"')::INTEGER, contains(result_json,'"bound_type":"DECIMAL(38,2)"')::INTEGER FROM ossie_fact_users_json('{"domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}');
+SELECT contains(result_json,'"rows":[["A","290.00"],["B","50.00"],["C",null]]')::INTEGER, contains(result_json,'"common_user_count":"3"')::INTEGER, contains(result_json,'"selected_user_count":"3"')::INTEGER, contains(result_json,'"bound_type":"DECIMAL(38,2)"')::INTEGER FROM ossie_population_json('{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}');
 ----
 1	1	1	1
 
 query III
-SELECT contains(result_json,'"rows":[]')::INTEGER, contains(result_json,'"common_user_count":"3"')::INTEGER, contains(result_json,'"selected_user_count":"0"')::INTEGER FROM ossie_fact_users_json('{"domain":"common","input_scope":"entire_capture","metrics":["income"],"cohort":{"operation":"predicate","predicate":"income>10000"}}');
+SELECT contains(result_json,'"rows":[]')::INTEGER, contains(result_json,'"common_user_count":"3"')::INTEGER, contains(result_json,'"selected_user_count":"0"')::INTEGER FROM ossie_population_json('{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["income"],"cohort":{"operation":"predicate","predicate":"income>10000"}}');
 ----
 1	1	1
 
 query III
-SELECT contains(result_json,'["A","2026-02-01","200.00","250.00"]')::INTEGER, contains(result_json,'["D","2026-02-01",null,"40.00"]')::INTEGER, contains(result_json,'"source_captured_rows":"8"')::INTEGER FROM ossie_fact_windows_json('{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}');
+SELECT contains(result_json,'["A","2026-02-01","200.00","250.00"]')::INTEGER, contains(result_json,'["D","2026-02-01",null,"40.00"]')::INTEGER, contains(result_json,'"source_captured_rows":"8"')::INTEGER FROM ossie_population_json('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}');
 ----
 1	1	1
 
 query III
-SELECT contains(plan_json,'"executed":false')::INTEGER, contains(plan_json,'"counts_computed":false')::INTEGER, (NOT contains(plan_json,'"common_user_count":'))::INTEGER FROM ossie_fact_users_compile('{"domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}');
+SELECT contains(plan_json,'"executed":false')::INTEGER, contains(plan_json,'"counts_computed":false')::INTEGER, (NOT contains(plan_json,'"common_user_count":'))::INTEGER FROM ossie_population_compile('{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}');
 ----
 1	1	1
 
 query III
-SELECT contains(program_json,'"schema_version":"ossie-fact-program-v1"')::INTEGER, contains(program_json,'"captured_rows":"10"')::INTEGER, contains(program_json,'"mcp_registered":false')::INTEGER FROM ossie_fact_program();
+SELECT contains(program_json,'"schema_version":"ossie-fact-program-v1"')::INTEGER, contains(program_json,'"captured_rows":"10"')::INTEGER, contains(program_json,'"mcp_registered":false')::INTEGER FROM (SELECT regexp_extract(program_json,'"program":(\{.*\})\}$',1) AS program_json FROM ossie_program());
 ----
 1	1	1
 
 statement error
-SELECT * FROM ossie_fact_users_json('{"domain":"common","input_scope":"entire_capture","metrics":["previous"],"cohort":{"operation":"all"}}');
+SELECT * FROM ossie_population_json('{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["previous"],"cohort":{"operation":"all"}}');
 ----
 INVALID_REQUEST
 
 statement error
-SELECT * FROM ossie_population_capabilities();
+SELECT * FROM ossie_population_json('{"kind":"objects","concept":"User","filters":[]}');
 ----
 UNSUPPORTED_CAPABILITY
 
@@ -72,12 +72,12 @@ statement ok
 CALL ossie_bundle_load('test/fixtures/population-fact-program/bundle.json');
 
 query II
-SELECT contains(result_json,'"rows":[["A","290.00"],["B","50.00"],["C",null]]')::INTEGER, contains(result_json,'"common_user_count":"3"')::INTEGER FROM ossie_fact_users_json('{"domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}');
+SELECT contains(result_json,'"rows":[["A","290.00"],["B","50.00"],["C",null]]')::INTEGER, contains(result_json,'"common_user_count":"3"')::INTEGER FROM ossie_population_json('{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}');
 ----
 1	1
 
 query I
-SELECT contains(result_json,'["A","2026-02-01","200.00","250.00"]')::INTEGER FROM ossie_fact_windows_json('{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}');
+SELECT contains(result_json,'["A","2026-02-01","200.00","250.00"]')::INTEGER FROM ossie_population_json('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}');
 ----
 1
 
@@ -88,6 +88,6 @@ statement ok
 DROP TABLE cost;
 
 query I
-SELECT contains(result_json,'"common_user_count":"3"')::INTEGER FROM ossie_fact_users_json('{"domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}');
+SELECT contains(result_json,'"common_user_count":"3"')::INTEGER FROM ossie_population_json('{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}');
 ----
 1

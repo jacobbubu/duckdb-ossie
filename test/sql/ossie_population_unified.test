@@ -1,5 +1,5 @@
 # name: test/sql/ossie_population_unified.test
-# description: ossie_population_json / ossie_population_compile / ossie_program route by kind to the same binds as the dedicated functions
+# description: ossie_population_json / ossie_population_compile / ossie_program route every request kind by profile
 # group: [sql]
 
 require ossie
@@ -29,47 +29,36 @@ COPY dws_gaap_di FROM 'test/fixtures/population-data/gaap-boundary.csv' (HEADER)
 statement ok
 CALL ossie_bundle_load('test/fixtures/population/bundle-10.json');
 
-query I
-SELECT (SELECT result_json FROM ossie_objects_json('ValidUser',['User.product = ''A'''])) = (SELECT result_json FROM ossie_population_json('{"kind":"objects","concept":"ValidUser","filters":["User.product = ''A''"]}'));
+query TTT
+SELECT regexp_extract(result_json,'"request_kind":"([^"]+)"',1), regexp_extract(result_json,'"rows":(\[.*\]),"row_count"',1), regexp_extract(result_json,'"row_count":(\d+)',1) FROM ossie_population_json('{"kind":"objects","concept":"ValidUser","filters":["User.product = ''A''"]}');
 ----
-true
+objects	[]	0
 
-query I
-SELECT (SELECT result_json FROM ossie_concept_query_json('ValidUser',['gaap_sum','record_count'],['dws_gaap_di.product'],[])) = (SELECT result_json FROM ossie_population_json('{"kind":"metrics","concept":"ValidUser","metrics":["gaap_sum","record_count"],"dimensions":["dws_gaap_di.product"],"filters":[]}'));
+query TTT
+SELECT regexp_extract(result_json,'"request_kind":"([^"]+)"',1), regexp_extract(result_json,'"rows":(\[.*\]),"row_count"',1), regexp_extract(result_json,'"row_count":(\d+)',1) FROM ossie_population_json('{"kind":"metrics","concept":"ValidUser","metrics":["gaap_sum","record_count"],"dimensions":["dws_gaap_di.product"],"filters":[]}');
 ----
-true
+metrics	[["X","180.00","6"],["Y","30.00","1"]]	2
 
-# The unified compile returns the dedicated plan_json with sql and execution_target appended.
-query II
-WITH l AS (SELECT * FROM ossie_concept_compile('ValidUser',['gaap_sum'],[],[],include_trace=>true)), u AS (SELECT plan_json FROM ossie_population_compile('{"kind":"metrics","concept":"ValidUser","metrics":["gaap_sum"],"dimensions":[],"filters":[],"include_trace":true}'))
-SELECT substr(u.plan_json,1,length(l.plan_json)-1) = substr(l.plan_json,1,length(l.plan_json)-1), ends_with(u.plan_json, ',"sql":"' || replace(l.sql,'"','\"') || '","execution_target":"' || l.execution_target || '"}') FROM l, u;
+# The unified compile returns the plan with the generated SQL and execution target appended.
+query TTTI
+SELECT regexp_extract(plan_json,'"request_kind":"([^"]+)"',1), regexp_extract(plan_json,'"executed":(true|false)',1), regexp_extract(plan_json,'"execution_target":"([^"]+)"\}$',1), contains(plan_json,',"sql":"SELECT \"system\".main.sum(dws_gaap_di.gaap_val) AS gaap_sum,')::INTEGER FROM ossie_population_compile('{"kind":"metrics","concept":"ValidUser","metrics":["gaap_sum"],"dimensions":[],"filters":[],"include_trace":true}');
 ----
-true	true
+metrics	false	frozen typed observation batch (AST dependency required)	1
 
 query TTI
 SELECT regexp_extract(program_json,'"schema_version":"([^"]+)"',1), regexp_extract(program_json,'"request_kinds":(\[[^\]]*\])',1), contains(program_json,'"program":null}')::INTEGER FROM ossie_program();
 ----
 ossie-program-v1	["objects","metrics"]	1
 
-query I
-SELECT (SELECT list(concept ORDER BY concept) FROM ossie_concepts_v2()) = (SELECT list_sort(regexp_extract_all(regexp_extract(program_json,'"concepts":(\[.*\]),"vocabulary":',1),'\{"concept":"([^"]+)"',1)) FROM ossie_program());
+query TTT
+SELECT list_sort(regexp_extract_all(regexp_extract(program_json,'"concepts":(\[.*\]),"vocabulary":',1),'\{"concept":"([^"]+)"',1)), list_sort(regexp_extract_all(regexp_extract(program_json,'"metrics":(\[.*\]),"fields":',1),'\{"name":"([^"]+)"',1)), list_sort(regexp_extract_all(regexp_extract(program_json,'"fields":(\[.*\])\},"capabilities":',1),'"name":"([^"]+)","qualified_name"',1)) FROM ossie_program();
 ----
-true
+[User, ValidUser]	[gaap_sum, gaap_value_count, mean_gaap, record_count]	[ds, gaap_val, product, region, user_id, user_type, ytd_gaap]
 
-query I
-SELECT (SELECT list(name ORDER BY name) FROM ossie_population_metrics()) = (SELECT list_sort(regexp_extract_all(regexp_extract(program_json,'"metrics":(\[.*\]),"fields":',1),'\{"name":"([^"]+)"',1)) FROM ossie_program());
+query TTTT
+SELECT regexp_extract(program_json,'"api_version":"([^"]+)"',1), regexp_extract(program_json,'"discovery_schema":"([^"]+)"',1), regexp_extract(program_json,'"plan_schema":"([^"]+)"',1), regexp_extract(program_json,'"capabilities":\{"scope":"([^"]+)"',1) FROM ossie_program();
 ----
-true
-
-query I
-SELECT (SELECT list(name ORDER BY name) FROM ossie_population_fields()) = (SELECT list_sort(regexp_extract_all(regexp_extract(program_json,'"fields":(\[.*\])\},"capabilities":',1),'"name":"([^"]+)","qualified_name"',1)) FROM ossie_program());
-----
-true
-
-query I
-SELECT (SELECT api_version || '|' || discovery_schema || '|' || plan_schema || '|' || ossie_spec_version || '|' || capabilities_json FROM ossie_population_capabilities()) = (SELECT regexp_extract(program_json,'"api_version":"([^"]+)"',1) || '|' || regexp_extract(program_json,'"discovery_schema":"([^"]+)"',1) || '|' || regexp_extract(program_json,'"plan_schema":"([^"]+)"',1) || '|' || regexp_extract(program_json,'"ossie_spec_version":"([^"]+)"',1) || '|' || regexp_extract(program_json,'"capabilities":(\{.*\}),"program":',1) FROM ossie_program());
-----
-true
+2.2.0	ossie-population-discovery-v1	ossie-population-plan-v1	bound frozen bundle
 
 # Envelope validation.
 
@@ -119,35 +108,35 @@ INSERT INTO observations VALUES ('A','2024-02-28','X',1,0),('A','2024-02-28','Y'
 statement ok
 CALL ossie_bundle_load('test/fixtures/population-observation/bundle-10.json');
 
-query I
-SELECT (SELECT result_json FROM ossie_daily_states_json('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}')) = (SELECT result_json FROM ossie_population_json('{"kind":"daily_states","concept":"QualifiedObservation","start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}'));
+query TT
+SELECT regexp_extract(result_json,'"schema_version":"([^"]+)"',1), regexp_extract(result_json,'"states":(\[.*\]),"comparison_columns"',1) FROM ossie_population_json('{"kind":"daily_states","concept":"QualifiedObservation","start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
 ----
-true
+ossie-daily-states-result-v1	[["A","2024-02-28","UNKNOWN"],["A","2024-02-29","TRUE"],["B","2024-02-28","FALSE"],["B","2024-02-29","FALSE"],["Outside","2024-02-28","UNKNOWN"],["Outside","2024-02-29","UNKNOWN"]]
 
-query I
-SELECT (SELECT plan_json FROM ossie_daily_states_compile('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}')) = (SELECT plan_json FROM ossie_population_compile('{"kind":"daily_states","concept":"QualifiedObservation","start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}'));
+query TT
+SELECT regexp_extract(plan_json,'"schema_version":"([^"]+)"',1), regexp_extract(plan_json,'"executed":(true|false)',1) FROM ossie_population_compile('{"kind":"daily_states","concept":"QualifiedObservation","start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"},"user_domain":"captured_users","transitions":"within_request_days"}');
 ----
-true
+ossie-daily-states-plan-v1	false
 
-query I
-SELECT (SELECT result_json FROM ossie_daily_users_json('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"}}')) = (SELECT result_json FROM ossie_population_json('{"kind":"daily_users","concept":"QualifiedObservation","start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"}}'));
+query TT
+SELECT regexp_extract(result_json,'"schema_version":"([^"]+)"',1), regexp_extract(result_json,'"members":(\[[^\]]*\])',1) FROM ossie_population_json('{"kind":"daily_users","concept":"QualifiedObservation","start_date":"2024-02-29","end_date":"2024-02-29","products":{"mode":"all"}}');
 ----
-true
+ossie-daily-user-set-result-v1	["A"]
 
-query I
-SELECT (SELECT plan_json FROM ossie_daily_users_compile('QualifiedObservation','{"start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"}}')) = (SELECT plan_json FROM ossie_population_compile('{"kind":"daily_users","concept":"QualifiedObservation","start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"}}'));
+query TT
+SELECT regexp_extract(plan_json,'"schema_version":"([^"]+)"',1), regexp_extract(plan_json,'"executed":(true|false)',1) FROM ossie_population_compile('{"kind":"daily_users","concept":"QualifiedObservation","start_date":"2024-02-28","end_date":"2024-02-29","products":{"mode":"all"}}');
 ----
-true
+ossie-daily-user-set-plan-v1	false
 
-query I
-SELECT (SELECT result_json FROM ossie_objects_json('QualifiedObservation',[])) = (SELECT result_json FROM ossie_population_json('{"kind":"objects","concept":"QualifiedObservation","filters":[]}'));
+query TT
+SELECT regexp_extract(result_json,'"request_kind":"([^"]+)"',1), regexp_extract(result_json,'"row_count":(\d+)',1) FROM ossie_population_json('{"kind":"objects","concept":"QualifiedObservation","filters":[]}');
 ----
-true
+objects	2
 
-query TI
-SELECT regexp_extract(program_json,'"request_kinds":(\[[^\]]*\])',1), ((SELECT program_json FROM ossie_daily_states_program()) = regexp_extract(program_json,'"program":(\{.*\})\}$',1))::INTEGER FROM ossie_program();
+query TT
+SELECT regexp_extract(program_json,'"request_kinds":(\[[^\]]*\])',1), regexp_extract(program_json,'"program":\{"schema_version":"([^"]+)"',1) FROM ossie_program();
 ----
-["objects","metrics","daily_users","daily_states"]	1
+["objects","metrics","daily_users","daily_states"]	ossie-daily-states-program-v1
 
 # Daily request keys are still validated by the dedicated parser once the envelope is stripped.
 statement error
@@ -169,20 +158,20 @@ INSERT INTO observations VALUES ('a','A','2026-01-01','X',1,10),('b','A','2026-0
 statement ok
 CALL ossie_bundle_load('test/fixtures/population-relation-program/bundle.json');
 
-query I
-SELECT (SELECT result_json FROM ossie_relation_objects_json('AUDITED_USER')) = (SELECT result_json FROM ossie_population_json('{"kind":"relation_links","relationship":"AUDITED_USER"}'));
+query TTT
+SELECT regexp_extract(result_json,'"schema_version":"([^"]+)"',1), regexp_extract(result_json,'"relationship":"([^"]+)"',1), regexp_extract(result_json,'"links":(\[.*\]),"link_count"',1) FROM ossie_population_json('{"kind":"relation_links","relationship":"AUDITED_USER"}');
 ----
-true
+ossie-relation-result-v1	audited_user	[["A","2026-01-01","X","A"]]
 
-query I
-SELECT (SELECT plan_json FROM ossie_relation_compile('audited_user')) = (SELECT plan_json FROM ossie_population_compile('{"kind":"relation_links","relationship":"audited_user"}'));
+query TT
+SELECT regexp_extract(plan_json,'"schema_version":"([^"]+)"',1), regexp_extract(plan_json,'"executed":(true|false)',1) FROM ossie_population_compile('{"kind":"relation_links","relationship":"audited_user"}');
 ----
-true
+ossie-relation-plan-v1	false
 
-query TII
-SELECT regexp_extract(program_json,'"request_kinds":(\[[^\]]*\])',1), contains(program_json,'"concepts":null,"vocabulary":null,"capabilities":null')::INTEGER, ((SELECT program_json FROM ossie_relation_program()) = regexp_extract(program_json,'"program":(\{.*\})\}$',1))::INTEGER FROM ossie_program();
+query TIT
+SELECT regexp_extract(program_json,'"request_kinds":(\[[^\]]*\])',1), contains(program_json,'"concepts":null,"vocabulary":null,"capabilities":null')::INTEGER, regexp_extract(program_json,'"program":\{"schema_version":"([^"]+)"',1) FROM ossie_program();
 ----
-["relation_links"]	1	1
+["relation_links"]	1	ossie-relation-program-v1
 
 statement error
 SELECT * FROM ossie_population_json('{"kind":"objects","concept":"X","filters":[]}');
@@ -206,35 +195,31 @@ INSERT INTO cost VALUES ('A','2026-01-01','X',10),('A','2026-01-01','Y',20),('A'
 statement ok
 CALL ossie_bundle_load('test/fixtures/population-fact-program/bundle.json');
 
-# Fact results echo the request verbatim, so the unified route differs only in that echo.
-query III
-WITH l AS (SELECT result_json j FROM ossie_fact_users_json('{"domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}')), u AS (SELECT result_json j FROM ossie_population_json('{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}'))
-SELECT regexp_replace(l.j,'"request":\{.*?\},"selected','"request":_,"selected') = regexp_replace(u.j,'"request":\{.*?\},"selected','"request":_,"selected'), contains(l.j,'"request":{"domain":"common"'), contains(u.j,'"request":{"kind":"fact_users","domain":"common"') FROM l,u;
+# Fact results echo the unified request verbatim, kind included.
+query TIT
+SELECT regexp_extract(result_json,'"schema_version":"([^"]+)"',1), contains(result_json,'"request":{"kind":"fact_users","domain":"common"')::INTEGER, regexp_extract(result_json,'"rows":(\[.*\])\}$',1) FROM ossie_population_json('{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}');
 ----
-true	true	true
-
-query I
-WITH l AS (SELECT plan_json j FROM ossie_fact_users_compile('{"domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}')), u AS (SELECT plan_json j FROM ossie_population_compile('{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}'))
-SELECT regexp_replace(l.j,'"request":\{.*?\},"selected','"request":_,"selected') = regexp_replace(u.j,'"request":\{.*?\},"selected','"request":_,"selected') FROM l,u;
-----
-true
-
-query I
-WITH l AS (SELECT result_json j FROM ossie_fact_windows_json('{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}')), u AS (SELECT result_json j FROM ossie_population_json('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}'))
-SELECT regexp_replace(l.j,'"request":\{.*?\},"selected','"request":_,"selected') = regexp_replace(u.j,'"request":\{.*?\},"selected','"request":_,"selected') FROM l,u;
-----
-true
-
-query I
-WITH l AS (SELECT plan_json j FROM ossie_fact_windows_compile('{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}')), u AS (SELECT plan_json j FROM ossie_population_compile('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}'))
-SELECT regexp_replace(l.j,'"request":\{.*?\},"selected','"request":_,"selected') = regexp_replace(u.j,'"request":\{.*?\},"selected','"request":_,"selected') FROM l,u;
-----
-true
+ossie-fact-users-result-v1	1	[["A","290.00"],["B","50.00"],["C",null]]
 
 query TI
-SELECT regexp_extract(program_json,'"request_kinds":(\[[^\]]*\])',1), ((SELECT program_json FROM ossie_fact_program()) = regexp_extract(program_json,'"program":(\{.*\})\}$',1))::INTEGER FROM ossie_program();
+SELECT regexp_extract(plan_json,'"schema_version":"([^"]+)"',1), contains(plan_json,'"request":{"kind":"fact_users","domain":"common"')::INTEGER FROM ossie_population_compile('{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["balance"],"cohort":{"operation":"all"}}');
 ----
-["fact_users","fact_windows"]	1
+ossie-fact-users-plan-v1	1
+
+query TT
+SELECT regexp_extract(result_json,'"schema_version":"([^"]+)"',1), regexp_extract(result_json,'"rows":(\[.*\])\}$',1) FROM ossie_population_json('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}');
+----
+ossie-fact-windows-result-v1	[["A","2026-02-01","200.00","250.00"],["B","2026-02-01","80.00","80.00"],["C","2026-02-01",null,null],["D","2026-02-01",null,"40.00"]]
+
+query TT
+SELECT regexp_extract(plan_json,'"schema_version":"([^"]+)"',1), regexp_extract(plan_json,'"executed":(true|false)',1) FROM ossie_population_compile('{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}');
+----
+ossie-fact-windows-plan-v1	false
+
+query TT
+SELECT regexp_extract(program_json,'"request_kinds":(\[[^\]]*\])',1), regexp_extract(program_json,'"program":\{"schema_version":"([^"]+)"',1) FROM ossie_program();
+----
+["fact_users","fact_windows"]	ossie-fact-program-v1
 
 # ---- historical observation profile ----
 
@@ -256,20 +241,20 @@ INSERT INTO history VALUES ('a','u','T','2024-02-28','2024-03-01'),('b','u','T',
 statement ok
 CALL ossie_bundle_load('test/fixtures/population-history-program/bundle.json');
 
-query I
-SELECT (SELECT result_json FROM ossie_history_links_json('team_at_observation','{"dates":{"mode":"range","start_date":"2024-02-29","end_date":"2024-03-01"},"products":{"mode":"subset","values":["X"]}}')) = (SELECT result_json FROM ossie_population_json('{"kind":"history_links","relationship":"team_at_observation","dates":{"mode":"range","start_date":"2024-02-29","end_date":"2024-03-01"},"products":{"mode":"subset","values":["X"]}}'));
+query TT
+SELECT regexp_extract(result_json,'"schema_version":"([^"]+)"',1), regexp_extract(result_json,'"links":(\[.*\])\}$',1) FROM ossie_population_json('{"kind":"history_links","relationship":"team_at_observation","dates":{"mode":"range","start_date":"2024-02-29","end_date":"2024-03-01"},"products":{"mode":"subset","values":["X"]}}');
 ----
-true
+ossie-history-links-result-v1	[["u","2024-02-29","X","T"],["u","2024-03-01","X","V"]]
 
-query I
-SELECT (SELECT plan_json FROM ossie_history_links_compile('team_at_observation','{"dates":{"mode":"all"},"products":{"mode":"all"}}')) = (SELECT plan_json FROM ossie_population_compile('{"kind":"history_links","relationship":"team_at_observation","dates":{"mode":"all"},"products":{"mode":"all"}}'));
+query TT
+SELECT regexp_extract(plan_json,'"schema_version":"([^"]+)"',1), regexp_extract(plan_json,'"executed":(true|false)',1) FROM ossie_population_compile('{"kind":"history_links","relationship":"team_at_observation","dates":{"mode":"all"},"products":{"mode":"all"}}');
 ----
-true
+ossie-history-links-plan-v1	false
 
-query TI
-SELECT regexp_extract(program_json,'"request_kinds":(\[[^\]]*\])',1), ((SELECT program_json FROM ossie_history_program()) = regexp_extract(program_json,'"program":(\{.*\})\}$',1))::INTEGER FROM ossie_program();
+query TT
+SELECT regexp_extract(program_json,'"request_kinds":(\[[^\]]*\])',1), regexp_extract(program_json,'"program":\{"schema_version":"([^"]+)"',1) FROM ossie_program();
 ----
-["history_links"]	1
+["history_links"]	ossie-history-program-v1
 
 statement error
 SELECT * FROM ossie_population_json('{"kind":"history_links","dates":{"mode":"all"},"products":{"mode":"all"}}');

@@ -1,6 +1,6 @@
 # 每个自然日有合格见证的 User 集合
 
-`ossie_daily_users_json(concept, request_json)` 是项目API2.2.0的专用SQL入口，
+`ossie_population_json` 的 `kind=daily_users` 请求是项目API2.2.0的专用入口，
 仅支持当前 `daily-observation-population-v1` 的正式派生观察概念（示例
 `QualifiedObservation`）。它返回一行VARCHAR `result_json`，完整成员集合
 与人数均指每个指定自然日都有至少一条范围内合格观察的User。产品可跨日更换；
@@ -8,9 +8,8 @@
 缺少见证，不证明现实用户不合格或数据完整。原 `user_count` 仍指期间至少一次合格。
 
 ```sql
-SELECT result_json FROM ossie_daily_users_json(
-  'QualifiedObservation',
-  '{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}'
+SELECT result_json FROM ossie_population_json(
+  '{"kind":"daily_users","concept":"QualifiedObservation","start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}'
 );
 ```
 
@@ -50,16 +49,15 @@ internal/fatal/OOM继续原生传播，不冒充预算失败。执行逐行、�
 
 能力发现 `daily_user_set` 单独声明SQL启用、实际唯一concept、结果schema、限制及
 未保证项。旧两个profileenabled=false，直接调用此SQL拒绝；User仍referent-only。
-`ossie_daily_users_compile(concept, request_json)` 返回一行VARCHAR `plan_json`，
+`ossie_population_compile` 对同一请求返回一行VARCHAR `plan_json`，
 schema为独立 `ossie-daily-user-set-plan-v1`。它共用相同请求校验和冻结bundle绑定，
 给出实际绑定的user/date/product类型、资格投影AST文本，以及有序逻辑步骤：TRUE资格、
 包含首尾的日期过滤、产品范围、去重(user,date)、日期数等于必需自然日数、原始字节排序、
 完整JSON预算。日期、规则、范围及追溯字段与执行出口一致。
 
 ```sql
-SELECT plan_json FROM ossie_daily_users_compile(
-  'QualifiedObservation',
-  '{"start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}'
+SELECT plan_json FROM ossie_population_compile(
+  '{"kind":"daily_users","concept":"QualifiedObservation","start_date":"2026-01-31","end_date":"2026-02-01","products":{"mode":"all"}}'
 );
 ```
 
@@ -74,11 +72,11 @@ plan完整JSON同样按增量编码限制在1,048,576 UTF-8字节内，超限以
 专用[每日MCP示例](../examples/daily_user_server.sql)新增两个工具：
 `population_daily_users`与`population_daily_compile`。它独立于原观察服务，
 默认使用23行研究观察，当前阈值10；operator可选择已审查的阈值20。
-五个资源包含原概念/指标/字段/SQL能力及 `ossie://population/daily-surface`。
+两个资源为 `ossie://population/program` 及 `ossie://population/daily-surface`。
 最后一个明确此服务只暴露两个每日工具；SQL指标/对象可用不等于MCP工具存在。
 Agent无导入/reload/任意SQL工具；原观察服务三个工具和每天场景拒绝保持。
 
-参数为concept与request_json两个String，范围全在request_json。固定上游
+参数只有request_json一个String，kind、concept与范围全在request_json。固定上游
 [6f9c4ba的参数绑定](https://github.com/teaguesterling/duckdb_mcp/blob/6f9c4ba1d2f1040c2a4638dabcd66da630a763ad/src/server/tool_handlers.cpp#L675)
 只按schema声明参数绑定，未知外层参数忽略，String参数可能从对象转为JSON文本。
 不能声称外层完整JSON Schema严格

@@ -101,13 +101,12 @@ existing object columns and plan-v1 behavior.
 ## Structured discovery and plan
 
 ```sql
-SELECT * FROM ossie_concepts_v2();
-SELECT * FROM ossie_population_capabilities();
-SELECT plan_json FROM ossie_concept_compile(
-  'QualifiedObservation', ['user_count'], [], []);
+SELECT program_json FROM ossie_program();
+SELECT plan_json FROM ossie_population_compile(
+  '{"kind":"metrics","concept":"QualifiedObservation","metrics":["user_count"],"dimensions":[],"filters":[]}');
 ```
 
-`ossie_concepts_v2()` returns concept, nullable parent/rule,
+Each `concepts` entry of `program_json` carries concept, nullable parent/rule,
 `identity_components_json`, nullable `referenced_entity_identity_json`,
 `objects_queryable`, `metrics_queryable`, `captured_observation_rows`,
 `captured_user_count`, profile/source and the existing definition/snapshot hashes.
@@ -118,13 +117,14 @@ row is not queryable; observation rows expose their referenced User identity.
 The captured counts are 8 observations/4 Users for every discovery row in this
 fixture: they describe the raw batch, not the 6/3 qualifying query population.
 
-The same function adapts old profiles to a single identity component. Legacy
-`ossie_concepts()` keeps its old schema for the two old profiles and refuses this
-compound profile with guidance to use v2. Metrics/fields discovery retain their
-v1 shapes; field presence alone does not authorize a grouping request.
+The same `concepts` section adapts old profiles to a single identity component.
+Legacy `ossie_concepts()` keeps its old schema for the two old profiles and refuses
+this compound profile with guidance to use `ossie_program()`. The `vocabulary`
+section retains the v1 metrics/fields shapes; field presence alone does not
+authorize a grouping request.
 
-The current project API is `2.2.0` (observation support was added in `2.1.0`). Capabilities identify the active concept
-function/schema, permitted group fields and User/mean scope. The new profile's
+The current project API is `2.2.0` (observation support was added in `2.1.0`). The `capabilities` section identifies the active
+discovery schema, permitted group fields and User/mean scope. The new profile's
 `ossie-population-plan-v2` explains the observation tuple (`entity_equals_record`
 true) separately from the referenced User (false), and states the internal binary
 string comparison. Old profiles still produce

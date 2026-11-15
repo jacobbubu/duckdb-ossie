@@ -6,9 +6,9 @@
 
 ```sql
 CALL ossie_bundle_load('test/fixtures/population-fact-program/bundle.json');
-SELECT * FROM ossie_fact_program();
-SELECT * FROM ossie_fact_users_json(
-  '{"domain":"common","input_scope":"entire_capture","metrics":["balance","income","expense"],"cohort":{"operation":"all"}}'
+SELECT * FROM ossie_program();
+SELECT * FROM ossie_population_json(
+  '{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["balance","income","expense"],"cohort":{"operation":"all"}}'
 );
 ```
 
@@ -19,16 +19,16 @@ SELECT * FROM ossie_fact_users_json(
 人群条件只允许一个已声明regular指标与一个精确数字的比较：=、<>、>、>=、<、<=。COUNT条件常量必须是整数，金额常量最多2位小数，不能使用浮点、NULL、其他列、函数、任意SQL或窗口指标。允许使用没有投影的regular指标。选择名大小写不敏感，返回声明中的规范拼写，大小写重复选择拒绝。
 
 ```sql
-SELECT * FROM ossie_fact_users_json(
-  '{"domain":"common","input_scope":"entire_capture","metrics":["income"],"cohort":{"operation":"difference","children":[{"operation":"predicate","predicate":"income>0"},{"operation":"predicate","predicate":"expense>50"}]}}'
+SELECT * FROM ossie_population_json(
+  '{"kind":"fact_users","domain":"common","input_scope":"entire_capture","metrics":["income"],"cohort":{"operation":"difference","children":[{"operation":"predicate","predicate":"income>0"},{"operation":"predicate","predicate":"expense>50"}]}}'
 );
 ```
 
 all仅有operation；predicate另有predicate；intersection/union/difference另有恰好两个有序children。每个原子条件归一为TRUE成员集合，再求交、并或有序差。右侧UNKNOWN不是右侧成员，因此不能用普通nullable NOT替代差集。所有集合运算仍限制在共同域内，union不能带入单侧D/E。
 
 ```sql
-SELECT * FROM ossie_fact_windows_json(
-  '{"input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}'
+SELECT * FROM ossie_population_json(
+  '{"kind":"fact_windows","input_scope":"entire_capture","windows":["previous","rolling"],"display":{"mode":"date_range","start_date":"2026-02-01","end_date":"2026-02-01"}}'
 );
 ```
 
@@ -36,9 +36,9 @@ SELECT * FROM ossie_fact_windows_json(
 
 显示范围必须显式all或date_range；all不能携带日期，date_range必须有有序start_date/end_date。日期文本须与固定DuckDB DATE的ToString规范一致，包括 `0001-01-01 (BC)`、宽年份和全部有限极值；有限INT32_MIN的规范文本由项目显式解析（上游文本cast不能往返此值），窗口查询树保留typed DATE常量。不会把计划文本可重放作为承诺。不接受infinity、epoch快捷字、非规范简写或NULL。范围只过滤输出，不限制跨度或改变基础行。没有按日期/产品缩小聚合输入的选项。
 
-两种查询都有对应的 `ossie_fact_users_compile` / `ossie_fact_windows_compile`，参数完全相同。计划schema分别为 `ossie-fact-users-plan-v1` / `ossie-fact-windows-plan-v1`，说明实际绑定类型、逻辑阶段和诊断SQL，executed/members_computed/counts_computed均false。不计算或返回common/selected/结果行计数，不提供物理计划或普通SQL重放保证。冻结表依赖存在于AST中；诊断SQL不能独立执行，固定DuckDB窗口文本还可能省略catalog。来源captured_rows属于加载事实，counts_computed仅指本次查询的计算计数。
+两种请求都可改用 `ossie_population_compile`，请求完全相同。计划schema分别为 `ossie-fact-users-plan-v1` / `ossie-fact-windows-plan-v1`，说明实际绑定类型、逻辑阶段和诊断SQL，executed/members_computed/counts_computed均false。不计算或返回common/selected/结果行计数，不提供物理计划或普通SQL重放保证。冻结表依赖存在于AST中；诊断SQL不能独立执行，固定DuckDB窗口文本还可能省略catalog。来源captured_rows属于加载事实，counts_computed仅指本次查询的计算计数。
 
-`ossie_fact_program()` 返回 `ossie-fact-program-v1`，列出两来源的完整身份、物理映射与实际类型、捕获行数、child hash；regular/window原定义、单位、类型、窗口来源与实际函数catalog/schema；以及支持/拒绝边界、资源限制和五个SQL函数。发现不执行对象查询或计算共同域人数。native的mcp_registered=false不推断外部服务注册。通用旧人口接口拒绝此profile，其他profile使用原接口。
+`ossie_program()` 的 `program` 段是 `ossie-fact-program-v1`，列出两来源的完整身份、物理映射与实际类型、捕获行数、child hash；regular/window原定义、单位、类型、窗口来源与实际函数catalog/schema；以及支持/拒绝边界、资源限制和SQL入口。发现不执行对象查询或计算共同域人数。native的mcp_registered=false不推断外部服务注册。此profile只接受 `kind=fact_users`/`fact_windows` 请求，其他kind拒绝。
 
 每次bind捕获同一个不可变父，计算分母与成员使用该父的两个child。预编译查询跨重新加载和来源表删除继续使用旧快照；执行始终经过私有binary Engine，不受调用者nocase或默认降序影响。同名数据库宏不能替换内部系统聚合、计数、金额加减或窗口函数。每个独立RPC会重新绑定：发现、编译与执行跨调用不保证相同快照，应比较返回的snapshot/content/core/ontology/mapping/manifest六项身份。
 

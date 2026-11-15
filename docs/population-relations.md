@@ -4,9 +4,9 @@
 
 ```sql
 CALL ossie_bundle_load('test/fixtures/population-relation-program/bundle.json');
-SELECT * FROM ossie_relation_program();
-SELECT * FROM ossie_relation_compile('audited_user');
-SELECT * FROM ossie_relation_objects_json('audited_user');
+SELECT * FROM ossie_program();
+SELECT * FROM ossie_population_compile('{"kind":"relation_links","relationship":"audited_user"}');
+SELECT * FROM ossie_population_json('{"kind":"relation_links","relationship":"audited_user"}');
 ```
 
 加载前需要本体对应的 observations 源表；可参考 [独立服务示例](../examples/relation_server.sql) 的 operator setup。该示例的 community 安装行是部署占位；使用本地产物时把 LOAD 改为构建出的扩展路径。
@@ -24,8 +24,8 @@ SQL 返回一列完整 JSON 文本。link 为 `[sourceUser,date,product,targetUs
 | 工具 | `population_relation_compile` | 同一声明关系的绑定逻辑解释 |
 | 工具 | `population_relation_objects` | 完整根/目标关系集合 |
 
-工具只有 `relationship` 字符串参数。先从 program 发现准确关系名，再调用。固定 MCP 上游会忽略多余参数，也可能把非字符串值转成文本；客户端必须传字符串，不能用 `date`、`products` 或 `limit` 偷加范围。示例关闭内置任意 SQL、导入、重载与通用数据库工具。原生 program 中 `mcp_registered=false` 是不观察外部注册的静态声明，不能用于判断正在运行的 MCP 服务；实际暴露以 `tools/list` 和 surface 为准。
+工具只有 `request_json` 字符串参数，内容为 `{"kind":"relation_links","relationship":R}`。先从 program 发现准确关系名，再调用。固定 MCP 上游会忽略多余参数，也可能把非字符串值转成文本；客户端必须传字符串，不能用 `date`、`products` 或 `limit` 偷加范围。示例关闭内置任意 SQL、导入、重载与通用数据库工具。原生 program 中 `mcp_registered=false` 是不观察外部注册的静态声明，不能用于判断正在运行的 MCP 服务；实际暴露以 `tools/list` 和 surface 为准。
 
 客户端应校验唯一完整 carrier、字段、实际日期范围/顺序、同映射目标、完整 link/count、预算及绑定，并对照 program 发现中的规范关系名、身份、规则和哈希。结构合法不能证明成员真值；compile 的 operator 文本是逻辑描述，不是优化器或执行计划。
 
-兼容边界保持明确：旧 gaap、join、observation profile 的接口行为保留；旧三个 server 不注册新工具。新 relation profile 使用专用 program/compile/objects 接口，旧通用对象/指标入口拒绝。
+兼容边界保持明确：旧 gaap、join、observation profile 的接口行为保留；旧三个 server 不注册新工具。relation profile 只接受 `kind=relation_links` 请求，objects/metrics 请求拒绝。

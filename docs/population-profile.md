@@ -64,7 +64,8 @@ SELECT * FROM ossie_objects('ValidUser', ['User.product = ''X''']);
 SELECT * FROM ossie_concept_query(
   'ValidUser', ['record_count', 'gaap_value_count', 'gaap_sum', 'mean_gaap'],
   ['dws_gaap_di.ds'], ['User.product = ''X''']);
-SELECT * FROM ossie_concept_compile('ValidUser', ['mean_gaap'], [], []);
+SELECT plan_json FROM ossie_population_compile(
+  '{"kind":"metrics","concept":"ValidUser","metrics":["mean_gaap"],"dimensions":[],"filters":[]}');
 ```
 
 Loading requires autocommit and a fully qualified, committed native table.
@@ -157,17 +158,18 @@ Content hashes frame physical column names/types and row values, plus row/column
 counts; they identify the ordered captured observation batch, not a universal
 order-independent dataset digest. Snapshot IDs additionally distinguish reloads.
 
-`ossie_concept_compile` exposes that same query AST as diagnostic SQL with profile,
-definition/snapshot hashes, execution target and `executed=false`. Empty metrics
-select the object path, with no dimensions. The SQL uses an internal frozen-row
+`ossie_population_compile` (request kinds `objects` and `metrics`) exposes that same
+query AST inside `plan_json` as diagnostic SQL with profile, definition/snapshot
+hashes, execution target and `executed=false`. Kind `objects` selects the object
+path, with no metrics or dimensions. The SQL uses an internal frozen-row
 reader whose AST dependency cannot be expressed as SQL text. Replaying the text
 is refused. A separate query after reload may bind a different snapshot; use
 execution trace to associate actual results with their batch.
 
 ## Machine-readable compile explanation
 
-`ossie_concept_compile` adds project-versioned `plan_json` before `executed` and
-accepts `include_trace => true`. It separates saved definition/dialect provenance
+`ossie_population_compile` returns a single project-versioned `plan_json` column and
+accepts `"include_trace":true` inside the request. It separates saved definition/dialect provenance
 from the final generated WHERE, FROM, ordered projections and groups. It also
 records validated input grain/join captures and definition/data hashes. Full capture
 row counts are not filtered counts; time ranges are not inferred from predicates.

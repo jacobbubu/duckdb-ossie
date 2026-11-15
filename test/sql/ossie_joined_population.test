@@ -122,7 +122,7 @@ SELECT * FROM ossie_objects('User',['fact._ossie_field_0 = ''f1''']);
 unknown original dataset.field
 
 query I
-SELECT CASE WHEN contains(execution_target,'"metric_grain":"fact"') THEN 1 ELSE 0 END FROM ossie_concept_compile('User',['amount_sum'],[],[]);
+SELECT CASE WHEN contains(regexp_extract(plan_json,'"execution_target":"(.*)"\}$',1),'\"metric_grain\":\"fact\"') THEN 1 ELSE 0 END FROM ossie_population_compile('{"kind":"metrics","concept":"User","metrics":["amount_sum"],"dimensions":[],"filters":[]}');
 ----
 1
 
@@ -144,7 +144,7 @@ statement ok
 CALL ossie_bundle_load('test/fixtures/string-join-fact/bundle.json');
 
 query T
-SELECT api_version FROM ossie_population_capabilities();
+SELECT regexp_extract(program_json,'"api_version":"([^"]+)"',1) FROM ossie_program();
 ----
 2.4.0
 
@@ -165,7 +165,7 @@ c
 e
 
 query I
-SELECT CASE WHEN contains(capabilities_json,'"schema_version":"ossie-native-string-join-v1"') AND contains(capabilities_json,'"actual_key_type":"VARCHAR"') THEN 1 ELSE 0 END FROM ossie_population_capabilities();
+SELECT CASE WHEN contains(program_json,'"schema_version":"ossie-native-string-join-v1"') AND contains(program_json,'"actual_key_type":"VARCHAR"') THEN 1 ELSE 0 END FROM ossie_program();
 ----
 1
 
@@ -173,7 +173,7 @@ statement ok
 PREPARE string_keys_held AS SELECT entity_id,"lookup.label" FROM ossie_objects('Device',[]) ORDER BY entity_id;
 
 statement ok
-CREATE TABLE string_snapshot_before AS SELECT snapshot_id FROM ossie_population_capabilities();
+CREATE TABLE string_snapshot_before AS SELECT regexp_extract(program_json,'"snapshot_id":"([^"]+)"',1) FROM ossie_program();
 
 statement ok
 INSERT INTO sj_a_d VALUES('unused','duplicate',0);
@@ -184,7 +184,7 @@ CALL ossie_bundle_load('test/fixtures/string-join-fact/bundle.json');
 entire dimension batch requires nonnull unique key
 
 query I
-SELECT count(*) FROM (SELECT snapshot_id FROM ossie_population_capabilities() EXCEPT ALL SELECT * FROM string_snapshot_before);
+SELECT count(*) FROM (SELECT regexp_extract(program_json,'"snapshot_id":"([^"]+)"',1) FROM ossie_program() EXCEPT ALL SELECT * FROM string_snapshot_before);
 ----
 0
 
@@ -237,7 +237,7 @@ statement ok
 CALL ossie_bundle_load('test/fixtures/direct-derived-single/bundle.json');
 
 query TT
-SELECT api_version,plan_schema FROM ossie_population_capabilities();
+SELECT regexp_extract(program_json,'"api_version":"([^"]+)"',1),regexp_extract(program_json,'"plan_schema":"([^"]+)"',1) FROM ossie_program();
 ----
 2.5.0	ossie-population-plan-v3
 
@@ -274,12 +274,12 @@ SELECT count(*) FROM (SELECT entity_id FROM ossie_objects('ActiveDevice',[]) UNI
 3
 
 query I
-SELECT CASE WHEN contains(plan_json,'"formal_rule":null') THEN 1 ELSE 0 END FROM ossie_concept_compile('Device',['device_count'],[],[]);
+SELECT CASE WHEN contains(plan_json,'"formal_rule":null') THEN 1 ELSE 0 END FROM ossie_population_compile('{"kind":"metrics","concept":"Device","metrics":["device_count"],"dimensions":[],"filters":[]}');
 ----
 1
 
 query I
-SELECT CASE WHEN contains(plan_json,'"owner":"LargeDevice","applied":true') THEN 1 ELSE 0 END FROM ossie_concept_compile('LargeDevice',['device_count'],[],[]);
+SELECT CASE WHEN contains(plan_json,'"owner":"LargeDevice","applied":true') THEN 1 ELSE 0 END FROM ossie_population_compile('{"kind":"metrics","concept":"LargeDevice","metrics":["device_count"],"dimensions":[],"filters":[]}');
 ----
 1
 
@@ -292,7 +292,7 @@ statement ok
 PREPARE held_direct_ids AS SELECT entity_id FROM ossie_objects('LargeDevice',[]) ORDER BY entity_id;
 
 statement ok
-CREATE TABLE direct_before AS SELECT snapshot_id FROM ossie_population_capabilities();
+CREATE TABLE direct_before AS SELECT regexp_extract(program_json,'"snapshot_id":"([^"]+)"',1) FROM ossie_program();
 
 statement ok
 UPDATE dd_a_f SET capacity=10 WHERE asset_id='d3';
@@ -303,7 +303,7 @@ CALL ossie_bundle_load('test/fixtures/direct-derived-single/bundle.json');
 CONSTRAINT_VIOLATION
 
 query I
-SELECT count(*) FROM (SELECT snapshot_id FROM ossie_population_capabilities() EXCEPT ALL SELECT * FROM direct_before);
+SELECT count(*) FROM (SELECT regexp_extract(program_json,'"snapshot_id":"([^"]+)"',1) FROM ossie_program() EXCEPT ALL SELECT * FROM direct_before);
 ----
 0
 
@@ -352,7 +352,7 @@ SELECT entity_id FROM ossie_objects('PriorityDevice',[])
 a1
 
 query TT
-SELECT api_version,plan_schema FROM ossie_population_capabilities()
+SELECT regexp_extract(program_json,'"api_version":"([^"]+)"',1),regexp_extract(program_json,'"plan_schema":"([^"]+)"',1) FROM ossie_program();
 ----
 2.6.0	ossie-population-plan-v4
 

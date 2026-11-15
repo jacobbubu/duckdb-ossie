@@ -1,11 +1,11 @@
 # name: test/sql/ossie_population_discovery.test
-# description: bound population vocabulary and project API version
+# description: bound population vocabulary and project API version inside ossie_program()
 # group: [sql]
 
 require ossie
 
 statement error
-SELECT * FROM ossie_population_fields();
+SELECT * FROM ossie_program();
 ----
 no bundle loaded
 
@@ -18,40 +18,51 @@ COPY dws_gaap_di FROM 'test/fixtures/population-data/gaap-boundary.csv' (HEADER)
 statement ok
 CALL ossie_bundle_load('test/fixtures/population/bundle-10.json');
 
-query TTTII rowsort
-SELECT name,datatype,bound_type,load_preflight_validated::INTEGER,execution_verified::INTEGER FROM ossie_population_metrics();
+query T
+SELECT regexp_extract(program_json,'"schema_version":"([^"]+)"',1) FROM ossie_program();
 ----
-gaap_sum	(empty)	DECIMAL(38,2)	1	0
-gaap_value_count	(empty)	BIGINT	1	0
-mean_gaap	Float	DOUBLE	1	0
-record_count	(empty)	BIGINT	1	0
+ossie-program-v1
 
-query TTTII
-SELECT qualified_name,object_column,bound_type,is_time::INTEGER,is_time_explicit::INTEGER FROM ossie_population_fields() WHERE name='ds';
+query T
+SELECT unnest(regexp_extract_all(regexp_extract(program_json,'"vocabulary":\{"metrics":(\[.*?\]),"fields":',1),'\{"name":"[^"]+","datatype":"[^"]*","bound_type":"[^"]+"',0)) FROM ossie_program() ORDER BY 1;
 ----
-dws_gaap_di.ds	dws_gaap_di.ds	DATE	1	0
+{"name":"gaap_sum","datatype":"","bound_type":"DECIMAL(38,2)"
+{"name":"gaap_value_count","datatype":"","bound_type":"BIGINT"
+{"name":"mean_gaap","datatype":"Float","bound_type":"DOUBLE"
+{"name":"record_count","datatype":"","bound_type":"BIGINT"
+
+query I
+SELECT len(regexp_extract_all(regexp_extract(program_json,'"vocabulary":\{"metrics":(\[.*?\]),"fields":',1),'"load_preflight_validated":true,"execution_verified":false\}',0)) FROM ossie_program();
+----
+4
+
+query T
+SELECT regexp_extract(program_json,'(\{"dataset":"dws_gaap_di","name":"ds","qualified_name":"dws_gaap_di.ds","object_column":"dws_gaap_di.ds","datatype":"Date","bound_type":"DATE".*?"is_time":true,"is_time_explicit":false)',1) FROM ossie_program();
+----
+{"dataset":"dws_gaap_di","name":"ds","qualified_name":"dws_gaap_di.ds","object_column":"dws_gaap_di.ds","datatype":"Date","bound_type":"DATE","label":"","description":"","expression":"ds","selected_dialect":"OSSIE_SQL_2026","available_dialects":["OSSIE_SQL_2026"],"synonyms":[],"examples":[],"instructions":"","ai_context":null,"custom_extensions":null,"is_time":true,"is_time_explicit":false
 
 query TTTT
-SELECT api_version,discovery_schema,plan_schema,ossie_spec_version FROM ossie_population_capabilities();
+SELECT regexp_extract(program_json,'"api_version":"([^"]+)"',1), regexp_extract(program_json,'"discovery_schema":"([^"]+)"',1), regexp_extract(program_json,'"plan_schema":"([^"]+)"',1), regexp_extract(program_json,'"ossie_spec_version":"([^"]+)"',1) FROM ossie_program();
 ----
 2.2.0	ossie-population-discovery-v1	ossie-population-plan-v1	0.2.0.dev0
 
+# Bundle identity is stated once in the header rather than repeated per embedded row.
 query I
-SELECT count(DISTINCT snapshot_id) FROM (SELECT snapshot_id FROM ossie_population_metrics() UNION ALL SELECT snapshot_id FROM ossie_population_fields() UNION ALL SELECT snapshot_id FROM ossie_population_capabilities());
+SELECT len(regexp_extract_all(program_json,'"snapshot_id":"([^"]+)"',1)) FROM ossie_program();
 ----
 1
 
 statement ok
-CREATE TABLE old_manifest AS SELECT manifest_sha256 FROM ossie_population_capabilities();
+CREATE TABLE old_manifest AS SELECT regexp_extract(program_json,'"manifest_sha256":"([^"]+)"',1) AS manifest_sha256 FROM ossie_program();
 
 statement ok
-PREPARE old_discovery AS SELECT (current.manifest_sha256=old_manifest.manifest_sha256)::INTEGER FROM ossie_population_capabilities() current,old_manifest;
+PREPARE old_discovery AS SELECT (regexp_extract(program_json,'"manifest_sha256":"([^"]+)"',1)=old_manifest.manifest_sha256)::INTEGER FROM ossie_program(),old_manifest;
 
 statement ok
 CALL ossie_bundle_load('test/fixtures/population/bundle-20.json');
 
 query I
-SELECT (old_manifest.manifest_sha256 <> current.manifest_sha256)::INTEGER FROM old_manifest,ossie_population_capabilities() current;
+SELECT (old_manifest.manifest_sha256 <> regexp_extract(program_json,'"manifest_sha256":"([^"]+)"',1))::INTEGER FROM old_manifest,ossie_program();
 ----
 1
 
@@ -62,6 +73,6 @@ EXECUTE old_discovery;
 
 # Legacy manifests retain their original active-contract version and no opt-in payload.
 query I
-SELECT (strpos(capabilities_json, '"concept_constraints"')=0)::INTEGER FROM ossie_population_capabilities();
+SELECT (strpos(program_json, '"concept_constraints"')=0)::INTEGER FROM ossie_program();
 ----
 1

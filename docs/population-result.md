@@ -1,18 +1,17 @@
 # Typed population result
 
-`ossie_objects_json(concept, filters)` and
-`ossie_concept_query_json(concept, metrics, dimensions, filters)` are optional
-adapters. Each returns exactly one VARCHAR column, `result_json`, with one row
-after successful execution, including an empty object/grouped result. They use
+`ossie_population_json(request_json)` with `{"kind":"objects","concept":C,"filters":[...]}`
+or `{"kind":"metrics","concept":C,"metrics":[...],"dimensions":[...],"filters":[...]}`
+is the typed adapter over the native `ossie_objects` / `ossie_concept_query`
+tables. It returns exactly one VARCHAR column, `result_json`, with one row
+after successful execution, including an empty object/grouped result. It uses
 the same QueryAST, filters, checked grain and frozen data as the native APIs.
-`include_trace => true` adds the same trace projections. Native object/query
+`"include_trace":true` adds the same trace projections. Native object/query
 column names, types and computation remain unchanged.
 
 The project schema is `ossie-population-result-v1`; it is not an Ossie or MCP
-standard. Project population API 2.0.0 adds these functions and marks the
-incompatible MCP success-format change. The example MCP object and
-query tools now use them, which changes their successful result format. Tool
-names, arguments, discovery resources and the compile tool format remain unchanged.
+standard. Project population API 2.0.0 introduced this envelope and marks the
+incompatible MCP success-format change. The example MCP query tool uses it.
 Consumers of the earlier row-object arrays must update their decoding.
 
 ## Envelope

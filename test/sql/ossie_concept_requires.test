@@ -30,7 +30,7 @@ SELECT string_agg(entity_id,',' ORDER BY entity_id) FROM ossie_objects('ActiveDe
 d1
 
 query T
-SELECT api_version FROM ossie_population_capabilities();
+SELECT regexp_extract(program_json,'"api_version":"([^"]+)"',1) FROM ossie_program();
 ----
 2.3.0
 
@@ -118,7 +118,7 @@ SELECT string_agg(entity_id,',' ORDER BY entity_id) FROM ossie_objects('ReadyShi
 s1,s2
 
 query T
-SELECT api_version FROM ossie_population_capabilities();
+SELECT regexp_extract(program_json,'"api_version":"([^"]+)"',1) FROM ossie_program();
 ----
 2.3.0
 

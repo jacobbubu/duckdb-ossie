@@ -95,8 +95,8 @@ SELECT * FROM ossie_objects('ValidUser', ['dws_gaap_di.ytd_gaap']);
 ----
 must have BOOLEAN type
 
-query TI
-SELECT execution_target, executed FROM ossie_concept_compile('ValidUser', ['mean_gaap'], [], []);
+query TT
+SELECT regexp_extract(plan_json,'"execution_target":"([^"]+)"',1), regexp_extract(plan_json,'"executed":(true|false)',1) FROM ossie_population_compile('{"kind":"metrics","concept":"ValidUser","metrics":["mean_gaap"],"dimensions":[],"filters":[]}');
 ----
 frozen typed observation batch (AST dependency required)	false
 
