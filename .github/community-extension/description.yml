@@ -105,9 +105,10 @@ docs:
     catch a wrong number.
 
     Models use the flat document shape of Ossie 0.2.0.dev0, with expressions in OSSIE_SQL_2026 (the
-    spec's own expression language) or ANSI_SQL. Current limits are documented rather than hidden:
-    table-backed sources only, all joins emitted as INNER, and metrics that span more than one grain
-    or use a window function refused rather than answered wrongly. See docs/limitations.md.
+    spec's own expression language) or ANSI_SQL. Metrics that aggregate at more than one grain are
+    computed per grain and joined on the dimension values; joins are INNER unless the model is loaded
+    with `left_joins => true`. Current limits are documented rather than hidden: table-backed sources
+    only, and window-function metrics refused rather than answered wrongly. See docs/limitations.md.
 
     **Serving a model to an AI agent**
 

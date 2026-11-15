@@ -35,6 +35,45 @@ pins). The DuckDB version each release targets is noted separately.
 - A population expression test that defined a macro named `nullif` now drops it first; `nullif` is a
   reserved word in DuckDB 2.0.
 
+### Added
+- **Population profiles.** `ossie_bundle_load(manifest_path)` loads a hash-bound core, ontology and
+  mapping bundle and captures the committed source batch, so a population is queried as frozen data
+  through `ossie_program()`, `ossie_population_compile(request_json)` and
+  `ossie_population_json(request_json)`, with `ossie_concepts()`, `ossie_concept_query()`,
+  `ossie_objects()` and `ossie_metadata()` describing it. Contracts in docs/population-profile.md
+  and the neighbouring `docs/population-*.md`; served over MCP by `examples/population_server.sql`
+- **Metrics that aggregate at more than one grain are computed, not refused.** `store_productivity`
+  (`SUM(store_sales.ss_ext_sales_price) / NULLIF(SUM(store.s_number_employees), 0)`) now aggregates
+  each side over its own dataset and takes the ratio over the results, rather than refusing. Each
+  grain gets a grouped subquery; the subqueries are joined NULL-safely on the dimension values, so a
+  group only one side produced is kept; row filters apply inside every subquery and metric filters
+  to the joined result. A filter or dimension a grain cannot reach without fanning out is refused,
+  naming the grain, since applying it to one side of a ratio only would be a different metric.
+  Checked against hand-written SQL over TPC-DS data in `ossie_differential.test`
+- **`ossie_load(..., left_joins => true)` joins dimensions with `LEFT JOIN`** instead of the default
+  `INNER`, so a fact row whose foreign key is NULL or dangling is kept under NULL dimension values
+  rather than dropped, and a total no longer shrinks when a dimension is added. Ossie declares no
+  join type, so the policy is set per load like `allow_filter_functions`. Fan-out and ambiguous-path
+  refusals are unchanged
+
+### Fixed
+- **`DATE_TRUNC` and `DATEADD` keep a `DATE` a `DATE`.** DuckDB's `date_trunc` and `date_add`
+  return a `TIMESTAMP` at midnight for a `DATE` input; the language keeps the input type. Year,
+  quarter, month, week and day parts now lower to the extension's own `ossie_date_trunc` and
+  `ossie_dateadd`, so a daily field groups and compares as a `DATE`. The compiled SQL names those
+  functions, so it runs only where the extension is loaded. `DATEADD` no longer emits an `INTERVAL`,
+  so it sidesteps the optimizer defect noted under 0.2.0
+- **A function outside OSSIE_SQL_2026 is refused at load, not passed to DuckDB.** An
+  `OSSIE_SQL_2026` field, metric or request filter that calls a function the language does not
+  list (`MD5`, `STRING_AGG`, an `INTERVAL` literal, `TO_CHAR`) fails at load naming it, and
+  suggests an `ANSI_SQL` variant. Previously it reached DuckDB's binder and meant whatever DuckDB
+  said. `REGEXP_COUNT`, `TRUNCATE`, `APPROX_PERCENTILE`, `PERCENTILE_CONT`/`DISC`, `EXTRACT` and
+  `POSITION` gained lowerings so that the listed functions all load
+- **Quoted column names match exactly.** When a dataset's source is a table or view in the catalog,
+  a quoted column reference in a field or metric that matches a column only by ignoring case is
+  refused at load with the column's real spelling, as the language requires. A source that is not
+  present at load is not checked
+
 ## [0.3.0] - 2026-10-21
 
 Targets DuckDB **v2.0.0**. DuckDB v1.5.6 keeps the 0.2.0 build.
@@ -80,19 +119,6 @@ breaking, that 0.1.1 predates.
   separate daily workflow that cannot block a merge
 
 ### Added
-- **Metrics that aggregate at more than one grain are computed, not refused.** `store_productivity`
-  (`SUM(store_sales.ss_ext_sales_price) / NULLIF(SUM(store.s_number_employees), 0)`) now aggregates
-  each side over its own dataset and takes the ratio over the results, rather than refusing. Each
-  grain gets a grouped subquery; the subqueries are joined NULL-safely on the dimension values, so a
-  group only one side produced is kept; row filters apply inside every subquery and metric filters
-  to the joined result. A filter or dimension a grain cannot reach without fanning out is refused,
-  naming the grain, since applying it to one side of a ratio only would be a different metric.
-  Checked against hand-written SQL over TPC-DS data in `ossie_differential.test`
-- **`ossie_load(..., left_joins => true)` joins dimensions with `LEFT JOIN`** instead of the default
-  `INNER`, so a fact row whose foreign key is NULL or dangling is kept under NULL dimension values
-  rather than dropped, and a total no longer shrinks when a dimension is added. Ossie declares no
-  join type, so the policy is set per load like `allow_filter_functions`. Fan-out and ambiguous-path
-  refusals are unchanged
 - **`OSSIE_SQL_2026`, the spec's own expression language** (apache/ossie be2c73f), executed alongside
   `ANSI_SQL`; an expression carrying both runs the `OSSIE_SQL_2026` variant. Functions DuckDB spells
   differently or lacks (`NVL`, `IFF`, `NVL2`, `ZEROIFNULL`, `NULLIFZERO`, `CHARINDEX`, `STARTSWITH`,
@@ -111,27 +137,11 @@ breaking, that 0.1.1 predates.
   requested, which the metric cannot express: grouped by date and item category, upstream's
   `cumulative_sales` ran across categories, and 10,047 of 10,049 rows differed from a per-category
   running total. 0.1.1 passed such metrics through; they now fail when queried, naming the metric
-- **`DATE_TRUNC` and `DATEADD` keep a `DATE` a `DATE`.** DuckDB's `date_trunc` and `date_add`
-  return a `TIMESTAMP` at midnight for a `DATE` input; the language keeps the input type. Year,
-  quarter, month, week and day parts now lower to the extension's own `ossie_date_trunc` and
-  `ossie_dateadd`, so a daily field groups and compares as a `DATE`. The compiled SQL names those
-  functions, so it runs only where the extension is loaded
-- **A function outside OSSIE_SQL_2026 is refused at load, not passed to DuckDB.** An
-  `OSSIE_SQL_2026` field, metric or request filter that calls a function the language does not
-  list (`MD5`, `STRING_AGG`, an `INTERVAL` literal, `TO_CHAR`) fails at load naming it, and
-  suggests an `ANSI_SQL` variant. Previously it reached DuckDB's binder and meant whatever DuckDB
-  said. `REGEXP_COUNT`, `TRUNCATE`, `APPROX_PERCENTILE`, `PERCENTILE_CONT`/`DISC`, `EXTRACT` and
-  `POSITION` gained lowerings so that the listed functions all load
-- **Quoted column names match exactly.** When a dataset's source is a table or view in the catalog,
-  a quoted column reference in a field or metric that matches a column only by ignoring case is
-  refused at load with the column's real spelling, as the language requires. A source that is not
-  present at load is not checked
 
 ### Known issues
 - A DuckDB optimizer defect, present in 1.5.5 and 1.5.6 without this extension, treats
-  `INTERVAL 30 DAY` and `INTERVAL 1 MONTH` as the same expression, so an `ANSI_SQL` query asking
-  for both gets one answer twice. `OSSIE_SQL_2026`'s `DATEADD` no longer hits it. See
-  docs/limitations.md
+  `INTERVAL 30 DAY` and `INTERVAL 1 MONTH` as the same expression, so a query asking for both gets
+  one answer twice. See docs/limitations.md
 
 ## [0.1.1] - 2026-09-07
 
