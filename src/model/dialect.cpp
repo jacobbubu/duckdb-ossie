@@ -5,6 +5,7 @@
 #include "duckdb/common/string_util.hpp"
 #include "duckdb/common/to_string.hpp"
 #include "duckdb/common/types.hpp"
+#include "duckdb/common/unordered_set.hpp"
 #include "duckdb/parser/expression/case_expression.hpp"
 #include "duckdb/parser/expression/cast_expression.hpp"
 #include "duckdb/parser/expression/columnref_expression.hpp"
@@ -13,20 +14,25 @@
 #include "duckdb/parser/expression/function_expression.hpp"
 #include "duckdb/parser/expression/operator_expression.hpp"
 #include "duckdb/parser/expression/type_expression.hpp"
+#include "duckdb/parser/expression/window_expression.hpp"
 #include "duckdb/parser/parsed_expression_iterator.hpp"
 
 // The Ossie expression language (core-spec/expression_language.md) is a SQL subset. Most of it is
 // spelled the same in DuckDB, so the tree DuckDB's parser produces is already right. This file handles
-// the rest, in three kinds:
+// the rest, in four kinds:
 //
 //   * a function DuckDB spells differently or lacks (NVL, IFF, CHARINDEX, DATEADD, ...) becomes the
 //     equivalent DuckDB tree;
 //   * a function DuckDB has under the same name but with a different result is wrapped so the result
 //     matches: CONCAT, GREATEST and LEAST skip NULL arguments in DuckDB, while NULL in gives NULL out
-//     for the language's own `||` and in standard SQL;
+//     for the language's own `||` and in standard SQL; DATE_TRUNC and DATEADD on a DATE give a DATE,
+//     through the extension's own functions, where DuckDB's give a TIMESTAMP;
 //   * a construct whose result the language does not define, and on which engines disagree, is
 //     refused at load. Guessing would return a number that is right on one engine and wrong on the
-//     next, which is the one outcome this extension exists to prevent.
+//     next, which is the one outcome this extension exists to prevent;
+//   * a function the language does not have at all is refused at load, even when DuckDB knows the name.
+//     The expression would run here and nowhere else, and the model's claim to portability would be
+//     false without anyone noticing. An ANSI_SQL variant is the place for engine-specific SQL.
 
 namespace duckdb {
 namespace ossie {
@@ -131,12 +137,78 @@ string DatePart(const ParsedExpression &argument, const string &function_name, c
 	                            context, StringUtil::Upper(function_name), argument.ToString());
 }
 
+//! A part that can put a time of day on a DATE. For the others, DATE_TRUNC and DATEADD go through the
+//! extension's own ossie_date_trunc and ossie_dateadd, which give a DATE back for a DATE in; DuckDB's
+//! date_trunc and date_add would give a TIMESTAMP at midnight.
+bool IsSubDayPart(const string &part) {
+	return part == "hour" || part == "minute" || part == "second";
+}
+
+//! Every function the language defines, spelled the way DuckDB's parser hands it over: COUNT(*) arrives
+//! as count_star, PERCENTILE_CONT(p) WITHIN GROUP (ORDER BY x) as quantile_cont, EXTRACT(part FROM d) as
+//! date_part. IF and IFNULL never reach here; the parser turns them into CASE and COALESCE itself.
+bool IsLanguageFunction(const string &name) {
+	static const unordered_set<string> NAMES = {
+	    // aggregates
+	    "sum", "count", "count_star", "avg", "min", "max", "stddev", "stddev_pop", "stddev_samp", "variance", "var_pop",
+	    "var_samp", "median", "quantile_cont", "quantile_disc", "approx_count_distinct", "approx_percentile",
+	    // date and time
+	    "current_date", "current_timestamp", "current_time", "year", "quarter", "month", "day", "dayofyear", "hour",
+	    "minute", "second", "date_part", "date_trunc", "dateadd", "datediff", "to_date", "to_timestamp", "to_char",
+	    // strings
+	    "concat", "length", "lower", "upper", "trim", "ltrim", "rtrim", "left", "right", "substring", "replace",
+	    "split_part", "position", "charindex", "contains", "startswith", "endswith", "regexp_like", "regexp_extract",
+	    "regexp_replace", "regexp_count",
+	    // math
+	    "abs", "round", "floor", "ceil", "ceiling", "trunc", "truncate", "mod", "sign", "power", "sqrt", "exp", "ln",
+	    "log", "log10", "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "radians", "degrees", "pi", "greatest",
+	    "least",
+	    // conditional
+	    "iff", "nullif", "coalesce", "nvl", "nvl2", "zeroifnull", "nullifzero"};
+	return NAMES.count(name) > 0;
+}
+
+bool IsWindowFunction(const string &name) {
+	static const unordered_set<string> NAMES = {"row_number",   "rank",       "dense_rank", "ntile",
+	                                            "percent_rank", "cume_dist",  "lag",        "lead",
+	                                            "first_value",  "last_value", "nth_value"};
+	return NAMES.count(name) > 0;
+}
+
+//! What DuckDB's parser makes of `INTERVAL 7 DAY`.
+bool IsIntervalConstructor(const string &name) {
+	static const unordered_set<string> NAMES = {
+	    "to_millennia", "to_centuries", "to_decades", "to_years",   "to_quarters",     "to_months",      "to_weeks",
+	    "to_days",      "to_hours",     "to_minutes", "to_seconds", "to_milliseconds", "to_microseconds"};
+	return NAMES.count(name) > 0;
+}
+
+void RequireLanguageFunction(const string &name, const string &context) {
+	if (IsLanguageFunction(name)) {
+		return;
+	}
+	if (IsIntervalConstructor(name)) {
+		throw InvalidInputException("%s uses an INTERVAL literal, which OSSIE_SQL_2026 does not define; write "
+		                            "DATEADD(part, amount, date_expr), or give the expression an ANSI_SQL variant",
+		                            context);
+	}
+	throw InvalidInputException("%s calls %s, which OSSIE_SQL_2026 does not define; give the expression an ANSI_SQL "
+	                            "variant, which reaches DuckDB as written",
+	                            context, StringUtil::Upper(name));
+}
+
 //! Returns the replacement for `function`, or nullptr to keep it as it is.
 unique_ptr<ParsedExpression> LowerFunction(FunctionExpression &function, const string &context) {
-	if (function.is_operator || !function.schema.empty() || !function.catalog.empty()) {
+	if (function.is_operator) {
 		return nullptr;
 	}
 	auto name = StringUtil::Lower(function.function_name);
+	RequireLanguageFunction(name, context);
+	if (!function.schema.empty() || !function.catalog.empty()) {
+		// POSITION(x IN y), SUBSTRING(s FROM a FOR b), TRIM(BOTH ...) and EXTRACT(part FROM d) arrive qualified
+		// with DuckDB's own schema; the names are the language's, and DuckDB already spells them right.
+		return nullptr;
+	}
 	auto &args = function.children;
 
 	if (name == "nvl") {
@@ -190,19 +262,24 @@ unique_ptr<ParsedExpression> LowerFunction(FunctionExpression &function, const s
 	if (name == "dateadd") {
 		RequireArgumentCount(function, 3, 3, "DATEADD(part, amount, date_expr)", context);
 		auto part = DatePart(*args[0], name, context);
-		Children interval;
-		interval.push_back(std::move(args[1]));
-		Children added;
-		added.push_back(std::move(args[2]));
-		added.push_back(Call("to_" + part + "s", std::move(interval)));
-		return Call("date_add", std::move(added));
+		if (IsSubDayPart(part)) {
+			Children interval;
+			interval.push_back(std::move(args[1]));
+			Children added;
+			added.push_back(std::move(args[2]));
+			added.push_back(Call("to_" + part + "s", std::move(interval)));
+			return Call("date_add", std::move(added));
+		}
+		args[0] = make_uniq<ConstantExpression>(Value(part));
+		return Call("ossie_dateadd", std::move(args));
 	}
 	if (name == "datediff" || name == "date_trunc") {
 		auto is_diff = name == "datediff";
 		RequireArgumentCount(function, is_diff ? 3 : 2, is_diff ? 3 : 2,
 		                     is_diff ? "DATEDIFF(part, start_date, end_date)" : "DATE_TRUNC(part, date_expr)", context);
-		args[0] = make_uniq<ConstantExpression>(Value(DatePart(*args[0], name, context)));
-		return Call(name, std::move(args));
+		auto part = DatePart(*args[0], name, context);
+		args[0] = make_uniq<ConstantExpression>(Value(part));
+		return Call(!is_diff && !IsSubDayPart(part) ? "ossie_date_trunc" : name, std::move(args));
 	}
 	if (name == "concat") {
 		if (args.empty()) {
@@ -228,6 +305,26 @@ unique_ptr<ParsedExpression> LowerFunction(FunctionExpression &function, const s
 		    "whether the pattern must match the whole string (Snowflake) or any part of it (Databricks, "
 		    "BigQuery). Use LIKE, or give the expression an ANSI_SQL variant that says which you mean",
 		    context);
+	}
+	if (name == "to_char") {
+		throw InvalidInputException(
+		    "%s calls TO_CHAR, whose format model is EXPERIMENTAL in OSSIE_SQL_2026 and differs between engines; "
+		    "give the expression an ANSI_SQL variant that uses strftime",
+		    context);
+	}
+	if (name == "truncate") {
+		RequireArgumentCount(function, 1, 2, "TRUNCATE(x, d)", context);
+		return Call("trunc", std::move(args));
+	}
+	if (name == "approx_percentile") {
+		RequireArgumentCount(function, 2, 2, "APPROX_PERCENTILE(expr, p)", context);
+		return Call("approx_quantile", std::move(args));
+	}
+	if (name == "regexp_count") {
+		RequireArgumentCount(function, 2, 2, "REGEXP_COUNT(str, pattern)", context);
+		Children matches;
+		matches.push_back(Call("regexp_extract_all", std::move(args)));
+		return Call("len", std::move(matches));
 	}
 	return nullptr;
 }
@@ -261,6 +358,13 @@ void Lower(unique_ptr<ParsedExpression> &expr, const string &context) {
 	case ExpressionClass::CAST:
 		LowerCast(expr->Cast<CastExpression>());
 		break;
+	case ExpressionClass::WINDOW: {
+		auto name = StringUtil::Lower(expr->Cast<WindowExpression>().function_name);
+		if (!IsWindowFunction(name)) {
+			RequireLanguageFunction(name, context);
+		}
+		break;
+	}
 	default:
 		break;
 	}

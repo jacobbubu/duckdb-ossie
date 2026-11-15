@@ -1,0 +1,37 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "unknown_window",
+  "datasets": [
+    {
+      "name": "o",
+      "source": "memory.main.orders",
+      "fields": [
+        {
+          "name": "id",
+          "datatype": "Integer",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "id"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "m",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "STRING_AGG(o.code, ',') OVER (ORDER BY o.id)"
+          }
+        ]
+      }
+    }
+  ]
+}

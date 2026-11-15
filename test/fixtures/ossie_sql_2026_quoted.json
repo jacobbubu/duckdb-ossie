@@ -1,0 +1,84 @@
+{
+  "version": "0.2.0.dev0",
+  "name": "quoted",
+  "datasets": [
+    {
+      "name": "o",
+      "source": "memory.main.quoted",
+      "fields": [
+        {
+          "name": "id",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "region",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "\"Region\""
+              }
+            ]
+          }
+        },
+        {
+          "name": "region_loose",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "region"
+              }
+            ]
+          }
+        },
+        {
+          "name": "literal",
+          "datatype": "String",
+          "expression": {
+            "dialects": [
+              {
+                "dialect": "OSSIE_SQL_2026",
+                "expression": "'\"Region\"' || \"Region\""
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "count",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "COUNT(o.id)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "total",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "OSSIE_SQL_2026",
+            "expression": "SUM(o.\"Amount\")"
+          }
+        ]
+      }
+    }
+  ]
+}

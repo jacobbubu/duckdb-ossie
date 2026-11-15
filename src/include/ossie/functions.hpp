@@ -22,6 +22,9 @@ void RegisterCompileFunction(ExtensionLoader &loader);
 //! Registers ossie_query(metrics, dimensions, filters).
 void RegisterQueryFunction(ExtensionLoader &loader);
 
+//! Registers ossie_date_trunc and ossie_dateadd, the DATE-preserving forms the OSSIE_SQL_2026 lowering emits.
+void RegisterDateFunctions(ExtensionLoader &loader);
+
 //! Fixed single-table ontology population profile and private observation batches.
 void RegisterPopulationFunctions(ExtensionLoader &loader);
 

@@ -20,7 +20,7 @@ INSERT INTO orders VALUES
 query TTIIII
 CALL ossie_load('test/fixtures/ossie_sql_2026_model.json');
 ----
-ossie_sql_2026	0.2.0.dev0	1	21	0	3
+ossie_sql_2026	0.2.0.dev0	1	26	0	5
 
 # --- functions DuckDB spells differently or lacks ---------------------------------------------------
 
@@ -62,33 +62,48 @@ FROM ossie_query(['order_count'], ['o.id', 'o.dash_position', 'o.starts_with_a',
 2	2	false	false
 3	0	true	false
 
-# The date part is written bare, as the language does: DATEADD(day, 30, created).
+# The date part is written bare, as the language does: DATEADD(day, 30, created). A DATE in gives a DATE
+# out, where DuckDB's own date_trunc and date_add would give a TIMESTAMP at midnight.
 query ITTI
 SELECT "o.id", "o.created_month", "o.due", "o.days_to_ship"
 FROM ossie_query(['order_count'], ['o.id', 'o.created_month', 'o.due', 'o.days_to_ship']) ORDER BY 1;
 ----
-1	2024-01-01 00:00:00	2024-03-01 00:00:00	2
-2	2024-02-01 00:00:00	2024-03-16 00:00:00	NULL
-3	2024-02-01 00:00:00	2024-03-30 00:00:00	31
+1	2024-01-01	2024-03-01	2
+2	2024-02-01	2024-03-16	NULL
+3	2024-02-01	2024-03-30	31
+
+query TT
+SELECT typeof("o.created_month"), typeof("o.due") FROM ossie_query(['order_count'], ['o.created_month', 'o.due']) LIMIT 1;
+----
+DATE	DATE
 
 # A month added to January 31 lands on the leap day.
 query IT
 SELECT "o.id", "o.month_later" FROM ossie_query(['order_count'], ['o.id', 'o.month_later']) ORDER BY 1;
 ----
-1	2024-02-29 00:00:00
-2	2024-03-15 00:00:00
-3	2024-03-29 00:00:00
+1	2024-02-29
+2	2024-03-15
+3	2024-03-29
 
-# KNOWN DUCKDB DEFECT, pinned so that an upgrade which fixes it fails here and docs/limitations.md gets
-# updated. DuckDB's optimizer folds INTERVAL 30 DAY and INTERVAL 1 MONTH to constants, judges them equal
-# (it compares intervals with a month normalised to 30 days), and merges the two expressions, so whichever
-# comes first wins. Row 1 should read 2024-03-01 and 2024-02-29. Plain DuckDB does the same with no
-# extension loaded; disabling the common_subexpressions optimizer gives the right answer. This is wrong
-# for ANSI_SQL models too, and is listed in docs/limitations.md.
+# Thirty days and one month beside each other. DuckDB's optimizer merges `d + INTERVAL 30 DAY` with
+# `d + INTERVAL 1 MONTH` as duplicates (docs/limitations.md), which an ANSI_SQL model still hits; the
+# lowering here passes the part as a string argument, so the two calls are not equal and both survive.
 query IT
 SELECT "o.due", "o.month_later" FROM ossie_query(['order_count'], ['o.id', 'o.due', 'o.month_later']) WHERE "o.id" = 1;
 ----
-2024-03-01 00:00:00	2024-03-01 00:00:00
+2024-03-01	2024-02-29
+
+# Sub-day parts stay on DuckDB's own functions: a DATE plus an hour has a time of day, so it is a TIMESTAMP.
+query TT
+SELECT "o.due_hour", typeof("o.due_hour") FROM ossie_query(['order_count'], ['o.id', 'o.due_hour']) WHERE "o.id" = 1;
+----
+2024-01-31 01:00:00	TIMESTAMP
+
+query TTT
+SELECT ossie_date_trunc('week', DATE '2024-02-29'), ossie_date_trunc('quarter', TIMESTAMP '2024-02-29 10:30:00'),
+       ossie_dateadd('year', 1, DATE '2024-02-29');
+----
+2024-02-26	2024-01-01 00:00:00	2025-02-28
 
 query ITT
 SELECT "o.id", "o.launch", "o.launch_ts" FROM ossie_query(['order_count'], ['o.id', 'o.launch', 'o.launch_ts']) ORDER BY 1;
@@ -96,6 +111,21 @@ SELECT "o.id", "o.launch", "o.launch_ts" FROM ossie_query(['order_count'], ['o.i
 1	2024-01-15	2024-01-15 10:30:00
 2	2024-01-15	2024-01-15 10:30:00
 3	2024-01-15	2024-01-15 10:30:00
+
+# Names the language has and DuckDB lacks, and standard forms DuckDB's parser rewrites on the way in:
+# REGEXP_COUNT, TRUNCATE, EXTRACT(part FROM d), POSITION(x IN y), PERCENTILE_CONT ... WITHIN GROUP.
+query IIRII
+SELECT "o.id", "o.digit_count", "o.third", "o.created_year", "o.dash_position_std"
+FROM ossie_query(['order_count'], ['o.id', 'o.digit_count', 'o.third', 'o.created_year', 'o.dash_position_std']) ORDER BY 1;
+----
+1	1	33.3	2024	2
+2	1	0.0	2024	2
+3	1	16.6	2024	0
+
+query RR
+SELECT * FROM ossie_query(['amount_median', 'amount_median_approx']);
+----
+50.00	50
 
 # --- same name, different result in DuckDB: NULL in gives NULL out ------------------------------------
 # DuckDB's concat, greatest and least skip NULL arguments. The language's `||` and standard SQL do not,
@@ -158,6 +188,28 @@ CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_arity.json');
 ----
 field "o.f" calls NVL with 3 argument(s); OSSIE_SQL_2026 defines it as NVL(expr, default)
 
+# A function outside the language is refused at load rather than passed to DuckDB's binder: a name that
+# happens to bind here would return a number no other engine agrees on.
+statement error
+CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_unknown_function.json');
+----
+field "o.f" calls MD5, which OSSIE_SQL_2026 does not define; give the expression an ANSI_SQL variant
+
+statement error
+CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_interval.json');
+----
+field "o.f" uses an INTERVAL literal, which OSSIE_SQL_2026 does not define; write DATEADD(part, amount, date_expr)
+
+statement error
+CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_to_char.json');
+----
+field "o.f" calls TO_CHAR, whose format model is EXPERIMENTAL in OSSIE_SQL_2026
+
+statement error
+CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_unknown_window.json');
+----
+metric "m" calls STRING_AGG, which OSSIE_SQL_2026 does not define
+
 # --- request filters are in the same language ------------------------------------------------------------
 # A filter is lowered the way a field is, after the policy check judges what the caller wrote.
 
@@ -190,3 +242,58 @@ statement error
 SELECT * FROM ossie_query(['order_count'], [], ['REGEXP_LIKE(o.code, ''A.*'')']);
 ----
 ossie: filter "REGEXP_LIKE(o.code, 'A.*')" calls REGEXP_LIKE, whose result OSSIE_SQL_2026 does not define
+
+statement error
+SELECT * FROM ossie_query(['order_count'], [], ['MD5(o.code) = ''x''']);
+----
+ossie: filter "MD5(o.code) = 'x'" calls MD5, which OSSIE_SQL_2026 does not define
+
+# --- quoted identifiers match exactly ----------------------------------------------------------------------
+# The language makes a quoted identifier exact where DuckDB matches it regardless of case. The source
+# is in the catalog here, so the spelling is checked at load; a name that only matches when case is
+# ignored is refused, naming the column as it is spelled. Unquoted names stay case-insensitive.
+
+statement ok
+CREATE TABLE quoted(id INT, "Region" VARCHAR, "Amount" DECIMAL(10,2));
+
+statement ok
+INSERT INTO quoted VALUES (1, 'east', 10.00), (2, 'west', 5.00);
+
+query TTIIII
+CALL ossie_load('test/fixtures/ossie_sql_2026_quoted.json');
+----
+quoted	0.2.0.dev0	1	4	0	2
+
+# A string literal that looks like a quoted identifier is a literal.
+query ITTTR
+SELECT "o.id", "o.region", "o.region_loose", "o.literal", total
+FROM ossie_query(['total'], ['o.id', 'o.region', 'o.region_loose', 'o.literal']) ORDER BY 1;
+----
+1	east	east	"Region"east	10.00
+2	west	west	"Region"west	5.00
+
+statement error
+CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_quoted_field.json');
+----
+ossie_load: field "o.region" refers to "region" in quotes, which OSSIE_SQL_2026 matches exactly; the column of memory.main.quoted is spelled "Region". Write Region without quotes to match it regardless of case
+
+statement error
+CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_quoted_metric.json');
+----
+ossie_load: metric "total" refers to "amount" in quotes, which OSSIE_SQL_2026 matches exactly; the column of memory.main.quoted is spelled "Amount"
+
+# Without the table, nothing can be checked and the model loads; the quoted name reaches DuckDB's binder.
+statement ok
+DROP TABLE quoted;
+
+statement ok
+CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_quoted_field.json');
+
+# A view is a source too, and its column names are the ones checked.
+statement ok
+CREATE VIEW quoted AS SELECT 1 AS id, 'east' AS "Region", 10.00 AS "Amount";
+
+statement error
+CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_quoted_field.json');
+----
+the column of memory.main.quoted is spelled "Region"

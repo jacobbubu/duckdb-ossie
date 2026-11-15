@@ -413,7 +413,7 @@
         "dialects": [
           {
             "dialect": "ANSI_SQL",
-            "expression": "SUM(fact.amount)+approx_count_distinct(dimension.id)"
+            "expression": "SUM(fact.amount)+bit_or(dimension.id)"
           }
         ]
       }

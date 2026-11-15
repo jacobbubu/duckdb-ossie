@@ -152,27 +152,43 @@ undefined and engines disagree, the expression is refused at load, naming the fi
 - `REGEXP_LIKE`: Snowflake requires the pattern to match the whole string, Databricks and
   BigQuery any part of it, and the language does not say. Use `LIKE`, or give the expression an
   `ANSI_SQL` variant that says which is meant (for example `regexp_full_match`).
-- `TO_DATE` or `TO_TIMESTAMP` with a format argument: format models differ between engines, and the
-  form is `EXPERIMENTAL` in the language. The one-argument ISO-8601 form is supported.
+- `TO_DATE` or `TO_TIMESTAMP` with a format argument, and `TO_CHAR`: format models differ between
+  engines, and both forms are `EXPERIMENTAL` in the language. The one-argument ISO-8601 forms of
+  `TO_DATE` and `TO_TIMESTAMP` are supported; for `TO_CHAR`, give the expression an `ANSI_SQL`
+  variant that uses `strftime`.
 - A date part outside year, quarter, month, week, day, hour, minute and second, or a function called
   with a different number of arguments than the language defines.
+- A function the language does not list, including `INTERVAL` literals (which DuckDB parses as a
+  call to `to_days` and the like) and window functions outside its ranking, offset and aggregate
+  set. DuckDB has `MD5`, `STRING_AGG` and hundreds more, but an `OSSIE_SQL_2026` expression that
+  calls one would mean something on this engine and nothing on another. Write it as an `ANSI_SQL`
+  variant, which reaches DuckDB as written. The same check applies to request filters, after
+  `allow_filter_functions` has judged the filter.
 
 **OSSIE_SQL_2026 choices where DuckDB differs.** DuckDB's `concat`, `greatest` and `least` skip
 NULL arguments. The language's own `||` and standard SQL return NULL when any argument is NULL, so
-`CONCAT`, `GREATEST` and `LEAST` do too here. `DATE_TRUNC` and `DATEADD` on a `DATE` return a
-`TIMESTAMP` at midnight in DuckDB rather than a `DATE`; the value is the same, the type is not. A
-function outside the language that DuckDB does not know is not refused at load: it reaches DuckDB's
-binder at query time, as it would in an `ANSI_SQL` expression.
+`CONCAT`, `GREATEST` and `LEAST` do too here. DuckDB's `date_trunc` and `date_add` turn a `DATE` into
+a `TIMESTAMP` at midnight; the language keeps the input type, so `DATE_TRUNC` and `DATEADD` with a
+year, quarter, month, week or day part are lowered to this extension's `ossie_date_trunc` and
+`ossie_dateadd`, which return `DATE` for `DATE` and `TIMESTAMP` for `TIMESTAMP`. The compiled SQL
+that `ossie_compile` prints therefore names those two functions, and runs only where the extension
+is loaded. An hour, minute or second part cannot keep a `DATE`, and uses DuckDB's `date_add`.
 
 Request filters are read in the same language, whatever dialect the model's own expressions use: a filter
 is lowered exactly as an `OSSIE_SQL_2026` field is, after `allow_filter_functions` has judged the filter
 as written. So `NVL` and `DATEADD(day, 30, d)` work in a filter, and `CONCAT(a, b) IS NULL` is true when
 either is NULL, as it would be in a field.
 
-**Quoted identifiers compare case-insensitively.** The language makes a quoted identifier exact: `"id"`
-should not match a column created as `id` (normalised to `ID`). DuckDB matches quoted names
-case-insensitively, and so does this extension. Only a model that relies on two names differing solely in
-case, one of them quoted, can tell the difference.
+**Quoted identifiers match exactly, when the source can be seen.** The language makes a quoted
+identifier exact: `"region"` does not name a column created as `"Region"`. DuckDB matches quoted
+names case-insensitively, so `ossie_load` checks instead: for every dataset whose source is a table
+or view in the catalog, a quoted column reference in a field, or a dataset-qualified one in a metric,
+that matches a column only by ignoring case is refused, naming the column's real spelling and
+suggesting the unquoted form. A dataset whose source is absent at load (the usual case with
+`ossie_compile` against a remote engine) is not checked, and DuckDB's own matching applies at query
+time. The check reads the expression text, so a name written both quoted and unquoted in one
+expression counts as quoted. Model-level names (datasets, fields, metrics) are case-insensitive as
+before, whether or not they are quoted.
 
 **Table sources only.** `source` may name a query rather than a table under the spec. Such a
 source can neither be prefix-rebound nor bound as a table reference, so it is refused at load.
@@ -197,10 +213,10 @@ folds `INTERVAL 30 DAY` and `INTERVAL 1 MONTH` to constants, compares them with 
 to 30 days, and merges the two expressions as duplicates, so a query that asks for both gets
 whichever comes first, twice. Adding a month to 2024-01-31 should give 2024-02-29, and does when
 asked alone. This is DuckDB 1.5.5 and 1.5.6 with no extension loaded, and it affects `ANSI_SQL`
-models (`d + INTERVAL 30 DAY` beside `d + INTERVAL 1 MONTH`) as much as `OSSIE_SQL_2026` ones
-(`DATEADD(day, 30, d)` beside `DATEADD(month, 1, d)`). Disabling the `common_subexpressions`
-optimizer gives the right answer. `test/sql/ossie_sql_2026.test` pins the current behaviour, so an
-upgrade that fixes it fails there and this entry can go. Minimal repro:
+models (`d + INTERVAL 30 DAY` beside `d + INTERVAL 1 MONTH`). `OSSIE_SQL_2026` models are no longer
+exposed: `DATEADD(day, 30, d)` and `DATEADD(month, 1, d)` lower to `ossie_dateadd` with the part as
+a string argument, which the optimizer cannot mistake for the same expression. Disabling the
+`common_subexpressions` optimizer gives the right answer for `ANSI_SQL`. Minimal repro:
 
 ```sql
 CREATE TABLE t AS SELECT DATE '2024-01-31' AS d;
