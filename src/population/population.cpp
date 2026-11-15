@@ -1376,8 +1376,9 @@ CapturedTable CaptureTable(ClientContext &context, Connection &source, const Dat
 	if (parts.size() != 3) {
 		Fail(dataset.name, "snapshot", "fully qualified catalog.schema.table source required");
 	}
-	auto entry = Catalog::GetEntry(*source.context, parts[0], parts[1],
-	                               EntryLookupInfo(CatalogType::TABLE_ENTRY, parts[2]), OnEntryNotFound::RETURN_NULL);
+	auto entry = Catalog::GetEntry(
+	    *source.context, EntryLookupInfo(CatalogType::TABLE_ENTRY, QualifiedName(parts[0], parts[1], parts[2])),
+	    OnEntryNotFound::RETURN_NULL);
 	if (!entry || entry->type != CatalogType::TABLE_ENTRY || entry->temporary ||
 	    !entry->Cast<TableCatalogEntry>().IsDuckTable()) {
 		Fail(dataset.name, "snapshot", "only committed native tables supported; TEMP/view/external source refused");

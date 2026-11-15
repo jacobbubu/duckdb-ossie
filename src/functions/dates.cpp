@@ -129,12 +129,12 @@ void DateTruncTimestamp(DataChunk &args, ExpressionState &, Vector &result) {
 
 void DateAddDate(DataChunk &args, ExpressionState &, Vector &result) {
 	TernaryExecutor::Execute<string_t, int64_t, date_t, date_t>(args.data[0], args.data[1], args.data[2], result,
-	                                                            args.size(), AddDate);
+	                                                            AddDate);
 }
 
 void DateAddTimestamp(DataChunk &args, ExpressionState &, Vector &result) {
 	TernaryExecutor::Execute<string_t, int64_t, timestamp_t, timestamp_t>(args.data[0], args.data[1], args.data[2],
-	                                                                      result, args.size(), AddTimestamp);
+	                                                                      result, AddTimestamp);
 }
 
 } // namespace
