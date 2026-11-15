@@ -18,13 +18,13 @@ struct RelationDeclaration {
 	string role_concept;
 	string multiplicity;
 	vector<string> derived_by;
-	vector<string> requires;
+	vector<string> requires_list;
 };
 struct RelationProgramInput {
 	string root, user_concept, mapped_user_relation, dataset, user_column;
 	vector<RelationScalar> scalars;
 	vector<RelationDeclaration> declarations;
-	vector<string> requires;
+	vector<string> requires_list;
 };
 struct BoundRelation {
 	string name, root, target_concept;

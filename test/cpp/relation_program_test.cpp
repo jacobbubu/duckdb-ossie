@@ -27,7 +27,8 @@ RelationProgramInput Input() {
 	input.user_column = "user_id";
 	input.scalars = {{"classification_value", "class_value", LogicalType::INTEGER},
 	                 {"other_value", "other_value", LogicalType::INTEGER}};
-	input.requires = {"DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0"};
+	input.requires_list = {
+	    "DailyObservation.classification_value IS NULL OR DailyObservation.classification_value >= 0"};
 	input.declarations = {{"qualified_user",
 	                       "User",
 	                       "ManyToOne",
@@ -94,7 +95,7 @@ void Run() {
 	          values->GetValue(1, 2).GetValue<bool>(),
 	      "allow-NULL guard true, negative false, positive true");
 	input = Input();
-	input.requires = {
+	input.requires_list = {
 	    "DailyObservation.classification_value IS NOT NULL AND DailyObservation.classification_value >= 0"};
 	auto nonnull = BindRelationProgram(input);
 	auto null_truth = engine.Query("SELECT " + nonnull.root_constraints[0]->ToString() +
@@ -165,7 +166,7 @@ void Run() {
 	         "DailyObservation.classification_value IS NOT NULL OR DailyObservation.classification_value >= 0",
 	         "DailyObservation.classification_value IS NULL AND DailyObservation.classification_value >= 0"}) {
 		input = Input();
-		input.requires = {constraint};
+		input.requires_list = {constraint};
 		Refuse([&] { BindRelationProgram(input); }, "reject non-total/wrong-field guard: " + constraint);
 	}
 	input = Input();
