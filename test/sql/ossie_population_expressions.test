@@ -105,4 +105,4 @@ SELECT * FROM ossie_concept_query('User',['ratio_of_sums','sum_ratio'],[],[]);
 1.2727272727272727	2.3333333333333333
 
 statement ok
-DROP MACRO nullif;
+DROP MACRO "nullif";

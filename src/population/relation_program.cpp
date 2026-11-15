@@ -9,6 +9,7 @@
 #include "duckdb/parser/expression/constant_expression.hpp"
 #include "duckdb/parser/expression/function_expression.hpp"
 #include "duckdb/parser/expression/operator_expression.hpp"
+#include "ossie/names.hpp"
 #include <map>
 #include <set>
 #include <functional>
@@ -45,7 +46,7 @@ unique_ptr<ParsedExpression> ParseRule(const string &text) {
 	if (text.find('"') != string::npos) {
 		Reject("quoted identifiers unsupported in relation rules");
 	}
-	auto parsed = Parser::ParseExpressionList(text);
+	auto parsed = Parser::GetBuiltinParser().ParseExpressionList(text);
 	if (parsed.size() != 1) {
 		Reject("exactly one expression required");
 	}
@@ -131,34 +132,33 @@ private:
 		if (tree.GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 			Reject("only declared integral scalar references allowed");
 		}
-		auto &names = tree.Cast<ColumnRefExpression>().column_names;
+		auto names = ColumnNames(tree.Cast<ColumnRefExpression>());
 		if (names.size() != 2 || !StringUtil::CIEquals(names[0], input.root) || !scalars.count(Key(names[1]))) {
 			Reject("unknown scalar or root namespace");
 		}
 		return *scalars.at(Key(names[1]));
 	}
 	unique_ptr<ParsedExpression> Physical(const RelationScalar &scalar) {
-		return make_uniq<ColumnRefExpression>(vector<string> {input.dataset, scalar.physical_column});
+		return make_uniq<ColumnRefExpression>(Identifier(scalar.physical_column), Identifier(input.dataset));
 	}
 	unique_ptr<ParsedExpression> Comparison(const ParsedExpression &tree) {
 		if (tree.GetExpressionType() != ExpressionType::COMPARE_GREATERTHANOREQUALTO) {
 			Reject("only scalar >= nonnull integral constant supported");
 		}
 		auto &comparison = tree.Cast<ComparisonExpression>();
-		auto &scalar = Scalar(*comparison.left);
-		if (comparison.right->GetExpressionClass() != ExpressionClass::CONSTANT) {
+		auto &scalar = Scalar(comparison.Left());
+		if (comparison.Right().GetExpressionClass() != ExpressionClass::CONSTANT) {
 			Reject("nonnull integral constant required");
 		}
-		auto &value = comparison.right->Cast<ConstantExpression>().value;
+		auto value = comparison.Right().Cast<ConstantExpression>().GetLiteral().ToValue();
 		if (value.IsNull() || !value.type().IsIntegral()) {
 			Reject("nonnull integral constant required");
 		}
-		Value represented;
 		string error;
-		if (!value.DefaultTryCastAs(scalar.type, represented, &error, true)) {
+		if (!value.DefaultTryCastAs(scalar.type, &error, true)) {
 			Reject("integral constant outside declared scalar type");
 		}
-		return make_uniq<ComparisonExpression>(tree.GetExpressionType(), Physical(scalar), comparison.right->Copy());
+		return make_uniq<ComparisonExpression>(tree.GetExpressionType(), Physical(scalar), comparison.Right().Copy());
 	}
 	unique_ptr<ParsedExpression> Constraint(const string &text) {
 		auto tree = ParseRule(text);
@@ -166,10 +166,11 @@ private:
 			Reject("constraint requires explicit same-field NULL guard");
 		}
 		auto &conjunction = tree->Cast<ConjunctionExpression>();
-		if (conjunction.children.size() != 2) {
+		auto &parts = conjunction.GetChildren();
+		if (parts.size() != 2) {
 			Reject("constraint requires exactly guard and comparison");
 		}
-		const ParsedExpression *guard = conjunction.children[0].get(), *comparison = conjunction.children[1].get();
+		const ParsedExpression *guard = parts[0].get(), *comparison = parts[1].get();
 		if (guard->GetExpressionClass() == ExpressionClass::COMPARISON) {
 			std::swap(guard, comparison);
 		}
@@ -181,44 +182,46 @@ private:
 			Reject("constraint requires OR IS NULL or AND IS NOT NULL");
 		}
 		auto &operation = guard->Cast<OperatorExpression>();
-		if (operation.children.size() != 1 ||
-		    &Scalar(*operation.children[0]) != &Scalar(*comparison->Cast<ComparisonExpression>().left)) {
+		auto &guarded = operation.GetChildren();
+		if (guarded.size() != 1 || &Scalar(*guarded[0]) != &Scalar(comparison->Cast<ComparisonExpression>().Left())) {
 			Reject("constraint guard must name same scalar");
 		}
 		idx_t nodes = 0;
 		Charge(6, nodes);
 		return make_uniq<ConjunctionExpression>(
-		    tree->GetExpressionType(),
-		    make_uniq<OperatorExpression>(guard_type, Physical(Scalar(*operation.children[0]))),
+		    tree->GetExpressionType(), make_uniq<OperatorExpression>(guard_type, Physical(Scalar(*guarded[0]))),
 		    Comparison(*comparison));
 	}
 	// Boolean membership must treat an upstream UNKNOWN qualification as absent.
 	unique_ptr<ParsedExpression> Membership(const ParsedExpression &predicate) {
 		return make_uniq<ComparisonExpression>(ExpressionType::COMPARE_NOT_DISTINCT_FROM, predicate.Copy(),
-		                                       make_uniq<ConstantExpression>(Value::BOOLEAN(true)));
+		                                       ConstantExpression::Boolean(true));
 	}
 	unique_ptr<ParsedExpression> Lower(const ParsedExpression &tree, std::set<string> &dependencies, bool &anchored,
 	                                   idx_t stack_depth, idx_t &expanded_nodes) {
 		if (tree.GetExpressionClass() == ExpressionClass::FUNCTION) {
 			auto &call = tree.Cast<FunctionExpression>();
-			if (!call.catalog.empty() || !StringUtil::CIEquals(call.schema, input.root) || call.is_operator ||
-			    call.distinct || call.filter || call.export_state ||
-			    (call.order_bys && !call.order_bys->orders.empty()) || call.children.size() != 1 ||
-			    !call.children[0]->GetAlias().empty() ||
-			    call.children[0]->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
+			auto &qualified = call.GetQualifiedName();
+			auto &arguments = call.GetArguments();
+			if (!qualified.Catalog().GetIdentifierName().empty() ||
+			    !StringUtil::CIEquals(qualified.Schema().GetIdentifierName(), input.root) || call.IsOperator() ||
+			    call.Distinct() || call.Filter() || call.ExportState() ||
+			    (call.OrderBy() && !call.OrderBy()->orders.empty()) || arguments.size() != 1 ||
+			    arguments[0].HasName() || !arguments[0].GetExpression().GetAlias().GetIdentifierName().empty() ||
+			    arguments[0].GetExpression().GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 				Reject("only explicit root.relation(User) calls supported");
 			}
-			auto &role = call.children[0]->Cast<ColumnRefExpression>().column_names;
+			auto role = ColumnNames(arguments[0].GetExpression().Cast<ColumnRefExpression>());
 			if (role.size() != 1 || !StringUtil::CIEquals(role[0], input.user_concept)) {
 				Reject("unbound or wrong User role");
 			}
-			auto name = Key(call.function_name);
+			auto name = Key(call.FunctionName().GetIdentifierName());
 			anchored = true;
 			if (name == Key(input.mapped_user_relation)) {
 				Charge(2, expanded_nodes);
 				return make_uniq<OperatorExpression>(
 				    ExpressionType::OPERATOR_IS_NOT_NULL,
-				    make_uniq<ColumnRefExpression>(vector<string> {input.dataset, input.user_column}));
+				    make_uniq<ColumnRefExpression>(Identifier(input.user_column), Identifier(input.dataset)));
 			}
 			if (!declarations.count(name)) {
 				Reject("unknown relationship reference");
@@ -239,7 +242,7 @@ private:
 			vector<unique_ptr<ParsedExpression>> children;
 			bool is_or = tree.GetExpressionType() == ExpressionType::CONJUNCTION_OR;
 			anchored = is_or;
-			for (auto &child : conjunction.children) {
+			for (auto &child : conjunction.GetChildren()) {
 				bool child_anchor = false;
 				children.push_back(Lower(*child, dependencies, child_anchor, stack_depth, expanded_nodes));
 				anchored = is_or ? anchored && child_anchor : anchored || child_anchor;

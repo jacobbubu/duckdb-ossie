@@ -206,13 +206,24 @@ genuine typo in a model expression is no longer caught by `ossie_load`, and inst
 binder error when a query touches it. That message names the column and the table, so it is a worse
 message arriving later — not a wrong answer.
 
+## Prepared statements
+
+**A prepared `ossie_query` or `ossie_compile` follows the model current at `EXECUTE`, not at
+`PREPARE`.** DuckDB 2.0 rebinds any prepared statement whose plan scans a catalog table, and the
+SQL these two functions compile scans the model's sources, so after another `ossie_load` the next
+`EXECUTE` compiles against the new model and the policy loaded with it. The population functions
+(`ossie_program`, `ossie_population_compile`, `ossie_population_json`, `ossie_objects`, ...) read a
+frozen capture rather than a catalog table, so a prepared population request keeps the snapshot it
+was bound to, as the population documents describe. Prepare neither if you need one model pinned
+across loads; re-prepare after the load you want.
+
 ## Known DuckDB defects
 
 **Intervals of 30 days and one month are treated as the same expression.** DuckDB's optimizer
 folds `INTERVAL 30 DAY` and `INTERVAL 1 MONTH` to constants, compares them with a month normalised
 to 30 days, and merges the two expressions as duplicates, so a query that asks for both gets
 whichever comes first, twice. Adding a month to 2024-01-31 should give 2024-02-29, and does when
-asked alone. This is DuckDB 1.5.5 and 1.5.6 with no extension loaded, and it affects `ANSI_SQL`
+asked alone. This is DuckDB 1.5.5, 1.5.6 and 2.0.0 with no extension loaded, and it affects `ANSI_SQL`
 models (`d + INTERVAL 30 DAY` beside `d + INTERVAL 1 MONTH`). `OSSIE_SQL_2026` models are no longer
 exposed: `DATEADD(day, 30, d)` and `DATEADD(month, 1, d)` lower to `ossie_dateadd` with the part as
 a string argument, which the optimizer cannot mistake for the same expression. Disabling the

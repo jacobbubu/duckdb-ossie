@@ -23,10 +23,10 @@
 #include "duckdb/main/extension/extension_loader.hpp"
 #include "duckdb/main/external_dependencies.hpp"
 #include "duckdb/common/types/column/column_data_collection.hpp"
+#include "ossie/names.hpp"
 #include "duckdb/common/types/date.hpp"
 #include "duckdb/parser/tableref/table_function_ref.hpp"
-#include "duckdb/main/materialized_query_result.hpp"
-#include "duckdb/main/pending_query_result.hpp"
+#include "duckdb/main/query_result.hpp"
 #include "duckdb/main/prepared_statement.hpp"
 #include "duckdb/parser/expression/cast_expression.hpp"
 #include "duckdb/parser/expression/case_expression.hpp"
@@ -131,31 +131,33 @@ string Quote(const string &name) {
 
 template <class QUERY>
 unique_ptr<QueryResult> Run(ClientContext &caller, Connection &connection, QUERY sql) {
-	auto pending = connection.PendingQuery(std::move(sql));
-	if (pending->HasError()) {
-		NormalizeError(pending->GetErrorObject(), "query", "bind", ExceptionType::INVALID_INPUT);
+	auto result = connection.Submit(std::move(sql));
+	if (result->HasError()) {
+		NormalizeError(result->GetErrorObject(), "query", "bind", ExceptionType::INVALID_INPUT);
 	}
+	result->Materialize();
 	while (true) {
 		if (caller.IsInterrupted()) {
 			connection.Interrupt();
-			// PendingQuery schedules tasks before the first ExecuteTask. Its destructor
+			// Submit schedules tasks before the first ExecuteTask. The handle's destructor
 			// does not drain them, and ClientContext skips Destroy during unwinding.
 			// Finish cancellation while the nested context and task notifiers are alive.
+			result->Close();
 			connection.context->CancelTransaction();
 			throw InterruptException();
 		}
-		auto status = pending->ExecuteTask();
-		if (status == PendingExecutionResult::EXECUTION_ERROR) {
-			NormalizeError(pending->GetErrorObject(), "query", "execute", ExceptionType::INVALID_INPUT);
+		auto state = result->ExecuteTask();
+		if (state == QueryResultState::EXECUTION_ERROR || result->HasError()) {
+			NormalizeError(result->GetErrorObject(), "query", "execute", ExceptionType::INVALID_INPUT);
 		}
-		if (PendingQueryResult::IsResultReady(status)) {
+		if (state == QueryResultState::FINISHED) {
 			break;
 		}
-		std::this_thread::yield();
-	}
-	auto result = pending->Execute();
-	if (result->HasError()) {
-		NormalizeError(result->GetErrorObject(), "query", "execute", ExceptionType::INVALID_INPUT);
+		if (state == QueryResultState::BLOCKED || state == QueryResultState::READY) {
+			result->WaitForTask();
+		} else {
+			std::this_thread::yield();
+		}
 	}
 	return result;
 }
@@ -452,16 +454,18 @@ bool ZeroProtectedDenominator(const ParsedExpression &expression) {
 		return false;
 	}
 	auto &function = expression.Cast<FunctionExpression>();
-	if (function.is_operator || !function.catalog.empty() || !function.schema.empty() ||
-	    !StringUtil::CIEquals(function.function_name, "nullif") || function.children.size() != 2) {
+	auto &qualified = function.GetQualifiedName();
+	if (function.IsOperator() || !qualified.Catalog().empty() || !qualified.Schema().empty() ||
+	    !StringUtil::CIEquals(function.FunctionName().GetIdentifierName(), "nullif") ||
+	    function.GetArguments().size() != 2) {
 		return false;
 	}
-	auto &zero = *function.children[1];
+	auto &zero = function.GetArguments()[1].GetExpression();
 	if (zero.GetExpressionClass() != ExpressionClass::CONSTANT) {
 		return false;
 	}
-	auto &value = zero.Cast<ConstantExpression>().value;
-	return !value.IsNull() && value.type().IsNumeric() && value == Value::INTEGER(0);
+	auto &literal = zero.Cast<ConstantExpression>().GetLiteral();
+	return !literal.IsNull() && literal.IsNumeric() && literal.ToValue() == Value::INTEGER(0);
 }
 
 // A separate strict profile checker never inherits the core filter-function flag.
@@ -484,15 +488,11 @@ void Strict(const ParsedExpression &expression, bool aggregates = false, bool in
 		break;
 	case ExpressionClass::CAST: {
 		auto &cast = expression.Cast<CastExpression>();
-		auto target = cast.cast_type;
-		if (target.IsUnbound()) {
-			auto &type = UnboundType::GetTypeExpression(target)->Cast<TypeExpression>();
-			if (!type.GetCatalog().empty() || !type.GetSchema().empty()) {
-				Fail(expression.ToString(), "rule", "qualified casts not supported");
-			}
-			target = UnboundType::TryDefaultBind(target);
+		auto &type = cast.TargetType();
+		if (!type.GetCatalog().empty() || !type.GetSchema().empty()) {
+			Fail(expression.ToString(), "rule", "qualified casts not supported");
 		}
-		auto id = target.id();
+		auto id = UnboundType::TryDefaultBind(type).id();
 		if (id != LogicalTypeId::DATE && id != LogicalTypeId::INTEGER && id != LogicalTypeId::BIGINT &&
 		    id != LogicalTypeId::DECIMAL && id != LogicalTypeId::DOUBLE && id != LogicalTypeId::VARCHAR &&
 		    id != LogicalTypeId::BOOLEAN) {
@@ -510,23 +510,29 @@ void Strict(const ParsedExpression &expression, bool aggregates = false, bool in
 		break;
 	case ExpressionClass::FUNCTION: {
 		auto &function = expression.Cast<FunctionExpression>();
-		auto name = StringUtil::Lower(function.function_name);
+		auto &qualified = function.GetQualifiedName();
+		auto &arguments = function.GetArguments();
+		auto name = StringUtil::Lower(function.FunctionName().GetIdentifierName());
 		bool aggregate = name == "sum" || name == "count" || name == "avg";
-		bool division = function.is_operator && name == "/";
-		bool arithmetic = function.is_operator && (name == "+" || name == "-" || name == "*" || division);
-		bool nullif = !function.is_operator && name == "nullif" && function.children.size() == 2;
-		if (!function.catalog.empty() || !function.schema.empty() || function.filter ||
-		    (function.order_bys && !function.order_bys->orders.empty()) || function.export_state ||
+		bool division = function.IsOperator() && name == "/";
+		bool arithmetic = function.IsOperator() && (name == "+" || name == "-" || name == "*" || division);
+		bool nullif = !function.IsOperator() && name == "nullif" && arguments.size() == 2;
+		bool named = false;
+		for (auto &argument : arguments) {
+			named = named || argument.HasName();
+		}
+		if (!qualified.Catalog().empty() || !qualified.Schema().empty() || function.Filter() || named ||
+		    (function.OrderBy() && !function.OrderBy()->orders.empty()) || function.ExportState() ||
 		    (!arithmetic && !aggregate && !nullif) || (aggregate && (!aggregates || inside_aggregate)) ||
-		    (!aggregate && function.distinct) || (aggregate && function.children.size() != 1)) {
+		    (!aggregate && function.Distinct()) || (aggregate && arguments.size() != 1)) {
 			Fail(expression.ToString(), "rule", "unsupported function or aggregate in scalar population");
 		}
-		if (division && (function.children.size() != 2 || !ZeroProtectedDenominator(*function.children[1]))) {
+		if (division && (arguments.size() != 2 || !ZeroProtectedDenominator(arguments[1].GetExpression()))) {
 			Fail(expression.ToString(), "rule",
 			     "division requires a direct NULLIF(expr, numeric zero constant) denominator");
 		}
-		for (auto &child : function.children) {
-			Strict(*child, aggregates, inside_aggregate || aggregate, depth + 1, visited);
+		for (auto &argument : arguments) {
+			Strict(argument.GetExpression(), aggregates, inside_aggregate || aggregate, depth + 1, visited);
 		}
 		return;
 	}
@@ -540,7 +546,7 @@ void Strict(const ParsedExpression &expression, bool aggregates = false, bool in
 
 bool HasAggregate(const ParsedExpression &expression) {
 	if (expression.GetExpressionClass() == ExpressionClass::FUNCTION) {
-		auto name = StringUtil::Lower(expression.Cast<FunctionExpression>().function_name);
+		auto name = StringUtil::Lower(expression.Cast<FunctionExpression>().FunctionName().GetIdentifierName());
 		if (name == "sum" || name == "count" || name == "avg") {
 			return true;
 		}
@@ -560,7 +566,7 @@ unique_ptr<ParsedExpression> Parse(const string &sql) {
 	}
 	vector<unique_ptr<ParsedExpression>> expressions;
 	try {
-		expressions = Parser::ParseExpressionList(sql);
+		expressions = Parser::GetBuiltinParser().ParseExpressionList(sql);
 	} catch (const ParserException &error) {
 		NormalizeError(ErrorData(error), sql, "rule", ExceptionType::INVALID_INPUT);
 	}
@@ -572,12 +578,11 @@ unique_ptr<ParsedExpression> Parse(const string &sql) {
 
 void Qualify(unique_ptr<ParsedExpression> &expression, const string &dataset) {
 	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
-		auto &column = expression->Cast<ColumnRefExpression>();
-		if (column.column_names.size() > 2 ||
-		    (column.column_names.size() == 2 && !StringUtil::CIEquals(column.column_names[0], dataset))) {
+		auto names = ColumnNames(expression->Cast<ColumnRefExpression>());
+		if (names.size() > 2 || (names.size() == 2 && !StringUtil::CIEquals(names[0], dataset))) {
 			Fail(expression->ToString(), "bind", "physical reference crosses dataset");
 		}
-		expression = make_uniq<ColumnRefExpression>(column.column_names.back(), dataset);
+		expression = make_uniq<ColumnRefExpression>(Identifier(names.back()), Identifier(dataset));
 		return;
 	}
 	ParsedExpressionIterator::EnumerateChildren(*expression,
@@ -627,14 +632,14 @@ string LogicalField(const Bundle &bundle, const string &sql) {
 	if (expression->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 		Fail(sql, "mapping", "mapping must be a single dataset.field reference");
 	}
-	auto &names = expression->Cast<ColumnRefExpression>().column_names;
+	auto names = ColumnNames(expression->Cast<ColumnRefExpression>());
 	return LogicalName(bundle, names);
 }
 
 void Resolve(const Bundle &bundle, unique_ptr<ParsedExpression> &expression, bool ontology_only = false,
              const string &owner = "") {
 	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
-		auto &names = expression->Cast<ColumnRefExpression>().column_names;
+		auto names = ColumnNames(expression->Cast<ColumnRefExpression>());
 		if (names.size() != 2) {
 			Fail(expression->ToString(), "rule", "scalar references must be qualified");
 		}
@@ -882,7 +887,7 @@ void Definitions(Bundle &bundle, const Ontology &ontology, const Mapping &mappin
 	}
 	auto id = FieldTree(bundle, bundle.identity);
 	if (id->GetExpressionClass() != ExpressionClass::COLUMN_REF ||
-	    bundle.model.datasets[0].primary_key != vector<string> {id->Cast<ColumnRefExpression>().column_names.back()}) {
+	    bundle.model.datasets[0].primary_key != vector<string> {ColumnNames(id->Cast<ColumnRefExpression>()).back()}) {
 		Fail(bundle.root, "identity", "identity must be a plain declared single-column primary key");
 	}
 	if (bundle.direct_derived) {
@@ -968,7 +973,7 @@ bool Matches(const string &datatype, const LogicalType &type) {
 
 void ExpandMetric(const Bundle &bundle, unique_ptr<ParsedExpression> &expression) {
 	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
-		auto &names = expression->Cast<ColumnRefExpression>().column_names;
+		auto names = ColumnNames(expression->Cast<ColumnRefExpression>());
 		if (names.size() != 2 || !StringUtil::CIEquals(names[0], bundle.model.datasets[0].name)) {
 			Fail(expression->ToString(), "metric", "single root dataset required");
 		}
@@ -991,7 +996,7 @@ struct FrozenScan : GlobalTableFunctionState {
 	ColumnDataScanState state;
 };
 unique_ptr<FunctionData> FrozenBindFunction(ClientContext &, TableFunctionBindInput &input, vector<LogicalType> &types,
-                                            vector<string> &names) {
+                                            vector<Identifier> &names) {
 	auto dependency =
 	    input.ref.external_dependency ? input.ref.external_dependency->GetDependency("ossie_batch") : nullptr;
 	if (!dependency) {
@@ -1005,7 +1010,7 @@ unique_ptr<FunctionData> FrozenBindFunction(ClientContext &, TableFunctionBindIn
 		result->program_parent = parent->Cast<SnapshotDependency>().bundle;
 	}
 	types = result->bundle->collection->Types();
-	names = result->bundle->physical_names;
+	names = Identifiers(result->bundle->physical_names);
 	return std::move(result);
 }
 unique_ptr<GlobalTableFunctionState> FrozenInit(ClientContext &, TableFunctionInitInput &input) {
@@ -1018,10 +1023,9 @@ void FrozenScanFunction(ClientContext &, TableFunctionInput &input, DataChunk &o
 }
 unique_ptr<TableRef> SnapshotTable(Bundle &bundle) {
 	auto table = make_uniq<TableFunctionRef>();
-	table->function = make_uniq<FunctionExpression>("_ossie_snapshot_rows", vector<unique_ptr<ParsedExpression>>());
-	table->function->Cast<FunctionExpression>().catalog = "system";
-	table->function->Cast<FunctionExpression>().schema = "main";
-	table->alias = bundle.model.datasets[0].name;
+	table->function = make_uniq<FunctionExpression>(QualifiedName("system", "main", "_ossie_snapshot_rows"),
+	                                                vector<unique_ptr<ParsedExpression>>());
+	table->alias = Identifier(bundle.model.datasets[0].name);
 	table->external_dependency = make_shared_ptr<ExternalDependency>();
 	table->external_dependency->AddDependency("ossie_batch", make_shared_ptr<SnapshotDependency>(bundle.owner.lock()));
 	return std::move(table);
@@ -1029,18 +1033,16 @@ unique_ptr<TableRef> SnapshotTable(Bundle &bundle) {
 void EngineFunctions(ParsedExpression &expression) {
 	if (expression.GetExpressionClass() == ExpressionClass::FUNCTION) {
 		auto &function = expression.Cast<FunctionExpression>();
-		function.catalog = "system";
-		function.schema = "main";
+		function.SetQualifiedName("system", "main", function.FunctionName());
 	}
 	if (expression.GetExpressionClass() == ExpressionClass::WINDOW) {
 		auto &window = expression.Cast<WindowExpression>();
-		window.catalog = "system";
-		window.schema = "main";
+		window.SetQualifiedName("system", "main", window.FunctionName());
 	}
 	ParsedExpressionIterator::EnumerateChildren(expression, [&](ParsedExpression &child) { EngineFunctions(child); });
 }
 unique_ptr<SQLStatement> FrozenSQL(Bundle &bundle, const string &sql) {
-	Parser parser;
+	auto parser = Parser::GetBuiltinParser();
 	parser.ParseQuery(sql);
 	auto statement = std::move(parser.statements[0]);
 	auto &select = statement->Cast<SelectStatement>().node->Cast<SelectNode>();
@@ -1057,7 +1059,7 @@ unique_ptr<TableRef> ProgramSources(unique_ptr<TableRef> ref, Bundle &parent,
 	case TableReferenceType::BASE_TABLE: {
 		auto &base = ref->Cast<BaseTableRef>();
 		for (auto &child : children) {
-			if (child->model.datasets[0].name == base.table_name) {
+			if (child->model.datasets[0].name == base.Table().GetIdentifierName()) {
 				auto table = SnapshotTable(*child);
 				table->external_dependency->AddDependency("ossie_program_parent",
 				                                          make_shared_ptr<SnapshotDependency>(parent.owner.lock()));
@@ -1067,7 +1069,7 @@ unique_ptr<TableRef> ProgramSources(unique_ptr<TableRef> ref, Bundle &parent,
 				return std::move(table);
 			}
 		}
-		Fail(base.table_name, "bind", "unknown frozen program source");
+		Fail(base.Table().GetIdentifierName(), "bind", "unknown frozen program source");
 	}
 	case TableReferenceType::JOIN: {
 		auto &join = ref->Cast<JoinRef>();
@@ -1090,7 +1092,7 @@ unique_ptr<TableRef> ProgramSources(unique_ptr<TableRef> ref, Bundle &parent,
 
 // Program SQL names frozen children by dataset; every function pins to system.main.
 unique_ptr<SelectStatement> ProgramSQL(Bundle &parent, const vector<shared_ptr<Bundle>> &children, const string &sql) {
-	Parser parser;
+	auto parser = Parser::GetBuiltinParser();
 	parser.ParseQuery(sql);
 	auto statement = unique_ptr_cast<SQLStatement, SelectStatement>(std::move(parser.statements[0]));
 	auto &select = statement->node->Cast<SelectNode>();
@@ -1120,7 +1122,7 @@ void BooleanContexts(Bundle &bundle, const ParsedExpression &expression) {
 		    expression, [&](const ParsedExpression &child) { CheckBooleanType(bundle, child); });
 	}
 	if (expression.GetExpressionClass() == ExpressionClass::CASE) {
-		for (auto &check : expression.Cast<CaseExpression>().case_checks) {
+		for (auto &check : expression.Cast<CaseExpression>().CaseChecks()) {
 			CheckBooleanType(bundle, *check.when_expr);
 		}
 	}
@@ -1143,11 +1145,11 @@ void BindConceptConstraint(Bundle &bundle, ConceptConstraint &constraint) {
 	     tree->GetExpressionType() != ExpressionType::CONJUNCTION_AND)) {
 		Fail(constraint.owner, "rule", "requires needs explicit same-attribute NULL guard");
 	}
-	auto &conjunction = tree->Cast<ConjunctionExpression>();
-	if (conjunction.children.size() != 2) {
+	auto &conjunction = tree->Cast<ConjunctionExpression>().GetChildren();
+	if (conjunction.size() != 2) {
 		Fail(constraint.owner, "rule", "requires accepts one guard and one comparison");
 	}
-	const ParsedExpression *guard = conjunction.children[0].get(), *comparison = conjunction.children[1].get();
+	const ParsedExpression *guard = conjunction[0].get(), *comparison = conjunction[1].get();
 	if (guard->GetExpressionClass() == ExpressionClass::COMPARISON) {
 		std::swap(guard, comparison);
 	}
@@ -1158,14 +1160,14 @@ void BindConceptConstraint(Bundle &bundle, ConceptConstraint &constraint) {
 	    comparison->GetExpressionType() != ExpressionType::COMPARE_GREATERTHANOREQUALTO) {
 		Fail(constraint.owner, "rule", "requires accepts IS NULL OR >=, or IS NOT NULL AND >=");
 	}
-	auto &operation = guard->Cast<OperatorExpression>();
+	auto &operation = guard->Cast<OperatorExpression>().GetChildren();
 	auto &test = comparison->Cast<ComparisonExpression>();
-	if (operation.children.size() != 1 || operation.children[0]->GetExpressionClass() != ExpressionClass::COLUMN_REF ||
-	    test.left->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
+	if (operation.size() != 1 || operation[0]->GetExpressionClass() != ExpressionClass::COLUMN_REF ||
+	    test.Left().GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 		Fail(constraint.owner, "rule", "requires needs direct mapped scalar references");
 	}
-	auto &guard_names = operation.children[0]->Cast<ColumnRefExpression>().column_names;
-	auto &names = test.left->Cast<ColumnRefExpression>().column_names;
+	auto guard_names = ColumnNames(operation[0]->Cast<ColumnRefExpression>());
+	auto names = ColumnNames(test.Left().Cast<ColumnRefExpression>());
 	if (names.size() != 2 || guard_names.size() != 2 || !StringUtil::CIEquals(names[0], constraint.owner) ||
 	    !StringUtil::CIEquals(guard_names[0], constraint.owner) || !StringUtil::CIEquals(guard_names[1], names[1])) {
 		Fail(constraint.owner, "rule", "requires guard and comparison must name the same owner attribute");
@@ -1196,31 +1198,34 @@ void BindConceptConstraint(Bundle &bundle, ConceptConstraint &constraint) {
 	auto type = prepared->GetTypes()[0];
 	Value threshold;
 	if (type.IsIntegral() && attribute->target == "Integer" &&
-	    test.right->GetExpressionClass() == ExpressionClass::CONSTANT) {
-		auto &value = test.right->Cast<ConstantExpression>().value;
+	    test.Right().GetExpressionClass() == ExpressionClass::CONSTANT) {
+		auto value = test.Right().Cast<ConstantExpression>().GetLiteral().ToValue();
 		string error;
-		if (value.IsNull() || !value.type().IsIntegral() || !value.DefaultTryCastAs(type, threshold, &error, true)) {
+		auto fitted = value.IsNull() || !value.type().IsIntegral() ? optional<Value>()
+		                                                           : value.DefaultTryCastAs(type, &error, true);
+		if (!fitted) {
 			Fail(constraint.owner, "bind", "requires threshold must fit the actual integer type without coercion");
 		}
+		threshold = *fitted;
 	} else if (type == LogicalType::DATE && attribute->target == "Date") {
-		// A typed DATE literal may be represented by the parser as CAST(string AS DATE).
+		// A typed DATE literal is represented by the parser as CAST(string AS DATE).
 		// No column casts, TRY_CAST, untyped strings or other temporal types are accepted.
-		if (test.right->GetExpressionClass() == ExpressionClass::CONSTANT &&
-		    test.right->Cast<ConstantExpression>().value.type() == LogicalType::DATE) {
-			threshold = test.right->Cast<ConstantExpression>().value;
-		} else if (test.right->GetExpressionClass() == ExpressionClass::CAST) {
-			auto &cast = test.right->Cast<CastExpression>();
-			auto target = cast.cast_type.IsUnbound() ? UnboundType::TryDefaultBind(cast.cast_type) : cast.cast_type;
-			if (cast.try_cast || target != LogicalType::DATE ||
-			    cast.child->GetExpressionClass() != ExpressionClass::CONSTANT) {
+		if (test.Right().GetExpressionClass() == ExpressionClass::CAST) {
+			auto &cast = test.Right().Cast<CastExpression>();
+			auto target = UnboundType::TryDefaultBind(cast.TargetType());
+			if (cast.IsTryCast() || target != LogicalType::DATE ||
+			    cast.Child().GetExpressionClass() != ExpressionClass::CONSTANT) {
 				Fail(constraint.owner, "rule", "requires needs a typed DATE constant");
 			}
-			auto &value = cast.child->Cast<ConstantExpression>().value;
+			auto value = cast.Child().Cast<ConstantExpression>().GetLiteral().ToValue();
 			string error;
-			if (value.IsNull() || value.type() != LogicalType::VARCHAR ||
-			    !value.DefaultTryCastAs(LogicalType::DATE, threshold, &error, true)) {
+			auto date = value.IsNull() || value.type() != LogicalType::VARCHAR
+			                ? optional<Value>()
+			                : value.DefaultTryCastAs(LogicalType::DATE, &error, true);
+			if (!date) {
 				Fail(constraint.owner, "bind", "invalid requires DATE constant");
 			}
+			threshold = *date;
 		} else {
 			Fail(constraint.owner, "rule", "requires needs a typed DATE constant");
 		}
@@ -1240,7 +1245,7 @@ void BindConceptConstraint(Bundle &bundle, ConceptConstraint &constraint) {
 	constraint.predicate = make_uniq<ConjunctionExpression>(
 	    tree->GetExpressionType(), make_uniq<OperatorExpression>(guard_type, physical->Copy()),
 	    make_uniq<ComparisonExpression>(ExpressionType::COMPARE_GREATERTHANOREQUALTO, physical->Copy(),
-	                                    make_uniq<ConstantExpression>(threshold)));
+	                                    ConstantExpression::FromValue(threshold)));
 	CheckBoolean(bundle, *constraint.predicate);
 }
 
@@ -1390,13 +1395,14 @@ CapturedTable CaptureTable(ClientContext &context, Connection &source, const Dat
 			Fail(dataset.name, "snapshot", "generated source columns not supported");
 		}
 	}
-	auto result = Run(context, source,
-	                  "SELECT * FROM " + Quote(parts[0]) + "." + Quote(parts[1]) + "." + Quote(parts[2]) + " LIMIT " +
-	                      to_string(MAX_ROWS + 1));
+	auto result =
+	    Run(context, source,
+	        "SELECT * FROM " + Quote(parts[0].GetIdentifierName()) + "." + Quote(parts[1].GetIdentifierName()) + "." +
+	            Quote(parts[2].GetIdentifierName()) + " LIMIT " + to_string(MAX_ROWS + 1));
 	CapturedTable capture;
-	capture.names = result->names;
-	capture.types = result->types;
-	auto count = result->Cast<MaterializedQueryResult>().RowCount();
+	capture.names = Names(result->GetNames());
+	capture.types = result->GetTypes();
+	auto count = result->RowCount();
 	if (count > MAX_ROWS || capture.types.empty() || capture.types.size() > 256) {
 		Fail(dataset.name, "snapshot", "batch exceeds 10000 rows or 256 physical columns; no truncation performed");
 	}
@@ -1453,9 +1459,9 @@ unique_ptr<ColumnDataCollection> Collect(ClientContext &context, const CapturedT
 		}
 		idx_t slot = r % STANDARD_VECTOR_SIZE;
 		for (idx_t c = 0; c < capture.types.size(); c++) {
-			chunk.SetValue(c, slot, capture.rows[r][c]);
+			chunk.data[c].Append(capture.rows[r][c]);
 		}
-		chunk.SetCardinality(slot + 1);
+		chunk.CheckCardinality(slot + 1);
 		if (slot + 1 == STANDARD_VECTOR_SIZE || r + 1 == capture.rows.size()) {
 			collection->Append(chunk);
 			chunk.Reset();
@@ -1466,7 +1472,7 @@ unique_ptr<ColumnDataCollection> Collect(ClientContext &context, const CapturedT
 
 void ExpandOriginal(const Model &model, unique_ptr<ParsedExpression> &expression) {
 	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
-		auto names = expression->Cast<ColumnRefExpression>().column_names;
+		auto names = ColumnNames(expression->Cast<ColumnRefExpression>());
 		auto dataset = names.size() == 2 ? model.FindDataset(names[0]) : nullptr;
 		auto field = dataset ? dataset->FindField(names[1]) : nullptr;
 		if (!field) {
@@ -1484,12 +1490,12 @@ void ExpandOriginal(const Model &model, unique_ptr<ParsedExpression> &expression
 void FlattenPhysical(unique_ptr<ParsedExpression> &expression, const Dataset &dataset, const CapturedTable &capture,
                      idx_t offset, const string &root) {
 	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
-		auto names = expression->Cast<ColumnRefExpression>().column_names;
+		auto names = ColumnNames(expression->Cast<ColumnRefExpression>());
 		if (names.empty() || names.size() > 2 || (names.size() == 2 && !StringUtil::CIEquals(names[0], dataset.name))) {
 			Fail(expression->ToString(), "bind", "physical reference crosses dataset");
 		}
 		auto index = PhysicalColumn(capture, names.back()) + offset;
-		expression = make_uniq<ColumnRefExpression>("_ossie_column_" + to_string(index), root);
+		expression = make_uniq<ColumnRefExpression>(Identifier("_ossie_column_" + to_string(index)), Identifier(root));
 		return;
 	}
 	ParsedExpressionIterator::EnumerateChildren(*expression, [&](unique_ptr<ParsedExpression> &child) {
@@ -1499,8 +1505,8 @@ void FlattenPhysical(unique_ptr<ParsedExpression> &expression, const Dataset &da
 
 void FlattenLogical(const Bundle &bundle, unique_ptr<ParsedExpression> &expression) {
 	if (expression->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
-		auto field = LogicalName(bundle, expression->Cast<ColumnRefExpression>().column_names);
-		expression = make_uniq<ColumnRefExpression>(field, bundle.model.datasets[0].name);
+		auto field = LogicalName(bundle, ColumnNames(expression->Cast<ColumnRefExpression>()));
+		expression = make_uniq<ColumnRefExpression>(Identifier(field), Identifier(bundle.model.datasets[0].name));
 		return;
 	}
 	ParsedExpressionIterator::EnumerateChildren(
@@ -1640,13 +1646,13 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 		idx_t slot = r % STANDARD_VECTOR_SIZE;
 		for (idx_t c = 0; c < types.size(); c++) {
 			auto &value = c < facts.types.size() ? facts.rows[r][c] : dims.rows[matches[r]][c - facts.types.size()];
-			chunk.SetValue(c, slot, value);
+			chunk.data[c].Append(value);
 			Frame(joined, value.ToSQLString());
 			if (joined.size() > MAX_BYTES) {
 				Fail("join", "snapshot", "joined batch exceeds 16 MiB canonical value limit");
 			}
 		}
-		chunk.SetCardinality(slot + 1);
+		chunk.CheckCardinality(slot + 1);
 		if (slot + 1 == STANDARD_VECTOR_SIZE || r + 1 == facts.rows.size()) {
 			bundle.collection->Append(chunk);
 			chunk.Reset();
@@ -2013,7 +2019,7 @@ void ObservationDefinitions(Bundle &b, const Ontology &ontology, const Mapping &
 		if (tree->GetExpressionClass() != ExpressionClass::COLUMN_REF || !distinct_fields.insert(field).second) {
 			Fail(field, "identity", "identity components must be distinct plain columns");
 		}
-		physical.push_back(tree->Cast<ColumnRefExpression>().column_names.back());
+		physical.push_back(ColumnNames(tree->Cast<ColumnRefExpression>()).back());
 	}
 	if (b.model.datasets[0].primary_key != physical) {
 		Fail(b.root, "identity", "declared primary key must match typed observation tuple");
@@ -2022,7 +2028,7 @@ void ObservationDefinitions(Bundle &b, const Ontology &ontology, const Mapping &
 	for (auto &a : b.attributes) {
 		auto tree = FieldTree(b, a.field);
 		if (tree->GetExpressionClass() != ExpressionClass::COLUMN_REF || !bound_fields.insert(a.field).second ||
-		    !physical_fields.insert(tree->Cast<ColumnRefExpression>().column_names.back()).second) {
+		    !physical_fields.insert(ColumnNames(tree->Cast<ColumnRefExpression>()).back()).second) {
 			Fail(a.field, "capability", "observation roles require distinct untransformed physical columns");
 		}
 	}
@@ -2038,19 +2044,19 @@ void ObservationDefinitions(Bundle &b, const Ontology &ontology, const Mapping &
 			Fail(m.name, "capability", "only five direct observation aggregate forms supported");
 		}
 		auto &f = tree->Cast<FunctionExpression>();
-		auto name = StringUtil::Lower(f.function_name);
-		if (f.children.size() != 1) {
+		auto name = StringUtil::Lower(f.FunctionName().GetIdentifierName());
+		if (f.GetArguments().size() != 1 || f.GetArguments()[0].HasName()) {
 			Fail(m.name, "capability", "single aggregate argument required");
 		}
 		string field;
 		for (const auto &candidate : {b.identity, b.amount_field}) {
-			if (f.children[0]->Equals(*FieldTree(b, candidate))) {
+			if (f.GetArguments()[0].GetExpression().Equals(*FieldTree(b, candidate))) {
 				field = candidate;
 			}
 		}
 		bool valid = (name == "count" && field == b.identity) ||
-		             (!f.distinct && field == b.amount_field && (name == "count" || name == "sum" || name == "avg"));
-		auto shape = name + ":" + (f.distinct ? "distinct:" : "all:") + field;
+		             (!f.Distinct() && field == b.amount_field && (name == "count" || name == "sum" || name == "avg"));
+		auto shape = name + ":" + (f.Distinct() ? "distinct:" : "all:") + field;
 		if (!valid || !metric_shapes.insert(shape).second) {
 			Fail(m.name, "capability", "unsupported or repeated observation metric shape");
 		}
@@ -2069,10 +2075,10 @@ void ObservationDefinitions(Bundle &b, const Ontology &ontology, const Mapping &
 		Fail(b.derived, "capability", "qualification must be class integer >= integer constant");
 	}
 	auto &comparison = b.rule->Cast<ComparisonExpression>();
-	if (!comparison.left->Equals(*FieldTree(b, b.class_field)) ||
-	    comparison.right->GetExpressionClass() != ExpressionClass::CONSTANT ||
-	    !comparison.right->Cast<ConstantExpression>().value.type().IsIntegral() ||
-	    comparison.right->Cast<ConstantExpression>().value.IsNull()) {
+	if (!comparison.Left().Equals(*FieldTree(b, b.class_field)) ||
+	    comparison.Right().GetExpressionClass() != ExpressionClass::CONSTANT ||
+	    !comparison.Right().Cast<ConstantExpression>().GetLiteral().ToValue().type().IsIntegral() ||
+	    comparison.Right().Cast<ConstantExpression>().GetLiteral().IsNull()) {
 		Fail(b.derived, "capability", "qualification must be class integer >= integer constant");
 	}
 }
@@ -2094,7 +2100,7 @@ void ObservationIdentityPreflight(ClientContext &context, Bundle &b, Connection 
 	auto duplicates = Run(context, engine,
 	                      FrozenSQL(b, "SELECT " + u + ", " + d + ", " + p + source + " GROUP BY " + u + ", " + d +
 	                                       ", " + p + " HAVING system.main.count(*) > 1"));
-	if (duplicates->Cast<MaterializedQueryResult>().RowCount() != 0) {
+	if (duplicates->RowCount() != 0) {
 		Fail(b.root, "identity",
 		     "entire batch contains duplicate observation tuple; identical and conflicting records both refused");
 	}
@@ -2125,7 +2131,7 @@ void FactCoreBudget(yyjson_val *core) {
 			bytes += sql.size();
 			auto language = Text(dialect, "dialect");
 			if (language == OSSIE_SQL_2026 || language == ANSI_SQL) {
-				auto parsed = Parser::ParseExpressionList(sql);
+				auto parsed = Parser::GetBuiltinParser().ParseExpressionList(sql);
 				if (parsed.size() != 1 || !parsed[0]->GetAlias().empty()) {
 					Fail("fact program", "capability", "one unaliased expression required");
 				}
@@ -2160,7 +2166,7 @@ string FactLogicalField(const Dataset &dataset, const string &sql) {
 	if (expr->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 		Fail(sql, "mapping", "direct declared field required");
 	}
-	auto &names = expr->Cast<ColumnRefExpression>().column_names;
+	auto names = ColumnNames(expr->Cast<ColumnRefExpression>());
 	if (names.size() != 2 || !StringUtil::CIEquals(names[0], dataset.name) || !dataset.FindField(names[1])) {
 		Fail(sql, "mapping", "declared field in this fact required");
 	}
@@ -2170,7 +2176,7 @@ string FactPhysicalField(const Dataset &dataset, const Field &field) {
 	if (field.expression.tree->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 		Fail(field.name, "capability", "fact field must directly map a physical column");
 	}
-	auto &names = field.expression.tree->Cast<ColumnRefExpression>().column_names;
+	auto names = ColumnNames(field.expression.tree->Cast<ColumnRefExpression>());
 	if (names.empty() || names.size() > 2 || (names.size() == 2 && !StringUtil::CIEquals(names[0], dataset.name))) {
 		Fail(field.name, "bind", "own physical column required");
 	}
@@ -2469,7 +2475,7 @@ void FreezeFacts(ClientContext &context, Bundle &b, Connection &engine) {
 			for (idx_t j = 0; j < ids.size(); j++) {
 				auto &value = row[ids[j]];
 				if (value.IsNull() ||
-				    (j == 1 ? !Date::IsFinite(value.GetValue<date_t>()) : value.GetValue<string>().empty())) {
+				    (j == 1 ? !value.GetValue<date_t>().IsFinite() : value.GetValue<string>().empty())) {
 					Fail(fact.concept, "identity",
 					     "full capture requires nonempty raw User/product and finite nonnull DATE");
 				}
@@ -2561,7 +2567,7 @@ void HistoryCoreBudget(yyjson_val *core) {
 				if (Text(dialect, "dialect") != OSSIE_SQL_2026) {
 					Fail("history", "capability", "OSSIE_SQL_2026 direct fields only");
 				}
-				auto parsed = Parser::ParseExpressionList(sql);
+				auto parsed = Parser::GetBuiltinParser().ParseExpressionList(sql);
 				if (parsed.size() != 1 || !parsed[0]->GetAlias().empty() ||
 				    parsed[0]->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 					Fail("history", "capability", "one direct unaliased field before model lowering");
@@ -2838,7 +2844,7 @@ void BuildHistorySegments(ClientContext &context, Bundle &b) {
 	dataset.source_bound = "memory.main.ossie_snapshot";
 	child->model.datasets.push_back(dataset);
 	child->physical_names = {"user_id", "target", "starts", "ends"};
-	child->collection = segments->Cast<MaterializedQueryResult>().TakeCollection();
+	child->collection = segments->TakeCollection();
 	child->rows = child->collection->Count();
 	b.history_segments = std::move(child);
 	auto summary = Run(context, *engine,
@@ -2903,7 +2909,7 @@ void FreezeHistory(ClientContext &context, Bundle &b, Connection &engine) {
 				auto &value = row[columns[i]];
 				bool date = src.roles[i] == "date" || src.roles[i] == "starts" || src.roles[i] == "ends";
 				if (value.IsNull() ||
-				    (date ? !Date::IsFinite(value.GetValue<date_t>()) : value.GetValue<string>().empty())) {
+				    (date ? !value.GetValue<date_t>().IsFinite() : value.GetValue<string>().empty())) {
 					Fail(src.roles[i], "identity",
 					     "full capture requires nonnull/nonempty raw identity and finite DATE");
 				}
@@ -3214,7 +3220,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 			input.root = bundle->root;
 			input.user_concept = bundle->user_concept;
 			input.dataset = dataset.name;
-			input.user_column = FieldTree(*bundle, bundle->identity)->Cast<ColumnRefExpression>().column_names.back();
+			input.user_column = ColumnNames(FieldTree(*bundle, bundle->identity)->Cast<ColumnRefExpression>()).back();
 			for (auto &attribute : bundle->attributes) {
 				if (attribute.target == bundle->user_concept) {
 					input.mapped_user_relation = attribute.name;
@@ -3227,7 +3233,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 					}
 					input.scalars.push_back(
 					    {attribute.name,
-					     FieldTree(*bundle, attribute.field)->Cast<ColumnRefExpression>().column_names.back(),
+					     ColumnNames(FieldTree(*bundle, attribute.field)->Cast<ColumnRefExpression>()).back(),
 					     prepared->GetTypes()[index]});
 				}
 			}
@@ -3328,16 +3334,16 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 			if (bundle.provenance.empty()) {
 				translated.push_back(dimension);
 			} else {
-				translated.push_back(
-				    make_uniq<ColumnRefExpression>(LogicalField(bundle, dimension), bundle.model.datasets[0].name)
-				        ->ToString());
+				translated.push_back(make_uniq<ColumnRefExpression>(Identifier(LogicalField(bundle, dimension)),
+				                                                    Identifier(bundle.model.datasets[0].name))
+				                         ->ToString());
 			}
 		}
 		auto statement = Compile(bundle.model, metrics, translated, {}, options);
 		if (!bundle.provenance.empty()) {
 			auto &select = statement->node->Cast<SelectNode>();
 			for (idx_t i = 0; i < dimensions.size(); i++) {
-				select.select_list[i]->SetAlias(dimensions[i]);
+				select.select_list[i]->SetAlias(Identifier(dimensions[i]));
 			}
 		}
 		return statement;
@@ -3346,13 +3352,13 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 	if (bundle.profile != OBSERVATION_PROFILE) {
 		for (auto name : {"entity_id", "record_id"}) {
 			auto id = FieldTree(bundle, bundle.identity);
-			id->SetAlias(name);
+			id->SetAlias(Identifier(name));
 			select->select_list.push_back(std::move(id));
 		}
 	}
 	for (auto &field : bundle.model.datasets[0].fields) {
 		auto expression = FieldTree(bundle, field.name);
-		expression->SetAlias(OriginalName(bundle, field.name));
+		expression->SetAlias(Identifier(OriginalName(bundle, field.name)));
 		select->select_list.push_back(std::move(expression));
 	}
 	select->where_clause = std::move(predicate);
@@ -3517,7 +3523,8 @@ string PlanJSON(const Bundle &bundle, const SelectStatement &statement, const st
 		if (i) {
 			result += ",";
 		}
-		result += "{\"ordinal\":" + to_string(i + 1) + ",\"alias\":" + JSONString(expression->GetAlias()) +
+		result += "{\"ordinal\":" + to_string(i + 1) +
+		          ",\"alias\":" + JSONString(expression->GetAlias().GetIdentifierName()) +
 		          ",\"sql\":" + JSONString(expression->ToString()) + "}";
 	}
 	vector<string> groups;
@@ -3815,7 +3822,7 @@ date_t FiniteDisplayDate(const string &text, const string &name) {
 	bool special = false;
 	if (text.empty() || text.size() > 32 ||
 	    Date::TryConvertDate(text.data(), text.size(), pos, value, special, true) != DateCastResult::SUCCESS ||
-	    pos != text.size() || special || !Date::IsFinite(value) || Date::ToString(value) != text) {
+	    pos != text.size() || special || !value.IsFinite() || Date::ToString(value) != text) {
 		Fail(name, "arguments", "finite canonical DuckDB DATE text required, including BC/wide years");
 	}
 	return value;
@@ -4214,7 +4221,7 @@ unique_ptr<FunctionData> FactBind(ClientContext &context, const Request &request
 		NormalizeError(prepared->GetErrorObject(), "fact_request", "bind", ExceptionType::INVALID_INPUT);
 	}
 	result->result_types = prepared->GetTypes();
-	result->result_names = prepared->GetNames();
+	result->result_names = Names(prepared->GetNames());
 	vector<string> expected = {"user_id"};
 	if (window) {
 		expected.push_back("ds");
@@ -4339,7 +4346,7 @@ string RelationJSON(ClientContext &context, const PopulationBind &data) {
 		lock_guard<mutex> guard(b.query_lock);
 		auto engine = Engine(b);
 		auto query = Run(context, *engine, data.statement->Copy());
-		if (query->types != data.result_types) {
+		if (query->GetTypes() != data.result_types) {
 			Fail(relation.name, "execute", "bound full link types changed");
 		}
 		while (auto chunk = query->Fetch()) {
@@ -4616,7 +4623,8 @@ void VocabularyRows(const Bundle &b, const string &vocabulary, vector<vector<Val
 	} else if (vocabulary == "fields") {
 		for (auto &dataset : b.definition_model.datasets) {
 			for (auto &f : dataset.fields) {
-				auto qualified = make_uniq<ColumnRefExpression>(f.name, dataset.name)->ToString();
+				auto qualified =
+				    make_uniq<ColumnRefExpression>(Identifier(f.name), Identifier(dataset.name))->ToString();
 				auto internal = LogicalField(b, qualified);
 				append({Value(dataset.name),
 				        Value(f.name),
@@ -4808,7 +4816,7 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, const Request &requ
 		for (const auto &entry : {std::make_pair("_ossie_snapshot_id", result->bundle->snapshot_id),
 		                          std::make_pair("_ossie_content_sha256", result->bundle->content_hash),
 		                          std::make_pair("_ossie_ontology_sha256", result->bundle->ontology_hash)}) {
-			auto expression = make_uniq<ConstantExpression>(Value(entry.second));
+			auto expression = ConstantExpression::FromValue(Value(entry.second));
 			expression->SetAlias(entry.first);
 			select.select_list.push_back(std::move(expression));
 		}
@@ -4838,7 +4846,7 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, const Request &requ
 			NormalizeError(prepared->GetErrorObject(), concept, "bind", ExceptionType::INVALID_INPUT);
 		}
 		types = prepared->GetTypes();
-		names = prepared->GetNames();
+		names = Names(prepared->GetNames());
 		if (result->encoded) {
 			case_insensitive_set_t unique_names;
 			for (auto &name : names) {
@@ -5082,7 +5090,7 @@ const char *DailyStateLabel(uint8_t mask) {
 string DailyStateResult(ClientContext &context, const PopulationBind &data, QueryResult &query) {
 	auto &b = *data.bundle;
 	auto &r = data.daily_request;
-	if (query.types != data.daily_input_types) {
+	if (query.GetTypes() != data.daily_input_types) {
 		Fail("daily_states", "execute", "full observation projection types changed");
 	}
 	if (b.user_count > MAX_ROWS / (2 * r.days - 1)) {
@@ -5220,7 +5228,7 @@ string ResultEncoding(const LogicalType &type) {
 }
 
 string ResultJSON(ClientContext &context, const PopulationBind &data, QueryResult &query) {
-	if (query.types != data.result_types || query.names != data.result_names) {
+	if (query.GetTypes() != data.result_types || Names(query.GetNames()) != data.result_names) {
 		Fail("query", "execute", "typed JSON result schema differs from the bound schema");
 	}
 	auto &b = *data.bundle;
@@ -5232,18 +5240,19 @@ string ResultJSON(ClientContext &context, const PopulationBind &data, QueryResul
 	    ",\"ontology_sha256\":" + JSONString(b.ontology_hash) + ",\"mapping_sha256\":" + JSONString(b.mapping_hash) +
 	    ",\"manifest_sha256\":" + JSONString(b.manifest_hash) +
 	    ",\"ordering\":\"unspecified\",\"paging\":false,\"truncated\":false,\"columns\":[";
-	for (idx_t col = 0; col < query.types.size(); col++) {
+	for (idx_t col = 0; col < query.GetTypes().size(); col++) {
 		if (col) {
 			json += ",";
 		}
-		json += "{\"ordinal\":" + to_string(col + 1) + ",\"name\":" + JSONString(query.names[col]) +
-		        ",\"bound_type\":" + JSONString(query.types[col].ToString()) +
-		        ",\"encoding\":" + JSONString(ResultEncoding(query.types[col])) + "}";
+		json += "{\"ordinal\":" + to_string(col + 1) +
+		        ",\"name\":" + JSONString(query.GetNames()[col].GetIdentifierName()) +
+		        ",\"bound_type\":" + JSONString(query.GetTypes()[col].ToString()) +
+		        ",\"encoding\":" + JSONString(ResultEncoding(query.GetTypes()[col])) + "}";
 	}
 	json += "],\"rows\":[";
 	idx_t count = 0;
 	while (auto chunk = query.Fetch()) {
-		if (chunk->ColumnCount() != query.types.size()) {
+		if (chunk->ColumnCount() != query.GetTypes().size()) {
 			Fail("query", "execute", "typed JSON chunk width differs from the bound schema");
 		}
 		for (idx_t row = 0; row < chunk->size(); row++) {
@@ -5254,7 +5263,7 @@ string ResultJSON(ClientContext &context, const PopulationBind &data, QueryResul
 				json += ",";
 			}
 			json += "[";
-			for (idx_t col = 0; col < query.types.size(); col++) {
+			for (idx_t col = 0; col < query.GetTypes().size(); col++) {
 				if (col) {
 					json += ",";
 				}
@@ -5376,8 +5385,9 @@ string FactProgramJSON(ClientContext &context, const Bundle &b) {
 		w.Field("bound_type", b.metric_types.at(window.name));
 		w.Field("dataset", p.sources[window.source].dataset);
 		w.Field("bound_expression", window.expression->ToString());
-		w.Field("bound_catalog", window.expression->Cast<WindowExpression>().catalog);
-		w.Field("bound_schema", window.expression->Cast<WindowExpression>().schema);
+		auto &qualified = window.expression->Cast<WindowExpression>().GetQualifiedName();
+		w.Field("bound_catalog", qualified.Catalog().GetIdentifierName());
+		w.Field("bound_schema", qualified.Schema().GetIdentifierName());
 		w.Append("}");
 	}
 	w.Append("],\"domain\":\"common User by row presence in both separately reduced "
@@ -5476,12 +5486,11 @@ string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
 		auto engine = Engine(b);
 		if (!r.window) {
 			auto count = Run(context, *engine, data.fact_domain_statement->Copy());
-			auto &material = count->Cast<MaterializedQueryResult>();
-			if (count->types != vector<LogicalType> {LogicalType::BIGINT} || material.RowCount() != 1 ||
-			    material.GetValue(0, 0).IsNull()) {
+			if (count->GetTypes() != vector<LogicalType> {LogicalType::BIGINT} || count->RowCount() != 1 ||
+			    count->Collection().GetValue(0, 0).IsNull()) {
 				Fail("common_user_count", "execute", "one nonNULL BIGINT count required");
 			}
-			auto value = material.GetValue(0, 0).GetValue<int64_t>();
+			auto value = count->Collection().GetValue(0, 0).GetValue<int64_t>();
 			if (value < 0 || value > int64_t(MAX_ROWS)) {
 				Fail("common_user_count", "execute", "common domain count outside bounded source");
 			}
@@ -5489,7 +5498,7 @@ string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
 			ObserveFact(context, PopulationFactCheckpoint::AFTER_DOMAIN);
 		}
 		auto query = Run(context, *engine, data.statement->Copy());
-		if (query->types != data.result_types || query->names != data.result_names) {
+		if (query->GetTypes() != data.result_types || Names(query->GetNames()) != data.result_names) {
 			Fail("fact_query", "execute", "actual typed schema changed");
 		}
 		while (auto chunk = query->Fetch()) {
@@ -5505,7 +5514,7 @@ string FactQueryJSON(ClientContext &context, const PopulationBind &data) {
 					values.push_back(chunk->GetValue(c, row));
 				}
 				if (values[0].IsNull() || StringValue::Get(values[0]).empty() ||
-				    (r.window && (values[1].IsNull() || !Date::IsFinite(values[1].GetValue<date_t>())))) {
+				    (r.window && (values[1].IsNull() || !values[1].GetValue<date_t>().IsFinite()))) {
 					Fail("fact_query", "execute", "nonempty User and finite DATE identities required");
 				}
 				rows.push_back(std::move(values));
@@ -5605,7 +5614,8 @@ unique_ptr<FunctionData> HistoryBind(ClientContext &context, const Request &requ
 	auto column = [&](const string &role) {
 		auto &ds = *b.model.FindDataset(obs.dataset);
 		auto position = std::find(obs.roles.begin(), obs.roles.end(), role) - obs.roles.begin();
-		return make_uniq<ColumnRefExpression>(FactPhysicalField(ds, *ds.FindField(obs.fields[position])), obs.dataset);
+		return make_uniq<ColumnRefExpression>(Identifier(FactPhysicalField(ds, *ds.FindField(obs.fields[position]))),
+		                                      Identifier(obs.dataset));
 	};
 	auto conjoin = [&](unique_ptr<ParsedExpression> predicate) {
 		select.where_clause = make_uniq<ConjunctionExpression>(ExpressionType::CONJUNCTION_AND,
@@ -5613,15 +5623,15 @@ unique_ptr<FunctionData> HistoryBind(ClientContext &context, const Request &requ
 	};
 	if (!r.all_dates) {
 		conjoin(make_uniq<ComparisonExpression>(ExpressionType::COMPARE_GREATERTHANOREQUALTO, column("date"),
-		                                        make_uniq<ConstantExpression>(Value::DATE(r.start))));
+		                                        ConstantExpression::FromValue(Value::DATE(r.start))));
 		conjoin(make_uniq<ComparisonExpression>(ExpressionType::COMPARE_LESSTHANOREQUALTO, column("date"),
-		                                        make_uniq<ConstantExpression>(Value::DATE(r.end))));
+		                                        ConstantExpression::FromValue(Value::DATE(r.end))));
 	}
 	if (!r.all_products) {
 		auto in = make_uniq<OperatorExpression>(ExpressionType::COMPARE_IN);
-		in->children.push_back(column("product"));
+		in->GetChildrenMutable().push_back(column("product"));
 		for (auto &item : r.products) {
-			in->children.push_back(make_uniq<ConstantExpression>(Value(item)));
+			in->GetChildrenMutable().push_back(ConstantExpression::String(item));
 		}
 		conjoin(std::move(in));
 	}
@@ -5724,7 +5734,7 @@ string HistoryQueryJSON(ClientContext &context, const PopulationBind &data) {
 		lock_guard<mutex> guard(b.query_lock);
 		auto engine = Engine(b);
 		auto query = Run(context, *engine, data.statement->Copy());
-		if (query->types != data.result_types) {
+		if (query->GetTypes() != data.result_types) {
 			Fail("history", "execute", "link projection types changed");
 		}
 		while (auto chunk = query->Fetch()) {
@@ -6065,11 +6075,11 @@ void Scan(ClientContext &context, TableFunctionInput &input, DataChunk &output) 
 	while (state.offset < state.rows.size() && count < STANDARD_VECTOR_SIZE) {
 		auto &row = state.rows[state.offset++];
 		for (idx_t col = 0; col < row.size(); col++) {
-			output.SetValue(col, count, row[col]);
+			output.data[col].Append(row[col]);
 		}
 		count++;
 	}
-	output.SetCardinality(count);
+	output.CheckCardinality(count);
 }
 
 unique_ptr<FunctionData> DispatchBind(ClientContext &context, const Request &request, vector<LogicalType> &types,
@@ -6108,7 +6118,7 @@ string Argument(const TableFunctionBindInput &input, idx_t index, const string &
 }
 
 Request NativeRequest(const TableFunctionBindInput &input) {
-	auto &name = input.table_function.name;
+	auto name = input.table_function.GetDefinition()->GetName().GetIdentifierName();
 	Request r;
 	r.operation = name;
 	r.encoded = false;
@@ -6119,20 +6129,21 @@ Request NativeRequest(const TableFunctionBindInput &input) {
 		r.dimensions = ToStringList(input.inputs[2], "ossie_concept_query");
 	}
 	r.filters = ToStringList(input.inputs.back(), "ossie_population");
-	auto trace = input.named_parameters.find("include_trace");
+	auto trace = input.named_parameters.find(Identifier("include_trace"));
 	r.include_trace =
 	    trace != input.named_parameters.end() && !trace->second.IsNull() && trace->second.GetValue<bool>();
 	return r;
 }
 
 unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
-                                      vector<string> &names) {
-	auto name = input.table_function.name;
+                                      vector<Identifier> &identifiers) {
+	auto name = input.table_function.GetDefinition()->GetName().GetIdentifierName();
 	string object = name;
 	if (!input.inputs.empty() && !input.inputs[0].IsNull() && input.inputs[0].type() == LogicalType::VARCHAR) {
 		object = input.inputs[0].GetValue<string>();
 	}
-	return ErrorBoundary(object, "bind", [&]() {
+	vector<string> names;
+	auto bound = ErrorBoundary(object, "bind", [&]() {
 		if (name == "ossie_population_json" || name == "ossie_population_compile") {
 			auto request = ParseUnifiedRequest(Argument(input, 0, name, "request_json required"),
 			                                   name == "ossie_population_compile", name);
@@ -6149,6 +6160,8 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 		}
 		return DispatchBind(context, NativeRequest(input), types, names);
 	});
+	identifiers = Identifiers(names);
+	return bound;
 }
 
 unique_ptr<GlobalTableFunctionState> InitBoundary(ClientContext &context, TableFunctionInitInput &input) {
@@ -6202,10 +6215,16 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	    "profiles, and the dedicated program section for daily-state, relation, multi-fact and history profiles. "
 	    "No query execution; max1MiB complete JSON.",
 	    "SELECT * FROM ossie_program()");
+	auto named = [](TableFunction function, const vector<string> &names) {
+		NameParameters(function.GetSignature(), names);
+		return function;
+	};
 	for (bool compile : {false, true}) {
 		auto name = compile ? "ossie_population_compile" : "ossie_population_json";
 		RegisterDescribe(
-		    loader, TableFunction(name, {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+		    loader,
+		    named(TableFunction(name, {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+		          {"request_json"}),
 		    compile ? "Bind one population request without executing it and return its plan_json. request_json "
 		              "declares kind (objects, metrics, daily_users, daily_states, relation_links, fact_users, "
 		              "fact_windows, history_links) plus that kind's request fields; the profile must support the "
@@ -6219,7 +6238,9 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	loader.RegisterFunction(
 	    TableFunction("_ossie_snapshot_rows", {}, FrozenScanFunction, FrozenBindFunction, FrozenInit));
 	RegisterDescribe(
-	    loader, TableFunction("ossie_bundle_load", {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+	    loader,
+	    named(TableFunction("ossie_bundle_load", {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+	          {"path"}),
 	    "Load a hash-bound local core/ontology/mapping bundle for gaap-scalar-population-v1 or "
 	    "fact-dimension-population-v1 or daily-observation-population-v1 or observation-relation-program-v1 or "
 	    "multi-fact-user-program-v1 or historical-observation-relation-v1. Captures "
@@ -6237,20 +6258,23 @@ void RegisterPopulationFunctions(ExtensionLoader &loader) {
 	                 "definition hashes, source and snapshot identity. Database-wide state is captured at binding.",
 	                 "SELECT * FROM ossie_concepts()");
 	auto list = LogicalType::LIST(LogicalType::ANY);
-	auto traced = [](TableFunction function) {
-		function.named_parameters["include_trace"] = LogicalType::BOOLEAN;
+	auto traced = [&](TableFunction function, const vector<string> &names) {
+		NameParameters(function.GetSignature(), names);
+		function.GetSignature().AddKeywordOnly("include_trace", LogicalType::BOOLEAN, Value::BOOLEAN(false));
 		return function;
 	};
 	RegisterDescribe(
 	    loader,
-	    traced(TableFunction("ossie_objects", {LogicalType::VARCHAR, list}, ScanBoundary, BindBoundary, InitBoundary)),
+	    traced(TableFunction("ossie_objects", {LogicalType::VARCHAR, list}, ScanBoundary, BindBoundary, InitBoundary),
+	           {"concept", "filters"}),
 	    "Return every logical field for an executable concept in the bound immutable batch. Scalar/join profiles add "
 	    "entity_id and record_id; observation profile preserves typed tuple columns. "
 	    "Strict scalar filters can only narrow population. No implicit sorting, paging or truncation.",
 	    "SELECT * FROM ossie_objects('ValidUser', [])");
 	RegisterDescribe(loader,
 	                 traced(TableFunction("ossie_concept_query", {LogicalType::VARCHAR, list, list, list}, ScanBoundary,
-	                                      BindBoundary, InitBoundary)),
+	                                      BindBoundary, InitBoundary),
+	                        {"concept", "metrics", "dimensions", "filters"}),
 	                 "Execute bounded SUM/COUNT/AVG metrics for a concept, using the same frozen batch and population "
 	                 "predicate as ossie_objects. NULL and sparse groups follow DuckDB SQL behavior.",
 	                 "SELECT * FROM ossie_concept_query('ValidUser', ['mean_gaap'], ['dws_gaap_di.ds'], [])");

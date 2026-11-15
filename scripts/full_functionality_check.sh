@@ -2,9 +2,9 @@
 # End-to-end functionality check for the ossie extension, driven the way an end user drives it:
 # a real duckdb CLI, a real database file, real semantic queries, and asserted NUMBERS.
 #
-# Deliberately not the sqllogictest suite. `make test` runs inside a build tree with the extension
-# statically linked. This drives the CLI and, when the ABI matches, the loadable
-# .duckdb_extension artifact -- which is what a user actually installs.
+# Deliberately not the sqllogictest suite. This drives a CLI and the loadable .duckdb_extension
+# artifact -- which is what a user actually installs. The stock CLI is preferred; when its ABI
+# does not match the artifact, the build tree's own shell loads the same artifact instead.
 #
 # Usage:  scripts/full_functionality_check.sh
 # Exit:   0 = all assertions passed (known defects are reported loudly but do not gate)
@@ -33,8 +33,10 @@ if [ -n "$STOCK" ] && [ -f "$EXT" ] && \
   PREAMBLE="LOAD '$EXT'; INSTALL tpcds; LOAD tpcds;"
   MODE="stock CLI $("$STOCK" --version | awk '{print $1}') + loadable artifact   [FAITHFUL]"
 else
-  DUCKDB="$BUILT"; EXTRA=""; PREAMBLE=""
-  MODE="build-tree shell $("$BUILT" --version 2>/dev/null | awk '{print $1}'), statically linked   [FALLBACK]"
+  # DuckDB 2.0 no longer links extensions into the build-tree shell; load its artifacts explicitly.
+  DUCKDB="$BUILT"; EXTRA="-unsigned"
+  PREAMBLE="LOAD '$EXT'; LOAD '$REPO/build/release/extension/tpcds/tpcds.duckdb_extension';"
+  MODE="build-tree shell $("$BUILT" --version 2>/dev/null | awk '{print $1}') + loadable artifact   [FALLBACK]"
   [ -n "$STOCK" ] && WHY="$("$STOCK" -unsigned -noheader -list -c "LOAD '$EXT'; SELECT 1;" 2>&1 | head -1)" \
                   || WHY="no duckdb on PATH"
 fi

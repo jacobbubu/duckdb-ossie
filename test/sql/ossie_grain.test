@@ -12,12 +12,12 @@ CALL ossie_load('test/fixtures/grain_model.json', rebind => MAP{'tpcds.public': 
 query T
 SELECT ossie_compile(['store_productivity'], [], []);
 ----
-SELECT (store_sales.agg_0 / "nullif"(store.agg_0, 0)) AS store_productivity FROM (SELECT sum(store.s_number_employees) AS agg_0 FROM tpcds.main.store AS store) AS store CROSS JOIN (SELECT sum(store_sales.ss_ext_sales_price) AS agg_0 FROM tpcds.main.store_sales AS store_sales) AS store_sales
+SELECT (store_sales.agg_0 / "nullif"(store.agg_0, 0)) AS store_productivity FROM ((SELECT sum(store.s_number_employees) AS agg_0 FROM tpcds.main.store AS store) AS store CROSS JOIN (SELECT sum(store_sales.ss_ext_sales_price) AS agg_0 FROM tpcds.main.store_sales AS store_sales) AS store_sales)
 
 query T
 SELECT ossie_compile(['customer_lifetime_value'], [], []);
 ----
-SELECT (store_sales.agg_0 / customer.agg_0) AS customer_lifetime_value FROM (SELECT count(DISTINCT customer.c_customer_sk) AS agg_0 FROM tpcds.main.customer AS customer) AS customer CROSS JOIN (SELECT sum(store_sales.ss_ext_sales_price) AS agg_0 FROM tpcds.main.store_sales AS store_sales) AS store_sales
+SELECT (store_sales.agg_0 / customer.agg_0) AS customer_lifetime_value FROM ((SELECT count(DISTINCT customer.c_customer_sk) AS agg_0 FROM tpcds.main.customer AS customer) AS customer CROSS JOIN (SELECT sum(store_sales.ss_ext_sales_price) AS agg_0 FROM tpcds.main.store_sales AS store_sales) AS store_sales)
 
 # Dimensions group every subquery and join them NULL-safely, keeping a group either side produced.
 # An aggregate shared between metrics is computed once. Row filters go into every subquery, metric
@@ -25,7 +25,7 @@ SELECT (store_sales.agg_0 / customer.agg_0) AS customer_lifetime_value FROM (SEL
 query T
 SELECT ossie_compile(['total_sales', 'store_productivity'], ['store.s_state'], ['store.s_state <> ''ZZ''', 'total_sales > 100']);
 ----
-SELECT COALESCE(store.dim_0, store_sales.dim_0) AS "store.s_state", store_sales.agg_0 AS total_sales, (store_sales.agg_0 / "nullif"(store.agg_0, 0)) AS store_productivity FROM (SELECT store.s_state AS dim_0, sum(store.s_number_employees) AS agg_0 FROM tpcds.main.store AS store WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store FULL JOIN (SELECT store.s_state AS dim_0, sum(store_sales.ss_ext_sales_price) AS agg_0 FROM tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk)) WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store_sales ON ((store.dim_0 IS NOT DISTINCT FROM store_sales.dim_0)) WHERE (store_sales.agg_0 > 100)
+SELECT COALESCE(store.dim_0, store_sales.dim_0) AS "store.s_state", store_sales.agg_0 AS total_sales, (store_sales.agg_0 / "nullif"(store.agg_0, 0)) AS store_productivity FROM ((SELECT store.s_state AS dim_0, sum(store.s_number_employees) AS agg_0 FROM tpcds.main.store AS store WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store FULL JOIN (SELECT store.s_state AS dim_0, sum(store_sales.ss_ext_sales_price) AS agg_0 FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk))) WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store_sales ON ((store.dim_0 IS NOT DISTINCT FROM store_sales.dim_0))) WHERE (store_sales.agg_0 > 100)
 
 # A filter or dimension must apply to every grain, so each grain has to reach its dataset without
 # repeating rows. store cannot reach date_dim except through store_sales.
@@ -50,7 +50,7 @@ aggregate with no column reference, and the requested metrics aggregate at 2 dif
 query T
 SELECT ossie_compile(['books_sales'], [], []);
 ----
-SELECT sum(CASE  WHEN ((item.i_category = 'Books')) THEN (store_sales.ss_ext_sales_price) ELSE 0 END) AS books_sales FROM tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.item AS item ON ((store_sales.ss_item_sk = item.i_item_sk))
+SELECT sum(CASE  WHEN ((item.i_category = 'Books')) THEN (store_sales.ss_ext_sales_price) ELSE 0 END) AS books_sales FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.item AS item ON ((store_sales.ss_item_sk = item.i_item_sk)))
 
 # COUNT(*) names no dataset, so alone there is no table to count.
 statement error

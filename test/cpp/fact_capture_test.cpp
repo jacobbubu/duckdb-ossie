@@ -2,8 +2,8 @@
 #include "ossie/parser.hpp"
 #include "duckdb/main/client_context.hpp"
 #include "duckdb/main/connection.hpp"
+#include "duckdb/main/query_result.hpp"
 #include "duckdb/main/database.hpp"
-#include "duckdb/main/materialized_query_result.hpp"
 #include "duckdb/main/prepared_statement.hpp"
 #include "duckdb/common/exception.hpp"
 #include <chrono>
@@ -41,18 +41,18 @@ string Literal(const string &s) {
 	}
 	return out + "'";
 }
-unique_ptr<MaterializedQueryResult> Query(Connection &c, const string &s) {
+unique_ptr<QueryResult> Query(Connection &c, const string &s) {
 	auto r = c.Query(s);
 	if (r->HasError())
 		throw std::runtime_error(r->GetError());
 	return r;
 }
-unique_ptr<MaterializedQueryResult> Execute(PreparedStatement &p) {
+unique_ptr<QueryResult> Execute(PreparedStatement &p) {
 	vector<Value> parameters;
-	auto r = p.Execute(parameters, false);
+	auto r = p.Execute(parameters);
 	if (r->HasError())
 		throw std::runtime_error(r->GetError());
-	return unique_ptr_cast<QueryResult, MaterializedQueryResult>(std::move(r));
+	return r;
 }
 unique_ptr<PreparedStatement> Prepare(Connection &c, bool window = false) {
 	auto p = c.Prepare(PopulationFactStatementForTesting(*c.context, window));
@@ -63,20 +63,23 @@ unique_ptr<PreparedStatement> Prepare(Connection &c, bool window = false) {
 void Baseline(Connection &c) {
 	auto p = Prepare(c);
 	auto r = Execute(*p);
-	Check(r->RowCount() == 3 && r->GetValue(0, 0).ToString() == "A" && r->GetValue(0, 1).ToString() == "B" &&
-	          r->GetValue(0, 2).ToString() == "C",
+	Check(r->RowCount() == 3 && r->Collection().GetValue(0, 0).ToString() == "A" &&
+	          r->Collection().GetValue(0, 1).ToString() == "B" && r->Collection().GetValue(0, 2).ToString() == "C",
 	      "actual frozen common domain A/B/C retains all-NULL C and excludes D/E");
-	Check(r->GetValue(1, 0).ToString() == "290.00" && r->GetValue(2, 0).ToString() == "375.00" &&
-	          r->GetValue(3, 0).ToString() == "85.00",
+	Check(r->Collection().GetValue(1, 0).ToString() == "290.00" &&
+	          r->Collection().GetValue(2, 0).ToString() == "375.00" &&
+	          r->Collection().GetValue(3, 0).ToString() == "85.00",
 	      "actual dual frozen collections produce independent cents oracle 29000/37500/8500");
-	Check(r->GetValue(1, 2).IsNull() && r->GetValue(4, 2).ToString() == "1" && r->GetValue(5, 2).ToString() == "0",
+	Check(r->Collection().GetValue(1, 2).IsNull() && r->Collection().GetValue(4, 2).ToString() == "1" &&
+	          r->Collection().GetValue(5, 2).ToString() == "0",
 	      "frozen NULL amount and COUNT(User)/COUNT(value) distinction preserved");
 	auto w = Prepare(c, true);
 	auto rows = Execute(*w);
-	Check(rows->RowCount() == 8 && rows->GetValue(0, 2).ToString() == "A" &&
-	          rows->GetValue(2, 2).ToString() == "200.00" && rows->GetValue(3, 2).ToString() == "250.00",
+	Check(rows->RowCount() == 8 && rows->Collection().GetValue(0, 2).ToString() == "A" &&
+	          rows->Collection().GetValue(2, 2).ToString() == "200.00" &&
+	          rows->Collection().GetValue(3, 2).ToString() == "250.00",
 	      "actual frozen sparse-date LAG and ROWS sum preserve January predecessor");
-	Check(rows->types[2] == LogicalType::DECIMAL(18, 2) && rows->types[3] == LogicalType::DECIMAL(38, 2),
+	Check(rows->GetTypes()[2] == LogicalType::DECIMAL(18, 2) && rows->GetTypes()[3] == LogicalType::DECIMAL(38, 2),
 	      "actual LAG and SUM window types differ and bind independently");
 }
 class Observer : public PopulationLoadObserver {
@@ -122,7 +125,7 @@ struct Gate {
 struct Attempt {
 	Connection &c;
 	Gate gate;
-	unique_ptr<MaterializedQueryResult> result;
+	unique_ptr<QueryResult> result;
 	std::exception_ptr error;
 	std::thread thread;
 	Attempt(Connection &c, const string &load, PopulationLoadCheckpoint checkpoint) : c(c) {
@@ -174,10 +177,10 @@ void Run(const string &root, int threads) {
 	    "explicit fact-only parser accepts known metric references and window metadata");
 	Query(writer, Read(fixtures + "rows.sql"));
 	auto initial = Query(loader, load);
-	Check(initial->GetValue(0, 0).ToString() == "multi-fact-user-program-v1" &&
-	          initial->GetValue(3, 0).ToString() == "18",
+	Check(initial->Collection().GetValue(0, 0).ToString() == "multi-fact-user-program-v1" &&
+	          initial->Collection().GetValue(3, 0).ToString() == "18",
 	      "production loader publishes parent over two independent captures");
-	auto original_hash = initial->GetValue(2, 0).ToString();
+	auto original_hash = initial->Collection().GetValue(2, 0).ToString();
 	initial.reset();
 	Baseline(reader);
 	const string minimum_request =
@@ -185,12 +188,14 @@ void Run(const string &root, int threads) {
 	    "\"display\":{"
 	    "\"mode\":\"date_range\",\"start_date\":\"5877642-06-23 (BC)\",\"end_date\":\"5877642-06-23 (BC)\"}}";
 	Check(Query(reader, "SELECT * FROM ossie_population_json(" + Literal(minimum_request) + ")")
-	              ->GetValue(0, 0)
+	              ->Collection()
+	              .GetValue(0, 0)
 	              .ToString()
 	              .find("\"rows\":[]") != string::npos,
 	      "isolated finite DATE minimum accepted as empty window display");
 	Check(Query(reader, "SELECT * FROM ossie_population_compile(" + Literal(minimum_request) + ")")
-	              ->GetValue(0, 0)
+	              ->Collection()
+	              .GetValue(0, 0)
 	              .ToString()
 	              .find("\"executed\":false") != string::npos,
 	      "isolated finite DATE minimum bound without execution");
@@ -213,7 +218,7 @@ void Run(const string &root, int threads) {
 	    PopulationFactObserver::KEY,
 	    make_shared_ptr<FactObserver>([&](PopulationFactCheckpoint) { throw std::runtime_error("compile executed"); }));
 	auto compile = Query(reader, "SELECT * FROM ossie_population_compile(" + Literal(users_request) + ")");
-	Check(compile->GetValue(0, 0).ToString().find("\"counts_computed\":false") != string::npos,
+	Check(compile->Collection().GetValue(0, 0).ToString().find("\"counts_computed\":false") != string::npos,
 	      "public compile performs no execution or count checkpoints");
 	reader.context->registered_state->Remove(PopulationFactObserver::KEY);
 	for (auto checkpoint : {PopulationFactCheckpoint::AFTER_DOMAIN, PopulationFactCheckpoint::BEFORE_SORT,
@@ -241,20 +246,21 @@ void Run(const string &root, int threads) {
 		Check(reader.Query(sql)->HasError(), "old profile API refuses fact program: " + sql);
 	Query(writer, "UPDATE revenue SET value=1 WHERE who='A';UPDATE cost SET value=2 WHERE who='A'");
 	auto refreshed = Query(loader, load);
-	Check(refreshed->GetValue(2, 0).ToString() != original_hash, "paired parent hash changes when sources change");
+	Check(refreshed->Collection().GetValue(2, 0).ToString() != original_hash,
+	      "paired parent hash changes when sources change");
 	refreshed.reset();
-	Check(Execute(*retained)->GetValue(1, 0).ToString() == "290.00" &&
-	          Execute(*retained_window)->GetValue(2, 2).ToString() == "200.00",
+	Check(Execute(*retained)->Collection().GetValue(1, 0).ToString() == "290.00" &&
+	          Execute(*retained_window)->Collection().GetValue(2, 2).ToString() == "200.00",
 	      "prepared old aggregate and single-source window survive reload with original values");
 	Query(writer, "DROP TABLE revenue;DROP TABLE cost");
-	Check(Execute(*retained)->GetValue(2, 0).ToString() == "375.00" &&
-	          Execute(*retained_window)->GetValue(3, 2).ToString() == "250.00",
+	Check(Execute(*retained)->Collection().GetValue(2, 0).ToString() == "375.00" &&
+	          Execute(*retained_window)->Collection().GetValue(3, 2).ToString() == "250.00",
 	      "both prepared paths use frozen AST dependencies after source deletion");
 
 	Query(writer, "CREATE MACRO count_star() AS 42::BIGINT;CREATE MACRO \"-\"(a,b) AS 99::DECIMAL(38,2);CREATE MACRO "
 	              "sum(x) AS 97::DECIMAL(38,2)");
-	auto old_users = Execute(*public_users)->GetValue(0, 0).ToString();
-	auto old_window = Execute(*public_window)->GetValue(0, 0).ToString();
+	auto old_users = Execute(*public_users)->Collection().GetValue(0, 0).ToString();
+	auto old_window = Execute(*public_window)->Collection().GetValue(0, 0).ToString();
 	Check(old_users.find("[\"A\",\"290.00\"]") != string::npos &&
 	          old_users.find("\"common_user_count\":\"3\"") != string::npos &&
 	          old_window.find("[\"A\",\"2026-02-01\",\"200.00\",\"250.00\"]") != string::npos,
@@ -280,7 +286,7 @@ void Run(const string &root, int threads) {
 		Query(writer, "BEGIN;UPDATE revenue SET value=1 WHERE who='A';UPDATE cost SET value=2 WHERE who='A';COMMIT");
 		attempt.Finish();
 		Check(attempt.result && !attempt.result->HasError() &&
-		          attempt.result->GetValue(2, 0).ToString() == original_hash,
+		          attempt.result->Collection().GetValue(2, 0).ToString() == original_hash,
 		      "concurrent two-table write between captures does not mix source transaction versions");
 	}
 	Baseline(reader);
@@ -345,14 +351,14 @@ void Run(const string &root, int threads) {
 	Query(writer, Read(fixtures + "rows.sql"));
 	Query(writer, "DELETE FROM revenue;DELETE FROM cost");
 	auto empty = Query(loader, load);
-	Check(empty->GetValue(3, 0).ToString() == "0" && Execute(*Prepare(reader))->RowCount() == 0 &&
+	Check(empty->Collection().GetValue(3, 0).ToString() == "0" && Execute(*Prepare(reader))->RowCount() == 0 &&
 	          Execute(*Prepare(reader, true))->RowCount() == 0,
 	      "empty captures preserve metadata, source types and empty full domains");
-	auto empty_hash = empty->GetValue(2, 0).ToString();
+	auto empty_hash = empty->Collection().GetValue(2, 0).ToString();
 	empty.reset();
 	Query(writer, "ALTER TABLE cost ADD COLUMN unused INTEGER");
 	auto metadata_changed = Query(loader, load);
-	Check(metadata_changed->GetValue(2, 0).ToString() != empty_hash,
+	Check(metadata_changed->Collection().GetValue(2, 0).ToString() != empty_hash,
 	      "empty capture physical metadata contributes to paired parent hash");
 	metadata_changed.reset();
 	Query(writer, "DROP TABLE revenue;DROP TABLE cost");
@@ -361,18 +367,18 @@ void Run(const string &root, int threads) {
 	Query(loader, "SET default_collation='nocase';SET default_order='DESC'");
 	Query(loader, load);
 	auto binary = Execute(*Prepare(reader));
-	Check(binary->RowCount() == 4 && binary->GetValue(0, 0).ToString() == "A" &&
-	          binary->GetValue(0, 3).ToString() == "a",
+	Check(binary->RowCount() == 4 && binary->Collection().GetValue(0, 0).ToString() == "A" &&
+	          binary->Collection().GetValue(0, 3).ToString() == "a",
 	      "load preflight and explicit binary execution preserve raw case-distinct User identities");
 
 	Query(reader, "SET SESSION default_collation='nocase';SET SESSION default_order='DESC'");
-	auto raw_public = Query(reader, users_sql)->GetValue(0, 0).ToString();
+	auto raw_public = Query(reader, users_sql)->Collection().GetValue(0, 0).ToString();
 	Check(raw_public.find("[\"A\",\"290.00\"]") != string::npos &&
 	          raw_public.find("[\"a\",\"0.00\"]") != string::npos &&
 	          raw_public.find("\"common_user_count\":\"4\"") != string::npos,
 	      "public private binary execution/count preserves A/a under caller nocase");
 	Query(reader, "SET SESSION default_collation='binary'");
-	Check(Execute(*Prepare(reader, true))->GetValue(2, 2).ToString() == "200.00",
+	Check(Execute(*Prepare(reader, true))->Collection().GetValue(2, 2).ToString() == "200.00",
 	      "window direction remains ascending under caller descending default");
 }
 } // namespace

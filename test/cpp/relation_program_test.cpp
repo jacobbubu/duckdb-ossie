@@ -81,8 +81,7 @@ void Run() {
 	auto rows = engine.Query("SELECT user_id,ds,product FROM observations WHERE " +
 	                         multiple.relations[1].predicate->ToString() + " ORDER BY user_id,ds,product");
 	Check(!rows->HasError(), "lowered dependent union binds in actual DuckDB");
-	Check(rows->Cast<MaterializedQueryResult>().RowCount() == 2,
-	      "downstream consumes all upstream union links, excludes NULL predicate and target");
+	Check(rows->RowCount() == 2, "downstream consumes all upstream union links, excludes NULL predicate and target");
 	auto chunk = rows->Fetch();
 	Check(chunk && chunk->GetValue(0, 0).ToString() == "A" && chunk->GetValue(2, 0).ToString() == "X" &&
 	          chunk->GetValue(0, 1).ToString() == "A" && chunk->GetValue(2, 1).ToString() == "Y",

@@ -51,16 +51,26 @@ DECIMAL(38,2)	BIGINT
 statement ok
 CREATE TABLE old_typed_result AS SELECT * FROM ossie_population_json('{"kind":"objects","concept":"User","filters":[]}');
 
+# DuckDB 2.0 rebinds any prepared statement whose plan scans a catalog table, so the
+# frozen-binding check must not join old_typed_result: it inspects the bound snapshot sequence.
 statement ok
-PREPARE old_typed AS SELECT (now.result_json=previous.result_json)::INTEGER FROM ossie_population_json('{"kind":"objects","concept":"User","filters":[]}') now,old_typed_result previous;
+PREPARE old_typed AS SELECT regexp_extract(result_json,'"snapshot_id":"[0-9a-f]+:([0-9]+)"',1) FROM ossie_population_json('{"kind":"objects","concept":"User","filters":[]}');
+
+query I
+SELECT (regexp_extract(result_json,'"snapshot_id":"[0-9a-f]+:([0-9]+)"',1)::INTEGER > 0)::INTEGER FROM ossie_population_json('{"kind":"objects","concept":"User","filters":[]}');
+----
+1
+
+query T nosort old_typed_snapshot
+EXECUTE old_typed;
+----
 
 statement ok
 CALL ossie_bundle_load('test/fixtures/population/bundle-20.json');
 
-query I
+query T nosort old_typed_snapshot
 EXECUTE old_typed;
 ----
-1
 
 query I
 SELECT (now.result_json<>previous.result_json)::INTEGER FROM ossie_population_json('{"kind":"objects","concept":"User","filters":[]}') now,old_typed_result previous;
@@ -72,7 +82,6 @@ CALL ossie_bundle_load('/missing/typed-bundle.json');
 ----
 ossie_population_error_v1
 
-query I
+query T nosort old_typed_snapshot
 EXECUTE old_typed;
 ----
-1

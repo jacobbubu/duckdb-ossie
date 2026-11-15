@@ -1,4 +1,5 @@
 #include "ossie/fact_program.hpp"
+#include "ossie/names.hpp"
 #include "ossie/compile.hpp"
 #include "duckdb/common/exception.hpp"
 #include "duckdb/common/case_insensitive_map.hpp"
@@ -66,8 +67,8 @@ unique_ptr<ParsedExpression> Expression(const string &sql) {
 	if (sql.find('"') != string::npos) {
 		Reject("quoted identifiers unsupported");
 	}
-	auto exprs = Parser::ParseExpressionList(sql);
-	if (exprs.size() != 1 || !exprs[0]->GetAlias().empty()) {
+	auto exprs = Parser::GetBuiltinParser().ParseExpressionList(sql);
+	if (exprs.size() != 1 || !exprs[0]->GetAlias().GetIdentifierName().empty()) {
 		Reject("one unaliased expression required");
 	}
 	Nodes(*exprs[0]);
@@ -82,13 +83,25 @@ const FactField &MappedField(const FactSource &s, const string &name) {
 	Reject("undeclared mapped field: " + s.dataset + "." + name);
 }
 unique_ptr<ParsedExpression> Column(const FactSource &s, const FactField &f) {
-	return make_uniq<ColumnRefExpression>(f.physical_column, s.dataset);
+	return make_uniq<ColumnRefExpression>(Identifier(f.physical_column), Identifier(s.dataset));
+}
+unique_ptr<ParsedExpression> DateConstant(const Value &value) {
+	// DuckDB renders the isolated finite INT32_MIN day but refuses to parse it back, so reach it by arithmetic.
+	auto day = value.GetValue<date_t>();
+	if (day.days != NumericLimits<int32_t>::Minimum()) {
+		return ConstantExpression::FromValue(value);
+	}
+	vector<unique_ptr<ParsedExpression>> children;
+	children.push_back(ConstantExpression::FromValue(Value::DATE(date_t(0))));
+	children.push_back(ConstantExpression::FromValue(Value::INTEGER(day.days)));
+	return make_uniq<FunctionExpression>(QualifiedName("system", "main", "+"), std::move(children), nullptr, nullptr,
+	                                     false, true);
 }
 pair<idx_t, const FactField *> SourceField(const FactProgram &p, const ParsedExpression &e) {
 	if (e.GetExpressionClass() != ExpressionClass::COLUMN_REF) {
 		Reject("aggregate/window value must be declared source field");
 	}
-	auto &names = e.Cast<ColumnRefExpression>().column_names;
+	auto names = ColumnNames(e.Cast<ColumnRefExpression>());
 	if (names.size() != 2) {
 		Reject("explicit dataset.field required");
 	}
@@ -103,13 +116,19 @@ string AmountUnit(const FactSource &s) {
 	return "currency:" + s.currency + ":scale2";
 }
 void PlainFunction(const FunctionExpression &f) {
-	if (!f.catalog.empty() || !f.schema.empty() || f.distinct || f.filter ||
-	    (f.order_bys && !f.order_bys->orders.empty()) || f.export_state) {
+	auto &qualified = f.GetQualifiedName();
+	if (!qualified.Catalog().GetIdentifierName().empty() || !qualified.Schema().GetIdentifierName().empty() ||
+	    f.Distinct() || f.Filter() || (f.OrderBy() && !f.OrderBy()->orders.empty()) || f.ExportState()) {
 		Reject("aggregate/operator modifiers or qualified functions unsupported");
+	}
+	for (auto &argument : f.GetArguments()) {
+		if (argument.HasName()) {
+			Reject("aggregate/operator modifiers or qualified functions unsupported");
+		}
 	}
 }
 unique_ptr<SelectStatement> SQL(const string &sql) {
-	Parser parser;
+	auto parser = Parser::GetBuiltinParser();
 	parser.ParseQuery(sql);
 	if (parser.statements.size() != 1 || parser.statements[0]->type != StatementType::SELECT_STATEMENT) {
 		Reject("internal single select invariant");
@@ -153,7 +172,7 @@ struct Binder {
 	unique_ptr<ParsedExpression> Bind(const ParsedExpression &e, string &unit, idx_t depth, idx_t &expanded,
 	                                  idx_t &dependency_depth) {
 		if (e.GetExpressionClass() == ExpressionClass::COLUMN_REF) {
-			auto &names = e.Cast<ColumnRefExpression>().column_names;
+			auto names = ColumnNames(e.Cast<ColumnRefExpression>());
 			if (names.size() != 1) {
 				Reject("bare metric reference required outside aggregate");
 			}
@@ -180,14 +199,15 @@ struct Binder {
 		}
 		auto &f = e.Cast<FunctionExpression>();
 		PlainFunction(f);
-		auto name = StringUtil::Lower(f.function_name);
-		if (f.is_operator) {
-			if ((name != "+" && name != "-") || f.children.size() != 2) {
+		auto name = StringUtil::Lower(f.FunctionName().GetIdentifierName());
+		auto &arguments = f.GetArguments();
+		if (f.IsOperator()) {
+			if ((name != "+" && name != "-") || arguments.size() != 2) {
 				Reject("only binary +/- supported");
 			}
 			string left, right;
-			auto a = Bind(*f.children[0], left, depth, expanded, dependency_depth),
-			     b = Bind(*f.children[1], right, depth, expanded, dependency_depth);
+			auto a = Bind(arguments[0].GetExpression(), left, depth, expanded, dependency_depth),
+			     b = Bind(arguments[1].GetExpression(), right, depth, expanded, dependency_depth);
 			if (left != right || left.find("currency:") != 0) {
 				Reject("arithmetic requires equal currency/scale money components, not counts");
 			}
@@ -196,12 +216,13 @@ struct Binder {
 			vector<unique_ptr<ParsedExpression>> children;
 			children.push_back(std::move(a));
 			children.push_back(std::move(b));
-			return make_uniq<FunctionExpression>("system", "main", name, std::move(children));
+			return make_uniq<FunctionExpression>(QualifiedName("system", "main", Identifier(name)),
+			                                     std::move(children));
 		}
-		if ((name != "sum" && name != "count") || f.children.size() != 1) {
+		if ((name != "sum" && name != "count") || arguments.size() != 1) {
 			Reject("only single-field SUM/COUNT supported");
 		}
-		auto field = SourceField(program, *f.children[0]);
+		auto field = SourceField(program, arguments[0].GetExpression());
 		auto &source = program.sources[field.first];
 		if (name == "sum" && !StringUtil::CIEquals(field.second->name, source.amount_field)) {
 			Reject("SUM requires mapped amount");
@@ -214,7 +235,8 @@ struct Binder {
 		auto column = Column(source, *field.second);
 		vector<unique_ptr<ParsedExpression>> children;
 		children.push_back(std::move(column));
-		auto aggregate = make_uniq<FunctionExpression>("system", "main", name, std::move(children));
+		auto aggregate =
+		    make_uniq<FunctionExpression>(QualifiedName("system", "main", Identifier(name)), std::move(children));
 		idx_t index = program.aggregates.size();
 		for (idx_t i = 0; i < program.aggregates.size(); i++) {
 			if (program.aggregates[i].expression->Equals(*aggregate)) {
@@ -231,8 +253,8 @@ struct Binder {
 		}
 		budget.Charge();
 		vector<unique_ptr<ParsedExpression>> leaf;
-		leaf.push_back(make_uniq<ColumnRefExpression>(field.second->name, source.dataset));
-		return make_uniq<FunctionExpression>("system", "main", name, std::move(leaf));
+		leaf.push_back(make_uniq<ColumnRefExpression>(Identifier(field.second->name), Identifier(source.dataset)));
+		return make_uniq<FunctionExpression>(QualifiedName("system", "main", Identifier(name)), std::move(leaf));
 	}
 	void Window(const FactDefinition &definition) {
 		auto e = Expression(definition.sql);
@@ -240,76 +262,88 @@ struct Binder {
 			Reject("one window expression required");
 		}
 		auto &w = e->Cast<WindowExpression>();
-		if (!w.catalog.empty() || !w.schema.empty() || w.distinct || w.filter_expr || w.ignore_nulls ||
-		    !w.arg_orders.empty() || w.exclude_clause != WindowExcludeMode::NO_OTHER || w.children.size() != 1 ||
-		    w.partitions.size() != 1 || w.orders.size() != 1) {
+		auto &qualified = w.GetQualifiedName();
+		auto &arguments = w.GetArguments();
+		auto &orders = w.OrderBy();
+		if (!qualified.Catalog().GetIdentifierName().empty() || !qualified.Schema().GetIdentifierName().empty() ||
+		    w.Distinct() || w.Filter() || w.IgnoreNulls() || !w.ArgOrders().empty() ||
+		    w.WindowExclude() != WindowExcludeMode::NO_OTHER || arguments.empty() || w.Partitions().size() != 1 ||
+		    orders.size() != 1) {
 			Reject("window shape/modifiers unsupported");
 		}
-		auto field = SourceField(program, *w.children[0]);
+		for (auto &argument : arguments) {
+			if (argument.HasName()) {
+				Reject("window shape/modifiers unsupported");
+			}
+		}
+		auto field = SourceField(program, arguments[0].GetExpression());
 		auto &s = program.sources[field.first];
 		if (!s.product_field.empty() || !StringUtil::CIEquals(field.second->name, s.amount_field)) {
 			Reject("window requires mapped amount at User/date grain");
 		}
-		auto part = SourceField(program, *w.partitions[0]), order = SourceField(program, *w.orders[0].expression);
+		auto part = SourceField(program, *w.Partitions()[0]), order = SourceField(program, *orders[0].expression);
 		if (part.first != field.first || order.first != field.first ||
 		    !StringUtil::CIEquals(part.second->name, s.user_field) ||
 		    !StringUtil::CIEquals(order.second->name, s.date_field)) {
 			Reject("window requires same mapped User partition and unique DATE order");
 		}
-		auto ot = w.orders[0].type;
-		auto nt = w.orders[0].null_order;
+		auto ot = orders[0].type;
+		auto nt = orders[0].null_order;
 		if ((ot != OrderType::ASCENDING && ot != OrderType::ORDER_DEFAULT) ||
 		    (nt != OrderByNullType::ORDER_DEFAULT && nt != OrderByNullType::NULLS_LAST)) {
 			Reject("ascending finite DATE order required");
 		}
-		auto integral = [&](const unique_ptr<ParsedExpression> &p, int64_t lo, int64_t hi) {
+		auto integral = [&](const ParsedExpression *p, int64_t lo, int64_t hi) {
 			if (!p || p->GetExpressionClass() != ExpressionClass::CONSTANT) {
 				Reject("literal bounded integral required");
 			}
-			auto &v = p->Cast<ConstantExpression>().value;
+			auto v = p->Cast<ConstantExpression>().GetLiteral().ToValue();
 			if (v.IsNull() || !v.type().IsIntegral()) {
 				Reject("literal bounded integral required");
 			}
-			Value represented;
 			string error;
-			if (!v.DefaultTryCastAs(LogicalType::BIGINT, represented, &error, true)) {
+			auto represented = v.DefaultTryCastAs(LogicalType::BIGINT, &error, true);
+			if (!represented) {
 				Reject("window literal outside BIGINT");
 			}
-			auto n = represented.GetValue<int64_t>();
+			auto n = represented->GetValue<int64_t>();
 			if (n < lo || n > hi) {
 				Reject("window offset/frame range");
 			}
 		};
-		auto name = StringUtil::Lower(w.function_name);
+		auto name = StringUtil::Lower(w.FunctionName().GetIdentifierName());
 		if (w.GetExpressionType() == ExpressionType::WINDOW_LAG && name == "lag") {
-			integral(w.offset_expr, 1, 1);
-			if (!w.default_expr || w.default_expr->GetExpressionClass() != ExpressionClass::CONSTANT ||
-			    !w.default_expr->Cast<ConstantExpression>().value.IsNull()) {
+			if (arguments.size() != 3) {
 				Reject("LAG requires explicit NULL default");
 			}
-			if (w.start != WindowBoundary::UNBOUNDED_PRECEDING || w.end != WindowBoundary::CURRENT_ROW_RANGE ||
-			    w.start_expr || w.end_expr) {
+			integral(&arguments[1].GetExpression(), 1, 1);
+			auto &fallback = arguments[2].GetExpression();
+			if (fallback.GetExpressionClass() != ExpressionClass::CONSTANT ||
+			    !fallback.Cast<ConstantExpression>().GetLiteral().IsNull()) {
+				Reject("LAG requires explicit NULL default");
+			}
+			if (w.WindowStart() != WindowBoundary::UNBOUNDED_PRECEDING ||
+			    w.WindowEnd() != WindowBoundary::CURRENT_ROW_RANGE || w.StartExpr() || w.EndExpr()) {
 				Reject("LAG default frame only");
 			}
 		} else if (w.GetExpressionType() == ExpressionType::WINDOW_AGGREGATE && name == "sum") {
-			if (w.start != WindowBoundary::EXPR_PRECEDING_ROWS || w.end != WindowBoundary::CURRENT_ROW_ROWS ||
-			    w.end_expr || w.offset_expr || w.default_expr) {
+			if (w.WindowStart() != WindowBoundary::EXPR_PRECEDING_ROWS ||
+			    w.WindowEnd() != WindowBoundary::CURRENT_ROW_ROWS || w.EndExpr() || arguments.size() != 1) {
 				Reject("SUM requires explicit bounded preceding ROWS to current row");
 			}
-			integral(w.start_expr, 0, 366);
+			integral(w.StartExpr().get(), 0, 366);
 		} else {
 			Reject("only LAG(value,1,NULL) and SUM ROWS windows supported");
 		}
 		budget.Charge(Nodes(*e));
 		auto copy = e->Copy();
 		auto &bound = copy->Cast<WindowExpression>();
-		bound.children[0] = Column(s, *field.second);
-		bound.partitions[0] = Column(s, *part.second);
-		bound.orders[0].expression = Column(s, *order.second);
-		bound.orders[0].type = OrderType::ASCENDING;
-		bound.orders[0].null_order = OrderByNullType::NULLS_LAST;
-		bound.catalog = "system";
-		bound.schema = "main";
+		bound.GetArgumentsMutable()[0].GetExpressionMutable() = Column(s, *field.second);
+		bound.PartitionsMutable()[0] = Column(s, *part.second);
+		bound.OrderByMutable()[0].expression = Column(s, *order.second);
+		bound.OrderByMutable()[0].type = OrderType::ASCENDING;
+		bound.OrderByMutable()[0].null_order = OrderByNullType::NULLS_LAST;
+		bound.SetQualifiedName("system", "main", w.FunctionName());
 		program.windows.push_back({definition.name, field.first, AmountUnit(s), std::move(copy)});
 	}
 };
@@ -351,13 +385,13 @@ string Cohort(const FactProgram &p, const FactCohort &c, idx_t depth, idx_t &nod
 		default:
 			Reject("comparison unsupported");
 		}
-		if (cmp.left->GetExpressionClass() != ExpressionClass::COLUMN_REF ||
-		    cmp.left->Cast<ColumnRefExpression>().column_names.size() != 1 ||
-		    cmp.right->GetExpressionClass() != ExpressionClass::CONSTANT) {
+		if (cmp.Left().GetExpressionClass() != ExpressionClass::COLUMN_REF ||
+		    cmp.Left().Cast<ColumnRefExpression>().ColumnNames().size() != 1 ||
+		    cmp.Right().GetExpressionClass() != ExpressionClass::CONSTANT) {
 			Reject("metric compared to typed numeric constant required");
 		}
-		auto &metric = FindMetric(p, cmp.left->Cast<ColumnRefExpression>().column_names[0]);
-		auto &v = cmp.right->Cast<ConstantExpression>().value;
+		auto &metric = FindMetric(p, cmp.Left().Cast<ColumnRefExpression>().ColumnNames()[0].GetIdentifierName());
+		auto v = cmp.Right().Cast<ConstantExpression>().GetLiteral().ToValue();
 		if (v.IsNull() || !(v.type().IsIntegral() || v.type().id() == LogicalTypeId::DECIMAL)) {
 			Reject("finite exact numeric constant required");
 		}
@@ -367,14 +401,14 @@ string Cohort(const FactProgram &p, const FactCohort &c, idx_t depth, idx_t &nod
 		if (v.type().id() == LogicalTypeId::DECIMAL && DecimalType::GetScale(v.type()) > 2) {
 			Reject("comparison amount scale exceeds2");
 		}
-		Value represented;
 		string error;
-		if (!v.DefaultTryCastAs(metric.unit.find("currency:") == 0 ? LogicalType::DECIMAL(38, 2) : LogicalType::BIGINT,
-		                        represented, &error, true)) {
+		auto represented = v.DefaultTryCastAs(
+		    metric.unit.find("currency:") == 0 ? LogicalType::DECIMAL(38, 2) : LogicalType::BIGINT, &error, true);
+		if (!represented) {
 			Reject("comparison constant outside measure type");
 		}
-		cmp.right = make_uniq<ConstantExpression>(std::move(represented));
-		cmp.left = make_uniq<ColumnRefExpression>(metric.name);
+		cmp.RightMutable() = ConstantExpression::FromValue(*represented);
+		cmp.LeftMutable() = make_uniq<ColumnRefExpression>(Identifier(metric.name));
 		return "(" + e->ToString() + ") IS TRUE";
 	}
 	if (!c.predicate.empty() || c.children.size() != 2 ||
@@ -412,7 +446,7 @@ Model CoreModel(const FactProgram &p) {
 			Field field;
 			field.name = f.name;
 			field.expression.sql = f.physical_column;
-			field.expression.tree = make_uniq<ColumnRefExpression>(f.physical_column);
+			field.expression.tree = make_uniq<ColumnRefExpression>(Identifier(f.physical_column));
 			field.is_computed = false;
 			dataset.AddField(std::move(field));
 		}
@@ -572,10 +606,9 @@ unique_ptr<SelectStatement> CompileFactCommonCount(const FactProgram &p, vector<
 	}
 	auto statement = SQL("SELECT COUNT(*) AS common_user_count FROM placeholder AS combined");
 	auto &count = statement->node->Cast<SelectNode>().select_list[0]->Cast<FunctionExpression>();
-	count.catalog = "system";
-	count.schema = "main";
+	count.SetQualifiedName("system", "main", count.FunctionName());
 	statement->node->Cast<SelectNode>().from_table =
-	    make_uniq<SubqueryRef>(CoreUsers(p, {p.metrics[0].name}, {}, sources), "combined");
+	    make_uniq<SubqueryRef>(CoreUsers(p, {p.metrics[0].name}, {}, sources), Identifier("combined"));
 	return statement;
 }
 
@@ -629,7 +662,7 @@ unique_ptr<SelectStatement> CompileFactWindows(const FactProgram &p, const vecto
 		source_index = window->source;
 		projection += ",0 AS " + Q(window->name);
 		auto tree = window->expression->Copy();
-		tree->alias = window->name;
+		tree->SetAlias(Identifier(window->name));
 		window_trees.push_back(std::move(tree));
 	}
 	auto i = source_index.GetIndex();
@@ -637,12 +670,11 @@ unique_ptr<SelectStatement> CompileFactWindows(const FactProgram &p, const vecto
 	auto inner = SQL("SELECT " + Q(s.dataset) + "." + Q(MappedField(s, s.user_field).physical_column) + " AS user_id," +
 	                 Q(s.dataset) + "." + Q(MappedField(s, s.date_field).physical_column) + " AS ds" + projection +
 	                 " FROM placeholder");
-	// DuckDB 1.5.6 WindowExpression::ToString omits catalog. Keep the typed
-	// tree rather than reparsing rendered windows and losing system binding.
+	// Keep the typed window trees rather than reparsing rendered SQL and losing their system binding.
 	for (idx_t w = 0; w < window_trees.size(); w++) {
 		inner->node->Cast<SelectNode>().select_list[w + 2] = std::move(window_trees[w]);
 	}
-	sources[i]->alias = s.dataset;
+	sources[i]->alias = Identifier(s.dataset);
 	inner->node->Cast<SelectNode>().from_table = std::move(sources[i]);
 	string out = "SELECT observed.user_id,observed.ds";
 	for (auto &name : names) {
@@ -654,17 +686,14 @@ unique_ptr<SelectStatement> CompileFactWindows(const FactProgram &p, const vecto
 			Reject("display DATE endpoints both required");
 		}
 		auto a = start.GetValue<date_t>(), b = end.GetValue<date_t>();
-		if (!Date::IsFinite(a) || !Date::IsFinite(b) || a.days > b.days) {
+		if (!a.IsFinite() || !b.IsFinite() || a.days > b.days) {
 			Reject("finite ordered display DATE required");
 		}
 	}
 	auto result = SQL(out + " ORDER BY observed.user_id ASC NULLS LAST,observed.ds ASC NULLS LAST");
 	if (!start.IsNull()) {
-		// Preserve typed DATE values: the isolated finite INT32_MIN has a canonical
-		// rendering that DuckDB 1.5.6 cannot parse back as a textual DATE cast.
-		result->node->Cast<SelectNode>().where_clause =
-		    make_uniq<BetweenExpression>(make_uniq<ColumnRefExpression>("ds", "observed"),
-		                                 make_uniq<ConstantExpression>(start), make_uniq<ConstantExpression>(end));
+		result->node->Cast<SelectNode>().where_clause = make_uniq<BetweenExpression>(
+		    make_uniq<ColumnRefExpression>("ds", "observed"), DateConstant(start), DateConstant(end));
 	}
 	result->node->Cast<SelectNode>().from_table = make_uniq<SubqueryRef>(std::move(inner), "observed");
 	return result;

@@ -1,7 +1,7 @@
 #include "ossie/population_testing.hpp"
 #include "duckdb/main/client_context.hpp"
 #include "duckdb/main/connection.hpp"
-#include "duckdb/main/materialized_query_result.hpp"
+#include "duckdb/main/query_result.hpp"
 #include "duckdb/main/prepared_statement.hpp"
 #include "duckdb.hpp"
 #include <chrono>
@@ -24,7 +24,7 @@ void Check(bool condition, const string &reason) {
 		throw std::runtime_error(reason);
 	checks++;
 }
-unique_ptr<MaterializedQueryResult> Query(Connection &connection, const string &sql) {
+unique_ptr<QueryResult> Query(Connection &connection, const string &sql) {
 	auto result = connection.Query(sql);
 	if (result->HasError())
 		throw std::runtime_error(sql + ": " + result->GetError());
@@ -33,7 +33,7 @@ unique_ptr<MaterializedQueryResult> Query(Connection &connection, const string &
 string Scalar(Connection &connection, const string &sql) {
 	auto result = Query(connection, sql);
 	Check(result->RowCount() == 1 && result->ColumnCount() == 1, "scalar shape");
-	return result->GetValue(0, 0).ToString();
+	return result->Collection().GetValue(0, 0).ToString();
 }
 string Read(const string &path) {
 	std::ifstream file(path);
@@ -86,7 +86,7 @@ public:
 struct Attempt {
 	Connection &connection;
 	Gate gate;
-	unique_ptr<MaterializedQueryResult> result;
+	unique_ptr<QueryResult> result;
 	std::exception_ptr failure;
 	std::thread worker;
 	Attempt(Connection &connection, const string &load, PopulationLoadCheckpoint checkpoint) : connection(connection) {
@@ -145,7 +145,7 @@ void Controls(const string &root, int threads) {
 	      "configured scheduler threads");
 	// library_version is derived from git tags, which shallow checkouts lack; the commit is the pin.
 	auto source_id = Scalar(reader, "SELECT source_id FROM pragma_version()");
-	Check(source_id.size() >= 7 && string("069cc9f9b5be802405797faecc284961b07c70ef").rfind(source_id, 0) == 0,
+	Check(source_id.size() >= 7 && string("d54cbbe3df17e8e5ce68312f483b4155836112aa").rfind(source_id, 0) == 0,
 	      "pinned native engine identity");
 	auto load = "CALL ossie_bundle_load(" + Literal(manifest) + ")";
 	Query(writer, rows);
@@ -257,7 +257,7 @@ public:
 };
 void DailyCancel(Connection &connection, const string &sql, PopulationDailyCheckpoint checkpoint) {
 	Gate gate;
-	unique_ptr<MaterializedQueryResult> result;
+	unique_ptr<QueryResult> result;
 	connection.context->registered_state->Insert(PopulationDailyObserver::KEY,
 	                                             make_shared_ptr<DailyObserver>(gate, checkpoint));
 	std::exception_ptr failure;
@@ -309,7 +309,7 @@ public:
 };
 void DailyStateCancel(Connection &connection, const string &sql, PopulationDailyStateCheckpoint checkpoint) {
 	Gate gate;
-	unique_ptr<MaterializedQueryResult> result;
+	unique_ptr<QueryResult> result;
 	connection.context->registered_state->Insert(PopulationDailyStateObserver::KEY,
 	                                             make_shared_ptr<DailyStateObserver>(gate, checkpoint));
 	std::exception_ptr failure;
@@ -361,7 +361,7 @@ public:
 };
 void RelationCancel(Connection &connection, const string &sql, PopulationRelationCheckpoint checkpoint) {
 	Gate gate;
-	unique_ptr<MaterializedQueryResult> result;
+	unique_ptr<QueryResult> result;
 	connection.context->registered_state->Insert(PopulationRelationObserver::KEY,
 	                                             make_shared_ptr<RelationObserver>(gate, checkpoint));
 	std::exception_ptr failure;
@@ -548,7 +548,7 @@ void RelationBindControls(const string &root, int threads) {
 		Gate gate;
 		reader.context->registered_state->Insert(PopulationLegacyBindObserver::KEY,
 		                                         make_shared_ptr<LegacyBindObserver>(gate));
-		unique_ptr<MaterializedQueryResult> result;
+		unique_ptr<QueryResult> result;
 		std::exception_ptr failure;
 		std::thread worker([&] {
 			try {
@@ -575,7 +575,7 @@ void RelationBindControls(const string &root, int threads) {
 			std::rethrow_exception(failure);
 		}
 		if (old_first) {
-			Check(result && !result->HasError() && result->GetValue(0, 0).GetValue<int64_t>() == 1,
+			Check(result && !result->HasError() && result->Collection().GetValue(0, 0).GetValue<int64_t>() == 1,
 			      "legacy bind and gate use same old snapshot across concurrent relation publication");
 			auto fresh = reader.Query("SELECT * FROM ossie_objects('QualifiedObservation',[])");
 			Check(fresh->HasError() && fresh->GetError().find("UNSUPPORTED_CAPABILITY") != string::npos,
@@ -722,7 +722,7 @@ void HistoryControls(const string &root, int threads) {
 		Gate gate;
 		reader.context->registered_state->Insert(PopulationLegacyBindObserver::KEY,
 		                                         make_shared_ptr<LegacyBindObserver>(gate));
-		unique_ptr<MaterializedQueryResult> result;
+		unique_ptr<QueryResult> result;
 		std::exception_ptr failure;
 		std::thread worker([&] {
 			try {
@@ -747,7 +747,7 @@ void HistoryControls(const string &root, int threads) {
 		if (failure)
 			std::rethrow_exception(failure);
 		if (old_first) {
-			Check(result && !result->HasError() && result->GetValue(0, 0).GetValue<int64_t>() == 1,
+			Check(result && !result->HasError() && result->Collection().GetValue(0, 0).GetValue<int64_t>() == 1,
 			      "legacy binding keeps captured old population through history publication");
 			auto fresh = reader.Query("SELECT * FROM ossie_objects('QualifiedObservation',[])");
 			Check(fresh->HasError() && fresh->GetError().find("UNSUPPORTED_CAPABILITY") != string::npos,

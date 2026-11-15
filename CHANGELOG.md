@@ -11,6 +11,55 @@ pins). The DuckDB version each release targets is noted separately.
 
 ## [Unreleased]
 
+### Changed
+- CI's `mcp-round-trip` job runs again and `CI gate` requires it. The community registry now serves
+  duckdb_mcp for DuckDB v2.0.0 (teaguesterling/duckdb_mcp#103, closed 2026-10-28).
+- The population surface is built against DuckDB v2.0.0 alongside the core, on the same parse-tree
+  API port as 0.3.0. `duckdb_functions()` names every population parameter too.
+- **A prepared `ossie_query` or `ossie_compile` follows the model current at `EXECUTE`.** DuckDB 2.0
+  rebinds a prepared statement whose plan scans a catalog table, which the SQL these two compile
+  does. Population requests read a frozen capture, so a prepared one keeps its snapshot as before.
+  Recorded in docs/limitations.md.
+- A string with trailing text after the date (`'2024-02-29garbage'`) is refused where DuckDB 2.0's
+  own `CAST` refuses it; 1.5.6 accepted it. The population profile document no longer claims
+  trailing text is accepted.
+- The isolated finite DATE minimum (day -2147483648, `5877642-06-23 (BC)`) is emitted as
+  `DATE '1970-01-01' + CAST(-2147483648 AS INTEGER)` in compiled SQL. DuckDB renders that day but
+  refuses to parse it back, and DuckDB 2.0 renders a DATE constant as text, so the rendered SQL of a
+  display range ending there now replays where it used to fail.
+- `scripts/full_functionality_check.sh`'s fallback loads the build tree's own `ossie` and `tpcds`
+  artifacts into the build-tree shell. DuckDB 2.0 no longer links extensions into that shell, so the
+  fallback had been asserting against a shell with nothing registered.
+- The C++ contract tests link `ossie` explicitly, since DuckDB 2.0 links extensions per target and
+  resolves the default set only after every extension is added.
+- A population expression test that defined a macro named `nullif` now drops it first; `nullif` is a
+  reserved word in DuckDB 2.0.
+
+## [0.3.0] - 2026-10-21
+
+Targets DuckDB **v2.0.0**. DuckDB v1.5.6 keeps the 0.2.0 build.
+
+### Changed
+- Built against DuckDB v2.0.0 and extension-ci-tools `v2.0-cyanoptera`. Every file that touches a
+  parse tree or registers a function changed for DuckDB 2.0's API.
+- `ossie_load`'s keyword parameters (`rebind`, `validate_sources`, `allow_filter_functions`) now
+  declare their defaults. DuckDB 2.0 makes a keyword parameter without a default required.
+- `ossie_compile` is marked fallible, so its refusals still reach the caller as messages. DuckDB 2.0
+  turns a throw from an unmarked scalar function into an INTERNAL error.
+- Golden SQL gained parentheses around joins, from DuckDB 2.0's printer.
+
+### Fixed
+- `duckdb_functions()` lists every ossie parameter by name again. DuckDB 2.0 reads names from the
+  signature, so without this change each function showed `col0`, `col1`, ... to an agent.
+  `ossie_load` now lists all four parameters, where 1.5 showed only `path`.
+
+### Known issues
+- The MCP surface (`examples/server.sql`) needs `duckdb_mcp`, which has no DuckDB 2.0 build in the
+  community registry yet. CI's `mcp-round-trip` job is off until it does.
+- The DuckDB interval defect listed under 0.2.0 is still present in v2.0.0.
+
+## [0.2.0] - 2026-10-10
+
 Targets DuckDB **v1.5.6**. Version 0.2.0: catches up with two changes to the Ossie spec, one of them
 breaking, that 0.1.1 predates.
 
@@ -196,6 +245,8 @@ most likely to affect you:
 - **No row cap.** `ossie_query` takes metrics, dimensions, and filters and nothing else, so a
   high-cardinality dimension returns every row
 
-[Unreleased]: https://github.com/iqea-ai/duckdb-ossie/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/iqea-ai/duckdb-ossie/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/iqea-ai/duckdb-ossie/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/iqea-ai/duckdb-ossie/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/iqea-ai/duckdb-ossie/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/iqea-ai/duckdb-ossie/releases/tag/v0.1.0

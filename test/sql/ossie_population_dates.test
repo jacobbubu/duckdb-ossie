@@ -109,10 +109,11 @@ SELECT entity_id FROM ossie_objects('User',['User.date = CAST(''2024-02-29 23:30
 ----
 leap_day
 
-query T
+# DuckDB 2.0 rejects trailing text in string-to-DATE casts; the literal reaches DuckDB's own cast unchanged.
+statement error
 SELECT entity_id FROM ossie_objects('User',['User.date = ''2024-02-29garbage''']);
 ----
-leap_day
+invalid date field format
 
 statement error
 SELECT * FROM ossie_objects('User',['User.date = CAST(''2023-02-29'' AS DATE)']);
