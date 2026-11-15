@@ -49,19 +49,17 @@ CALL ossie_load('test/fixtures/conformance/gooddata/ossie_tpcds.yaml');
 ----
 tpcds_model	0.2.0.dev0	5	20	4	0
 
-# nvidia's model. It loads, and its one metric is then refused for a real reason: it averages over
-# two datasets, so there is no single grain to aggregate at. Loading a model and answering a query
-# are separate questions, and this is what it looks like when the first succeeds and the second
-# correctly does not.
+# nvidia's model. Its one metric divides a sum over orders by a count over customers, so each side
+# is aggregated at its own grain and the ratio is taken over the two results.
 query TTIIII
 CALL ossie_load('test/fixtures/conformance/nvidia/sales.ossie.yaml');
 ----
 sales	0.2.0.dev0	2	6	1	1
 
-statement error
+query T
 SELECT ossie_compile(['revenue_per_customer'], [], []);
 ----
-different grains
+SELECT (orders.agg_0 / customers.agg_0) AS revenue_per_customer FROM (SELECT count(DISTINCT customers.customer_id) AS agg_0 FROM analytics.public.customers AS customers) AS customers CROSS JOIN (SELECT sum(orders.subtotal) AS agg_0 FROM analytics.public.orders AS orders) AS orders
 
 # --- upstream's own example model -------------------------------------------------------------------
 # The file the flat document shape was introduced with. Its plain metrics compile exactly as our

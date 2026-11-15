@@ -7,6 +7,7 @@
 #include "duckdb/parser/expression/comparison_expression.hpp"
 #include "duckdb/parser/expression/conjunction_expression.hpp"
 #include "duckdb/parser/expression/function_expression.hpp"
+#include "duckdb/parser/expression/operator_expression.hpp"
 #include "duckdb/parser/expression/window_expression.hpp"
 #include "duckdb/parser/parsed_expression_iterator.hpp"
 #include "duckdb/parser/parser.hpp"
@@ -14,6 +15,7 @@
 #include "duckdb/parser/statement/select_statement.hpp"
 #include "duckdb/parser/tableref/basetableref.hpp"
 #include "duckdb/parser/tableref/joinref.hpp"
+#include "duckdb/parser/tableref/subqueryref.hpp"
 #include "ossie/catalog.hpp"
 #include "ossie/dialect.hpp"
 
@@ -525,6 +527,239 @@ unique_ptr<ParsedExpression> JoinCondition(const Relationship &relationship) {
 	return condition;
 }
 
+//! Joins every dataset in `required` onto `root`, refusing any hop that would repeat root rows.
+unique_ptr<TableRef> JoinRequired(const Model &model, const Dataset &root, const vector<string> &required,
+                                  unique_ptr<TableRef> from) {
+	auto planned_joins = PlanJoins(model, root, required);
+	for (auto &planned : planned_joins) {
+		bool moving_to_target = StringUtil::CIEquals(planned.relationship->to_dataset, planned.dataset->name);
+		if (FansOut(*planned.relationship, moving_to_target)) {
+			throw InvalidInputException("ossie: joining \"%s\" repeats each \"%s\" row once per match, which "
+			                            "would inflate every aggregate. Relationship \"%s\" is %s",
+			                            planned.dataset->name, root.name, planned.relationship->name,
+			                            CardinalityName(planned.relationship->cardinality));
+		}
+	}
+	for (auto &planned : planned_joins) {
+		auto join = make_uniq<JoinRef>(JoinRefType::REGULAR);
+		// Ossie does not declare a join type. INNER matches hand-written SQL, but drops fact rows
+		// where the foreign key is NULL; an override belongs here when one is needed.
+		join->type = JoinType::INNER;
+		join->left = std::move(from);
+		join->right = BindTable(*planned.dataset);
+		join->condition = JoinCondition(*planned.relationship);
+		from = std::move(join);
+	}
+	return from;
+}
+
+void AndInto(unique_ptr<ParsedExpression> &target, unique_ptr<ParsedExpression> expr) {
+	if (!target) {
+		target = std::move(expr);
+	} else {
+		target = make_uniq<ConjunctionExpression>(ExpressionType::CONJUNCTION_AND, std::move(target), std::move(expr));
+	}
+}
+
+void GroupByAll(SelectNode &select, idx_t count) {
+	if (count == 0) {
+		return;
+	}
+	GroupingSet grouping_set;
+	for (idx_t i = 0; i < count; i++) {
+		select.groups.group_expressions.push_back(select.select_list[i]->Copy());
+		grouping_set.insert(i);
+	}
+	select.groups.grouping_sets.push_back(std::move(grouping_set));
+}
+
+//! One per-grain subquery of a multi-grain request: the aggregates that run over this dataset's rows,
+//! and the datasets its dimensions, filters and aggregates need joined in.
+struct GrainQuery {
+	const Dataset *dataset;
+	case_insensitive_set_t reachable;
+	vector<string> required;
+	case_insensitive_set_t required_seen;
+	vector<unique_ptr<ParsedExpression>> aggregates;
+	vector<string> aggregate_text;
+	unique_ptr<ParsedExpression> where_clause;
+};
+
+//! A dimension or filter applies to every grain, so each grain's subquery must be able to join the
+//! dataset it names without repeating rows. JoinRequired would refuse anyway, but in terms of the
+//! join rather than of the request the caller made.
+void RequireReachable(GrainQuery &query, const string &dataset, const string &kind, const string &request,
+                      const vector<string> &grains) {
+	if (query.reachable.find(dataset) != query.reachable.end()) {
+		AddRequired(query.required, query.required_seen, dataset, query.dataset->name);
+		return;
+	}
+	throw InvalidInputException("ossie: %s \"%s\" names dataset \"%s\", which \"%s\" cannot join without repeating "
+	                            "its rows, so it cannot apply to the aggregates computed at that grain. The requested "
+	                            "metrics aggregate at %s different grains (%s)",
+	                            kind, request, dataset, query.dataset->name, to_string(grains.size()),
+	                            StringUtil::Join(grains, ", "));
+}
+
+//! Replaces each aggregate in `expr` with a reference to the column that its grain's subquery will
+//! compute it under, registering the aggregate there. Identical aggregates share one column.
+void HoistAggregates(const Model &model, unique_ptr<ParsedExpression> &expr, const string &request,
+                     vector<GrainQuery> &grain_queries) {
+	if (expr->GetExpressionClass() == ExpressionClass::FUNCTION &&
+	    IsAggregateName(expr->Cast<FunctionExpression>().function_name)) {
+		case_insensitive_set_t datasets;
+		CollectDatasets(*expr, datasets);
+		auto grain = AggregateGrain(model, datasets, request);
+		for (auto &query : grain_queries) {
+			if (!StringUtil::CIEquals(query.dataset->name, grain)) {
+				continue;
+			}
+			auto text = expr->ToString();
+			idx_t index = 0;
+			for (; index < query.aggregate_text.size(); index++) {
+				if (query.aggregate_text[index] == text) {
+					break;
+				}
+			}
+			if (index == query.aggregate_text.size()) {
+				query.aggregate_text.push_back(text);
+				query.aggregates.push_back(std::move(expr));
+			}
+			for (auto &name : SortedNames(datasets)) {
+				AddRequired(query.required, query.required_seen, name, query.dataset->name);
+			}
+			expr = make_uniq<ColumnRefExpression>("agg_" + to_string(index), query.dataset->name);
+			return;
+		}
+		throw InternalException("ossie: aggregate grain \"%s\" has no subquery", grain);
+	}
+	ParsedExpressionIterator::EnumerateChildren(
+	    *expr, [&](unique_ptr<ParsedExpression> &child) { HoistAggregates(model, child, request, grain_queries); });
+}
+
+unique_ptr<ParsedExpression> Coalesce(vector<unique_ptr<ParsedExpression>> children) {
+	if (children.size() == 1) {
+		return std::move(children[0]);
+	}
+	return make_uniq<OperatorExpression>(ExpressionType::OPERATOR_COALESCE, std::move(children));
+}
+
+//! Metrics whose aggregates sit at several grains: each grain gets its own grouped subquery, the
+//! subqueries are joined on the dimension values (NULL-safe, keeping every group either side
+//! produced), and the metric expressions are evaluated over the aggregate columns. Each aggregate
+//! therefore runs over the complete rows of its own dataset, restricted only by filters that
+//! dataset can reach without fanning out.
+unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<string> &grains,
+                                              vector<unique_ptr<ParsedExpression>> metric_expressions,
+                                              const vector<string> &dimensions, const vector<string> &filters,
+                                              const CompileOptions &options) {
+	if (options.population_source || options.population_predicate) {
+		throw InvalidInputException("ossie: a population request cannot aggregate at more than one grain");
+	}
+	vector<GrainQuery> grain_queries;
+	for (auto &grain : grains) {
+		GrainQuery query;
+		query.dataset = model.FindDataset(grain);
+		query.reachable = SafelyReachable(model, grain);
+		grain_queries.push_back(std::move(query));
+	}
+
+	for (auto &expr : metric_expressions) {
+		auto alias = expr->GetAlias();
+		HoistAggregates(model, expr, alias, grain_queries);
+		expr->SetAlias(alias);
+	}
+
+	vector<Dimension> resolved_dimensions;
+	for (auto &request : dimensions) {
+		auto dimension = ResolveDimension(model, request);
+		for (auto &query : grain_queries) {
+			RequireReachable(query, dimension.dataset->name, "dimension", request, grains);
+		}
+		resolved_dimensions.push_back(std::move(dimension));
+	}
+
+	unique_ptr<ParsedExpression> outer_where;
+	for (auto &request : filters) {
+		auto filter = ResolveFilter(model, request, options);
+		if (filter.is_aggregate) {
+			HoistAggregates(model, filter.expr, request, grain_queries);
+			AndInto(outer_where, std::move(filter.expr));
+			continue;
+		}
+		case_insensitive_set_t referenced;
+		CollectDatasets(*filter.expr, referenced);
+		for (auto &query : grain_queries) {
+			for (auto &name : SortedNames(referenced)) {
+				RequireReachable(query, name, "filter", request, grains);
+			}
+			AndInto(query.where_clause, filter.expr->Copy());
+		}
+	}
+
+	auto outer = make_uniq<SelectNode>();
+	unique_ptr<TableRef> from;
+	// The dimension values seen so far, coalesced across the subqueries already joined, so the next
+	// subquery can match a group that only one earlier side produced.
+	vector<vector<unique_ptr<ParsedExpression>>> dimension_refs(resolved_dimensions.size());
+	for (auto &query : grain_queries) {
+		auto select = make_uniq<SelectNode>();
+		for (idx_t i = 0; i < resolved_dimensions.size(); i++) {
+			auto expr = resolved_dimensions[i].expr->Copy();
+			expr->SetAlias("dim_" + to_string(i));
+			select->select_list.push_back(std::move(expr));
+		}
+		GroupByAll(*select, resolved_dimensions.size());
+		for (idx_t i = 0; i < query.aggregates.size(); i++) {
+			auto &expr = query.aggregates[i];
+			expr->SetAlias("agg_" + to_string(i));
+			select->select_list.push_back(std::move(expr));
+		}
+		select->where_clause = std::move(query.where_clause);
+		select->from_table = JoinRequired(model, *query.dataset, query.required, BindTable(*query.dataset));
+		select->aggregate_handling = AggregateHandling::STANDARD_HANDLING;
+		auto statement = make_uniq<SelectStatement>();
+		statement->node = std::move(select);
+		auto subquery = make_uniq<SubqueryRef>(std::move(statement), query.dataset->name);
+
+		if (!from) {
+			from = std::move(subquery);
+		} else {
+			auto join = make_uniq<JoinRef>(resolved_dimensions.empty() ? JoinRefType::CROSS : JoinRefType::REGULAR);
+			join->type = JoinType::OUTER;
+			join->left = std::move(from);
+			for (idx_t i = 0; i < resolved_dimensions.size(); i++) {
+				vector<unique_ptr<ParsedExpression>> seen;
+				for (auto &ref : dimension_refs[i]) {
+					seen.push_back(ref->Copy());
+				}
+				auto right = make_uniq<ColumnRefExpression>("dim_" + to_string(i), query.dataset->name);
+				AndInto(join->condition, make_uniq<ComparisonExpression>(ExpressionType::COMPARE_NOT_DISTINCT_FROM,
+				                                                         Coalesce(std::move(seen)), std::move(right)));
+			}
+			join->right = std::move(subquery);
+			from = std::move(join);
+		}
+		for (idx_t i = 0; i < resolved_dimensions.size(); i++) {
+			dimension_refs[i].push_back(make_uniq<ColumnRefExpression>("dim_" + to_string(i), query.dataset->name));
+		}
+	}
+
+	for (idx_t i = 0; i < resolved_dimensions.size(); i++) {
+		auto expr = Coalesce(std::move(dimension_refs[i]));
+		expr->SetAlias(resolved_dimensions[i].alias);
+		outer->select_list.push_back(std::move(expr));
+	}
+	for (auto &expr : metric_expressions) {
+		outer->select_list.push_back(std::move(expr));
+	}
+	outer->where_clause = std::move(outer_where);
+	outer->from_table = std::move(from);
+	auto statement = make_uniq<SelectStatement>();
+	statement->node = std::move(outer);
+	return statement;
+}
+
 } // namespace
 
 void RequireMetricGrain(const Model &model, const vector<string> &metrics, const string &designated_dataset) {
@@ -583,12 +818,19 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 		metric_expressions.push_back(std::move(expr));
 	}
 
-	// One query has one set of rows to group, so every aggregate must sit at the same grain.
+	// One query has one set of rows to group, so when aggregates sit at several grains each grain gets
+	// its own subquery.
 	if (grains.size() > 1) {
-		auto names = SortedNames(grains);
-		throw InvalidInputException("ossie: these metrics aggregate at %s different grains (%s). Computing "
-		                            "them together needs one aggregate per grain, which is not supported yet",
-		                            to_string(grains.size()), StringUtil::Join(names, ", "));
+		if (has_grainless) {
+			throw InvalidInputException("ossie: metric \"%s\" has an aggregate with no column reference, and the "
+			                            "requested metrics aggregate at %s different grains (%s), so there is no "
+			                            "single dataset for it to count. Qualify it, for example "
+			                            "COUNT(store_sales.ss_item_sk) rather than COUNT(*)",
+			                            grainless_metric, to_string(grains.size()),
+			                            StringUtil::Join(SortedNames(grains), ", "));
+		}
+		return CompileMultiGrain(model, SortedNames(grains), std::move(metric_expressions), dimensions, filters,
+		                         options);
 	}
 	if (grains.empty()) {
 		if (has_grainless) {
@@ -613,18 +855,10 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 	for (auto &request : dimensions) {
 		auto dimension = ResolveDimension(model, request);
 		AddRequired(required, required_seen, dimension.dataset->name, root.name);
-		auto index = select->select_list.size();
 		dimension.expr->SetAlias(dimension.alias);
 		select->select_list.push_back(std::move(dimension.expr));
-		select->groups.group_expressions.push_back(select->select_list[index]->Copy());
 	}
-	if (!select->groups.group_expressions.empty()) {
-		GroupingSet grouping_set;
-		for (idx_t i = 0; i < select->groups.group_expressions.size(); i++) {
-			grouping_set.insert(i);
-		}
-		select->groups.grouping_sets.push_back(std::move(grouping_set));
-	}
+	GroupByAll(*select, select->select_list.size());
 
 	for (auto &expr : metric_expressions) {
 		select->select_list.push_back(std::move(expr));
@@ -640,38 +874,11 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 		}
 
 		auto &target = filter.is_aggregate ? select->having : select->where_clause;
-		if (!target) {
-			target = std::move(filter.expr);
-		} else {
-			target = make_uniq<ConjunctionExpression>(ExpressionType::CONJUNCTION_AND, std::move(target),
-			                                          std::move(filter.expr));
-		}
-	}
-
-	auto planned_joins = PlanJoins(model, root, required);
-	for (auto &planned : planned_joins) {
-		bool moving_to_target = StringUtil::CIEquals(planned.relationship->to_dataset, planned.dataset->name);
-		if (FansOut(*planned.relationship, moving_to_target)) {
-			throw InvalidInputException("ossie: joining \"%s\" repeats each \"%s\" row once per match, which "
-			                            "would inflate every aggregate. Relationship \"%s\" is %s",
-			                            planned.dataset->name, root.name, planned.relationship->name,
-			                            CardinalityName(planned.relationship->cardinality));
-		}
+		AndInto(target, std::move(filter.expr));
 	}
 
 	unique_ptr<TableRef> from = options.population_source ? options.population_source->Copy() : BindTable(root);
-	for (auto &planned : planned_joins) {
-		auto join = make_uniq<JoinRef>(JoinRefType::REGULAR);
-		// Ossie does not declare a join type. INNER matches hand-written SQL, but drops fact rows
-		// where the foreign key is NULL; an override belongs here when one is needed.
-		join->type = JoinType::INNER;
-		join->left = std::move(from);
-		join->right = BindTable(*planned.dataset);
-		join->condition = JoinCondition(*planned.relationship);
-		from = std::move(join);
-	}
-
-	select->from_table = std::move(from);
+	select->from_table = JoinRequired(model, root, required, std::move(from));
 	select->aggregate_handling = AggregateHandling::STANDARD_HANDLING;
 
 	auto statement = make_uniq<SelectStatement>();

@@ -22,7 +22,7 @@ the directory keeps the two from being confused in history.)
 | `orionbelt/tpcds_ossie.yaml` | `converters/orionbelt/tests/fixtures/` | yes |
 | `omni/fixtureA_ossie.yaml` | `converters/omni/tests/fixtures/` | yes |
 | `gooddata/ossie_tpcds.yaml` | `converters/gooddata/tests/fixtures/` | yes |
-| `nvidia/sales.ossie.yaml` | `converters/nvidia/tests/fixtures/` | yes (its one metric is multi-grain, so queries on it are refused) |
+| `nvidia/sales.ossie.yaml` | `converters/nvidia/tests/fixtures/` | yes (its one metric is multi-grain: each side is aggregated at its own grain) |
 | `databricks/ossie_fixtureA_ossie.yaml` | `converters/databricks/java/src/test/resources/` | no — carries only `DATABRICKS` expressions |
 | `examples/tpcds_semantic_model.yaml` | `examples/` | yes (its three window-function metrics are refused when queried) |
 

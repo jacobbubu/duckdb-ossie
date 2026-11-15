@@ -39,7 +39,7 @@ Claims about a file format should be checkable, so:
 Models use the flat document shape of Ossie 0.2.0.dev0, one model per file, with expressions in
 `OSSIE_SQL_2026` (the spec's own expression language) or `ANSI_SQL`. What is not yet supported is
 listed in [docs/limitations.md](docs/limitations.md): table-backed sources only, and metrics that
-span more than one grain or use a window function are refused rather than answered wrongly.
+use a window function are refused rather than answered wrongly.
 
 ```sql
 CALL ossie_load('model.json', rebind => MAP{'tpcds.public': 'tpcds.main'});
@@ -63,15 +63,19 @@ SELECT * FROM ossie_query(['total_sales'],           -- ask a question
 
 The primary consumer here is an AI agent, which cannot check the number it gets back. A plausible
 wrong answer is therefore worse than an error, and the extension is built to refuse rather than
-guess. Ask for `store_productivity` — which sums a fact column and a dimension column — and you get:
+guess. Ask for `total_sales` grouped by `store.s_state` on a model where the sales-to-store
+relationship is declared many-to-many, and you get:
 
 ```
-ossie: these metrics aggregate at 2 different grains (store, store_sales).
-Computing them together needs one aggregate per grain, which is not supported yet
+ossie: joining "store" repeats each "store_sales" row once per match, which would
+inflate every aggregate. Relationship "store_sales_to_store" is many_to_many
 ```
 
-rather than a number roughly a thousand times too large. [docs/limitations.md](docs/limitations.md)
-records every such refusal and why it exists.
+rather than a number inflated by the number of matches. Where the model *does* determine the
+answer the extension does the work instead: `store_productivity`, which sums a fact column and a
+dimension column, is aggregated one grain at a time and the ratio taken over the results, rather
+than summing employee counts once per sale. [docs/limitations.md](docs/limitations.md) records
+every refusal and why it exists.
 
 ## Functions
 

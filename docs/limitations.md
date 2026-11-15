@@ -57,17 +57,28 @@ content validation. Extensions are descriptive and do not execute vendor code.
 
 ## Grain
 
-**Metrics that aggregate at more than one grain.** `store_productivity` is
-`SUM(store_sales.ss_ext_sales_price) / NULLIF(SUM(store.s_number_employees), 0)`. Joining `store`
-to `store_sales` replicates each store's employee count once per sale line, so a naive `SUM` over
-it is inflated by roughly the number of sales per store. Answering this correctly requires
-computing each aggregate at its own grain and joining the results, which is not implemented.
-`customer_lifetime_value` is refused for the same reason.
+**Metrics that aggregate at more than one grain** are computed one grain at a time.
+`store_productivity` is `SUM(store_sales.ss_ext_sales_price) / NULLIF(SUM(store.s_number_employees),
+0)`; joining `store` to `store_sales` would replicate each store's employee count once per sale
+line and inflate the denominator by roughly the number of sales per store. Instead each grain gets
+its own grouped subquery, the subqueries are joined on the dimension values (`FULL JOIN ... ON a
+IS NOT DISTINCT FROM b`, so a group only one side produced is kept, with NULL for the other side's
+aggregates), and the metric expression is evaluated over the aggregate columns. What this
+implies for a request:
 
-Note that a metric referencing a second dataset is *not* by itself a problem. Where the second
-dataset is functionally determined by the grain — `item.i_category` inside an aggregate over
-`store_sales` — its values are replicated onto fact rows without changing their count, and the
-query compiles.
+- A row filter is applied inside *every* grain's subquery, so each grain must reach the filter's
+  dataset without fanning out. `store_productivity` filtered by `date_dim.d_year = 2001` is refused:
+  `store` cannot reach `date_dim` except through `store_sales`, and a filter that silently applied
+  to one side of the ratio only would be a different metric. The same holds for dimensions.
+- A metric filter (`total_sales > 100`) applies to the joined result.
+- `COUNT(*)` alongside metrics at two grains is refused, as there is no single grain for it to
+  inherit (see below).
+- Population requests are single-grain by construction and refuse multi-grain metrics.
+
+A metric referencing a second dataset is *not* by itself multi-grain. Where the second dataset is
+functionally determined by the grain — `item.i_category` inside an aggregate over `store_sales` —
+its values are replicated onto fact rows without changing their count, and the aggregate stays at
+the `store_sales` grain.
 
 **Aggregates with no column reference.** A metric defined as `COUNT(*)` names no dataset, and
 Ossie has no field binding a metric to one. Asking for it alone leaves no candidate for the `FROM`

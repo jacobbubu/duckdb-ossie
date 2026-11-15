@@ -54,10 +54,19 @@ SELECT * FROM ossie_query(['record_count','amount_sum'],[],['fact.active AND dim
 ----
 4	24.98
 
-statement error
-SELECT ossie_compile(['amount_sum','dimension_count'],[],[]);
+# Two grains: the fact sum and the dimension count are each taken over their own table. A
+# dimension group with no facts is still a group, with a NULL sum.
+query IT
+SELECT * FROM ossie_query(['amount_sum','dimension_count'],[],[]);
 ----
-different grains
+55.01	4
+
+query TIT rowsort
+SELECT * FROM ossie_query(['amount_sum','dimension_count'],['dimension.label'],[]);
+----
+North	24.98	2
+South	30.03	1
+Unused	NULL	1
 
 statement error
 SELECT ossie_compile(['dimension_count'],['fact.id'],[]);
