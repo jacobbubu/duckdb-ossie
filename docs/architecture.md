@@ -113,7 +113,9 @@ The differential tests run generated SQL and hand-written TPC-DS equivalents ove
 diff the results with symmetric `EXCEPT`. They are the only layer that catches a wrong *number* —
 a golden-file test passes just as happily on SQL that is valid and incorrect. One of them pins the
 `INNER` join behaviour: grouping by `store.s_state` drops exactly the sales whose foreign key is
-NULL, so a change in join type will fail a test rather than silently move a total.
+NULL, so a change in join type will fail a test rather than silently move a total. Its twin pins
+`left_joins => true`: the same sales reappear as the `NULL` group and the grouped total equals the
+ungrouped one.
 
 Formatting matches DuckDB's, enforced in CI:
 

@@ -63,6 +63,31 @@ SELECT (SELECT total_sales FROM ossie_query(['total_sales']))
 ----
 0.00
 
+# With left_joins those rows survive as a NULL group, and the grouped total equals the ungrouped one.
+statement ok
+CALL ossie_load('test/fixtures/tpcds_semantic_model.json', rebind => MAP{'tpcds.public': 'memory.main'}, left_joins => true);
+
+query I
+SELECT (SELECT total_sales FROM ossie_query(['total_sales']))
+     - (SELECT sum(total_sales) FROM ossie_query(['total_sales'], ['store.s_state']));
+----
+0.00
+
+query I
+SELECT (SELECT total_sales FROM ossie_query(['total_sales'], ['store.s_state']) WHERE "store.s_state" IS NULL)
+     - (SELECT sum(ss_ext_sales_price) FROM store_sales WHERE ss_store_sk IS NULL);
+----
+0.00
+
+# Guard: the NULL group exists and carries sales, so the checks above compared something.
+query I
+SELECT count(*) FROM store_sales WHERE ss_store_sk IS NULL AND ss_ext_sales_price IS NOT NULL;
+----
+<REGEX>:[1-9][0-9]*
+
+statement ok
+CALL ossie_load('test/fixtures/tpcds_semantic_model.json', rebind => MAP{'tpcds.public': 'memory.main'});
+
 # A metric referencing a second dataset as a scalar joins without fanning out.
 statement ok
 CALL ossie_load('test/fixtures/grain_model.json', rebind => MAP{'tpcds.public': 'memory.main'});

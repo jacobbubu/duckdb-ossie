@@ -22,6 +22,8 @@ struct LoadBindData : public TableFunctionData {
 	bool validate_sources = false;
 	//! Set at load so a caller supplying filters cannot widen its own policy.
 	bool allow_filter_functions = false;
+	//! Keep grain rows whose foreign key matches nothing, instead of dropping them at the join.
+	bool left_joins = false;
 };
 
 struct LoadGlobalState : public GlobalTableFunctionState {
@@ -58,6 +60,8 @@ unique_ptr<FunctionData> LoadBind(ClientContext &context, TableFunctionBindInput
 			result->validate_sources = entry.second.GetValue<bool>();
 		} else if (StringUtil::CIEquals(entry.first, "allow_filter_functions")) {
 			result->allow_filter_functions = entry.second.GetValue<bool>();
+		} else if (StringUtil::CIEquals(entry.first, "left_joins")) {
+			result->left_joins = entry.second.GetValue<bool>();
 		}
 	}
 
@@ -109,7 +113,7 @@ void LoadFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk 
 	output.SetValue(4, 0, Value::BIGINT(static_cast<int64_t>(model->relationships.size())));
 	output.SetValue(5, 0, Value::BIGINT(static_cast<int64_t>(model->metrics.size())));
 
-	OssieState::Get(context).SetModel(std::move(model), bind_data.allow_filter_functions);
+	OssieState::Get(context).SetModel(std::move(model), bind_data.allow_filter_functions, bind_data.left_joins);
 	global_state.done = true;
 }
 
@@ -119,10 +123,11 @@ OssieState &OssieState::Get(ClientContext &context) {
 	return *ObjectCache::GetObjectCache(context).GetOrCreate<OssieState>(STATE_KEY);
 }
 
-void OssieState::SetModel(shared_ptr<Model> new_model, bool allow_filter_functions_p) {
+void OssieState::SetModel(shared_ptr<Model> new_model, bool allow_filter_functions_p, bool left_joins_p) {
 	lock_guard<mutex> guard(lock);
 	model = std::move(new_model);
 	allow_filter_functions = allow_filter_functions_p;
+	left_joins = left_joins_p;
 }
 
 OssieSnapshot OssieState::GetSnapshot() {
@@ -130,6 +135,7 @@ OssieSnapshot OssieState::GetSnapshot() {
 	OssieSnapshot snapshot;
 	snapshot.model = model;
 	snapshot.allow_filter_functions = allow_filter_functions;
+	snapshot.left_joins = left_joins;
 	return snapshot;
 }
 
@@ -142,6 +148,7 @@ void RegisterLoadFunction(ExtensionLoader &loader) {
 	ossie_load.named_parameters["rebind"] = LogicalType::MAP(LogicalType::VARCHAR, LogicalType::VARCHAR);
 	ossie_load.named_parameters["validate_sources"] = LogicalType::BOOLEAN;
 	ossie_load.named_parameters["allow_filter_functions"] = LogicalType::BOOLEAN;
+	ossie_load.named_parameters["left_joins"] = LogicalType::BOOLEAN;
 
 	CreateTableFunctionInfo info(ossie_load);
 	info.descriptions.push_back(Describe(
@@ -151,9 +158,12 @@ void RegisterLoadFunction(ExtensionLoader &loader) {
 	    "local catalog; validate_sources (BOOLEAN, default false) requires every dataset's table to "
 	    "exist and reports all failures at once; allow_filter_functions (BOOLEAN, default false) lets "
 	    "request-supplied filters call named functions, and is set here so a caller supplying filters "
-	    "cannot widen its own policy.",
+	    "cannot widen its own policy; left_joins (BOOLEAN, default false) joins dimensions with LEFT "
+	    "JOIN rather than INNER, so a fact row whose foreign key matches no dimension row is kept, "
+	    "with NULL dimension values, instead of dropped. Ossie does not declare a join type.",
 	    {"CALL ossie_load('model.yaml')", "CALL ossie_load('model.json', rebind => MAP{'tpcds.public': 'memory.main'})",
-	     "CALL ossie_load('model.yaml', validate_sources => true)"}));
+	     "CALL ossie_load('model.yaml', validate_sources => true)",
+	     "CALL ossie_load('model.yaml', left_joins => true)"}));
 	loader.RegisterFunction(std::move(info));
 }
 

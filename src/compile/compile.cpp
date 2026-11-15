@@ -529,7 +529,7 @@ unique_ptr<ParsedExpression> JoinCondition(const Relationship &relationship) {
 
 //! Joins every dataset in `required` onto `root`, refusing any hop that would repeat root rows.
 unique_ptr<TableRef> JoinRequired(const Model &model, const Dataset &root, const vector<string> &required,
-                                  unique_ptr<TableRef> from) {
+                                  unique_ptr<TableRef> from, const CompileOptions &options) {
 	auto planned_joins = PlanJoins(model, root, required);
 	for (auto &planned : planned_joins) {
 		bool moving_to_target = StringUtil::CIEquals(planned.relationship->to_dataset, planned.dataset->name);
@@ -543,8 +543,8 @@ unique_ptr<TableRef> JoinRequired(const Model &model, const Dataset &root, const
 	for (auto &planned : planned_joins) {
 		auto join = make_uniq<JoinRef>(JoinRefType::REGULAR);
 		// Ossie does not declare a join type. INNER matches hand-written SQL, but drops fact rows
-		// where the foreign key is NULL; an override belongs here when one is needed.
-		join->type = JoinType::INNER;
+		// where the foreign key is NULL; left_joins keeps them.
+		join->type = options.left_joins ? JoinType::LEFT : JoinType::INNER;
 		join->left = std::move(from);
 		join->right = BindTable(*planned.dataset);
 		join->condition = JoinCondition(*planned.relationship);
@@ -716,7 +716,7 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 			select->select_list.push_back(std::move(expr));
 		}
 		select->where_clause = std::move(query.where_clause);
-		select->from_table = JoinRequired(model, *query.dataset, query.required, BindTable(*query.dataset));
+		select->from_table = JoinRequired(model, *query.dataset, query.required, BindTable(*query.dataset), options);
 		select->aggregate_handling = AggregateHandling::STANDARD_HANDLING;
 		auto statement = make_uniq<SelectStatement>();
 		statement->node = std::move(select);
@@ -878,7 +878,7 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 	}
 
 	unique_ptr<TableRef> from = options.population_source ? options.population_source->Copy() : BindTable(root);
-	select->from_table = JoinRequired(model, root, required, std::move(from));
+	select->from_table = JoinRequired(model, root, required, std::move(from), options);
 	select->aggregate_handling = AggregateHandling::STANDARD_HANDLING;
 
 	auto statement = make_uniq<SelectStatement>();

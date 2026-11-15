@@ -136,3 +136,23 @@ statement error
 SELECT ossie_compile(['total_sales'], ['item.i_brand', 'store.s_state'], []);
 ----
 more than one join path connects
+
+# Ossie does not declare a join type. INNER is the default; left_joins keeps grain rows whose foreign
+# key matches no dimension row, so a total cannot shrink when a dimension is added. Fan-out and path
+# checks are unchanged, since a LEFT JOIN repeats rows exactly as an INNER one does.
+statement ok
+CALL ossie_load('test/fixtures/tpcds_semantic_model.json', rebind => MAP{'tpcds.public': 'tpcds.main'}, left_joins => true);
+
+query T
+SELECT ossie_compile(['total_sales'], ['store.s_state'], ['date_dim.d_year = 2001']);
+----
+SELECT store.s_state AS "store.s_state", sum(store_sales.ss_ext_sales_price) AS total_sales FROM tpcds.main.store_sales AS store_sales LEFT JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk)) LEFT JOIN tpcds.main.date_dim AS date_dim ON ((store_sales.ss_sold_date_sk = date_dim.d_date_sk)) WHERE (date_dim.d_year = 2001) GROUP BY store.s_state
+
+# The policy is per load, like allow_filter_functions: reloading without it goes back to INNER.
+statement ok
+CALL ossie_load('test/fixtures/tpcds_semantic_model.json', rebind => MAP{'tpcds.public': 'tpcds.main'});
+
+query T
+SELECT ossie_compile(['total_sales'], ['store.s_state'], []);
+----
+SELECT store.s_state AS "store.s_state", sum(store_sales.ss_ext_sales_price) AS total_sales FROM tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk)) GROUP BY store.s_state

@@ -26,6 +26,7 @@ unique_ptr<TableRef> QueryBindReplace(ClientContext &context, TableFunctionBindI
 
 	CompileOptions options;
 	options.allow_filter_functions = snapshot.allow_filter_functions;
+	options.left_joins = snapshot.left_joins;
 
 	auto argument = [&](idx_t index) {
 		return index < input.inputs.size() ? ToStringList(input.inputs[index], "ossie_query") : vector<string>();

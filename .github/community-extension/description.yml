@@ -72,8 +72,9 @@ docs:
 
     - `ossie_load(path, ...)` -- parse and validate a model, YAML or JSON. Named arguments:
       `rebind` remaps warehouse-qualified source prefixes onto the local catalog,
-      `validate_sources` requires every dataset's table to exist, and `allow_filter_functions`
-      sets the filter policy at load so a caller supplying filters cannot widen its own policy
+      `validate_sources` requires every dataset's table to exist, `allow_filter_functions`
+      sets the filter policy at load so a caller supplying filters cannot widen its own policy,
+      and `left_joins` keeps fact rows whose foreign key matches no dimension row
     - `ossie_query(metrics, dimensions, filters)` -- compile the request and execute it
     - `ossie_compile(metrics, dimensions, filters)` -- the same SQL as text, without running it
     - `ossie_datasets()`, `ossie_fields()`, `ossie_metrics()`, `ossie_relationships()` -- the

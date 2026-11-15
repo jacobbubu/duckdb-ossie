@@ -13,6 +13,7 @@ namespace ossie {
 struct OssieSnapshot {
 	shared_ptr<const Model> model;
 	bool allow_filter_functions = false;
+	bool left_joins = false;
 };
 
 //! The loaded model, held per database rather than per connection: an MCP server answers on its own
@@ -23,7 +24,7 @@ public:
 
 	static OssieState &Get(ClientContext &context);
 
-	void SetModel(shared_ptr<Model> new_model, bool allow_filter_functions);
+	void SetModel(shared_ptr<Model> new_model, bool allow_filter_functions, bool left_joins);
 
 	//! One lock captures both components. Null model until loaded; old readers survive replacement.
 	OssieSnapshot GetSnapshot();
@@ -45,6 +46,7 @@ private:
 	mutex lock;
 	shared_ptr<const Model> model;
 	bool allow_filter_functions = false;
+	bool left_joins = false;
 };
 
 } // namespace ossie

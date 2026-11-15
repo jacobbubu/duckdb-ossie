@@ -81,7 +81,7 @@ every refusal and why it exists.
 
 | Function | Purpose |
 |---|---|
-| `ossie_load(path, ...)` | Parse and validate a model. Named args: `rebind`, `validate_sources`, `allow_filter_functions` |
+| `ossie_load(path, ...)` | Parse and validate a model. Named args: `rebind`, `validate_sources`, `allow_filter_functions`, `left_joins` |
 | `ossie_datasets()` | Datasets, their sources, keys, and whether each source resolves |
 | `ossie_fields()` | Fields with datatype, `is_time`, `is_computed`, expression, synonyms |
 | `ossie_metrics()` | Metrics with datatype, expression, synonyms |

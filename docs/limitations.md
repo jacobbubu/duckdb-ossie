@@ -107,10 +107,16 @@ produce different numbers, so the request is refused with the endpoints named ra
 to whichever route was found first.
 
 **Join type is not declared.** Ossie describes a relationship's endpoints and columns but not
-whether it is inner or outer. All joins are emitted as `INNER`, which means a fact row whose
-foreign key is `NULL` is dropped once the corresponding dimension is joined. A metric can
-therefore return a smaller total once a dimension or filter is added. There is currently no
-override.
+whether it is inner or outer. By default joins are emitted as `INNER`, which matches hand-written
+SQL but means a fact row whose foreign key is `NULL` or matches no dimension row is dropped once
+that dimension is joined, so a metric can return a smaller total once a dimension or filter is
+added. Loading with `left_joins => true` emits `LEFT JOIN` from the grain to every dimension
+instead: such rows survive, grouped under `NULL` dimension values, and the grouped total equals
+the ungrouped one. The policy applies to the whole model for that load, like
+`allow_filter_functions`; there is no per-relationship declaration, because the model format has
+nowhere to put one. A filter on a dimension column still excludes the unmatched rows, as it does in
+plain SQL (`WHERE store.s_state = 'TN'` is false for a `NULL` state), and the fan-out and
+ambiguous-path checks are unchanged, since a `LEFT JOIN` repeats rows exactly as an `INNER` one does.
 
 ## Filters
 
