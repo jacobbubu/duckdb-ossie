@@ -1,7 +1,7 @@
 # Frozen bundle discovery
 
-The population APIs now expose original model vocabulary and successful load
-preflight evidence from the same immutable bundle as concept execution. These
+The population APIs expose original model vocabulary and successful load
+preflight results from the same immutable bundle as concept execution. These
 functions are independent of `ossie_metrics()`/`ossie_fields()`, which describe
 the separately loaded core model.
 
@@ -54,9 +54,8 @@ is synthesized. Time flags describe declared/defaulted roles, not calendar suppo
 Capabilities return one row with `api_version=2.2.0` for legacy manifests
 (`2.3.0` for sole [concept constraint capability](population-constraints.md),
 `2.4.0` for explicit [native String join capability](string-join.md), alone or
-combined with concept constraints; see its limited native acceptance;
-`2.5.0` for [multiple direct children](direct-derived.md), with plan-v3
-and its separate limited Mac ARM64 acceptance),
+combined with concept constraints;
+`2.5.0` for [multiple direct children](direct-derived.md), with plan-v3),
 `discovery_schema=ossie-population-discovery-v1`,
 `plan_schema=ossie-population-plan-v1` for scalar/join profiles (`plan-v2` for
 the observation profile), `ossie_spec_version=0.2.0.dev0`,
@@ -102,9 +101,7 @@ advertised as implemented. The 16 MiB canonical limit is not peak memory.
 
 GAAP remains the primary requirement fixture. The generic fact/dimension fixture,
 reversed datasets and computed/quoted names test discovery-driven requests without
-GAAP vocabulary. Stock artifact controls are in `verify_discovery_artifact.ts`;
-actual MCP resource contents and resource-driven requests are checked by
-`verify_population_mcp.ts`. Separate resource calls can observe different bundles
+GAAP vocabulary. Separate resource calls can observe different bundles
 across operator reload; consumers must compare hashes. The example exposes no reload.
 
 API2.2.0 adds the separate `daily_user_set` operation declaration. See

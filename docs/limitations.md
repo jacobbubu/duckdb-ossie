@@ -112,9 +112,9 @@ tables the model never declared.
 
 ## Model conformance
 
-The [P1 function and window matrix](ossie-sql-compatibility.md) separates pinned
-language definitions, profile AST boundaries and actual execution evidence.
-It does not claim complete OSSIE_SQL_2026 conformance.
+The [function and window matrix](ossie-sql-compatibility.md) separates pinned
+language definitions from each profile's AST boundaries. It does not claim
+complete OSSIE_SQL_2026 conformance.
 
 **The pre-0.2 `semantic_model` array.** Ossie 0.2.0.dev0 puts exactly one model at the root of each
 document and removed the `semantic_model` array rather than deprecating it. A document that still

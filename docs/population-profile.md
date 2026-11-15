@@ -1,7 +1,7 @@
 # Single-table population execution
 
-`gaap-scalar-population-v1` implements the first local OSSIE-REQ-001 execution
-slice against pinned Ossie `0.2.0.dev0` and DuckDB 1.5.6. It provides one root
+`gaap-scalar-population-v1` is a bounded single-table execution profile against
+pinned Ossie `0.2.0.dev0` and DuckDB 1.5.6. It provides one root
 EntityType and one derived EntityType with scalar attributes and a scalar
 membership rule. It does not represent full Ossie ontology conformance.
 
@@ -120,18 +120,15 @@ The fixed Ossie expression source
 defines / and NULLIF but leaves Decimal precision/scale and zero-division results
 unspecified. DuckDB documents [approximate Decimal division](https://duckdb.org/docs/current/sql/data_types/numeric)
 and [IEEE zero division](https://duckdb.org/docs/current/sql/dialect/postgresql_compatibility);
-our pinned 1.5.6 artifact controls establish the behavior stated here. This is an explicit implementation restriction,
+the pinned 1.5.6 engine determines the behavior stated here. This is an explicit implementation restriction,
 not a claim of full OSSIE_SQL_2026 compliance. The existing core APIs retain their
 host arithmetic behavior; this stricter population guard does not rewrite them.
-The synthetic expression verifier uses
-hand-derived ratios, NULL/zero/empty groups, native types, rejected formulas,
-caller macro isolation and an explicit non-finite control.
 
 Without an explicit capability selection, nonempty `requires` anywhere in the
 supported ontology closure is refused. The opt-in
 [`concept-scalar-requires-v1`](population-constraints.md) source implementation
-adds bounded Integer/DATE concept constraints to the scalar and joined profiles;
-its new native execution is not yet verified. Ontology-level and relationship
+adds bounded Integer/DATE concept constraints to the scalar and joined profiles.
+Ontology-level and relationship
 constraints remain refused in these two profiles. So are
 explicit value-type components, multiple inheritance, multiple datasets, core joins
 and missing/ambiguous identity mappings. The error includes `object`, `stage`,
@@ -167,7 +164,7 @@ records validated input grain/join captures and definition/data hashes. Full cap
 row counts are not filtered counts; time ranges are not inferred from predicates.
 This is a parser AST explanation, not a physical/optimizer plan or proof of execution.
 Read compile columns by name: its schema now has eleven columns. See
-[the plan contract](population-plan.md) for compatibility, lifecycle and evidence.
+[the plan contract](population-plan.md) for compatibility and lifecycle.
 
 ## DATE boundaries and conversion
 
@@ -202,22 +199,18 @@ Normalize input explicitly if a strict format is required. No SQL short-circuit
 or complete eager evaluation of every unused computed field is promised.
 
 The engine also accepts epoch, infinity and -infinity DATE values. Infinity
-orders beyond finite dates and is distinct from NULL. The independent native
-adapter checks isFinite and the date sentinel before formatting, because the
-fixed Node client's raw toString renders these sentinels as large ordinary dates.
-Finite dates remain native DATE strings, with no JS Date conversion. Controls
-compare actual extension objects and metrics under Honolulu and Shanghai timezone
-settings; this is evidence for the tested DATE formulas, not general timezone/DST
-or timestamp support.
+orders beyond finite dates and is distinct from NULL. Clients that format dates
+must check for these sentinels themselves; a naive toString renders them as large
+ordinary dates. Session timezone settings do not affect the DATE formulas above;
+this is not general timezone/DST or timestamp support.
 
 Primary references: [DuckDB DATE and special values](https://duckdb.org/docs/current/sql/data_types/date),
 [CAST and TRY_CAST](https://duckdb.org/docs/current/sql/expressions/cast), and
 [comparison/BETWEEN semantics](https://duckdb.org/docs/current/sql/expressions/comparison_operators).
-The fixed Ossie expression source
-defines broader temporal constructs. Our DATE artifact evidence
-establishes this narrower behavior against pinned DuckDB 1.5.6.
+The fixed Ossie expression source defines broader temporal constructs; this
+profile implements the narrower behavior above against pinned DuckDB 1.5.6.
 
-## Limits and evidence
+## Limits
 
 Definitions are at most 1 MiB each. A captured batch is at most 10,000 rows and
 256 physical columns, with at most 16 MiB of framed canonical values. There are
@@ -229,16 +222,12 @@ and DATE. These are acceptance limits; initial source materialization and query
 execution use the host DuckDB memory budget. Overflow is an error, never truncation.
 Queries serialize per bundle and forward caller cancellation during execution.
 
-The independent artifact verifier
-loads the real extension into an independently installed stock DuckDB Node binding under Node.js. It compares
-full object sets, totals, every daily and region/type group, and group drill-down
-against an independent CSV/bigint-cents oracle at thresholds 10 and 20, plus hand-derived
-NULL/identity boundary controls. It also exercises rejection, atomic reload,
-prepared snapshot retention, cancellation and concurrent callers. Reproducible
-hashes and results are in r3-date-population-artifact-results.json.
-The current research record tracks remaining work;
-Expression evidence records
-this slice's actual arithmetic and rejection controls. This slice does not complete P0, multi-table safe joins, calendar or A1–A8 acceptance.
+## Joined fact-dimension profile
+
+[`fact-dimension-population-v1`](population-joined.md) freezes one designated fact
+dataset and one dimension dataset associated by a single-column equality
+relationship, validates every key before filtering, and serves the same object
+and metric functions over the joined batch.
 
 ## Daily observation profile
 
@@ -254,10 +243,10 @@ plan-v1 contracts.
 INNER/missing=reject 路径，新增 capability 的批次使用 API 2.4.0，可独立组合概念 requires。
 旧默认 INTEGER-only/API 2.2.0、仅 requires/API 2.3.0 及原断言保持。
 字符串按完整 UTF-8 字节匹配，禁止隐式转换与正规化；NULL、未引用维度唯一性及
-过滤前全批次 FK 检查不放宽。该新能力已通过独立封存的 Mac ARM64 限定原生验收，范围与产物绑定见上述说明；旧验收不覆盖它。
+过滤前全批次 FK 检查不放宽。
 
 ## 多个直接派生子概念（显式选择）
 
 [direct-derived-concepts-v1](direct-derived.md) 为现有普通单表/双源路径增加有界同根直接子集合，
 共享身份与 Mapping、允许重叠，不扩多层/多继承或兄弟推理。新选择使用 API2.5/plan-v3；
-默认、requires 与 String 的原选择行为保持。新能力已通过单独封存的 Mac ARM64 限定原生验收，具体范围与版本绑定见上述说明；不能外推其他平台或完整本体规范。
+默认、requires 与 String 的原选择行为保持。

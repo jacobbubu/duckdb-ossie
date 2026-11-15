@@ -66,37 +66,12 @@ const result = JSON.parse(carrier[0].result_json);
 // Numeric result.rows cells are strings. Read columns[i].bound_type/encoding.
 ```
 
-population_result.ts is the validated reference
-decoder used by the tests; it retains numeric strings and rejects type/encoding
-or row-width mismatches. Discovery/compile responses keep their earlier formats.
+A decoder should retain the numeric strings and reject type/encoding or
+row-width mismatches. Discovery/compile responses keep their earlier formats.
 
 The adapter fetches chunks without making another complete Value-row copy, but
 materializes the complete JSON string. MCP adds another escaping layer. Capture
-limits do not bound output or peak memory. Large-response evidence applies to
-tested inputs/configurations; no universal output-size promise is made. Cancellation
+limits do not bound output or peak memory; no universal output-size promise is
+made. Cancellation
 is checked during and after encoding, and the existing pending-task draining is
-retained. Timed artifact cancellation does not identify an exact encoding checkpoint.
-Pagination remains a separately recorded future research requirement.
-
-## Evidence
-
-```sh
-bun scripts/verify_typed_population_artifact.ts /abs/path/ossie.duckdb_extension --output results.json
-```
-
-The stock native client and actual stdio MCP client use ordinary JSON parsing,
-independent integer/Decimal expectations, signed/non-finite float and DATE values,
-NULL/Boolean/escaping, duplicate names, old prepared/reload/failed-load controls,
-large object/group completeness and cancellation/recovery. SQL tests check the
-optional adapter and native API boundary; the artifact verifier fully parses JSON.
-Existing MCP GAAP/dual-table tests decode the new envelopes and retain their
-independent population, aggregate, group, drilldown and refusal controls.
-
-Final local evidence
-has 24 named checks; MCP regression evidence
-has 330 checks/106 refusals on the same artifact. The large synthetic fixture
-returned all 10,000 objects/17 columns and 10,000 groups. Its object carrier was
-43,340,457 bytes and JSON-RPC line 63,181,123 bytes; grouped carrier/line were
-2,469,414/2,749,800 bytes. The fixture adds float/Boolean fields, so it is not a
-controlled byte-for-byte size comparison with the earlier raw response. These
-are observed sizes, not output or memory limits. Those reports retain their original local-version scope. Later c5eb47e GitHub AMD64/macOS acceptance and tidy passed; that separate CI record does not rewrite the earlier reports.
+retained. There is no pagination.

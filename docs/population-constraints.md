@@ -1,10 +1,8 @@
 # 显式概念 requires：有限可复用子集
 
-已完成固定 Mac ARM64 / DuckDB 1.5.6 的限定原生验收，包含两种结构不同的场景、
-类型与拒绝边界及既有回归。工作沿用 OSSIE-REQ-001，不新增 profile。
-执行版本与结果见原生验收摘要，
-类型范围与统计口径见[边界验收](concept-requires-boundaries.md#accepted-boundaries-007)。
-本次仅同步说明，没有追加运行；这些结果不构成新能力的 CLI/MCP 或完整 Ontology 验收。
+`concept-scalar-requires-v1` 为单表与双源 profile 增加有界的 Integer/DATE 概念约束。
+它沿用既有 profile，不新增 profile；支持的类型范围与边界语义见
+[边界说明](concept-requires-boundaries.md)。
 
 ## 选择能力和兼容边界
 
@@ -39,9 +37,8 @@ guard 与比较可交换顺序。Integer 属性只接受 TINYINT、SMALLINT、IN
 整数常量必须非 NULL、无损适合实际整数类型；DATE 常量必须有显式 DATE 类型。
 不接受计算列表达式、隐式字符串转换、两列比较、其他比较运算符、函数、聚合、窗口或子查询。
 DATE 保持既有 DuckDB 1.5.6 类型/解析行为，包括其特殊值边界；没有新增严格 ISO、
-有限性、timestamp、时区政策或 JS Date 转换。基础 A/B 的离线 oracle 覆盖普通日期；
-独立边界合同另以 BigInt 日序核对 BC、宽年份、解析极值与特殊值，已有实际原生结果。
-文本解析范围与物理存储范围分别记录，见[DATE 边界说明](concept-requires-boundaries.md#date-storage-boundary)。
+有限性、timestamp、时区政策或 JS Date 转换。
+文本解析范围与物理存储范围不同，见[DATE 边界说明](concept-requires-boundaries.md#date-storage-boundary)。
 
 所有声明先进行 AST/实际类型预检，即使人口为空也不能跳过坏表达式。
 根约束覆盖实际形成的全部根对象；子约束只作用于 derived_by 为 TRUE 的对象。
@@ -71,64 +68,16 @@ SQL 返回列及 plan-v1 不变；compile 仍是诊断 AST，带 manifest/定义
 总输入 128 KiB，继承原捕获行数、物理列数与 canonical 字节限制。
 这些不是峰值内存、吞吐或硬执行期限保证。
 
-## 验证入口与已有验收
-
-只使用已经安装的 Node.js 24.12+ 和 npm 依赖，不联网或安装：
-
-```sh
-node scripts/verify_concept_requires_artifact.ts --offline
-node --test --test-concurrency=1 test/tooling/concept_requires.test.ts
-```
-
-两套输入分别位于 `test/fixtures/concept-requires-single/` 和
-`test/fixtures/concept-requires-joined/`。manifest 绑定三个标准文档的精确字节；
-这些 fixture 使用固定 JSON 序列化，离线入口另校验 schema、声明对应与普通日期/整数答案。
-单表完整根/子身份为 d1,d2,d3 / d1；双源为 s1,s2,s3,s4 / s1,s2。
-保留完整 NULL/整数/日期分组及手写 SQL 对照；COUNT 不替代身份核对。
-
-下列是独立 A/B 入口的命令形状，本次文档更新不执行。新的运行须核对产物、SHA、
-源码/依赖、预算和全新目录，并取得对应运行授权；可在已授权的连续 Goal 内推进。
-已有 007 结果由当时冻结来源绑定，不能仅凭源码或本文更新推导其他产物具备新能力。
-包含构建、边界与旧回归的完整入口见原生监督说明。
-
-```sh
-node scripts/verify_concept_requires_artifact.ts \
-  --artifact "$ARTIFACT" --sha256 "$ARTIFACT_SHA256" --output "$NEW_EVIDENCE_DIRECTORY"
-```
-
-当前实际入口初限 Mac ARM64、Node.js 24.12+、DuckDB 1.5.6/069cc9f9b5、Node API/Bindings
-1.5.6-r.1；AMD64 后置。只加载固定文件，拒绝预载 ossie，关闭扩展自动安装/加载；
-新目录必须是仓库 `.local-agent-evidence/` 的直接子目录。单 worker 最多 200 条 SQL、
-60 秒执行时间，随后最多 1 秒等待 close；零重试。stdout/stderr 合计最多 1 MiB、摘要最多 1 MiB，
-超限失败，清理未知不报告成功。这不是完整入口 60 秒 SLO。
-
-外层保留输入 pin、stdout/stderr、结果/失败收据及哈希；每项 SQL 的响应/错误保留在 worker JSON，
-超时强停只能保留此前输出字节。受控负控在新子目录写明确的新定义和新 SHA，
-不覆盖原 fixture，不修改失败查询去寻求通过。文件 pin 和加载状态不证明内存字节、
-全部动态依赖或源码确实编译成该产物；这些字段明确标记未测/未证明。
-
-007 原生验收已通过 A/B、capture 的 554 项检查、31 个 SQL 文件的 1122 项断言及旧
-20 阶段，包含发布前取消、违约保留、prepared 跨重载与来源删除保护。类型/拒绝边界
-及另行封存的来源越界检查也已通过；具体数量和版本见上述摘要，不称全部旧 profile
-或全部类型语法均已验证。本次未运行这些入口，也未改默认 quality-local 或 CI。
-
-## 旧证据与公共交付
-
-功能实施前已保全旧源码和新旧哈希对应。旧 overlay-v1 已绑定相关旧源码；
-它不应对新输入通过，不能重签、改旧报告或放宽字节检查。
-新功能的离线/原生执行证据与新公共目标树分别交付；当前没有完成后者、M4–M5 或发布。
-原 P0/P1、旧版本 CI、旧产物验收继续只证明各自版本。
-
 ## 显式字符串关联键
 
 参见 [native-string-join-v1](string-join.md)：仅扩展现有两表单键 ManyToOne
 INNER/missing=reject 路径，新增 capability 的批次使用 API 2.4.0，可独立组合概念 requires。
 旧默认 INTEGER-only/API 2.2.0、仅 requires/API 2.3.0 及原断言保持。
 字符串按完整 UTF-8 字节匹配，禁止隐式转换与正规化；NULL、未引用维度唯一性及
-过滤前全批次 FK 检查不放宽。该新能力已通过独立封存的 Mac ARM64 限定原生验收，范围与产物绑定见上述说明；旧验收不覆盖它。
+过滤前全批次 FK 检查不放宽。
 
 ## 多个直接派生子概念（显式选择）
 
 [direct-derived-concepts-v1](direct-derived.md) 为现有普通单表/双源路径增加有界同根直接子集合，
 共享身份与 Mapping、允许重叠，不扩多层/多继承或兄弟推理。新选择使用 API2.5/plan-v3；
-默认、requires 与 String 的原选择行为保持。新能力已通过单独封存的 Mac ARM64 限定原生验收，具体范围与版本绑定见上述说明；不能外推其他平台或完整本体规范。
+默认、requires 与 String 的原选择行为保持。

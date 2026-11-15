@@ -1,6 +1,6 @@
 # 两事实指标、人群集合与观察行窗口
 
-`multi-fact-user-program-v1` 面向同一User的两种独立事实粒度：User/date与User/date/product。先各自聚合到User，再组合金额和筛选人群，避免原始明细相连造成重复累计。原生加载、专用SQL接口、独立MCP及无模型Agent集成/重放已本地验收；完整P1逐项本地验收已通过。示例采用合成的加性USD观察值，不代表GAAP或累计年内数值。
+`multi-fact-user-program-v1` 面向同一User的两种独立事实粒度：User/date与User/date/product。先各自聚合到User，再组合金额和筛选人群，避免原始明细相连造成重复累计。示例采用合成的加性USD观察值，不代表GAAP或累计年内数值。
 
 加载[完整示例](../test/fixtures/population-fact-program/bundle.json)前，先执行[来源表脚本](../test/fixtures/population-fact-program/rows.sql)。manifest引用固定core/ontology/mapping，program只指定两个dataset/concept/显式currency，以及core中的窗口指标名。User身份关系必须相同且映射对象/完整关联树一致；金额实际类型DECIMAL(18,2)，User和product非空原始VARCHAR，DATE非NULL且有限，完整源身份唯一。错误、重复、取消或任一来源捕获失败都不替换当前有效快照；源改变需显式重新加载。
 
@@ -49,7 +49,7 @@ SELECT * FROM ossie_fact_windows_json(
 `population_fact_windows_compile`四工具和`ossie://facts/program`、
 `ossie://facts/surface`、`ossie://facts/request-contract`三资源。运营者先创建来源并加载bundle；使用包含新函数的
 本地产物时，将示例的community安装/LOAD改为该产物的LOAD，再在项目根目录
-启动标准DuckDB1.5.6客户端。此本地验收不代表community已发布该能力。
+启动标准DuckDB1.5.6客户端。
 
 客户端先读取program、实际surface和共享请求契约，再调用工具。四工具唯一必填参数都是
 `request_json`字符串，内容与上文SQL请求相同。固定duckdb_mcp上游实际忽略
@@ -58,44 +58,16 @@ SELECT * FROM ossie_fact_windows_json(
 工具未在此服务注册。program的`mcp_registered=false`描述native发现的边界；
 实际tools/list和surface才证明该服务的暴露。
 
-结果校验器保留精确文本数值与全有限DATE，核对请求、
-规范选择、单位、来源粒度、六项快照绑定及完整键集合；计划不接受计算标记或
-伪造成员。外层8MiB是本地decoder保护，不是服务器wire保证。schema或hash
-一致仍不能证明金额/成员真值，实际MCP验收
-另以独立BigInt及完整身份oracle核对，包括10000行与先窗口后展示。
+金额同币种/scale才可组合；只支持SUM(mapped amount)、COUNT(mapped User或amount)、同单位SUM组件加减。AVG、声明COUNT(*)、嵌套/跨事实聚合、聚合修饰、比率、混合单位、原始明细fan-out、递归程序、跨来源窗口、未声明SQL、日历补齐/状态/历史推断均拒绝。Prepare只证明类型绑定；超范围金额必须在加载实际类型/数据转换阶段拒绝。
 
-无模型演练入口以标准客户端运行实际MCP，
-注入模拟Responses，覆盖八个有限场景并严格顺序重放。CLI参数依次为客户端、
-新扩展产物、项目下全新的`.local-agent-evidence/...`私有目录、全新的receipt路径。
-用`bun --no-env-file`启动；入口没有live模式或服务配置读取。原始RPC、上下文
-和答案留在忽略的私有封存目录，receipt只输出选择的审计结论。
-
-答案保留完整执行envelope与执行引用；仅解释场景不调用查询、不提供成员/金额/
-计数。独立oracle核对完整行、精确金额、共同分母和先窗口后展示。八场景是
-脚本集成验收，不证明模型自主选择工具、真实输出token预算足够或生产数据
-业务口径正确。模拟reason/limitations采用固定声明，不能外推为真实模型文本审计。
-工作包证据区分源文件/定义
-绑定、事件对应和独立计算；hash封存不提供执行历史的真实性认证。
-
-金额同币种/scale才可组合；只支持SUM(mapped amount)、COUNT(mapped User或amount)、同单位SUM组件加减。AVG、声明COUNT(*)、嵌套/跨事实聚合、聚合修饰、比率、混合单位、原始明细fan-out、递归程序、跨来源窗口、未声明SQL、日历补齐/状态/历史推断均拒绝。受限输入与表达式预算内，Prepare证明类型，实际精度仍应对照执行证据；超范围金额必须在加载实际类型/数据转换阶段拒绝，不把未构造的溢出场景称已验收。
-
-本profile的冻结输入及表达式预算还给出金额界限：每个SUM组件绝对cents≤10000×(10^18−1)，1024节点指标最多512组件叶，所有中间/最终值≤512×10000×(10^18−1)<10^38−1。最大合法输入/行数/1023节点实际执行已与BigInt cents对照；更宽源类型与越界展开拒绝。此证明不覆盖未来放宽后的类型、行数、运算或预算，也不声称已触发运行时金额溢出。
-
-本地复验（输出目录须全新）：
-
-```sh
-bun --no-env-file scripts/verify_fact_objects_artifact.ts build/release/extension/ossie/ossie.duckdb_extension /tmp/ossie-fact-new
-bun --no-env-file scripts/verify_fact_stock_cli.ts /path/to/duckdb build/release/extension/ossie/ossie.duckdb_extension /tmp/ossie-fact-cli-new
-```
+本profile的冻结输入及表达式预算还给出金额界限：每个SUM组件绝对cents≤10000×(10^18−1)，1024节点指标最多512组件叶，所有中间/最终值≤512×10000×(10^18−1)<10^38−1。更宽源类型与越界展开拒绝。这些界限只在当前的类型、行数、运算和预算下成立。
 
 各profile的函数/窗口位置与固定规范差异见[兼容矩阵](ossie-sql-compatibility.md)。
 
-共享[请求契约](../examples/fact_users_request_contract.json)单独标识为
+共享[请求契约](../examples/fact_users_request_contract.json)标识为
 `ossie-fact-users-request-contract-v1`，只适用于users查询及compile；两工具描述
 都包含完整集合构造语法。schema只检查显式解码后的结构，原生负责指标与
-谓词数值绑定，不能把contentSchema当作自动验证。通用例子假设另一个program
-声明order_count/refund_count，不含当前验收答案，也不能直接在本例快照执行。
-载荷在服务启动时读入独立普通表，通过资源返回一行contract_json String；
-客户端核对其内容和原始字节与本地已审文件一致，并封存实际发现/context。
-这不是native六快照绑定的一部分，也不是可由其他宿主自动获取的保证。
-旧原件和源hash保留，新发现必须生成新演练/重放记录，不能重封旧试验。
+谓词数值绑定，不能把contentSchema当作自动验证。契约中的通用例子假设另一个program
+声明order_count/refund_count，不能直接在本例快照执行。载荷在服务启动时读入
+独立普通表，通过`ossie://facts/request-contract`返回一行contract_json String；
+它不是native六快照绑定的一部分。
