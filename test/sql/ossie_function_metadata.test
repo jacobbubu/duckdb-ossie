@@ -28,12 +28,12 @@ WHERE starts_with(function_name, 'ossie_') AND (examples IS NULL OR len(examples
 ----
 0
 
-# Thirty-two registrations: thirty names, with ossie_query contributing three overloads.
+# Seventeen registrations: fifteen names, with ossie_query contributing three overloads.
 query II
 SELECT count(*), count(DISTINCT function_name) FROM duckdb_functions()
 WHERE starts_with(function_name, 'ossie_');
 ----
-38	36
+17	15
 
 # Each ossie_query overload resolves to its own description rather than falling through to none.
 query II
@@ -51,13 +51,15 @@ WHERE starts_with(function_name, 'ossie_') AND NOT list_contains(categories, 'os
 ----
 0
 
-# Dedicated fact functions have the actual single-request/discovery arity and examples.
+# The population surface is exactly the unified entries plus the native concept helpers.
 query TI
 SELECT function_name, len(parameters) FROM duckdb_functions()
-WHERE function_name IN ('ossie_fact_program','ossie_fact_users_compile','ossie_fact_users_json','ossie_fact_windows_compile','ossie_fact_windows_json') ORDER BY function_name;
+WHERE starts_with(function_name, 'ossie_') AND NOT starts_with(function_name, 'ossie_query') AND function_name NOT IN ('ossie_load','ossie_metadata','ossie_relationships','ossie_datasets','ossie_fields','ossie_metrics','ossie_compile') ORDER BY function_name;
 ----
-ossie_fact_program	0
-ossie_fact_users_compile	1
-ossie_fact_users_json	1
-ossie_fact_windows_compile	1
-ossie_fact_windows_json	1
+ossie_bundle_load	1
+ossie_concept_query	5
+ossie_concepts	0
+ossie_objects	3
+ossie_population_compile	1
+ossie_population_json	1
+ossie_program	0

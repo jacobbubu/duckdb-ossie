@@ -2,6 +2,7 @@
 #include "ossie/parser.hpp"
 #include "duckdb/main/connection.hpp"
 #include "duckdb/main/query_result.hpp"
+#include "duckdb/parser/tableref/basetableref.hpp"
 #include <fstream>
 #include <cmath>
 #include <iostream>
@@ -63,11 +64,10 @@ void Run(const std::string &root) {
 		Refuse([&] { RequireMetricGrain(model, {name}, "fact"); }, "without a dataset",
 		       "reject grainless aggregate: " + string(name));
 	}
-	Refuse(
-	    [&] {
-		    RequireMetricGrain(model, {"amount_sum", "star"}, "fact");
-	    },
-	    "without a dataset", "new checker does not infer standalone COUNT(*) grain from another metric");
+	auto both = [&] {
+		RequireMetricGrain(model, {"amount_sum", "star"}, "fact");
+	};
+	Refuse(both, "without a dataset", "new checker does not infer standalone COUNT(*) grain from another metric");
 	Check(CompileToSQL(model, {"amount_sum", "star"}, {}, {}, options).find("count_star()") != string::npos,
 	      "existing core grainless inheritance retained");
 	Check(CompileToSQL(model, {"with_star"}, {}, {}, options).find("count_star()") != string::npos,
@@ -134,6 +134,40 @@ void Run(const std::string &root) {
 	auto escaped = connection.Query(CompileToSQL(model, {"unrecognized_aggregate"}, {}, {}, options));
 	Check(!escaped->HasError() && escaped->GetValue(0, 0).ToString() == "58.01",
 	      "unrecognized aggregate requires separate strict expression whitelist; binder alone is insufficient");
+
+	CompileOptions keyed;
+	SharedKey key;
+	key.name = "key";
+	key.fields["fact"] = "dim_id";
+	key.fields["dimension"] = "id";
+	keyed.shared_keys.push_back(key);
+	auto count_rows = [&](const vector<string> &metrics, const CompileOptions &with) {
+		auto result = connection.Query(CompileToSQL(model, metrics, {"key"}, {}, with));
+		if (result->HasError())
+			throw std::runtime_error(result->GetError());
+		return result->RowCount();
+	};
+	Check(count_rows({"amount_sum", "dimension_count"}, keyed) == 4,
+	      "shared key groups each grain by its own field and the default grain join keeps one-sided keys");
+	keyed.grain_join = JoinType::INNER;
+	Check(count_rows({"amount_sum", "dimension_count"}, keyed) == 3,
+	      "INNER grain join keeps only keys present at every grain");
+	Check(count_rows({"amount_sum"}, keyed) == 3, "single-grain request with a shared key groups by the root's field");
+	keyed.required_grains.push_back("dimension");
+	Check(count_rows({"amount_sum"}, keyed) == 3,
+	      "required grain without aggregates still contributes its row presence to the INNER join");
+	Refuse([&] { CompileToSQL(model, {"amount_sum"}, {"key"}, {}, CompileOptions()); }, "qualified as dataset.field",
+	       "bare name is a dimension only when declared as a shared key");
+	connection.Query("CREATE TABLE r6_dimension_alt AS SELECT * FROM r6_dimension WHERE id = 1");
+	BaseTableRef alt;
+	alt.table_name = "r6_dimension_alt";
+	keyed.population_sources["dimension"] = &alt;
+	auto replaced = CompileToSQL(model, {"amount_sum"}, {"key"}, {}, keyed);
+	Check(replaced.find("r6_dimension_alt AS dimension") != string::npos && count_rows({"amount_sum"}, keyed) == 1,
+	      "population source replaces the dataset's declared source under the dataset alias");
+	keyed.required_grains = {"absent"};
+	Refuse([&] { CompileToSQL(model, {"amount_sum"}, {"key"}, {}, keyed); }, "not a declared dataset",
+	       "required grain must be declared");
 }
 } // namespace
 int main(int argc, char **argv) {

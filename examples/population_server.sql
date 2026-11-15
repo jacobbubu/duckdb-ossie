@@ -13,36 +13,26 @@ COPY dws_gaap_di FROM 'test/fixtures/population-data/gaap-original-475.csv' (HEA
 CALL ossie_bundle_load('test/fixtures/population/bundle-10.json');
 -- END OPERATOR SETUP
 
--- The extension helper rejects invalid/null lists with the versioned population error contract.
--- It never stringifies non-string elements or falls back to an unrestricted query.
+-- Every request is one JSON object with a "kind" key. The extension rejects invalid requests with the
+-- versioned population error contract and never falls back to an unrestricted query.
 
 PRAGMA mcp_publish_query('SELECT * FROM ossie_concepts()', 'ossie://population/concepts', 'json', 0);
-PRAGMA mcp_publish_query('SELECT * FROM ossie_population_metrics()', 'ossie://population/metrics', 'json', 0);
-PRAGMA mcp_publish_query('SELECT * FROM ossie_population_fields()', 'ossie://population/fields', 'json', 0);
-PRAGMA mcp_publish_query('SELECT * FROM ossie_population_capabilities()', 'ossie://population/capabilities', 'json', 0);
+PRAGMA mcp_publish_query('SELECT * FROM ossie_program()', 'ossie://population/program', 'json', 0);
 
 PRAGMA mcp_publish_tool(
-    'population_objects',
-    'List objects in an exact discovered concept. filters is a JSON-encoded array of predicate strings; use "[]" for none. Filters only narrow the formal rule. Result is a single result_json carrier: parse it as ossie-population-result-v1 with bound column types and row arrays. Numeric cells are strings, NULL stays null. Results are unsorted and unpaged; even empty results carry snapshot hashes.',
-    'SELECT * FROM ossie_objects_json($concept, ossie_population_strings($filters), include_trace => true)',
-    '{"concept":{"type":"string","description":"Exact concept name from concepts resource"},"filters":{"type":"string","description":"JSON-encoded array of predicate strings"}}',
-    '["concept","filters"]',
-    'json'
-);
-PRAGMA mcp_publish_tool(
     'population_query',
-    'Aggregate a discovered concept. Read metrics, fields and capabilities first. Lists are JSON-encoded string arrays. Result is a single result_json carrier: parse ossie-population-result-v1 columns and row arrays. Integer/Decimal cells are exact strings, IEEE float cells are approximate strings with explicit non-finite values; NULL stays null. Check snapshot hashes even for empty results. Groups are sparse, unsorted and unpaged; combined requests bind separately.',
-    'SELECT * FROM ossie_concept_query_json($concept, ossie_population_strings($metrics), ossie_population_strings($dimensions), ossie_population_strings($filters), include_trace => true)',
-    '{"concept":{"type":"string"},"metrics":{"type":"string","description":"JSON-encoded array of exact metric names"},"dimensions":{"type":"string","description":"JSON-encoded array of exact dimension names"},"filters":{"type":"string","description":"JSON-encoded array of predicate strings"}}',
-    '["concept","metrics","dimensions","filters"]',
+    'Execute one bounded population request. request_json is a String encoding exactly one JSON object. kind "objects" lists objects of an exact discovered concept: {"kind":"objects","concept":C,"filters":[predicate,...],"include_trace":true}; filters only narrow the formal rule, use [] for none. kind "metrics" aggregates a discovered concept: {"kind":"metrics","concept":C,"metrics":[name,...],"dimensions":[name,...],"filters":[...],"include_trace":true}; read the program resource (concepts, vocabulary, capabilities) first. Result is a single result_json carrier: parse it as ossie-population-result-v1 with bound column types and row arrays. Integer/Decimal cells are exact strings, IEEE float cells are approximate strings with explicit non-finite values; NULL stays null. Check snapshot hashes even for empty results. Groups are sparse, unsorted and unpaged; combined requests bind separately.',
+    'SELECT * FROM ossie_population_json($request_json)',
+    '{"request_json":{"type":"string","description":"JSON-encoded request object with kind, concept and exact name lists"}}',
+    '["request_json"]',
     'json'
 );
 PRAGMA mcp_publish_tool(
     'population_compile',
-    'Inspect diagnostic SQL and the bound definition/snapshot hashes without executing. Same list encoding as population_query; empty metrics selects objects and requires empty dimensions. Diagnostic SQL needs an internal AST dependency and cannot be replayed as ordinary SQL. A separate call after operator reload may bind a different snapshot; compare the execution envelope hashes, including empty results.',
-    'SELECT * FROM ossie_concept_compile($concept, ossie_population_strings($metrics), ossie_population_strings($dimensions), ossie_population_strings($filters), include_trace => true)',
-    '{"concept":{"type":"string"},"metrics":{"type":"string"},"dimensions":{"type":"string"},"filters":{"type":"string"}}',
-    '["concept","metrics","dimensions","filters"]',
+    'Inspect diagnostic SQL and the bound definition/snapshot hashes without executing. Same request_json grammar as population_query. Diagnostic SQL needs an internal AST dependency and cannot be replayed as ordinary SQL. A separate call after operator reload may bind a different snapshot; compare the execution envelope hashes, including empty results.',
+    'SELECT * FROM ossie_population_compile($request_json)',
+    '{"request_json":{"type":"string"}}',
+    '["request_json"]',
     'json'
 );
 PRAGMA mcp_server_start('stdio', 'localhost', 0, '{

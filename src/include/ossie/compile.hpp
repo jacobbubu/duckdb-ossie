@@ -1,5 +1,6 @@
 #pragma once
 
+#include "duckdb/common/enums/join_type.hpp"
 #include "ossie/model.hpp"
 
 namespace duckdb {
@@ -7,6 +8,14 @@ class SelectStatement;
 class TableRef;
 
 namespace ossie {
+
+//! A bare dimension name that resolves to a different field on each dataset, so grains that share
+//! no relationship can still be grouped and joined on the same key.
+struct SharedKey {
+	string name;
+	//! dataset name -> field name on that dataset
+	case_insensitive_map_t<string> fields;
+};
 
 struct CompileOptions {
 	//! Whether filters may call named functions. Operators are always allowed, subqueries never.
@@ -16,8 +25,15 @@ struct CompileOptions {
 	bool left_joins = false;
 	//! Internal, already resolved row predicate. Never reparsed or field-expanded.
 	const ParsedExpression *population_predicate = nullptr;
-	//! Internal typed batch source carrying its lifetime dependency.
-	TableRef *population_source = nullptr;
+	//! Internal typed batch sources carrying their lifetime dependency, keyed by dataset name. A
+	//! dataset absent here binds to its declared source.
+	case_insensitive_map_t<TableRef *> population_sources;
+	vector<SharedKey> shared_keys;
+	//! Datasets that get a grain subquery even when no requested metric aggregates over them, so
+	//! their row presence takes part in the grain join.
+	vector<string> required_grains;
+	//! How the per-grain subqueries of a multi-grain request are joined on their dimension values.
+	JoinType grain_join = JoinType::OUTER;
 };
 
 //! Requires each metric's recognized original-model aggregate grain to be the designated dataset.

@@ -4,8 +4,8 @@
 single-table [`gaap-scalar-population-v1`](population-profile.md). It freezes one
 designated fact dataset and one dimension dataset, associates them through one
 single-column equality relationship, and then serves the same `ossie_concepts()`,
-`ossie_objects(...)`, `ossie_concept_query(...)` and `ossie_concept_compile(...)`
-functions over the joined, frozen population. v1 keeps refusing multiple datasets
+`ossie_objects(...)`, `ossie_concept_query(...)`, `ossie_population_json(...)` and
+`ossie_population_compile(...)` functions over the joined, frozen population. v1 keeps refusing multiple datasets
 and core joins; this profile is selected explicitly in the manifest.
 
 ## Manifest
@@ -100,7 +100,8 @@ prove that an arbitrary expression is safe.
 
 ## Compile metadata and hashing
 
-`ossie_concept_compile(...).execution_target` is a JSON object for this profile.
+The `execution_target` inside `ossie_population_compile(...).plan_json` is a JSON
+object for this profile.
 It reports the frozen target, fact metric grain, relationship and physical keys,
 INNER/reject policy, both input tables' row counts and hashes, mapping version and
 logical/physical provenance. The v1 target remains plain text. The diagnostic SQL

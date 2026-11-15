@@ -5,7 +5,7 @@
 require ossie
 
 statement error
-SELECT * FROM ossie_objects_json('User',[]);
+SELECT * FROM ossie_population_json('{"kind":"objects","concept":"User","filters":[]}');
 ----
 no bundle loaded
 
@@ -19,27 +19,27 @@ statement ok
 CALL ossie_bundle_load('test/fixtures/population/bundle-10.json');
 
 query IIIII
-SELECT contains(result_json,'"schema_version":"ossie-population-result-v1"')::INTEGER, contains(result_json,'"request_kind":"objects"')::INTEGER, contains(result_json,'"concept":"ValidUser"')::INTEGER, contains(result_json,'"bound_type":"DECIMAL(18,2)"')::INTEGER, contains(result_json,'"encoding":"decimal-text"')::INTEGER FROM ossie_objects_json('ValidUser',[]);
+SELECT contains(result_json,'"schema_version":"ossie-population-result-v1"')::INTEGER, contains(result_json,'"request_kind":"objects"')::INTEGER, contains(result_json,'"concept":"ValidUser"')::INTEGER, contains(result_json,'"bound_type":"DECIMAL(18,2)"')::INTEGER, contains(result_json,'"encoding":"decimal-text"')::INTEGER FROM ossie_population_json('{"kind":"objects","concept":"ValidUser","filters":[]}');
 ----
 1	1	1	1	1
 
 query IIII
-SELECT contains(result_json,'"rows":[]')::INTEGER, contains(result_json,'"row_count":0')::INTEGER, contains(result_json,'"snapshot_id":')::INTEGER, contains(result_json,'"columns":[')::INTEGER FROM ossie_objects_json('ValidUser',['User.product = ''absent''']);
+SELECT contains(result_json,'"rows":[]')::INTEGER, contains(result_json,'"row_count":0')::INTEGER, contains(result_json,'"snapshot_id":')::INTEGER, contains(result_json,'"columns":[')::INTEGER FROM ossie_population_json('{"kind":"objects","concept":"ValidUser","filters":["User.product = ''absent''"]}');
 ----
 1	1	1	1
 
 query II
-SELECT contains(result_json,'"bound_type":"DECIMAL(38,2)"')::INTEGER, contains(result_json,'"encoding":"integer-text"')::INTEGER FROM ossie_concept_query_json('ValidUser',['gaap_sum','record_count'],[],[]);
+SELECT contains(result_json,'"bound_type":"DECIMAL(38,2)"')::INTEGER, contains(result_json,'"encoding":"integer-text"')::INTEGER FROM ossie_population_json('{"kind":"metrics","concept":"ValidUser","metrics":["gaap_sum","record_count"],"dimensions":[],"filters":[]}');
 ----
 1	1
 
 statement error
-SELECT * FROM ossie_concept_query_json('ValidUser',['gaap_sum','GAAP_SUM'],[],[]);
+SELECT * FROM ossie_population_json('{"kind":"metrics","concept":"ValidUser","metrics":["gaap_sum","GAAP_SUM"],"dimensions":[],"filters":[]}');
 ----
 duplicate column name
 
 statement error
-SELECT * FROM ossie_concept_query_json('ValidUser',['missing_metric'],[],[]);
+SELECT * FROM ossie_population_json('{"kind":"metrics","concept":"ValidUser","metrics":["missing_metric"],"dimensions":[],"filters":[]}');
 ----
 missing_metric
 
@@ -49,10 +49,10 @@ SELECT typeof(gaap_sum),typeof(record_count) FROM ossie_concept_query('ValidUser
 DECIMAL(38,2)	BIGINT
 
 statement ok
-CREATE TABLE old_typed_result AS SELECT * FROM ossie_objects_json('User',[]);
+CREATE TABLE old_typed_result AS SELECT * FROM ossie_population_json('{"kind":"objects","concept":"User","filters":[]}');
 
 statement ok
-PREPARE old_typed AS SELECT (now.result_json=previous.result_json)::INTEGER FROM ossie_objects_json('User',[]) now,old_typed_result previous;
+PREPARE old_typed AS SELECT (now.result_json=previous.result_json)::INTEGER FROM ossie_population_json('{"kind":"objects","concept":"User","filters":[]}') now,old_typed_result previous;
 
 statement ok
 CALL ossie_bundle_load('test/fixtures/population/bundle-20.json');
@@ -63,7 +63,7 @@ EXECUTE old_typed;
 1
 
 query I
-SELECT (now.result_json<>previous.result_json)::INTEGER FROM ossie_objects_json('User',[]) now,old_typed_result previous;
+SELECT (now.result_json<>previous.result_json)::INTEGER FROM ossie_population_json('{"kind":"objects","concept":"User","filters":[]}') now,old_typed_result previous;
 ----
 1
 

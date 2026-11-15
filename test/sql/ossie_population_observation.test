@@ -51,17 +51,24 @@ B	2026-02-01	X
 B	2026-02-01	Y
 C	2026-02-01	X
 
-query TIIII rowsort
-SELECT concept,objects_queryable,metrics_queryable,captured_observation_rows,captured_user_count FROM ossie_concepts_v2();
+query T
+SELECT unnest(regexp_extract_all(program_json,'\{"concept":"([^"]+)","parent"',1)) FROM ossie_program();
 ----
-DailyObservation	true	true	8	4
-QualifiedObservation	true	true	8	4
-User	false	false	8	4
+User
+DailyObservation
+QualifiedObservation
+
+query T
+SELECT unnest(regexp_extract_all(program_json,'"objects_queryable":(true|false),"metrics_queryable":(true|false),"captured_observation_rows":\d+,"captured_user_count":\d+,"source"',0)) FROM ossie_program();
+----
+"objects_queryable":false,"metrics_queryable":false,"captured_observation_rows":8,"captured_user_count":4,"source"
+"objects_queryable":true,"metrics_queryable":true,"captured_observation_rows":8,"captured_user_count":4,"source"
+"objects_queryable":true,"metrics_queryable":true,"captured_observation_rows":8,"captured_user_count":4,"source"
 
 statement error
 SELECT * FROM ossie_concepts();
 ----
-compound identity requires ossie_concepts_v2
+compound identity requires ossie_program
 
 statement error
 SELECT * FROM ossie_objects('User',[]);

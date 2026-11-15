@@ -1,7 +1,7 @@
 {
   "schema_version": "ossie-fact-users-request-contract-v1",
   "applies_to": ["population_fact_users", "population_fact_users_compile"],
-  "construction_notice": "request_json is a String encoding one JSON object: {\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[regular_metric_name],\"cohort\":C}. C is exactly {\"operation\":\"all\"}, {\"operation\":\"predicate\",\"predicate\":P}, or {\"operation\":OP,\"children\":[C,C]}; OP is \"intersection\", \"union\" or \"difference\". Exact fields only; no unknown/duplicate inner keys, NUL, implicit defaults or object-valued outer request_json. Children are exactly two ordered nested cohorts; difference is left set minus right TRUE members, so UNKNOWN on the right is not excluded. Each predicate is one unaliased comparison of an unqualified, unquoted declared regular metric on the left and exact nonNULL numeric constant on the right; comparison kinds =, <>, >, >=, <, <=. Count needs an integral BIGINT constant; currency needs exact DECIMAL(38,2), decimal scale at most2; no DOUBLE, field/window references, functions/casts, metric-to-metric, arithmetic or AND/OR predicates. A predicate metric need not be selected for output. metrics selects1..32 regular names, case-insensitive and no case duplicates, each at most128 UTF8 bytes. Root-inclusive depth<=16, total nodes<=64, original request_json UTF8 bytes<=16384; bounded nesting supported, no self-reference. Read ossie://facts/request-contract for structural schema, full semantics and hypothetical examples, and ossie://facts/program for actual declarations/units/snapshot bindings. A structural schema alone does not bind metrics/predicates or enforce byte/tree budgets.",
+  "construction_notice": "request_json is a String encoding one JSON object: {\"kind\":\"fact_users\",\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":[regular_metric_name],\"cohort\":C}. C is exactly {\"operation\":\"all\"}, {\"operation\":\"predicate\",\"predicate\":P}, or {\"operation\":OP,\"children\":[C,C]}; OP is \"intersection\", \"union\" or \"difference\". Exact fields only; no unknown/duplicate inner keys, NUL, implicit defaults or object-valued outer request_json. Children are exactly two ordered nested cohorts; difference is left set minus right TRUE members, so UNKNOWN on the right is not excluded. Each predicate is one unaliased comparison of an unqualified, unquoted declared regular metric on the left and exact nonNULL numeric constant on the right; comparison kinds =, <>, >, >=, <, <=. Count needs an integral BIGINT constant; currency needs exact DECIMAL(38,2), decimal scale at most2; no DOUBLE, field/window references, functions/casts, metric-to-metric, arithmetic or AND/OR predicates. A predicate metric need not be selected for output. metrics selects1..32 regular names, case-insensitive and no case duplicates, each at most128 UTF8 bytes. Root-inclusive depth<=16, total nodes<=64, original request_json UTF8 bytes<=16384; bounded nesting supported, no self-reference. Read ossie://facts/request-contract for structural schema, full semantics and hypothetical examples, and ossie://facts/program for actual declarations/units/snapshot bindings. A structural schema alone does not bind metrics/predicates or enforce byte/tree budgets.",
   "outer_argument": {
     "request_json": "String containing one strict JSON object, not an object argument and not a second JSON-encoded string",
     "outer_boundary": "Existing MCP backend ignores extra outer keys; current Agent requires exact outer fields. Do not claim backend behavior changed."
@@ -10,8 +10,11 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Fact users inner request structural schema; native binding is still required",
     "type": "object",
-    "required": ["domain", "input_scope", "metrics", "cohort"],
+    "required": ["kind", "domain", "input_scope", "metrics", "cohort"],
     "properties": {
+      "kind": {
+        "const": "fact_users"
+      },
       "domain": {
         "const": "common"
       },
@@ -113,6 +116,7 @@
       {
         "id": "all",
         "inner_request": {
+          "kind": "fact_users",
           "domain": "common",
           "input_scope": "entire_capture",
           "metrics": ["order_count"],
@@ -127,6 +131,7 @@
       {
         "id": "predicate",
         "inner_request": {
+          "kind": "fact_users",
           "domain": "common",
           "input_scope": "entire_capture",
           "metrics": ["order_count"],
@@ -142,6 +147,7 @@
       {
         "id": "intersection",
         "inner_request": {
+          "kind": "fact_users",
           "domain": "common",
           "input_scope": "entire_capture",
           "metrics": ["order_count"],
@@ -166,6 +172,7 @@
       {
         "id": "union",
         "inner_request": {
+          "kind": "fact_users",
           "domain": "common",
           "input_scope": "entire_capture",
           "metrics": ["order_count"],
@@ -190,6 +197,7 @@
       {
         "id": "difference",
         "inner_request": {
+          "kind": "fact_users",
           "domain": "common",
           "input_scope": "entire_capture",
           "metrics": ["order_count"],
@@ -214,6 +222,7 @@
       {
         "id": "nested",
         "inner_request": {
+          "kind": "fact_users",
           "domain": "common",
           "input_scope": "entire_capture",
           "metrics": ["order_count"],

@@ -1,17 +1,20 @@
 # Population compile explanation
 
-`ossie_concept_compile` now returns `plan_json` with the project-specific schema
+`ossie_population_compile` (request kinds `objects`/`metrics`) returns `plan_json`
+with the project-specific schema
 version `ossie-population-plan-v1` for scalar/join profiles and
 [`ossie-population-plan-v2`](population-observation.md) for daily observations. It describes the generated semantic SELECT AST
 and the immutable definition/data bundle used to build it. This is our extension
 contract, independent of Ossie document versions and the MCP protocol version.
 
 ```sql
-SELECT sql, plan_json, snapshot_id, executed
-FROM ossie_concept_compile(
-  'ValidUser', ['gaap_sum'], ['dws_gaap_di.ds'],
-  ['User.product = ''X'''], include_trace => true);
+SELECT plan_json FROM ossie_population_compile('{
+  "kind":"metrics","concept":"ValidUser","metrics":["gaap_sum"],
+  "dimensions":["dws_gaap_di.ds"],"filters":["User.product = ''X''"],
+  "include_trace":true}');
 ```
+
+`sql`, `snapshot_id` and `executed` are fields of `plan_json`, not separate columns.
 
 This is not an optimizer or physical plan. The compile endpoint does not execute
 or perform the final query `Prepare`/table-output binding. `executed=false`,

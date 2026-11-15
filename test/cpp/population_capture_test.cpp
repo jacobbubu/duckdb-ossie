@@ -128,7 +128,11 @@ const string TOTAL = "SELECT amount_sum FROM ossie_concept_query('User',['amount
 const string MEMBERS = "SELECT string_agg(entity_id,',' ORDER BY entity_id) FROM ossie_objects('ValidUser',[])";
 const string SNAPSHOT = "SELECT snapshot_id FROM ossie_concepts() WHERE concept='User'";
 const string HASH = "SELECT content_sha256 FROM ossie_concepts() WHERE concept='User'";
-const string META = "SELECT execution_target FROM ossie_concept_compile('User',['amount_sum'],[],[])";
+const string META = "SELECT regexp_extract(plan_json,'\"execution_target\":\"(.*)\"\\}$',1) FROM "
+                    "ossie_population_compile('{\"kind\":\"metrics\",\"concept\":\"User\",\"metrics\":[\"amount_sum\"],"
+                    "\"dimensions\":[],\"filters\":[]}')";
+const string PROGRAM_SNAPSHOT =
+    "SELECT regexp_extract(program_json,'\"snapshot_id\":\"([^\"]+)\"',1) FROM ossie_program()";
 void Controls(const string &root, int threads) {
 	// Read all required inputs before starting any thread; missing fixtures are fatal.
 	auto rows = Read(root + "test/fixtures/safe-join-research/rows.sql");
@@ -401,7 +405,7 @@ void ObservationControls(const string &root, int threads) {
 	auto load20 =
 	    "CALL ossie_bundle_load(" + Literal(root + "test/fixtures/population-observation/bundle-20.json") + ")";
 	const string total = "SELECT amount_sum FROM ossie_concept_query('QualifiedObservation',['amount_sum'],[],[])";
-	const string snapshot = "SELECT snapshot_id FROM ossie_concepts_v2() WHERE concept='DailyObservation'";
+	const string snapshot = PROGRAM_SNAPSHOT;
 	Query(writer, "SET GLOBAL default_collation='nocase'");
 	Query(loader, load10);
 	Check(Scalar(reader, "SELECT current_setting('default_collation')") == "nocase",
@@ -411,12 +415,12 @@ void ObservationControls(const string &root, int threads) {
 	Check(!prepared->HasError(), "observation prepared bind");
 	Check(Scalar(reader, total) == "31.00", "observation initial sum");
 	const string daily =
-	    "SELECT result_json FROM ossie_daily_users_json('QualifiedObservation', "
-	    "'{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}}')";
+	    "SELECT result_json FROM ossie_population_json('{\"kind\":\"daily_users\",\"concept\":\"QualifiedObservation\","
+	    "\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"}}')";
 	auto daily_before = Scalar(reader, daily);
 	Check(daily_before.find("\"members\":[\"B\"]") != string::npos, "native daily membership");
 	const string daily_plan = "SELECT plan_json" + daily.substr(daily.find(" FROM "));
-	const string plan_sql = StringUtil::Replace(daily_plan, "ossie_daily_users_json", "ossie_daily_users_compile");
+	const string plan_sql = StringUtil::Replace(daily_plan, "ossie_population_json", "ossie_population_compile");
 	auto counter = make_shared_ptr<DailyCounter>();
 	reader.context->registered_state->Insert(PopulationDailyObserver::KEY, counter);
 	auto plan_before = Scalar(reader, plan_sql);
@@ -432,15 +436,16 @@ void ObservationControls(const string &root, int threads) {
 		DailyCancel(reader, daily, checkpoint);
 		Check(Scalar(reader, daily) == daily_before, "daily native cancellation retains complete bundle and recovers");
 	}
-	const string states = "SELECT result_json FROM ossie_daily_states_json('QualifiedObservation', "
-	                      "'{\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"},"
+	const string states = "SELECT result_json FROM ossie_population_json('{\"kind\":\"daily_states\","
+	                      "\"concept\":\"QualifiedObservation\","
+	                      "\"start_date\":\"2026-01-31\",\"end_date\":\"2026-02-01\",\"products\":{\"mode\":\"all\"},"
 	                      "\"user_domain\":\"captured_users\",\"transitions\":\"within_request_days\"}')";
 	auto states_before = Scalar(reader, states);
 	Check(states_before.find("\"user_count\":\"4\"") != string::npos &&
 	          states_before.find("\"state_count\":\"8\"") != string::npos,
 	      "daily states use entire captured User domain");
 	const string states_plan_sql = StringUtil::Replace("SELECT plan_json" + states.substr(states.find(" FROM ")),
-	                                                   "ossie_daily_states_json", "ossie_daily_states_compile");
+	                                                   "ossie_population_json", "ossie_population_compile");
 	auto states_counter = make_shared_ptr<DailyStateCounter>();
 	reader.context->registered_state->Insert(PopulationDailyStateObserver::KEY, states_counter);
 	auto states_plan_before = Scalar(reader, states_plan_sql);
@@ -464,7 +469,9 @@ void ObservationControls(const string &root, int threads) {
 		attempt.gate.Wait();
 		Check(Scalar(reader, snapshot) == before && Scalar(reader, total) == "31.00",
 		      "observation readers keep old bundle while load waits");
-		Check(Scalar(reader, "SELECT captured_user_count FROM ossie_concepts_v2() WHERE concept='User'") == "4",
+		Check(Scalar(reader,
+		             "SELECT regexp_extract(program_json,'\"concept\":\"User\",.*?\"captured_user_count\":(\\d+)',1) "
+		             "FROM ossie_program()") == "4",
 		      "observation old captured User set");
 		Query(writer, "UPDATE observations SET amount_usd=777 WHERE observation_id='o4'");
 		attempt.Finish();
@@ -581,12 +588,11 @@ void RelationBindControls(const string &root, int threads) {
 		}
 	}
 	Query(loader, old_load);
-	auto old_snapshot = Scalar(reader, "SELECT snapshot_id FROM ossie_concepts_v2() WHERE concept='DailyObservation'");
+	auto old_snapshot = Scalar(reader, PROGRAM_SNAPSHOT);
 	{
 		Attempt attempt(loader, new_load, PopulationLoadCheckpoint::BEFORE_PUBLISH);
 		attempt.gate.Wait();
-		Check(Scalar(reader, "SELECT snapshot_id FROM ossie_concepts_v2() WHERE concept='DailyObservation'") ==
-		          old_snapshot,
+		Check(Scalar(reader, PROGRAM_SNAPSHOT) == old_snapshot,
 		      "validated relation candidate remains unpublished at prepublish checkpoint");
 		loader.Interrupt();
 		attempt.Finish();
@@ -594,16 +600,16 @@ void RelationBindControls(const string &root, int threads) {
 		          attempt.result->GetErrorObject().Type() == ExceptionType::INTERRUPT,
 		      "relation prepublish cancellation preserves native interrupt");
 	}
-	Check(Scalar(reader, "SELECT snapshot_id FROM ossie_concepts_v2() WHERE concept='DailyObservation'") ==
-	          old_snapshot,
+	Check(Scalar(reader, PROGRAM_SNAPSHOT) == old_snapshot,
 	      "cancelled relation candidate preserves old complete profile");
 	Query(loader, new_load);
-	Check(Scalar(reader,
-	             "SELECT contains(program_json,'\"load_constraints_validated\":true') FROM ossie_relation_program()") ==
+	Check(Scalar(reader, "SELECT contains(program_json,'\"load_constraints_validated\":true') FROM ossie_program()") ==
 	          "true",
 	      "relation load recovers after cancellation");
-	const string objects = "SELECT result_json FROM ossie_relation_objects_json('audited_user')";
-	const string plan = "SELECT plan_json FROM ossie_relation_compile('audited_user')";
+	const string objects = "SELECT result_json FROM "
+	                       "ossie_population_json('{\"kind\":\"relation_links\",\"relationship\":\"audited_user\"}')";
+	const string plan = "SELECT plan_json FROM "
+	                    "ossie_population_compile('{\"kind\":\"relation_links\",\"relationship\":\"audited_user\"}')";
 	auto before = Scalar(reader, objects);
 	auto counter = make_shared_ptr<RelationCounter>();
 	reader.context->registered_state->Insert(PopulationRelationObserver::KEY, counter);
@@ -640,7 +646,7 @@ void HistoryControls(const string &root, int threads) {
 	Query(writer, "INSERT INTO history VALUES ('a','u','T',DATE '2024-02-28',DATE '2024-03-01')");
 	auto load =
 	    "CALL ossie_bundle_load(" + Literal(root + "test/fixtures/population-history-program/bundle.json") + ")";
-	const string program = "SELECT program_json FROM ossie_history_program()";
+	const string program = "SELECT program_json FROM ossie_program()";
 	Query(writer, "SET GLOBAL default_collation='nocase'");
 	Query(loader, load);
 	auto before = Scalar(reader, program);
@@ -648,11 +654,12 @@ void HistoryControls(const string &root, int threads) {
 	Check(before.find("\"query_supported\":true") != string::npos, "history honest supported query declaration");
 	auto prepared = reader.Prepare(program);
 	Check(!prepared->HasError(), "history program prepared parent bind");
-	const string links_sql = "SELECT result_json FROM "
-	                         "ossie_history_links_json('team_at_observation','{\"dates\":{\"mode\":\"all\"},"
-	                         "\"products\":{\"mode\":\"all\"}}')";
+	const string links_sql =
+	    "SELECT result_json FROM "
+	    "ossie_population_json('{\"kind\":\"history_links\",\"relationship\":\"team_at_observation\","
+	    "\"dates\":{\"mode\":\"all\"},\"products\":{\"mode\":\"all\"}}')";
 	const string plan_sql = StringUtil::Replace(StringUtil::Replace(links_sql, "result_json", "plan_json"),
-	                                            "ossie_history_links_json", "ossie_history_links_compile");
+	                                            "ossie_population_json", "ossie_population_compile");
 	int probes = 0;
 	reader.context->registered_state->Insert(
 	    PopulationHistoryObserver::KEY,
@@ -693,8 +700,7 @@ void HistoryControls(const string &root, int threads) {
 		Query(loader, load);
 		before = Scalar(reader, program);
 	}
-	const string hash =
-	    "SELECT regexp_extract(program_json,'\"content_sha256\":\"([^\"]+)\"',1) FROM ossie_history_program()";
+	const string hash = "SELECT regexp_extract(program_json,'\"content_sha256\":\"([^\"]+)\"',1) FROM ossie_program()";
 	auto original_hash = Scalar(reader, hash);
 	{
 		Attempt attempt(loader, load, PopulationLoadCheckpoint::AFTER_HISTORY_OBSERVATION_CAPTURE);
@@ -743,7 +749,7 @@ void HistoryControls(const string &root, int threads) {
 		if (old_first) {
 			Check(result && !result->HasError() && result->GetValue(0, 0).GetValue<int64_t>() == 1,
 			      "legacy binding keeps captured old population through history publication");
-			auto fresh = reader.Query("SELECT * FROM ossie_population_capabilities()");
+			auto fresh = reader.Query("SELECT * FROM ossie_objects('QualifiedObservation',[])");
 			Check(fresh->HasError() && fresh->GetError().find("UNSUPPORTED_CAPABILITY") != string::npos,
 			      "fresh legacy discovery rejects history safely");
 		} else {
@@ -873,14 +879,16 @@ void StringJoinControls(const string &root, int threads) {
 		auto fk = dimension_value ? string("batch_id") : string("join_key");
 		auto label = dimension_value ? string("batches.label") : string("lookup.label");
 		auto load = "CALL ossie_bundle_load(" + Literal(manifest) + ")";
-		auto snapshot = "SELECT snapshot_id FROM ossie_population_capabilities()";
+		auto snapshot = PROGRAM_SNAPSHOT;
 		auto full = "SELECT string_agg(entity_id || ':' || \"" + label +
 		            "\",',' ORDER BY entity_id) FROM ossie_objects(" + Literal(concept) + ",[])";
 		const string answer = "s1:one,s2:zero-one,s3:nul,s4:prefix";
 		Query(loader, load);
 		Check(Scalar(reader, full) == answer,
 		      "String keys retain complete byte-sensitive identity association including NUL");
-		Check(Scalar(reader, "SELECT api_version FROM ossie_population_capabilities()") == "2.4.0",
+		Check(Scalar(reader,
+		             "SELECT regexp_extract(program_json,'\"api_version\":\"([^\"]+)\"',1) FROM ossie_program()") ==
+		          "2.4.0",
 		      "String capability explicitly upgrades API");
 		Check(Scalar(reader, "SELECT string_agg(entity_id,',' ORDER BY entity_id) FROM ossie_objects(" +
 		                         Literal(child) + ",[])") == "s1",
@@ -944,7 +952,7 @@ void DirectDerivedControls(const string &root, int threads) {
 		auto parent = joined ? string("Shipment") : string("Device"),
 		     first = joined ? string("ReadyShipment") : string("ActiveDevice"),
 		     second = joined ? string("CurrentShipment") : string("LargeDevice");
-		auto snapshot = "SELECT snapshot_id FROM ossie_population_capabilities()";
+		auto snapshot = PROGRAM_SNAPSHOT;
 		auto members = [](const string &name) {
 			return "SELECT string_agg(entity_id,',' ORDER BY entity_id) FROM ossie_objects(" + Literal(name) + ",[])";
 		};
@@ -955,13 +963,17 @@ void DirectDerivedControls(const string &root, int threads) {
 		Check(Scalar(reader, members(first)) == "d1,d2" && Scalar(reader, members(second)) == "d1,d3",
 		      "multiple child scopes overlap but have distinct complete members");
 		Check(Scalar(reader, "SELECT count(*) FROM ossie_concepts()") == "3", "all direct concepts discovered");
-		Check(Scalar(reader, "SELECT api_version FROM ossie_population_capabilities()") == "2.5.0",
+		Check(Scalar(reader,
+		             "SELECT regexp_extract(program_json,'\"api_version\":\"([^\"]+)\"',1) FROM ossie_program()") ==
+		          "2.5.0",
 		      "direct capability selects API2.5");
 		vector<pair<unique_ptr<PreparedStatement>, string>> held;
 		for (const auto &name : {parent, first, second}) {
 			for (const auto &sql :
-			     {members(name), "SELECT plan_json FROM ossie_concept_compile(" + Literal(name) + ",[" +
-			                         Literal(joined ? "shipment_count" : "device_count") + "],[],[])"}) {
+			     {members(name),
+			      "SELECT plan_json FROM ossie_population_compile('{\"kind\":\"metrics\",\"concept\":\"" + name +
+			          "\",\"metrics\":[\"" + string(joined ? "shipment_count" : "device_count") +
+			          "\"],\"dimensions\":[],\"filters\":[]}')"}) {
 				auto statement = reader.Prepare(sql);
 				Check(!statement->HasError(), "prepare each direct concept and its exact plan");
 				held.emplace_back(std::move(statement), Scalar(reader, sql));
@@ -1049,7 +1061,7 @@ void SingleInheritanceControls(const string &root, int threads) {
 		     parent = joined ? string("ReadyShipment") : string("ActiveDevice"),
 		     middle = joined ? string("CurrentReadyShipment") : string("LargeActiveDevice"),
 		     leaf = joined ? string("ExpressCurrentShipment") : string("PriorityDevice");
-		auto snapshot = "SELECT snapshot_id FROM ossie_population_capabilities()";
+		auto snapshot = PROGRAM_SNAPSHOT;
 		auto members = [](const string &name) {
 			return "SELECT string_agg(entity_id,',' ORDER BY entity_id) FROM ossie_objects(" + Literal(name) + ",[])";
 		};
@@ -1061,14 +1073,17 @@ void SingleInheritanceControls(const string &root, int threads) {
 		vector<pair<unique_ptr<PreparedStatement>, string>> held;
 		for (const auto &name : {base, parent, middle, leaf})
 			for (const auto &sql :
-			     {members(name), "SELECT plan_json FROM ossie_concept_compile(" + Literal(name) + ",[" +
-			                         Literal(joined ? "shipment_count" : "device_count") + "],[],[])"}) {
+			     {members(name),
+			      "SELECT plan_json FROM ossie_population_compile('{\"kind\":\"metrics\",\"concept\":\"" + name +
+			          "\",\"metrics\":[\"" + string(joined ? "shipment_count" : "device_count") +
+			          "\"],\"dimensions\":[],\"filters\":[]}')"}) {
 				auto statement = reader.Prepare(sql);
 				Check(!statement->HasError(), "prepare full lineage objects and plan");
 				held.emplace_back(std::move(statement), Scalar(reader, sql));
 			}
 		for (const auto &sql :
-		     {string("SELECT capabilities_json FROM ossie_population_capabilities()"),
+		     {string("SELECT regexp_extract(program_json,'\"capabilities\":(\\{.*\\}),\"program\":',1) FROM "
+		             "ossie_program()"),
 		      string(
 		          "SELECT string_agg(concept||':'||COALESCE(parent,'-'),';' ORDER BY concept) FROM ossie_concepts()")})
 			held.emplace_back(reader.Prepare(sql), Scalar(reader, sql));

@@ -181,14 +181,15 @@ void Run(const string &root, int threads) {
 	initial.reset();
 	Baseline(reader);
 	const string minimum_request =
-	    "{\"input_scope\":\"entire_capture\",\"windows\":[\"previous\",\"rolling\"],\"display\":{"
+	    "{\"kind\":\"fact_windows\",\"input_scope\":\"entire_capture\",\"windows\":[\"previous\",\"rolling\"],"
+	    "\"display\":{"
 	    "\"mode\":\"date_range\",\"start_date\":\"5877642-06-23 (BC)\",\"end_date\":\"5877642-06-23 (BC)\"}}";
-	Check(Query(reader, "SELECT * FROM ossie_fact_windows_json(" + Literal(minimum_request) + ")")
+	Check(Query(reader, "SELECT * FROM ossie_population_json(" + Literal(minimum_request) + ")")
 	              ->GetValue(0, 0)
 	              .ToString()
 	              .find("\"rows\":[]") != string::npos,
 	      "isolated finite DATE minimum accepted as empty window display");
-	Check(Query(reader, "SELECT * FROM ossie_fact_windows_compile(" + Literal(minimum_request) + ")")
+	Check(Query(reader, "SELECT * FROM ossie_population_compile(" + Literal(minimum_request) + ")")
 	              ->GetValue(0, 0)
 	              .ToString()
 	              .find("\"executed\":false") != string::npos,
@@ -196,20 +197,22 @@ void Run(const string &root, int threads) {
 	Check(reader.Query(PopulationFactStatementForTesting(*reader.context, false)->ToString())->HasError(),
 	      "rendered SQL without frozen AST dependencies is refused");
 
-	const auto users_request = string("{\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":["
-	                                  "\"balance\"],\"cohort\":{\"operation\":\"all\"}}");
+	const auto users_request =
+	    string("{\"kind\":\"fact_users\",\"domain\":\"common\",\"input_scope\":\"entire_capture\",\"metrics\":["
+	           "\"balance\"],\"cohort\":{\"operation\":\"all\"}}");
 	const auto windows_request =
-	    string("{\"input_scope\":\"entire_capture\",\"windows\":[\"previous\",\"rolling\"],\"display\":{\"mode\":"
+	    string("{\"kind\":\"fact_windows\",\"input_scope\":\"entire_capture\",\"windows\":[\"previous\",\"rolling\"],"
+	           "\"display\":{\"mode\":"
 	           "\"date_range\",\"start_date\":\"2026-02-01\",\"end_date\":\"2026-02-01\"}}");
-	const auto users_sql = "SELECT * FROM ossie_fact_users_json(" + Literal(users_request) + ")";
-	const auto windows_sql = "SELECT * FROM ossie_fact_windows_json(" + Literal(windows_request) + ")";
+	const auto users_sql = "SELECT * FROM ossie_population_json(" + Literal(users_request) + ")";
+	const auto windows_sql = "SELECT * FROM ossie_population_json(" + Literal(windows_request) + ")";
 	auto public_users = reader.Prepare(users_sql), public_window = reader.Prepare(windows_sql);
 	Check(!public_users->HasError() && !public_window->HasError(),
 	      "public prepared JSON binds both actual typed projections");
 	reader.context->registered_state->Insert(
 	    PopulationFactObserver::KEY,
 	    make_shared_ptr<FactObserver>([&](PopulationFactCheckpoint) { throw std::runtime_error("compile executed"); }));
-	auto compile = Query(reader, "SELECT * FROM ossie_fact_users_compile(" + Literal(users_request) + ")");
+	auto compile = Query(reader, "SELECT * FROM ossie_population_compile(" + Literal(users_request) + ")");
 	Check(compile->GetValue(0, 0).ToString().find("\"counts_computed\":false") != string::npos,
 	      "public compile performs no execution or count checkpoints");
 	reader.context->registered_state->Remove(PopulationFactObserver::KEY);
@@ -230,9 +233,11 @@ void Run(const string &root, int threads) {
 	auto old_life = PopulationFactLifetimeForTesting(*reader.context);
 	Check(old_life.size() == 3 && old_life[0]() && old_life[1]() && old_life[2](),
 	      "native weak probes observe live parent and two children");
-	for (auto &sql : vector<string> {"SELECT * FROM ossie_concepts()", "SELECT * FROM ossie_population_metrics()",
-	                                 "SELECT * FROM ossie_objects('User',[])", "SELECT * FROM ossie_relation_program()",
-	                                 "SELECT * FROM ossie_daily_users_json('User','{}')"})
+	for (auto &sql : vector<string> {
+	         "SELECT * FROM ossie_concepts()", "SELECT * FROM ossie_objects('User',[])",
+	         "SELECT * FROM ossie_population_json('{\"kind\":\"relation_links\",\"relationship\":\"x\"}')",
+	         "SELECT * FROM ossie_population_json('{\"kind\":\"daily_users\",\"concept\":\"User\","
+	         "\"start_date\":\"2026-01-01\",\"end_date\":\"2026-01-01\",\"products\":{\"mode\":\"all\"}}')"})
 		Check(reader.Query(sql)->HasError(), "old profile API refuses fact program: " + sql);
 	Query(writer, "UPDATE revenue SET value=1 WHERE who='A';UPDATE cost SET value=2 WHERE who='A'");
 	auto refreshed = Query(loader, load);
