@@ -129,10 +129,10 @@ check("semantic_query returns rows for the requested columns",
 
 send({"jsonrpc":"2.0","id":5,"method":"tools/call","params":{
     "name":"semantic_query",
-    "arguments":{"metrics":"store_productivity"}}})
+    "arguments":{"metrics":"store_productivity","filters":"date_dim.d_year = 2001"}}})
 r = read()
 body = json.dumps((r or {}).get("result", {})) + json.dumps((r or {}).get("error", {}))
-check("a refusal reaches the agent as a message", "grain" in body.lower(), body[:110])
+check("a refusal reaches the agent as a message", "repeating its rows" in body, body[:110])
 
 proc.terminate()
 try:

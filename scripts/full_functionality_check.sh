@@ -127,12 +127,19 @@ eq "compile works with no tables at all (pre-rebind)" "true" \
 
 # --------------------------------------------------------------- J6  refusals
 g "J6  refusals -- the reason to trust this with an agent"
-has "multi-grain refused, both grains named" "different grains (store, store_sales)" \
+LOAD_G="CALL ossie_load('$FIX/grain_model.json', rebind => MAP{'tpcds.public':'tpcds.main'});"
+has "multi-grain metric aggregates each grain in its own subquery" "AS store CROSS JOIN (SELECT sum(store_sales.ss_ext_sales_price)" \
    "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['store_productivity'],[],[]);"
-has "2nd multi-grain metric refused" "different grains (customer, store_sales)" \
-   "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['customer_lifetime_value'],[],[]);"
-has "mixing a clean metric with a multi-grain one refused" "different grains" \
-   "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['total_sales','store_productivity'],[],[]);"
+has "multi-grain by a dimension joins the grains FULL on the dimension" "FULL JOIN" \
+   "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['total_sales','store_productivity'],['store.s_state'],[]);"
+eq "multi-grain ratio == hand-written ratio of two plain aggregates" "0.0" \
+  "$LOAD_G SELECT (SELECT store_productivity FROM ossie_query(['store_productivity']))
+                - (SELECT (SELECT sum(ss_ext_sales_price) FROM tpcds.main.store_sales)
+                         / NULLIF((SELECT sum(s_number_employees) FROM tpcds.main.store), 0));"
+has "multi-grain filter on an unreachable dataset refused, both named" "which \"store\" cannot join without repeating its rows" \
+   "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['store_productivity'],[],['date_dim.d_year = 2001']);"
+has "COUNT(*) with two grains refused (no single grain to inherit)" "2 different grains" \
+   "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['total_sales','store_productivity','transaction_count'],[],[]);"
 has "COUNT(*) metric alone refused (no grain to group by)" "no column reference" \
    "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['transaction_count'],[],[]);"
 has "scalar reference to a 2nd dataset COMPILES (not a fan-out)" "INNER JOIN" \
