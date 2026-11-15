@@ -49,6 +49,7 @@
 #include "duckdb/storage/object_cache.hpp"
 #include "yyjson.hpp"
 #include <atomic>
+#include <cstdlib>
 #include <cmath>
 #include <thread>
 #include <algorithm>
@@ -60,11 +61,19 @@ namespace ossie {
 using duckdb_yyjson::yyjson_doc;
 using duckdb_yyjson::yyjson_doc_free;
 using duckdb_yyjson::yyjson_doc_get_root;
+using duckdb_yyjson::yyjson_doc_mut_copy;
+using duckdb_yyjson::yyjson_get_bool;
 using duckdb_yyjson::yyjson_get_len;
 using duckdb_yyjson::yyjson_get_str;
 using duckdb_yyjson::yyjson_is_arr;
+using duckdb_yyjson::yyjson_is_bool;
 using duckdb_yyjson::yyjson_is_obj;
 using duckdb_yyjson::yyjson_is_str;
+using duckdb_yyjson::yyjson_mut_doc;
+using duckdb_yyjson::yyjson_mut_doc_free;
+using duckdb_yyjson::yyjson_mut_doc_get_root;
+using duckdb_yyjson::yyjson_mut_obj_remove_key;
+using duckdb_yyjson::yyjson_mut_write;
 using duckdb_yyjson::yyjson_obj_get;
 using duckdb_yyjson::yyjson_read;
 using duckdb_yyjson::yyjson_val;
@@ -3972,6 +3981,8 @@ struct PopulationBind : TableFunctionData {
 	string path;
 	bool load = false;
 	bool compile = false;
+	bool plan_only = false;
+	bool program = false;
 	bool discover = false;
 	bool discover_v2 = false;
 	bool encoded = false;
@@ -3999,6 +4010,157 @@ struct PopulationBind : TableFunctionData {
 	vector<string> result_names;
 	string vocabulary;
 };
+
+enum class Kind {
+	OBJECTS,
+	METRICS,
+	DAILY_USERS,
+	DAILY_STATES,
+	RELATION_LINKS,
+	FACT_USERS,
+	FACT_WINDOWS,
+	HISTORY_LINKS
+};
+
+const char *KindName(Kind kind) {
+	switch (kind) {
+	case Kind::OBJECTS:
+		return "objects";
+	case Kind::METRICS:
+		return "metrics";
+	case Kind::DAILY_USERS:
+		return "daily_users";
+	case Kind::DAILY_STATES:
+		return "daily_states";
+	case Kind::RELATION_LINKS:
+		return "relation_links";
+	case Kind::FACT_USERS:
+		return "fact_users";
+	case Kind::FACT_WINDOWS:
+		return "fact_windows";
+	default:
+		return "history_links";
+	}
+}
+
+struct Request {
+	Kind kind = Kind::OBJECTS;
+	bool compile = false;
+	bool encoded = true;
+	bool unified = false;
+	string operation;
+	string concept;
+	vector<string> metrics, dimensions, filters;
+	bool include_trace = false;
+	string request_json;
+	string echo_json;
+};
+
+vector<string> StringArray(yyjson_val *value, const string &name) {
+	vector<string> result;
+	if (!value) {
+		return result;
+	}
+	if (!yyjson_is_arr(value)) {
+		Fail(name, "arguments", "JSON array of strings required");
+	}
+	size_t index, maximum;
+	yyjson_val *item;
+	yyjson_arr_foreach(value, index, maximum, item) {
+		result.push_back(DailyString(item, name + "[" + to_string(index) + "]"));
+	}
+	return result;
+}
+
+string WithoutKeys(yyjson_doc *doc, const vector<string> &keys) {
+	auto copy = yyjson_doc_mut_copy(doc, nullptr);
+	if (!copy) {
+		Fail("request", "arguments", "request copy failed");
+	}
+	std::unique_ptr<yyjson_mut_doc, decltype(&yyjson_mut_doc_free)> owner(copy, yyjson_mut_doc_free);
+	auto root = yyjson_mut_doc_get_root(copy);
+	for (auto &key : keys) {
+		yyjson_mut_obj_remove_key(root, key.c_str());
+	}
+	size_t length = 0;
+	auto text = yyjson_mut_write(copy, 0, &length);
+	if (!text) {
+		Fail("request", "arguments", "request serialization failed");
+	}
+	string result(text, length);
+	free(text);
+	return result;
+}
+
+Request ParseUnifiedRequest(const string &bytes, bool compile, const string &operation) {
+	if (bytes.size() > DAILY_REQUEST_BYTES) {
+		Fail(operation + ".request_json_utf8_bytes", "resource", "complete request exceeds 16KiB");
+	}
+	auto doc = yyjson_read(bytes.data(), bytes.size(), 0);
+	if (!doc) {
+		Fail(operation, "arguments", "strict JSON object request required");
+	}
+	std::unique_ptr<yyjson_doc, decltype(&yyjson_doc_free)> owner(doc, yyjson_doc_free);
+	auto root = yyjson_doc_get_root(doc);
+	if (!yyjson_is_obj(root)) {
+		Fail(operation, "arguments", "strict JSON object request required");
+	}
+	Request r;
+	r.compile = compile;
+	r.unified = true;
+	r.operation = operation;
+	r.echo_json = bytes;
+	auto kind = DailyString(yyjson_obj_get(root, "kind"), "kind");
+	auto required = [&](const char *name) {
+		auto value = DailyString(yyjson_obj_get(root, name), name);
+		if (value.empty()) {
+			Fail(name, "arguments", "nonempty string required");
+		}
+		return value;
+	};
+	auto trace = [&]() {
+		auto value = yyjson_obj_get(root, "include_trace");
+		if (value && !yyjson_is_bool(value)) {
+			Fail("include_trace", "arguments", "boolean required");
+		}
+		return value && yyjson_get_bool(value);
+	};
+	if (kind == "objects") {
+		r.kind = Kind::OBJECTS;
+		DailyKeys(root, {"kind", "concept", "filters", "include_trace"});
+		r.concept = required("concept");
+		r.filters = StringArray(yyjson_obj_get(root, "filters"), "filters");
+		r.include_trace = trace();
+	} else if (kind == "metrics") {
+		r.kind = Kind::METRICS;
+		DailyKeys(root, {"kind", "concept", "metrics", "dimensions", "filters", "include_trace"});
+		r.concept = required("concept");
+		r.metrics = StringArray(yyjson_obj_get(root, "metrics"), "metrics");
+		r.dimensions = StringArray(yyjson_obj_get(root, "dimensions"), "dimensions");
+		r.filters = StringArray(yyjson_obj_get(root, "filters"), "filters");
+		r.include_trace = trace();
+	} else if (kind == "daily_users" || kind == "daily_states") {
+		r.kind = kind == "daily_users" ? Kind::DAILY_USERS : Kind::DAILY_STATES;
+		r.concept = required("concept");
+		r.request_json = WithoutKeys(doc, {"kind", "concept"});
+	} else if (kind == "relation_links") {
+		r.kind = Kind::RELATION_LINKS;
+		DailyKeys(root, {"kind", "relationship"});
+		r.concept = required("relationship");
+	} else if (kind == "fact_users" || kind == "fact_windows") {
+		r.kind = kind == "fact_users" ? Kind::FACT_USERS : Kind::FACT_WINDOWS;
+		r.request_json = WithoutKeys(doc, {"kind"});
+	} else if (kind == "history_links") {
+		r.kind = Kind::HISTORY_LINKS;
+		r.concept = required("relationship");
+		r.request_json = WithoutKeys(doc, {"kind", "relationship"});
+	} else {
+		Fail("kind", "arguments",
+		     "objects, metrics, daily_users, daily_states, relation_links, fact_users, fact_windows or history_links "
+		     "required");
+	}
+	return r;
+}
 
 struct PopulationScan : GlobalTableFunctionState {
 	unique_ptr<QueryResult> result;
@@ -4037,7 +4199,7 @@ shared_ptr<Bundle> LegacyCurrent(ClientContext &context, const string &operation
 	return bundle;
 }
 
-unique_ptr<FunctionData> FactBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
+unique_ptr<FunctionData> FactBind(ClientContext &context, const Request &request, vector<LogicalType> &types,
                                   vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
 	result->bundle = Current(context);
@@ -4045,21 +4207,11 @@ unique_ptr<FunctionData> FactBind(ClientContext &context, TableFunctionBindInput
 	if (!b.fact_program) {
 		Fail("fact_program", "capability", "multi-fact-user-program-v1 required");
 	}
-	result->fact_discovery = input.table_function.name == "ossie_fact_program";
-	if (result->fact_discovery) {
-		types = {LogicalType::VARCHAR};
-		names = {"program_json"};
-		return std::move(result);
-	}
-	if (input.inputs[0].IsNull()) {
-		Fail("fact_request", "arguments", "request JSON required");
-	}
-	bool window = input.table_function.name == "ossie_fact_windows_json" ||
-	              input.table_function.name == "ossie_fact_windows_compile";
-	result->fact_compile = input.table_function.name == "ossie_fact_users_compile" ||
-	                       input.table_function.name == "ossie_fact_windows_compile";
+	bool window = request.kind == Kind::FACT_WINDOWS;
+	result->fact_compile = request.compile;
 	result->fact_query = true;
-	result->fact_request = ParseFactRequest(input.inputs[0].GetValue<string>(), *b.fact_program, window);
+	result->fact_request = ParseFactRequest(request.request_json, *b.fact_program, window);
+	result->fact_request.bytes = request.echo_json;
 	auto &r = result->fact_request;
 	lock_guard<mutex> guard(b.query_lock);
 	result->statement =
@@ -4106,7 +4258,7 @@ unique_ptr<FunctionData> FactBind(ClientContext &context, TableFunctionBindInput
 	return std::move(result);
 }
 
-unique_ptr<FunctionData> RelationBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
+unique_ptr<FunctionData> RelationBind(ClientContext &context, const Request &request, vector<LogicalType> &types,
                                       vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
 	result->bundle = Current(context);
@@ -4114,10 +4266,7 @@ unique_ptr<FunctionData> RelationBind(ClientContext &context, TableFunctionBindI
 	if (!b.relation_program) {
 		Fail("relation", "capability", "relation program profile required");
 	}
-	if (input.inputs[0].IsNull()) {
-		Fail("relation", "arguments", "relationship name required");
-	}
-	auto name = input.inputs[0].GetValue<string>();
+	auto &name = request.concept;
 	bool found = false;
 	for (idx_t i = 0; i < b.relation_program->relations.size(); i++) {
 		if (StringUtil::CIEquals(name, b.relation_program->relations[i].name)) {
@@ -4132,7 +4281,7 @@ unique_ptr<FunctionData> RelationBind(ClientContext &context, TableFunctionBindI
 	auto &relation = b.relation_program->relations[result->relation_index];
 	result->concept = relation.name;
 	result->relation_objects = true;
-	result->relation_compile = input.table_function.name == "ossie_relation_compile";
+	result->relation_compile = request.compile;
 	lock_guard<mutex> guard(b.query_lock);
 	string projection = "SELECT ";
 	for (idx_t i = 0; i < b.observation_identity.size(); i++) {
@@ -4272,24 +4421,19 @@ string RelationJSON(ClientContext &context, const PopulationBind &data) {
 	return writer.Finish();
 }
 
-unique_ptr<FunctionData> DailyBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
+unique_ptr<FunctionData> DailyBind(ClientContext &context, const Request &request, vector<LogicalType> &types,
                                    vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
 	result->bundle = Current(context);
-	result->daily_states = input.table_function.name == "ossie_daily_states_json" ||
-	                       input.table_function.name == "ossie_daily_states_compile";
-	if (input.inputs[0].IsNull() || input.inputs[1].IsNull()) {
-		Fail("daily_user_set", "arguments", "concept and request_json required");
-	}
-	result->concept = input.inputs[0].GetValue<string>();
+	result->daily_states = request.kind == Kind::DAILY_STATES;
+	result->concept = request.concept;
 	auto &bundle = *result->bundle;
 	if (bundle.profile != OBSERVATION_PROFILE || result->concept != bundle.derived) {
 		Fail("daily_user_set", "capability", "current registered qualified daily observation concept required");
 	}
-	result->daily_request = ParseDailyRequest(input.inputs[1].GetValue<string>(), result->daily_states);
+	result->daily_request = ParseDailyRequest(request.request_json, result->daily_states);
 	result->daily = true;
-	result->daily_compile = input.table_function.name == "ossie_daily_users_compile" ||
-	                        input.table_function.name == "ossie_daily_states_compile";
+	result->daily_compile = request.compile;
 	if (result->daily_states && bundle.user_count > MAX_ROWS / (2 * result->daily_request.days - 1)) {
 		Fail("daily_states.combined_objects", "resource", "User*(2*days-1) exceeds 10000 before allocation");
 	}
@@ -4340,6 +4484,62 @@ unique_ptr<FunctionData> LoadBind(ClientContext &context, TableFunctionBindInput
 	return std::move(result);
 }
 
+vector<string> ConceptColumns(bool v2) {
+	if (v2) {
+		return {"concept",
+		        "parent",
+		        "derived_by",
+		        "identity_components_json",
+		        "referenced_entity_identity_json",
+		        "objects_queryable",
+		        "metrics_queryable",
+		        "captured_observation_rows",
+		        "captured_user_count",
+		        "profile",
+		        "source",
+		        "snapshot_id",
+		        "content_sha256",
+		        "core_sha256",
+		        "ontology_sha256",
+		        "mapping_sha256",
+		        "manifest_sha256"};
+	}
+	return {"concept",         "parent",         "identity_field", "derived_by",      "profile",
+	        "snapshot_id",     "content_sha256", "core_sha256",    "ontology_sha256", "mapping_sha256",
+	        "manifest_sha256", "source",         "records"};
+}
+
+void ConceptRows(const Bundle &b, bool v2, vector<vector<Value>> &rows) {
+	vector<string> concepts =
+	    b.direct_derived ? ExecutableConcepts(b)
+	                     : (v2 && b.profile == OBSERVATION_PROFILE ? vector<string> {b.user_concept, b.root, b.derived}
+	                                                               : vector<string> {b.root, b.derived});
+	for (const auto &concept : concepts) {
+		auto selected = b.direct_derived ? DirectChild(b, concept) : nullptr;
+		bool derived = b.direct_derived ? selected != nullptr : concept == b.derived;
+		auto &original_rule = selected ? selected->original_rule : b.original_rule;
+		if (v2) {
+			bool user = concept == b.user_concept;
+			rows.push_back(
+			    {Value(concept), derived ? Value(selected ? selected->parent : b.root) : Value(LogicalType::VARCHAR),
+			     derived ? Value(original_rule) : Value(LogicalType::VARCHAR), Value(IdentityComponents(b, user)),
+			     b.profile == OBSERVATION_PROFILE && !user ? Value(ReferencedUserIdentity(b))
+			                                               : Value(LogicalType::VARCHAR),
+			     Value::BOOLEAN(!user), Value::BOOLEAN(!user), Value::BIGINT(static_cast<int64_t>(b.rows)),
+			     Value::BIGINT(static_cast<int64_t>(b.profile == OBSERVATION_PROFILE ? b.user_count : b.rows)),
+			     Value(b.profile), Value(b.original_source), Value(b.snapshot_id), Value(b.content_hash),
+			     Value(b.core_hash), Value(b.ontology_hash), Value(b.mapping_hash), Value(b.manifest_hash)});
+			continue;
+		}
+		rows.push_back(
+		    {Value(concept), derived ? Value(selected ? selected->parent : b.root) : Value(LogicalType::VARCHAR),
+		     Value(OriginalName(b, b.identity)), derived ? Value(original_rule) : Value(LogicalType::VARCHAR),
+		     Value(b.profile), Value(b.snapshot_id), Value(b.content_hash), Value(b.core_hash), Value(b.ontology_hash),
+		     Value(b.mapping_hash), Value(b.manifest_hash), Value(b.original_source),
+		     Value::BIGINT(static_cast<int64_t>(b.rows))});
+	}
+}
+
 unique_ptr<FunctionData> DiscoverBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
                                       vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
@@ -4349,33 +4549,14 @@ unique_ptr<FunctionData> DiscoverBind(ClientContext &context, TableFunctionBindI
 	if (!result->discover_v2 && result->bundle->profile == OBSERVATION_PROFILE) {
 		Fail("ossie_concepts", "capability", "compound identity requires ossie_concepts_v2");
 	}
+	names = ConceptColumns(result->discover_v2);
 	if (result->discover_v2) {
-		names = {"concept",
-		         "parent",
-		         "derived_by",
-		         "identity_components_json",
-		         "referenced_entity_identity_json",
-		         "objects_queryable",
-		         "metrics_queryable",
-		         "captured_observation_rows",
-		         "captured_user_count",
-		         "profile",
-		         "source",
-		         "snapshot_id",
-		         "content_sha256",
-		         "core_sha256",
-		         "ontology_sha256",
-		         "mapping_sha256",
-		         "manifest_sha256"};
 		types = vector<LogicalType>(5, LogicalType::VARCHAR);
 		types.insert(types.end(),
 		             {LogicalType::BOOLEAN, LogicalType::BOOLEAN, LogicalType::BIGINT, LogicalType::BIGINT});
 		types.insert(types.end(), 8, LogicalType::VARCHAR);
 		return std::move(result);
 	}
-	names = {"concept",         "parent",         "identity_field", "derived_by",      "profile",
-	         "snapshot_id",     "content_sha256", "core_sha256",    "ontology_sha256", "mapping_sha256",
-	         "manifest_sha256", "source",         "records"};
 	types = vector<LogicalType>(12, LogicalType::VARCHAR);
 	types.push_back(LogicalType::BIGINT);
 	return std::move(result);
@@ -4388,12 +4569,9 @@ constexpr const char *STRING_JOIN_API_VERSION = "2.4.0";
 constexpr const char *DIRECT_DERIVED_API_VERSION = "2.5.0";
 constexpr const char *SINGLE_INHERITANCE_API_VERSION = "2.6.0";
 
-unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBindInput &input,
-                                        vector<LogicalType> &types, vector<string> &names) {
-	auto result = make_uniq<PopulationBind>();
-	result->bundle = LegacyCurrent(context, input.table_function.name);
-	result->vocabulary = input.table_function.name;
-	if (result->vocabulary == "ossie_population_metrics") {
+vector<string> VocabularyColumns(const string &vocabulary) {
+	vector<string> names;
+	if (vocabulary == "ossie_population_metrics") {
 		names = {"name",
 		         "datatype",
 		         "bound_type",
@@ -4408,10 +4586,7 @@ unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBin
 		         "custom_extensions_json",
 		         "load_preflight_validated",
 		         "execution_verified"};
-		types = vector<LogicalType>(12, LogicalType::VARCHAR);
-		types.push_back(LogicalType::BOOLEAN);
-		types.push_back(LogicalType::BOOLEAN);
-	} else if (result->vocabulary == "ossie_population_fields") {
+	} else if (vocabulary == "ossie_population_fields") {
 		names = {"dataset",
 		         "name",
 		         "qualified_name",
@@ -4433,24 +4608,39 @@ unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBin
 		         "is_computed",
 		         "load_preflight_validated",
 		         "execution_verified"};
+	} else {
+		names = {"api_version", "discovery_schema", "plan_schema", "ossie_spec_version", "capabilities_json"};
+	}
+	for (auto name : {"profile", "snapshot_id", "content_sha256", "core_sha256", "ontology_sha256", "mapping_sha256",
+	                  "manifest_sha256"}) {
+		names.push_back(name);
+	}
+	return names;
+}
+
+unique_ptr<FunctionData> VocabularyBind(ClientContext &context, TableFunctionBindInput &input,
+                                        vector<LogicalType> &types, vector<string> &names) {
+	auto result = make_uniq<PopulationBind>();
+	result->bundle = LegacyCurrent(context, input.table_function.name);
+	result->vocabulary = input.table_function.name;
+	names = VocabularyColumns(result->vocabulary);
+	if (result->vocabulary == "ossie_population_metrics") {
+		types = vector<LogicalType>(12, LogicalType::VARCHAR);
+		types.push_back(LogicalType::BOOLEAN);
+		types.push_back(LogicalType::BOOLEAN);
+	} else if (result->vocabulary == "ossie_population_fields") {
 		types = vector<LogicalType>(16, LogicalType::VARCHAR);
 		for (idx_t i = 0; i < 5; i++) {
 			types.push_back(LogicalType::BOOLEAN);
 		}
 	} else {
-		names = {"api_version", "discovery_schema", "plan_schema", "ossie_spec_version", "capabilities_json"};
 		types = vector<LogicalType>(5, LogicalType::VARCHAR);
 	}
-	for (auto name : {"profile", "snapshot_id", "content_sha256", "core_sha256", "ontology_sha256", "mapping_sha256",
-	                  "manifest_sha256"}) {
-		names.push_back(name);
-		types.push_back(LogicalType::VARCHAR);
-	}
+	types.insert(types.end(), 7, LogicalType::VARCHAR);
 	return std::move(result);
 }
 
-void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
-	auto &b = *data.bundle;
+void VocabularyRows(const Bundle &b, const string &vocabulary, vector<vector<Value>> &rows) {
 	auto append = [&](vector<Value> row) {
 		for (const auto &value : {b.profile, b.snapshot_id, b.content_hash, b.core_hash, b.ontology_hash,
 		                          b.mapping_hash, b.manifest_hash}) {
@@ -4458,7 +4648,7 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 		}
 		rows.push_back(std::move(row));
 	};
-	if (data.vocabulary == "ossie_population_metrics") {
+	if (vocabulary == "ossie_population_metrics") {
 		for (auto &m : b.definition_model.metrics) {
 			append({Value(m.name), Value(m.datatype), Value(b.metric_types.at(m.name)), Value(m.description),
 			        Value(m.expression.sql), Value(m.expression.dialect),
@@ -4467,7 +4657,7 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 			        Value(m.ai_context.raw_json), Value(m.custom_extensions_json), Value::BOOLEAN(true),
 			        Value::BOOLEAN(false)});
 		}
-	} else if (data.vocabulary == "ossie_population_fields") {
+	} else if (vocabulary == "ossie_population_fields") {
 		for (auto &dataset : b.definition_model.datasets) {
 			for (auto &f : dataset.fields) {
 				auto qualified = make_uniq<ColumnRefExpression>(f.name, dataset.name)->ToString();
@@ -4639,25 +4829,21 @@ void VocabularyRows(const PopulationBind &data, vector<vector<Value>> &rows) {
 	}
 }
 
-unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
+unique_ptr<FunctionData> RequestBind(ClientContext &context, const Request &request, vector<LogicalType> &types,
                                      vector<string> &names) {
 	auto result = make_uniq<PopulationBind>();
-	result->bundle = LegacyCurrent(context, input.table_function.name);
-	if (input.inputs[0].IsNull()) {
-		Fail("concept", "bind", "concept required");
-	}
-	auto concept = input.inputs[0].GetValue<string>();
+	result->bundle = LegacyCurrent(context, request.operation);
+	auto &concept = request.concept;
 	result->concept = concept;
-	bool objects = input.inputs.size() == 2;
-	auto metrics = objects ? vector<string>() : ToStringList(input.inputs[1], "ossie_concept_query");
-	auto dimensions = objects ? vector<string>() : ToStringList(input.inputs[2], "ossie_concept_query");
-	auto filters = ToStringList(input.inputs.back(), "ossie_population");
+	bool objects = request.kind == Kind::OBJECTS;
+	auto &metrics = request.metrics;
+	auto &dimensions = request.dimensions;
+	auto &filters = request.filters;
 	if (metrics.size() > 64 || dimensions.size() > 256) {
 		Fail(concept, "capability", "request exceeds 64 metrics or 256 dimensions");
 	}
-	result->compile = input.table_function.name == "ossie_concept_compile";
-	result->encoded =
-	    input.table_function.name == "ossie_objects_json" || input.table_function.name == "ossie_concept_query_json";
+	result->compile = request.compile;
+	result->encoded = request.encoded;
 	// Empty metrics explicitly select the object path for the compile endpoint only.
 	objects |= result->compile && metrics.empty();
 	result->objects = objects;
@@ -4666,8 +4852,7 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
 	}
 	lock_guard<mutex> guard(result->bundle->query_lock);
 	result->statement = QueryAST(*result->bundle, concept, metrics, dimensions, filters, objects);
-	auto trace = input.named_parameters.find("include_trace");
-	if (trace != input.named_parameters.end() && !trace->second.IsNull() && trace->second.GetValue<bool>()) {
+	if (request.include_trace) {
 		auto &select = result->statement->node->Cast<SelectNode>();
 		for (const auto &entry : {std::make_pair("_ossie_snapshot_id", result->bundle->snapshot_id),
 		                          std::make_pair("_ossie_content_sha256", result->bundle->content_hash),
@@ -4690,6 +4875,15 @@ unique_ptr<FunctionData> RequestBind(ClientContext &context, TableFunctionBindIn
 	result->sql = result->statement->ToString();
 	if (result->compile) {
 		result->plan_json = PlanJSON(*result->bundle, *result->statement, concept, metrics, filters, objects);
+		if (request.unified) {
+			result->plan_only = true;
+			result->plan_json.pop_back();
+			result->plan_json += ",\"sql\":" + JSONString(result->sql) +
+			                     ",\"execution_target\":" + JSONString(result->bundle->execution_target) + "}";
+			types = {LogicalType::VARCHAR};
+			names = {"plan_json"};
+			return std::move(result);
+		}
 		names = {"sql",
 		         "profile",
 		         "snapshot_id",
@@ -5180,8 +5374,7 @@ void FactIdentityJSON(DailyJSONWriter &writer, const Bundle &b) {
 	writer.Field("user_concept", b.fact_program->user_concept);
 	writer.Field("user_identity_relationship", b.fact_program->user_identity_relationship);
 }
-string FactProgramJSON(ClientContext &context, const PopulationBind &data) {
-	auto &b = *data.bundle;
+string FactProgramJSON(ClientContext &context, const Bundle &b) {
 	auto &p = *b.fact_program;
 	DailyJSONWriter w(context, "program_json_utf8_bytes", "fact_program");
 	w.Append("{\"schema_version\":\"ossie-fact-program-v1\"");
@@ -5450,7 +5643,7 @@ void ObserveHistory(ClientContext &context, PopulationHistoryCheckpoint point) {
 		throw InterruptException();
 	}
 }
-unique_ptr<FunctionData> HistoryBind(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
+unique_ptr<FunctionData> HistoryBind(ClientContext &context, const Request &request, vector<LogicalType> &types,
                                      vector<string> &names) {
 	auto data = make_uniq<PopulationBind>();
 	data->bundle = Current(context);
@@ -5458,15 +5651,12 @@ unique_ptr<FunctionData> HistoryBind(ClientContext &context, TableFunctionBindIn
 	if (b.profile != HISTORY_PROFILE) {
 		Fail("history", "capability", "historical-observation profile required");
 	}
-	if (input.inputs[0].IsNull() || input.inputs[1].IsNull()) {
-		Fail("history", "arguments", "relationship and request_json required");
-	}
-	if (input.inputs[0].GetValue<string>() != b.history_relationship) {
+	if (request.concept != b.history_relationship) {
 		Fail("history", "arguments", "exact declared historical relationship required");
 	}
 	data->history_query = true;
-	data->history_compile = input.table_function.name == "ossie_history_links_compile";
-	data->history_request = ParseHistoryRequest(input.inputs[1].GetValue<string>());
+	data->history_compile = request.compile;
+	data->history_request = ParseHistoryRequest(request.request_json);
 	auto &r = data->history_request;
 	auto &obs = b.history_sources[0];
 	auto observation = Quote(obs.dataset);
@@ -5734,6 +5924,146 @@ string HistoryProgramJSON(ClientContext &context, const Bundle &b) {
 	return json.Finish();
 }
 
+string RelationProgramJSON(ClientContext &context, const Bundle &b) {
+	auto &program = *b.relation_program;
+	vector<string> identity_types;
+	for (auto &field : b.observation_identity) {
+		identity_types.push_back(b.field_types.at(field));
+	}
+	string json =
+	    "{\"schema_version\":\"ossie-relation-program-v1\",\"profile\":" + JSONString(b.profile) +
+	    ",\"snapshot_id\":" + JSONString(b.snapshot_id) + ",\"content_sha256\":" + JSONString(b.content_hash) +
+	    ",\"core_sha256\":" + JSONString(b.core_hash) + ",\"ontology_sha256\":" + JSONString(b.ontology_hash) +
+	    ",\"mapping_sha256\":" + JSONString(b.mapping_hash) + ",\"manifest_sha256\":" + JSONString(b.manifest_hash) +
+	    ",\"root\":" + JSONString(program.root) + ",\"target_concept\":" + JSONString(program.target_concept) +
+	    ",\"mapped_user_relation\":" + JSONString(program.mapped_user_relation) +
+	    ",\"root_identity_fields\":" + JSONStrings(b.observation_identity) +
+	    ",\"root_identity_bound_types\":" + JSONStrings(identity_types) +
+	    ",\"captured_rows\":" + JSONString(to_string(b.rows)) +
+	    ",\"source_types_bound\":true,\"load_constraints_validated\":true,\"query_executed\":false,"
+	    "\"root_constraints\":" +
+	    JSONStrings(b.relation_input.requires_list) + ",\"relations\":[";
+	for (idx_t i = 0; i < program.relations.size(); i++) {
+		auto &relation = program.relations[i];
+		if (i) {
+			json += ",";
+		}
+		vector<string> constraints;
+		for (auto &constraint : relation.constraints) {
+			constraints.push_back(constraint->ToString());
+		}
+		json += "{\"name\":" + JSONString(relation.name) +
+		        ",\"target_concept\":" + JSONString(relation.target_concept) +
+		        ",\"dependencies\":" + JSONStrings(relation.dependencies) +
+		        ",\"dependency_depth\":" + to_string(relation.dependency_depth) +
+		        ",\"derived_by\":" + JSONStrings(relation.rules) +
+		        ",\"bound_predicate\":" + JSONString(relation.predicate->ToString()) +
+		        ",\"link_constraints\":" + JSONStrings(constraints) + "}";
+	}
+	json += "],\"objects_queryable\":true,\"mcp_registered\":false,\"constraint_scope\":\"entire root or actual "
+	        "complete relation links before atomic publish\","
+	        "\"predicate_sql_replayable\":false,\"json_byte_limit\":1048576}";
+	if (json.size() > DAILY_RESULT_BYTES) {
+		Fail("relation_program", "resource", "complete program JSON exceeds 1MiB");
+	}
+	if (context.IsInterrupted()) {
+		throw InterruptException();
+	}
+	return json;
+}
+
+// Columns named *_json carry pre-encoded JSON and are embedded without the suffix.
+string RowsJSON(const vector<string> &columns, const vector<vector<Value>> &rows) {
+	string json = "[";
+	for (idx_t r = 0; r < rows.size(); r++) {
+		if (r) {
+			json += ",";
+		}
+		json += "{";
+		for (idx_t c = 0; c < columns.size(); c++) {
+			if (c) {
+				json += ",";
+			}
+			auto &value = rows[r][c];
+			auto name = columns[c];
+			bool raw = StringUtil::EndsWith(name, "_json");
+			if (raw) {
+				name = name.substr(0, name.size() - 5);
+			}
+			json += JSONString(name) + ":";
+			if (value.IsNull()) {
+				json += "null";
+			} else if (raw) {
+				json += StringValue::Get(value);
+			} else if (value.type() == LogicalType::BOOLEAN) {
+				json += value.GetValue<bool>() ? "true" : "false";
+			} else if (value.type() == LogicalType::BIGINT) {
+				json += to_string(value.GetValue<int64_t>());
+			} else {
+				json += JSONString(StringValue::Get(value));
+			}
+		}
+		json += "}";
+	}
+	return json + "]";
+}
+
+string ProgramJSON(ClientContext &context, const Bundle &b) {
+	vector<string> kinds;
+	string program = "null";
+	bool legacy = b.profile == PROFILE || b.profile == JOIN_PROFILE || b.profile == OBSERVATION_PROFILE;
+	if (legacy) {
+		kinds = {"objects", "metrics"};
+	}
+	if (b.profile == OBSERVATION_PROFILE) {
+		kinds.push_back("daily_users");
+		kinds.push_back("daily_states");
+		program = DailyStateProgram(context, b);
+	} else if (b.profile == RELATION_PROFILE) {
+		kinds = {"relation_links"};
+		program = RelationProgramJSON(context, b);
+	} else if (b.profile == FACT_PROFILE) {
+		kinds = {"fact_users", "fact_windows"};
+		program = FactProgramJSON(context, b);
+	} else if (b.profile == HISTORY_PROFILE) {
+		kinds = {"history_links"};
+		program = HistoryProgramJSON(context, b);
+	}
+	string json =
+	    "{\"schema_version\":\"ossie-program-v1\",\"profile\":" + JSONString(b.profile) +
+	    ",\"snapshot_id\":" + JSONString(b.snapshot_id) + ",\"content_sha256\":" + JSONString(b.content_hash) +
+	    ",\"core_sha256\":" + JSONString(b.core_hash) + ",\"ontology_sha256\":" + JSONString(b.ontology_hash) +
+	    ",\"mapping_sha256\":" + JSONString(b.mapping_hash) + ",\"manifest_sha256\":" + JSONString(b.manifest_hash) +
+	    ",\"request_kinds\":" + JSONStrings(kinds) + ",\"query_executed\":false";
+	if (legacy) {
+		vector<vector<Value>> concepts, metrics, fields, capabilities;
+		ConceptRows(b, true, concepts);
+		VocabularyRows(b, "ossie_population_metrics", metrics);
+		VocabularyRows(b, "ossie_population_fields", fields);
+		VocabularyRows(b, "ossie_population_capabilities", capabilities);
+		auto &row = capabilities[0];
+		json += ",\"api_version\":" + JSONString(StringValue::Get(row[0])) +
+		        ",\"discovery_schema\":" + JSONString(StringValue::Get(row[1])) +
+		        ",\"plan_schema\":" + JSONString(StringValue::Get(row[2])) +
+		        ",\"ossie_spec_version\":" + JSONString(StringValue::Get(row[3])) +
+		        ",\"concepts\":" + RowsJSON(ConceptColumns(true), concepts) +
+		        ",\"vocabulary\":{\"metrics\":" + RowsJSON(VocabularyColumns("ossie_population_metrics"), metrics) +
+		        ",\"fields\":" + RowsJSON(VocabularyColumns("ossie_population_fields"), fields) +
+		        "},\"capabilities\":" + StringValue::Get(row[4]);
+	} else {
+		json += ",\"api_version\":null,\"discovery_schema\":null,\"plan_schema\":null,\"ossie_spec_version\":null"
+		        ",\"concepts\":null,\"vocabulary\":null,\"capabilities\":null";
+	}
+	json += ",\"program\":" + program + "}";
+	if (json.size() > DAILY_RESULT_BYTES) {
+		Fail("program", "resource", "complete program JSON exceeds 1MiB");
+	}
+	if (context.IsInterrupted()) {
+		throw InterruptException();
+	}
+	return json;
+}
+
 unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionInitInput &input) {
 	auto result = make_uniq<PopulationScan>();
 	auto &data = input.bind_data->Cast<PopulationBind>();
@@ -5752,97 +6082,26 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 	} else if (data.history_discovery) {
 		result->rows.push_back({Value(HistoryProgramJSON(context, *data.bundle))});
 	} else if (data.fact_discovery) {
-		result->rows.push_back({Value(FactProgramJSON(context, data))});
+		result->rows.push_back({Value(FactProgramJSON(context, *data.bundle))});
 	} else if (data.fact_query) {
 		result->rows.push_back({Value(FactQueryJSON(context, data))});
 	} else if (data.relation_objects) {
 		result->rows.push_back({Value(RelationJSON(context, data))});
 	} else if (data.relation_discovery) {
-		auto &b = *data.bundle;
-		auto &program = *b.relation_program;
-		vector<string> identity_types;
-		for (auto &field : b.observation_identity) {
-			identity_types.push_back(b.field_types.at(field));
-		}
-		string json =
-		    "{\"schema_version\":\"ossie-relation-program-v1\",\"profile\":" + JSONString(b.profile) +
-		    ",\"snapshot_id\":" + JSONString(b.snapshot_id) + ",\"content_sha256\":" + JSONString(b.content_hash) +
-		    ",\"core_sha256\":" + JSONString(b.core_hash) + ",\"ontology_sha256\":" + JSONString(b.ontology_hash) +
-		    ",\"mapping_sha256\":" + JSONString(b.mapping_hash) +
-		    ",\"manifest_sha256\":" + JSONString(b.manifest_hash) + ",\"root\":" + JSONString(program.root) +
-		    ",\"target_concept\":" + JSONString(program.target_concept) +
-		    ",\"mapped_user_relation\":" + JSONString(program.mapped_user_relation) +
-		    ",\"root_identity_fields\":" + JSONStrings(b.observation_identity) +
-		    ",\"root_identity_bound_types\":" + JSONStrings(identity_types) +
-		    ",\"captured_rows\":" + JSONString(to_string(b.rows)) +
-		    ",\"source_types_bound\":true,\"load_constraints_validated\":true,\"query_executed\":false,"
-		    "\"root_constraints\":" +
-		    JSONStrings(b.relation_input.requires_list) + ",\"relations\":[";
-		for (idx_t i = 0; i < program.relations.size(); i++) {
-			auto &relation = program.relations[i];
-			if (i) {
-				json += ",";
-			}
-			vector<string> constraints;
-			for (auto &constraint : relation.constraints) {
-				constraints.push_back(constraint->ToString());
-			}
-			json += "{\"name\":" + JSONString(relation.name) +
-			        ",\"target_concept\":" + JSONString(relation.target_concept) +
-			        ",\"dependencies\":" + JSONStrings(relation.dependencies) +
-			        ",\"dependency_depth\":" + to_string(relation.dependency_depth) +
-			        ",\"derived_by\":" + JSONStrings(relation.rules) +
-			        ",\"bound_predicate\":" + JSONString(relation.predicate->ToString()) +
-			        ",\"link_constraints\":" + JSONStrings(constraints) + "}";
-		}
-		json += "],\"objects_queryable\":true,\"mcp_registered\":false,\"constraint_scope\":\"entire root or actual "
-		        "complete relation links before atomic publish\","
-		        "\"predicate_sql_replayable\":false,\"json_byte_limit\":1048576}";
-		if (json.size() > DAILY_RESULT_BYTES) {
-			Fail("relation_program", "resource", "complete program JSON exceeds 1MiB");
-		}
-		if (context.IsInterrupted()) {
-			throw InterruptException();
-		}
-		result->rows.push_back({Value(json)});
+		result->rows.push_back({Value(RelationProgramJSON(context, *data.bundle))});
 	} else if (data.daily_state_discovery) {
 		result->rows.push_back({Value(DailyStateProgram(context, *data.bundle))});
 	} else if (!data.vocabulary.empty()) {
-		VocabularyRows(data, result->rows);
+		VocabularyRows(*data.bundle, data.vocabulary, result->rows);
 	} else if (data.discover) {
-		auto &b = *data.bundle;
-		vector<string> concepts = b.direct_derived ? ExecutableConcepts(b)
-		                                           : (data.discover_v2 && b.profile == OBSERVATION_PROFILE
-		                                                  ? vector<string> {b.user_concept, b.root, b.derived}
-		                                                  : vector<string> {b.root, b.derived});
-		for (const auto &concept : concepts) {
-			auto selected = b.direct_derived ? DirectChild(b, concept) : nullptr;
-			bool derived = b.direct_derived ? selected != nullptr : concept == b.derived;
-			auto &original_rule = selected ? selected->original_rule : b.original_rule;
-			if (data.discover_v2) {
-				bool user = concept == b.user_concept;
-				result->rows.push_back(
-				    {Value(concept),
-				     derived ? Value(selected ? selected->parent : b.root) : Value(LogicalType::VARCHAR),
-				     derived ? Value(original_rule) : Value(LogicalType::VARCHAR), Value(IdentityComponents(b, user)),
-				     b.profile == OBSERVATION_PROFILE && !user ? Value(ReferencedUserIdentity(b))
-				                                               : Value(LogicalType::VARCHAR),
-				     Value::BOOLEAN(!user), Value::BOOLEAN(!user), Value::BIGINT(static_cast<int64_t>(b.rows)),
-				     Value::BIGINT(static_cast<int64_t>(b.profile == OBSERVATION_PROFILE ? b.user_count : b.rows)),
-				     Value(b.profile), Value(b.original_source), Value(b.snapshot_id), Value(b.content_hash),
-				     Value(b.core_hash), Value(b.ontology_hash), Value(b.mapping_hash), Value(b.manifest_hash)});
-				continue;
-			}
-			result->rows.push_back(
-			    {Value(concept), derived ? Value(selected ? selected->parent : b.root) : Value(LogicalType::VARCHAR),
-			     Value(OriginalName(b, b.identity)), derived ? Value(original_rule) : Value(LogicalType::VARCHAR),
-			     Value(b.profile), Value(b.snapshot_id), Value(b.content_hash), Value(b.core_hash),
-			     Value(b.ontology_hash), Value(b.mapping_hash), Value(b.manifest_hash), Value(b.original_source),
-			     Value::BIGINT(static_cast<int64_t>(b.rows))});
-		}
+		ConceptRows(*data.bundle, data.discover_v2, result->rows);
+	} else if (data.program) {
+		result->rows.push_back({Value(ProgramJSON(context, *data.bundle))});
 	} else if (data.daily_compile) {
 		result->rows.push_back(
 		    {Value(data.daily_states ? DailyStatePlan(context, data) : DailyPlanJSON(context, data))});
+	} else if (data.plan_only) {
+		result->rows.push_back({Value(data.plan_json)});
 	} else if (data.compile) {
 		auto &b = *data.bundle;
 		result->rows.push_back({Value(data.sql), Value(b.profile), Value(b.snapshot_id), Value(b.content_hash),
@@ -5888,6 +6147,102 @@ void Scan(ClientContext &context, TableFunctionInput &input, DataChunk &output) 
 	output.SetCardinality(count);
 }
 
+unique_ptr<FunctionData> DispatchBind(ClientContext &context, const Request &request, vector<LogicalType> &types,
+                                      vector<string> &names) {
+	switch (request.kind) {
+	case Kind::OBJECTS:
+	case Kind::METRICS:
+		return RequestBind(context, request, types, names);
+	case Kind::DAILY_USERS:
+	case Kind::DAILY_STATES:
+		return DailyBind(context, request, types, names);
+	case Kind::RELATION_LINKS:
+		return RelationBind(context, request, types, names);
+	case Kind::FACT_USERS:
+	case Kind::FACT_WINDOWS:
+		return FactBind(context, request, types, names);
+	default:
+		return HistoryBind(context, request, types, names);
+	}
+}
+
+unique_ptr<FunctionData> ProgramBind(ClientContext &context, const string &name, vector<LogicalType> &types,
+                                     vector<string> &names) {
+	auto result = make_uniq<PopulationBind>();
+	result->bundle = Current(context);
+	auto &b = *result->bundle;
+	if (name == "ossie_history_program") {
+		if (b.profile != HISTORY_PROFILE) {
+			Fail(name, "capability", "historical-observation profile required");
+		}
+		result->history_discovery = true;
+	} else if (name == "ossie_fact_program") {
+		if (!b.fact_program) {
+			Fail("fact_program", "capability", "multi-fact-user-program-v1 required");
+		}
+		result->fact_discovery = true;
+	} else if (name == "ossie_relation_program") {
+		if (!b.relation_program) {
+			Fail(name, "capability", "relation program profile required");
+		}
+		result->relation_discovery = true;
+	} else if (name == "ossie_daily_states_program") {
+		if (b.profile != OBSERVATION_PROFILE) {
+			Fail(name, "capability", "daily-observation profile required");
+		}
+		result->daily_state_discovery = true;
+	} else {
+		result->program = true;
+	}
+	types = {LogicalType::VARCHAR};
+	names = {"program_json"};
+	return std::move(result);
+}
+
+string Argument(const TableFunctionBindInput &input, idx_t index, const string &object, const string &message) {
+	if (input.inputs[index].IsNull()) {
+		Fail(object, "arguments", message);
+	}
+	return input.inputs[index].GetValue<string>();
+}
+
+Request LegacyRequest(const TableFunctionBindInput &input) {
+	auto &name = input.table_function.name;
+	Request r;
+	r.operation = name;
+	r.compile = StringUtil::EndsWith(name, "_compile");
+	if (name == "ossie_history_links_json" || name == "ossie_history_links_compile") {
+		r.kind = Kind::HISTORY_LINKS;
+		r.concept = Argument(input, 0, "history", "relationship and request_json required");
+		r.request_json = Argument(input, 1, "history", "relationship and request_json required");
+	} else if (StringUtil::StartsWith(name, "ossie_fact_")) {
+		r.kind = name.find("windows") != string::npos ? Kind::FACT_WINDOWS : Kind::FACT_USERS;
+		r.request_json = Argument(input, 0, "fact_request", "request JSON required");
+		r.echo_json = r.request_json;
+	} else if (name == "ossie_relation_objects_json" || name == "ossie_relation_compile") {
+		r.kind = Kind::RELATION_LINKS;
+		r.concept = Argument(input, 0, "relation", "relationship name required");
+	} else if (StringUtil::StartsWith(name, "ossie_daily_")) {
+		r.kind = name.find("states") != string::npos ? Kind::DAILY_STATES : Kind::DAILY_USERS;
+		r.concept = Argument(input, 0, "daily_user_set", "concept and request_json required");
+		r.request_json = Argument(input, 1, "daily_user_set", "concept and request_json required");
+	} else {
+		bool objects = input.inputs.size() == 2;
+		r.kind = objects ? Kind::OBJECTS : Kind::METRICS;
+		r.concept = Argument(input, 0, "concept", "concept required");
+		if (!objects) {
+			r.metrics = ToStringList(input.inputs[1], "ossie_concept_query");
+			r.dimensions = ToStringList(input.inputs[2], "ossie_concept_query");
+		}
+		r.filters = ToStringList(input.inputs.back(), "ossie_population");
+		r.encoded = name == "ossie_objects_json" || name == "ossie_concept_query_json";
+		auto trace = input.named_parameters.find("include_trace");
+		r.include_trace =
+		    trace != input.named_parameters.end() && !trace->second.IsNull() && trace->second.GetValue<bool>();
+	}
+	return r;
+}
+
 unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindInput &input, vector<LogicalType> &types,
                                       vector<string> &names) {
 	auto name = input.table_function.name;
@@ -5896,52 +6251,13 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 		object = input.inputs[0].GetValue<string>();
 	}
 	return ErrorBoundary(object, "bind", [&]() {
-		if (name == "ossie_history_links_json" || name == "ossie_history_links_compile") {
-			return HistoryBind(context, input, types, names);
+		if (name == "ossie_population_json" || name == "ossie_population_compile") {
+			auto request = ParseUnifiedRequest(Argument(input, 0, name, "request_json required"),
+			                                   name == "ossie_population_compile", name);
+			return DispatchBind(context, request, types, names);
 		}
-		if (name == "ossie_history_program") {
-			auto result = make_uniq<PopulationBind>();
-			result->bundle = Current(context);
-			if (result->bundle->profile != HISTORY_PROFILE) {
-				Fail(name, "capability", "historical-observation profile required");
-			}
-			result->history_discovery = true;
-			types = {LogicalType::VARCHAR};
-			names = {"program_json"};
-			return unique_ptr<FunctionData>(std::move(result));
-		}
-		if (name == "ossie_fact_program" || name == "ossie_fact_users_json" || name == "ossie_fact_users_compile" ||
-		    name == "ossie_fact_windows_json" || name == "ossie_fact_windows_compile") {
-			return FactBind(context, input, types, names);
-		}
-		if (name == "ossie_relation_objects_json" || name == "ossie_relation_compile") {
-			return RelationBind(context, input, types, names);
-		}
-		if (name == "ossie_relation_program") {
-			auto result = make_uniq<PopulationBind>();
-			result->bundle = Current(context);
-			if (!result->bundle->relation_program) {
-				Fail(name, "capability", "relation program profile required");
-			}
-			result->relation_discovery = true;
-			types = {LogicalType::VARCHAR};
-			names = {"program_json"};
-			return unique_ptr<FunctionData>(std::move(result));
-		}
-		if (name == "ossie_daily_states_program") {
-			auto result = make_uniq<PopulationBind>();
-			result->bundle = Current(context);
-			if (result->bundle->profile != OBSERVATION_PROFILE) {
-				Fail(name, "capability", "daily-observation profile required");
-			}
-			result->daily_state_discovery = true;
-			types = {LogicalType::VARCHAR};
-			names = {"program_json"};
-			return unique_ptr<FunctionData>(std::move(result));
-		}
-		if (name == "ossie_daily_users_json" || name == "ossie_daily_users_compile" ||
-		    name == "ossie_daily_states_json" || name == "ossie_daily_states_compile") {
-			return DailyBind(context, input, types, names);
+		if (StringUtil::EndsWith(name, "_program")) {
+			return ProgramBind(context, name, types, names);
 		}
 		if (name == "ossie_bundle_load") {
 			return LoadBind(context, input, types, names);
@@ -5953,7 +6269,7 @@ unique_ptr<FunctionData> BindBoundary(ClientContext &context, TableFunctionBindI
 		    name == "ossie_population_capabilities") {
 			return VocabularyBind(context, input, types, names);
 		}
-		return RequestBind(context, input, types, names);
+		return DispatchBind(context, LegacyRequest(input), types, names);
 	});
 }
 
@@ -6030,6 +6346,27 @@ vector<std::function<bool()>> PopulationFactLifetimeForTesting(ClientContext &co
 }
 
 void RegisterPopulationFunctions(ExtensionLoader &loader) {
+	RegisterDescribe(
+	    loader, TableFunction("ossie_program", {}, ScanBoundary, BindBoundary, InitBoundary),
+	    "Discover the current frozen population bundle as one program_json: profile, snapshot and definition "
+	    "hashes, accepted request kinds, typed concepts, vocabulary and capabilities for scalar/join/observation "
+	    "profiles, and the dedicated program section for daily-state, relation, multi-fact and history profiles. "
+	    "No query execution; max1MiB complete JSON.",
+	    "SELECT * FROM ossie_program()");
+	for (bool compile : {false, true}) {
+		auto name = compile ? "ossie_population_compile" : "ossie_population_json";
+		RegisterDescribe(
+		    loader, TableFunction(name, {LogicalType::VARCHAR}, ScanBoundary, BindBoundary, InitBoundary),
+		    compile ? "Bind one population request without executing it and return its plan_json. request_json "
+		              "declares kind (objects, metrics, daily_users, daily_states, relation_links, fact_users, "
+		              "fact_windows, history_links) plus that kind's request fields; the profile must support the "
+		              "kind. Never scans or counts; max16KiB request/1MiB complete JSON."
+		            : "Execute one population request against the frozen bundle and return its result_json. "
+		              "request_json declares kind (objects, metrics, daily_users, daily_states, relation_links, "
+		              "fact_users, fact_windows, history_links) plus that kind's request fields; the profile must "
+		              "support the kind. Complete typed JSON, no paging or truncation; max16KiB request/1MiB JSON.",
+		    string("SELECT * FROM ") + name + "('{\"kind\":\"objects\",\"concept\":\"ValidUser\"}')");
+	}
 	for (auto name : {"ossie_fact_users_json", "ossie_fact_users_compile", "ossie_fact_windows_json",
 	                  "ossie_fact_windows_compile"}) {
 		RegisterDescribe(
