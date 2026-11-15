@@ -18,8 +18,7 @@ struct OntologyRelationship {
 	string multiplicity;
 	vector<string> verbalizes;
 	vector<string> derived_by;
-	vector<string>
-	    requires;
+	vector<string> requires_list;
 };
 
 struct Concept {
@@ -28,8 +27,7 @@ struct Concept {
 	vector<string> identify_by;
 	vector<string> extends;
 	vector<string> derived_by;
-	vector<string>
-	    requires;
+	vector<string> requires_list;
 	vector<OntologyRelationship> relationships;
 
 	const OntologyRelationship *FindRelationship(const string &relationship) const;
@@ -38,8 +36,7 @@ struct Concept {
 struct Ontology {
 	string name;
 	string version;
-	vector<string>
-	    requires;
+	vector<string> requires_list;
 	vector<Concept> concepts;
 
 	const Concept *FindConcept(const string &concept) const;

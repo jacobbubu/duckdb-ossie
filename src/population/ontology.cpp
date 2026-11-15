@@ -19,9 +19,7 @@ OntologyRelationship ParseRelationship(yyjson_val *value) {
 	relationship.multiplicity = Text(value, "multiplicity");
 	relationship.verbalizes = Strings(value, "verbalizes");
 	relationship.derived_by = Strings(value, "derived_by");
-	relationship.
-	    requires
-	= Strings(value, "requires");
+	relationship.requires_list = Strings(value, "requires");
 	return relationship;
 }
 
@@ -36,9 +34,7 @@ Concept ParseConcept(yyjson_val *value) {
 	concept.identify_by = Strings(value, "identify_by");
 	concept.extends = Strings(value, "extends");
 	concept.derived_by = Strings(value, "derived_by");
-	concept.
-	    requires
-	= Strings(value, "requires");
+	concept.requires_list = Strings(value, "requires");
 	for (auto relationship : Array(value, "relationships")) {
 		concept.relationships.push_back(ParseRelationship(relationship));
 	}
@@ -157,9 +153,7 @@ Ontology ParseOntology(yyjson_val *root) {
 	Ontology ontology;
 	ontology.version = Text(root, "version");
 	ontology.name = Text(root, "name");
-	ontology.
-	    requires
-	= Strings(root, "requires");
+	ontology.requires_list = Strings(root, "requires");
 	for (auto concept : Array(root, "ontology", true)) {
 		ontology.concepts.push_back(ParseConcept(concept));
 	}

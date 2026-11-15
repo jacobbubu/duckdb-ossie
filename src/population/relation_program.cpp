@@ -75,17 +75,17 @@ public:
 			if (name == mapped || scalars.count(name) || !declarations.emplace(name, &declaration).second ||
 			    !StringUtil::CIEquals(declaration.role_concept, input.user_concept) ||
 			    declaration.multiplicity != "ManyToOne" || declaration.derived_by.empty() ||
-			    declaration.derived_by.size() > 8 || declaration.requires.size() > 8) {
+			    declaration.derived_by.size() > 8 || declaration.requires_list.size() > 8) {
 				Reject("unique single-User ManyToOne declarations with 1..8 rules required");
 			}
 			for (auto &text : declaration.derived_by) {
 				InputBytes(text);
 			}
-			for (auto &text : declaration.requires) {
+			for (auto &text : declaration.requires_list) {
 				InputBytes(text);
 			}
 		}
-		for (auto &text : input.requires) {
+		for (auto &text : input.requires_list) {
 			InputBytes(text);
 		}
 	}
@@ -93,10 +93,10 @@ public:
 		program.root = input.root;
 		program.target_concept = input.user_concept;
 		program.mapped_user_relation = input.mapped_user_relation;
-		if (input.requires.size() > 8) {
+		if (input.requires_list.size() > 8) {
 			Reject("at most eight root constraints");
 		}
-		for (auto &text : input.requires) {
+		for (auto &text : input.requires_list) {
 			program.root_constraints.push_back(Constraint(text));
 		}
 		for (auto &entry : declarations) {
@@ -293,7 +293,7 @@ private:
 		idx_t nodes = 0;
 		Budget(*relation.predicate, 0, nodes);
 		bound_nodes.emplace(name, nodes);
-		for (auto &text : declaration.requires) {
+		for (auto &text : declaration.requires_list) {
 			relation.constraints.push_back(Constraint(text));
 		}
 		visiting.erase(name);

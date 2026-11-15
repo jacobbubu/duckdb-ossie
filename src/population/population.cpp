@@ -693,22 +693,20 @@ string ObjectIdentity(const Bundle &bundle, const ObjectMapping &object, const s
 }
 
 void Definitions(Bundle &bundle, const Ontology &ontology, const Mapping &mapping) {
-	Empty(ontology.requires, "requires", "ontology");
+	Empty(ontology.requires_list, "requires", "ontology");
 	const Concept *parent = nullptr, *child = nullptr;
 	vector<const Concept *> children;
 	for (auto &component : ontology.concepts) {
 		if (!bundle.concept_requires) {
-			Empty(component.requires, "requires", "concept");
+			Empty(component.requires_list, "requires", "concept");
 		} else {
-			if (component.requires.size() > 8) {
+			if (component.requires_list.size() > 8) {
 				Fail(component.name, "resource", "at most eight concept requires");
 			}
-			for (idx_t i = 0; i < component.requires.size(); i++) {
+			for (idx_t i = 0; i < component.requires_list.size(); i++) {
 				ConceptConstraint constraint;
 				constraint.owner = component.name;
-				constraint.original = component.
-				                          requires[
-				                              i];
+				constraint.original = component.requires_list[i];
 				constraint.index = i;
 				idx_t total_bytes = constraint.original.size();
 				for (auto &prior : bundle.concept_constraints) {
@@ -798,7 +796,7 @@ void Definitions(Bundle &bundle, const Ontology &ontology, const Mapping &mappin
 	bundle.identity_relation = id_relation;
 	case_insensitive_set_t relation_names;
 	for (auto &relationship : parent->relationships) {
-		Empty(relationship.requires, "requires", "relationship");
+		Empty(relationship.requires_list, "requires", "relationship");
 		Empty(relationship.derived_by, "derived_by", "relationship");
 		auto &name = relationship.name;
 		if (!relation_names.insert(name).second) {
@@ -1771,12 +1769,12 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 // Keep scalar and joined profile validation unchanged.
 void ObservationDefinitions(Bundle &b, const Ontology &ontology, const Mapping &mapping) {
 	bool program = b.profile == RELATION_PROFILE;
-	Empty(ontology.requires, "requires", "ontology");
+	Empty(ontology.requires_list, "requires", "ontology");
 	const Concept *user = nullptr, *observation = nullptr, *derived = nullptr;
 	case_insensitive_set_t names;
 	for (auto &c : ontology.concepts) {
 		if (!program || c.identify_by.size() != 3) {
-			Empty(c.requires, "requires", "concept");
+			Empty(c.requires_list, "requires", "concept");
 		}
 		if (c.type != "EntityType" || !names.insert(c.name).second) {
 			Fail("ontology", "capability", "three distinct entity concepts required");
@@ -1807,10 +1805,7 @@ void ObservationDefinitions(Bundle &b, const Ontology &ontology, const Mapping &
 	b.root = observation->name;
 	b.derived = derived->name;
 	if (program) {
-		b.relation_input.
-		    requires
-		= observation->
-		      requires;
+		b.relation_input.requires_list = observation->requires_list;
 	}
 	b.user_id_relation = user->identify_by[0];
 	if (derived->extends.size() != 1 || derived->extends[0] != b.root) {
@@ -1823,7 +1818,7 @@ void ObservationDefinitions(Bundle &b, const Ontology &ontology, const Mapping &
 	Empty(user->derived_by, "derived_by", b.user_concept);
 	Empty(observation->derived_by, "derived_by", b.root);
 	auto relationship_target = [&](const OntologyRelationship &r, const string &multiplicity) {
-		Empty(r.requires, "requires", "relationship");
+		Empty(r.requires_list, "requires", "relationship");
 		Empty(r.derived_by, "derived_by", "relationship");
 		if (r.roles.size() != 1 || r.multiplicity != multiplicity) {
 			Fail(r.name, "capability", "unsupported relationship role or multiplicity");
@@ -1850,10 +1845,7 @@ void ObservationDefinitions(Bundle &b, const Ontology &ontology, const Mapping &
 			declaration.role_concept = r.roles[0];
 			declaration.multiplicity = r.multiplicity;
 			declaration.derived_by = r.derived_by;
-			declaration.
-			    requires
-			= r.
-			      requires;
+			declaration.requires_list = r.requires_list;
 			b.relation_input.declarations.push_back(std::move(declaration));
 			continue;
 		}
@@ -2201,7 +2193,7 @@ void FactDefinitions(Bundle &b, const Ontology &ontology, const Mapping &mapping
 	if (b.fact_input.sources[0].currency != b.fact_input.sources[1].currency) {
 		Fail("fact program", "capability", "same explicit currency required");
 	}
-	Empty(ontology.requires, "requires", "ontology");
+	Empty(ontology.requires_list, "requires", "ontology");
 	if (ontology.concepts.size() != 3) {
 		Fail("ontology", "capability", "referent User and two root entities required");
 	}
@@ -2215,7 +2207,7 @@ void FactDefinitions(Bundle &b, const Ontology &ontology, const Mapping &mapping
 		}
 		Empty(concept.extends, "extends", name);
 		Empty(concept.derived_by, "derived_by", name);
-		Empty(concept.requires, "requires", name);
+		Empty(concept.requires_list, "requires", name);
 		if (roots.count(name)) {
 			root_objects[name] = &concept;
 		} else {
@@ -2234,7 +2226,7 @@ void FactDefinitions(Bundle &b, const Ontology &ontology, const Mapping &mapping
 	}
 	b.user_id_relation = user->identify_by[0];
 	auto target = [&](const OntologyRelationship &relation, const string &multiplicity) {
-		Empty(relation.requires, "requires", "relationship");
+		Empty(relation.requires_list, "requires", "relationship");
 		Empty(relation.derived_by, "derived_by", "relationship");
 		if (relation.roles.size() != 1 || relation.multiplicity != multiplicity) {
 			Fail(relation.name, "capability", "single role and declared multiplicity required");
@@ -2591,7 +2583,7 @@ void HistoryDefinitions(Bundle &b, const Ontology &ontology, const Mapping &mapp
 	    StringUtil::CIEquals(b.history_sources[0].concept, b.history_sources[1].concept)) {
 		Fail("history", "bind", "distinct datasets and roots required");
 	}
-	Empty(ontology.requires, "requires", "ontology");
+	Empty(ontology.requires_list, "requires", "ontology");
 	case_insensitive_map_t<const Concept *> concepts;
 	case_insensitive_set_t builtins = {"Any", "Boolean", "Date", "DateTime", "Decimal", "Float", "Integer", "String"};
 	for (auto &c : ontology.concepts) {
@@ -2600,7 +2592,7 @@ void HistoryDefinitions(Bundle &b, const Ontology &ontology, const Mapping &mapp
 		}
 		Empty(c.extends, "extends", "history concept");
 		Empty(c.derived_by, "derived_by", "history concept");
-		Empty(c.requires, "requires", "history concept");
+		Empty(c.requires_list, "requires", "history concept");
 	}
 	if (concepts.size() != 4) {
 		Fail("history", "capability", "two roots, User and target referents required");
@@ -2612,7 +2604,7 @@ void HistoryDefinitions(Bundle &b, const Ontology &ontology, const Mapping &mapp
 		case_insensitive_map_t<string> roles;
 		for (auto &r : concepts.at(concept)->relationships) {
 			Empty(r.derived_by, "derived_by", "history relationship");
-			Empty(r.requires, "requires", "history relationship");
+			Empty(r.requires_list, "requires", "history relationship");
 			auto &name = r.name;
 			if (r.roles.size() != 1) {
 				Fail(name, "capability", "one target role required");
@@ -2957,9 +2949,7 @@ string InferProfile(yyjson_val *root, const Ontology &ontology) {
 	for (auto &c : ontology.concepts) {
 		if (c.identify_by.size() == 3) {
 			observation = true;
-			relation |= !c.
-			                 requires
-			                .empty();
+			relation |= !c.requires_list.empty();
 		}
 		for (auto &r : c.relationships) {
 			relation |= !r.derived_by.empty();
@@ -5787,7 +5777,7 @@ unique_ptr<GlobalTableFunctionState> Init(ClientContext &context, TableFunctionI
 		    ",\"captured_rows\":" + JSONString(to_string(b.rows)) +
 		    ",\"source_types_bound\":true,\"load_constraints_validated\":true,\"query_executed\":false,"
 		    "\"root_constraints\":" +
-		    JSONStrings(b.relation_input.requires) + ",\"relations\":[";
+		    JSONStrings(b.relation_input.requires_list) + ",\"relations\":[";
 		for (idx_t i = 0; i < program.relations.size(); i++) {
 			auto &relation = program.relations[i];
 			if (i) {
