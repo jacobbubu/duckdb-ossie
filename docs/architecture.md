@@ -57,9 +57,11 @@ SQL you inspect is the SQL that runs.
 never becomes spliced SQL.
 
 **Grain.** Each aggregate's grain is the dataset that functionally determines the others it
-references — the one whose rows are counted once while the rest are replicated onto them. Every
-aggregate in a query must agree on one grain, and that grain becomes the root of the join tree. An
-aggregate with no column reference, like `COUNT(*)`, inherits the grain when exactly one exists.
+references — the one whose rows are counted once while the rest are replicated onto them. When
+every aggregate in a query agrees on one grain, that grain becomes the root of the join tree. When
+they do not, each grain gets its own grouped subquery, rooted at that grain, and the subqueries are
+joined on the dimension values; the metric expressions then run over the hoisted aggregate columns.
+An aggregate with no column reference, like `COUNT(*)`, inherits the grain when exactly one exists.
 
 **Plan joins.** BFS outward from the root over the relationship graph. Reaching a required dataset
 by a second, non-tree edge means two routes exist that could produce different numbers, so it
@@ -111,7 +113,9 @@ The differential tests run generated SQL and hand-written TPC-DS equivalents ove
 diff the results with symmetric `EXCEPT`. They are the only layer that catches a wrong *number* —
 a golden-file test passes just as happily on SQL that is valid and incorrect. One of them pins the
 `INNER` join behaviour: grouping by `store.s_state` drops exactly the sales whose foreign key is
-NULL, so a change in join type will fail a test rather than silently move a total.
+NULL, so a change in join type will fail a test rather than silently move a total. Its twin pins
+`left_joins => true`: the same sales reappear as the `NULL` group and the grouped total equals the
+ungrouped one.
 
 Formatting matches DuckDB's, enforced in CI:
 

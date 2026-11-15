@@ -11,6 +11,9 @@ namespace ossie {
 struct CompileOptions {
 	//! Whether filters may call named functions. Operators are always allowed, subqueries never.
 	bool allow_filter_functions = false;
+	//! Join dimensions with LEFT JOIN instead of INNER, so a grain row whose foreign key is NULL or
+	//! dangling is kept, with NULL dimension values, rather than dropped.
+	bool left_joins = false;
 	//! Internal, already resolved row predicate. Never reparsed or field-expanded.
 	const ParsedExpression *population_predicate = nullptr;
 	//! Internal typed batch source carrying its lifetime dependency.

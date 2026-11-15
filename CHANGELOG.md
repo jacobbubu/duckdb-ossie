@@ -31,6 +31,19 @@ breaking, that 0.1.1 predates.
   separate daily workflow that cannot block a merge
 
 ### Added
+- **Metrics that aggregate at more than one grain are computed, not refused.** `store_productivity`
+  (`SUM(store_sales.ss_ext_sales_price) / NULLIF(SUM(store.s_number_employees), 0)`) now aggregates
+  each side over its own dataset and takes the ratio over the results, rather than refusing. Each
+  grain gets a grouped subquery; the subqueries are joined NULL-safely on the dimension values, so a
+  group only one side produced is kept; row filters apply inside every subquery and metric filters
+  to the joined result. A filter or dimension a grain cannot reach without fanning out is refused,
+  naming the grain, since applying it to one side of a ratio only would be a different metric.
+  Checked against hand-written SQL over TPC-DS data in `ossie_differential.test`
+- **`ossie_load(..., left_joins => true)` joins dimensions with `LEFT JOIN`** instead of the default
+  `INNER`, so a fact row whose foreign key is NULL or dangling is kept under NULL dimension values
+  rather than dropped, and a total no longer shrinks when a dimension is added. Ossie declares no
+  join type, so the policy is set per load like `allow_filter_functions`. Fan-out and ambiguous-path
+  refusals are unchanged
 - **`OSSIE_SQL_2026`, the spec's own expression language** (apache/ossie be2c73f), executed alongside
   `ANSI_SQL`; an expression carrying both runs the `OSSIE_SQL_2026` variant. Functions DuckDB spells
   differently or lacks (`NVL`, `IFF`, `NVL2`, `ZEROIFNULL`, `NULLIFZERO`, `CHARINDEX`, `STARTSWITH`,

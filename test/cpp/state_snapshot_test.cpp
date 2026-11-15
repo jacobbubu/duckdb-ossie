@@ -52,7 +52,7 @@ void ControlledSnapshot(const std::string &root) {
 	auto first = ReadModel(root + "test/fixtures/state_snapshot/a.json");
 	auto second = ReadModel(root + "test/fixtures/state_snapshot/b.json");
 	duckdb::weak_ptr<const duckdb::ossie::Model> old = first;
-	state.SetModel(first, false);
+	state.SetModel(first, false, false);
 	std::mutex barrier;
 	std::condition_variable changed;
 	bool captured = false, published = false;
@@ -88,7 +88,7 @@ void ControlledSnapshot(const std::string &root) {
 		if (!changed.wait_for(guard, std::chrono::seconds(5), [&] { return captured; })) {
 			throw std::runtime_error("reader barrier timed out");
 		}
-		state.SetModel(second, true);
+		state.SetModel(second, true, false);
 		first.reset();
 		published = true;
 		changed.notify_all();
@@ -132,8 +132,8 @@ void ConnectionAndTiming(const std::string &root) {
 	SQL(first, "PREPARE policy AS SELECT ossie_compile(['total'], [], ['ABS(facts.amount) > 0'])");
 	Check(Scalar(first, "EXECUTE deferred").find("facts_a") != std::string::npos, "scalar execution reads A");
 	Check(first.Query("EXECUTE policy")->HasError(), "prepared scalar A policy refuses filter");
-	SQL(second,
-	    "CALL ossie_load(" + Quote(root + "test/fixtures/state_snapshot/b.json") + ", allow_filter_functions => true)");
+	SQL(second, "CALL ossie_load(" + Quote(root + "test/fixtures/state_snapshot/b.json") +
+	                ", allow_filter_functions => true, left_joins => true)");
 	Check(Scalar(first, "EXECUTE deferred").find("facts_b") != std::string::npos, "prepared scalar execution reads B");
 	Check(Scalar(first, "EXECUTE policy").find("abs(") != std::string::npos, "prepared scalar reads B policy");
 	Check(Scalar(first, "EXECUTE bound") == "3", "prepared table query retains A binding");
@@ -141,7 +141,8 @@ void ConnectionAndTiming(const std::string &root) {
 	      "new cross-connection query reads B model and policy");
 	Check(first.Query("CALL ossie_load('does-not-exist.json')")->HasError(), "failed load refused");
 	auto snapshot = duckdb::ossie::OssieState::Get(*first.context).GetSnapshot();
-	Check(snapshot.model->name == "B" && snapshot.allow_filter_functions, "failed load retains paired B state");
+	Check(snapshot.model->name == "B" && snapshot.allow_filter_functions && snapshot.left_joins,
+	      "failed load retains paired B state");
 	Check(Scalar(second, "SELECT * FROM ossie_query(['total'], [], ['ABS(facts.amount) > 0'])") == "60",
 	      "failed load leaves B computation unchanged");
 }

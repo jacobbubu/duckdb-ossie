@@ -27,6 +27,7 @@ void CompileFunction(DataChunk &args, ExpressionState &state, Vector &result) {
 		auto filters = ToStringList(args.data[2].GetValue(row), "ossie_compile");
 		CompileOptions options;
 		options.allow_filter_functions = snapshot.allow_filter_functions;
+		options.left_joins = snapshot.left_joins;
 		auto sql = CompileToSQL(*model, metrics, dimensions, filters, options);
 		result.SetValue(row, Value(sql));
 	}
