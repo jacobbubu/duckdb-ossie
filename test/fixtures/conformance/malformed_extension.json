@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "closed_contract",
   "datasets": [
     {
@@ -20,7 +20,7 @@
       ]
     }
   ],
-  "custom_extensions": [
+  "nonportable_extensions": [
     {
       "vendor_name": "custom",
       "data": false

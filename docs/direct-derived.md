@@ -4,7 +4,7 @@
 existing `gaap-scalar-population-v1` and `fact-dimension-population-v1` profiles.
 It removes their one-child limit within the bounds below; it adds no business
 profile and does not claim full Ossie Ontology conformance. The pinned document
-format remains Ossie `0.2.0.dev0`.
+format remains Ossie `0.3.0.dev0`.
 
 Add `direct-derived-concepts-v1` to the bundle manifest `capabilities` list. It
 can appear alone or with `concept-scalar-requires-v1`, and on the joined profile

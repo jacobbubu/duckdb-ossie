@@ -12,7 +12,7 @@ call ossie_load
 query TTIIII
 CALL ossie_load('test/fixtures/loader_contract/valid.json');
 ----
-metadata_contract	0.2.0.dev0	1	11	0	1
+metadata_contract	0.3.0.dev0	1	11	0	1
 
 query TTT
 SELECT kind, name, instructions FROM ossie_metadata() WHERE kind = 'model';
@@ -30,9 +30,9 @@ SELECT description, synonyms[1], ai_context FROM ossie_metadata() WHERE name = '
 金额说明	收入	{"synonyms":["收入"],"instructions":"保留 NULL","examples":["每日收入是多少？"],"vendor_hint":{"keep":true}}
 
 query T
-SELECT custom_extensions FROM ossie_metadata() WHERE name = 'amount';
+SELECT nonportable_extensions FROM ossie_metadata() WHERE name = 'amount';
 ----
-[{"vendor_name":"business","data":"{\"unit\":\"CNY\"}"}]
+[{"vendor_name":"business","data":{"unit":"CNY"}}]
 
 query TTT
 SELECT name, expression_dialect, array_to_string(available_dialects, ',') FROM ossie_metadata() WHERE kind = 'metric';
@@ -237,7 +237,7 @@ version must be
 query TTIIII
 CALL ossie_load('test/fixtures/loader_contract/valid.yaml');
 ----
-yaml_metadata	0.2.0.dev0	1	1	0	0
+yaml_metadata	0.3.0.dev0	1	1	0	0
 
 query T
 SELECT instructions FROM ossie_metadata() WHERE kind='model';
@@ -257,7 +257,7 @@ true
 query TTIIII
 CALL ossie_load('test/fixtures/conformance/nul_metadata.json');
 ----
-nul_metadata	0.2.0.dev0	1	1	0	0
+nul_metadata	0.3.0.dev0	1	1	0	0
 
 query T rowsort
 SELECT CASE WHEN instructions = 'before' || chr(0) || 'after' THEN 'preserved' ELSE 'truncated' END FROM ossie_metadata() WHERE kind IN ('model','field');
@@ -318,14 +318,16 @@ nul_metadata
 statement error
 CALL ossie_load('test/fixtures/conformance/malformed_extension.json');
 ----
-field 'data' must be a string
+field 'data' must be an object
 
-statement error
+# Dialect names are an open vocabulary in 0.3.0.dev0: an unknown one (here `ansi_sql`, which is not
+# `ANSI_SQL`) is carried as metadata and skipped for execution, so the load succeeds on the other entry.
+query TTIIII
 CALL ossie_load('test/fixtures/conformance/lowercase_dialect.json');
 ----
-has an unsupported dialect name
+closed_contract	0.3.0.dev0	1	1	0	0
 
-query T
-SELECT name FROM ossie_metadata() WHERE kind='model';
+query TT
+SELECT expression_dialect, array_to_string(available_dialects, ',') FROM ossie_metadata() WHERE name = 'amount';
 ----
-nul_metadata
+ANSI_SQL	ansi_sql,ANSI_SQL

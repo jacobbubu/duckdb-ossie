@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "history_observation_demo",
   "description": "Synthetic finite-date temporal membership; independent captured observations and history records.",
   "datasets": [

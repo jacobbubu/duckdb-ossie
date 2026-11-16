@@ -1,0 +1,14 @@
+version: "0.3.0.dev0"
+name: open_vendor
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: amount
+        expression:
+          sql: amount
+        nonportable_extensions:
+          - vendor_name: acme_internal
+            data:
+              owner: finance
+              tags: [a, b]

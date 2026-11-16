@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "gaap_population",
   "description": "Research draft: derivation by recorded fiscal YTD GAAP; active and paying statuses are not established.",
   "ontology": [

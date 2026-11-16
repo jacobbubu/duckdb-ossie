@@ -10,16 +10,16 @@
   "core": {
     "path": "core.json",
     "name": "joined_population",
-    "sha256": "4235df33f029262b793e68d0ddb5f3417fa1fe16e87f2827f9e91a09dd0fb878"
+    "sha256": "c318cb64e88c795f8b348da87f9db19748a7fa55e42f16aaed7ba27bb97268d6"
   },
   "ontology": {
     "path": "ontology.json",
     "name": "joined_ontology",
-    "sha256": "ff67598165fcdff92a3fe40c8a4b67a9dd2bb30a0cdde5c0fc967bf959b5e613"
+    "sha256": "045f54da44a5a5928f4c664e6b55dddc16c6ec530eaa53dd2068ac66cd43c084"
   },
   "mapping": {
     "path": "mapping.json",
     "name": "joined_mapping",
-    "sha256": "fede2d077986e8c46162973f87b750afcd1420e8229d480d175a6c7acee4dcfd"
+    "sha256": "02345b6d07a1909cc33cdf690989f9062eb1d6c969793f11f55a225f0c0b3779"
   }
 }

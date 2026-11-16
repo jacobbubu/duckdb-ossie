@@ -21,7 +21,7 @@ SELECT contains(plan_json,'"schema_version":"ossie-population-plan-v1"')::INTEGE
 1	1	1	1
 
 query IIIII
-SELECT contains(plan_json,'"version":"0.2.0.dev0"')::INTEGER, contains(plan_json,'"name":"gaap_population"')::INTEGER, contains(plan_json,'"name":"gaap_binding"')::INTEGER, contains(plan_json,'"physical_plan":false')::INTEGER, contains(plan_json,'"sql_replayable":false')::INTEGER FROM ossie_population_compile('{"kind":"metrics","concept":"ValidUser","metrics":["gaap_sum"],"dimensions":[],"filters":[]}');
+SELECT contains(plan_json,'"version":"0.3.0.dev0"')::INTEGER, contains(plan_json,'"name":"gaap_population"')::INTEGER, contains(plan_json,'"name":"gaap_binding"')::INTEGER, contains(plan_json,'"physical_plan":false')::INTEGER, contains(plan_json,'"sql_replayable":false')::INTEGER FROM ossie_population_compile('{"kind":"metrics","concept":"ValidUser","metrics":["gaap_sum"],"dimensions":[],"filters":[]}');
 ----
 1	1	1	1	1
 

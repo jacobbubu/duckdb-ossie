@@ -14,16 +14,16 @@
   "core": {
     "path": "core.json",
     "name": "shipment_rules",
-    "sha256": "f3c643cedbc2ca52d8a08e001a1c1aa4b873de7e8c509c5ec2a256684b9c6018"
+    "sha256": "4fe259893826559e19f46cf68a6b4a1543064deeae0f380a1f2ce242cfb12cc9"
   },
   "ontology": {
     "path": "ontology.json",
     "name": "shipment_rules_ontology",
-    "sha256": "11db51b6f0f7615d1a5df446a85cb2ec77f50085a6fd606adf841233a5ead1c1"
+    "sha256": "1124b4f90dac78cbce6956e5c5b8ac053e92b39a31d1621510c7db09759bab1d"
   },
   "mapping": {
     "path": "mapping.json",
     "name": "shipment_rules_mapping",
-    "sha256": "d0bc0ed25b87406227f4e987e6240ae327f4a74e2c43dc95b1bc1869e0fce002"
+    "sha256": "307214b8cdca427df33d02da9eba6933fec9ac9abb077140ad362dea9722a4dc"
   }
 }

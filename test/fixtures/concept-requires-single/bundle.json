@@ -6,16 +6,16 @@
   "core": {
     "path": "core.json",
     "name": "device_rules",
-    "sha256": "ce2bdd085f9ad3cf3d8763d4d0d26ee068ec50dd712b3848e1f3a65f345a1914"
+    "sha256": "6383225bb7c87e216c023ee1d50a3b77e43eaacc0d2827f1f32a2e9838976ba7"
   },
   "ontology": {
     "path": "ontology.json",
     "name": "device_rules_ontology",
-    "sha256": "f765ee815e3d1e3e9f2160fefdd12685e92676a09d8a8997bcb5a9c9790b3f1b"
+    "sha256": "0a1e566a1338b0c3b263780c2d8ac54021bf0328b70be90fc43f29b5cee6bffe"
   },
   "mapping": {
     "path": "mapping.json",
     "name": "device_rules_mapping",
-    "sha256": "0660741073788af202711205a346061c6f4d47c6c7d11476ef1f3bf89185e646"
+    "sha256": "a03b137ad0046f2e12a46ba30b42b7d0504450bfe2c5d30a808e58b89edebe2d"
   }
 }

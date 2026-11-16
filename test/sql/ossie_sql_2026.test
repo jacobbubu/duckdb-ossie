@@ -20,7 +20,7 @@ INSERT INTO orders VALUES
 query TTIIII
 CALL ossie_load('test/fixtures/ossie_sql_2026_model.json');
 ----
-ossie_sql_2026	0.2.0.dev0	1	26	0	5
+ossie_sql_2026	0.3.0.dev0	1	26	0	5
 
 # --- functions DuckDB spells differently or lacks ---------------------------------------------------
 
@@ -262,7 +262,7 @@ INSERT INTO quoted VALUES (1, 'east', 10.00), (2, 'west', 5.00);
 query TTIIII
 CALL ossie_load('test/fixtures/ossie_sql_2026_quoted.json');
 ----
-quoted	0.2.0.dev0	1	4	0	2
+quoted	0.3.0.dev0	1	4	0	2
 
 # A string literal that looks like a quoted identifier is a literal.
 query ITTTR

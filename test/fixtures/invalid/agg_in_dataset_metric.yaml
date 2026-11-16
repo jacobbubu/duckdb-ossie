@@ -1,0 +1,16 @@
+version: "0.3.0.dev0"
+name: agg_in_dataset_metric
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: amount
+        expression:
+          sql: amount
+    metrics:
+      - name: revenue
+        expression:
+          sql: SUM(amount)
+      - name: doubled
+        expression:
+          sql: AGG(orders.revenue) * 2

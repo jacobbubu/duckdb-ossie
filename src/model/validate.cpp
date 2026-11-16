@@ -58,12 +58,22 @@ void ValidateFieldExpression(const Dataset &dataset, const Field &field) {
 	});
 }
 
+//! `dataset.source.column` is how the parser spells a dataset-scoped metric's reference to a column
+//! of its own source, which only that metric may reach.
+bool IsOwnSourceColumn(const Metric &metric, const vector<string> &names) {
+	return names.size() == 3 && !metric.dataset.empty() && StringUtil::CIEquals(names[0], metric.dataset) &&
+	       StringUtil::CIEquals(names[1], "source");
+}
+
 void ValidateMetricExpression(const Model &model, const Metric &metric, MetricReferencePolicy policy) {
 	auto context = StringUtil::Format("metric \"%s\"", metric.name);
 	VisitColumnRefs(*metric.expression.tree, [&](const ColumnRefExpression &colref) {
 		auto names = ColumnNames(colref);
 		if (policy == MetricReferencePolicy::DECLARED_METRICS && names.size() == 1 && model.FindMetric(names[0])) {
 			return; // The explicit FactProgram binder subsequently checks leaf source, DAG and units.
+		}
+		if (IsOwnSourceColumn(metric, names)) {
+			return;
 		}
 		if (names.size() != 2) {
 			throw InvalidInputException("ossie_load: %s references \"%s\"; a metric must qualify every column "

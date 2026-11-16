@@ -30,7 +30,7 @@ docs:
     INSERT INTO customers VALUES (1,'US'),(2,'DE');
 
     COPY (SELECT '{
-      "version": "0.2.0.dev0",
+      "version": "0.3.0.dev0",
       "name": "sales",
       "datasets": [
         {"name": "orders", "source": "memory.main.orders", "fields": [
@@ -93,10 +93,10 @@ docs:
     **Conformance**
 
     Models are validated against the format's own `core-spec/ossie-schema.json`. The test suite
-    includes six models vendored verbatim from apache/ossie: five published by other Ossie
-    implementers -- Databricks, GoodData, NVIDIA, Omni and OrionBelt -- and the spec's own TPC-DS
-    example. Five load and answer queries; the Databricks model carries only DATABRICKS
-    expressions, which this extension does not execute.
+    includes fifteen models vendored verbatim from apache/ossie: the spec's own examples (TPC-DS,
+    flights, renamed fields) and its compliance models (wide-table retail and stores, the scott
+    query model, the portability ladder m0-m3). Twelve load and answer queries; the three refusals
+    are the portability models that name a column without its dataset, which the spec forbids.
     Generated SQL is diffed against hand-written TPC-DS equivalents with symmetric EXCEPT over
     dsdgen(sf = 0.01) data, so correctness is measured against the numbers rather than against our
     own output. That covers total_sales and books_sales against hand-written SQL, and total_sales,
@@ -104,8 +104,10 @@ docs:
     The remaining metrics are exercised by golden-SQL, grain or vocabulary tests, none of which can
     catch a wrong number.
 
-    Models use the flat document shape of Ossie 0.2.0.dev0, with expressions in OSSIE_SQL_2026 (the
-    spec's own expression language) or ANSI_SQL. Metrics that aggregate at more than one grain are
+    Models use the document shape of Ossie 0.3.0.dev0, with expressions in OSSIE_SQL_2026 (the
+    spec's own expression language, written as expression.sql) or ANSI_SQL. Dataset-scoped metrics
+    are addressed as dataset.metric and combined in a model-scoped metric with AGG(dataset.metric).
+    Metrics that aggregate at more than one grain are
     computed per grain and joined on the dimension values; joins are INNER unless the model is loaded
     with `left_joins => true`. Current limits are documented rather than hidden: table-backed sources
     only, and window-function metrics refused rather than answered wrongly. See docs/limitations.md.

@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "safe_join_research",
   "description": "Synthetic fact-grain join research. Core live queries; not a production population profile.",
   "datasets": [

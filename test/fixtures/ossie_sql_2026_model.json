@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "ossie_sql_2026",
   "description": "Every OSSIE_SQL_2026 function that DuckDB spells differently or lacks, over rows chosen for the edge cases",
   "datasets": [

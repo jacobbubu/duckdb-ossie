@@ -1,7 +1,7 @@
 # Single-table population execution
 
 `gaap-scalar-population-v1` is a bounded single-table execution profile against
-pinned Ossie `0.2.0.dev0` and DuckDB 2.0.0. It provides one root
+pinned Ossie `0.3.0.dev0` and DuckDB 2.0.0. It provides one root
 EntityType and one derived EntityType with scalar attributes and a scalar
 membership rule. It does not represent full Ossie ontology conformance.
 

@@ -1,0 +1,17 @@
+version: "0.3.0.dev0"
+name: agg_grainless
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: amount
+        expression:
+          sql: amount
+    metrics:
+      - name: order_count
+        expression:
+          sql: COUNT(*)
+metrics:
+  - name: doubled
+    expression:
+      sql: AGG(orders.order_count) * 2

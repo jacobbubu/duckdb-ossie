@@ -8,13 +8,13 @@ require ossie
 query TTIIII
 CALL ossie_load('test/fixtures/tpcds_semantic_model.json');
 ----
-tpcds_retail_model	0.2.0.dev0	5	31	4	5
+tpcds_retail_model	0.3.0.dev0	5	31	4	5
 
 # rebind remaps the warehouse prefix onto the local catalog; counts are unaffected.
 query TTIIII
 CALL ossie_load('test/fixtures/tpcds_semantic_model.json', rebind => MAP{'tpcds.public': 'tpcds.main'});
 ----
-tpcds_retail_model	0.2.0.dev0	5	31	4	5
+tpcds_retail_model	0.3.0.dev0	5	31	4	5
 
 statement error
 CALL ossie_load('/does/not/exist.json');
@@ -54,7 +54,7 @@ CREATE TABLE store(a INT);
 query TTIIII
 CALL ossie_load('test/fixtures/tpcds_semantic_model.json', rebind => MAP{'tpcds.public': 'memory.main'}, validate_sources => true);
 ----
-tpcds_retail_model	0.2.0.dev0	5	31	4	5
+tpcds_retail_model	0.3.0.dev0	5	31	4	5
 
 # The model is held per database, not per connection: an MCP server answers on its own connection
 # and must see a model loaded by the init script.

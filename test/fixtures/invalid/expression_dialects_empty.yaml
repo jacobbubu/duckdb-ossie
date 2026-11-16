@@ -1,0 +1,9 @@
+version: "0.3.0.dev0"
+name: expression_dialects_empty
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: amount
+        expression:
+          dialects: []

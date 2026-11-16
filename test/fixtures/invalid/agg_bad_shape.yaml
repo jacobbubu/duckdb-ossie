@@ -1,0 +1,17 @@
+version: "0.3.0.dev0"
+name: agg_bad_shape
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: amount
+        expression:
+          sql: amount
+    metrics:
+      - name: revenue
+        expression:
+          sql: SUM(amount)
+metrics:
+  - name: filtered
+    expression:
+      sql: AGG(orders.revenue) FILTER (WHERE orders.amount > 0)

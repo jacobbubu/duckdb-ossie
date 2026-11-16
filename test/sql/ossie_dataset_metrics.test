@@ -1,0 +1,174 @@
+# name: test/sql/ossie_dataset_metrics.test
+# description: Ossie 0.3.0.dev0 constructs: expression.sql, dataset-scoped metrics, AGG(dataset.metric), nonportable_extensions
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE orders(order_id INT, cust_id INT, amount_cents INT, shipped_at DATE);
+
+statement ok
+INSERT INTO orders VALUES (1, 1, 1000, '2024-01-01'), (2, 1, 2500, NULL), (3, 2, 400, '2024-02-01');
+
+statement ok
+CREATE TABLE customers(customer_id INT, region VARCHAR);
+
+statement ok
+INSERT INTO customers VALUES (1, 'east'), (2, 'west');
+
+query TTIIII
+CALL ossie_load('test/fixtures/dataset_metrics.yaml');
+----
+dataset_metrics	0.3.0.dev0	2	5	1	5
+
+# Dataset-scoped metrics surface as dataset.metric with their dataset; the model-scoped one has none.
+query TTT
+SELECT name, dataset, expression_dialect FROM ossie_metadata() WHERE kind = 'metric' ORDER BY name;
+----
+customers.customer_count	customers	OSSIE_SQL_2026
+orders.order_count	orders	OSSIE_SQL_2026
+orders.revenue	orders	OSSIE_SQL_2026
+orders.shipped_count	orders	OSSIE_SQL_2026
+revenue_per_customer	NULL	OSSIE_SQL_2026
+
+# expression.sql is the OSSIE_SQL_2026 text; a dialects entry for OSSIE_SQL_2026 is recorded but not
+# used (orders.revenue's dialects entry would have added "+ 0").
+query T
+SELECT array_to_string(available_dialects, ',') FROM ossie_metadata() WHERE name = 'orders.revenue';
+----
+OSSIE_SQL_2026,SNOWFLAKE
+
+# A dataset-scoped metric names its own fields by bare name (amount -> the field's expression) and
+# source columns as source.column (shipped_at is not a field).
+query T
+SELECT ossie_compile(['orders.revenue', 'orders.shipped_count'], ['customers.region'], []);
+----
+SELECT customers.region AS "customers.region", sum((orders.amount_cents / 100.0)) AS "orders.revenue", count(orders.shipped_at) AS "orders.shipped_count" FROM (memory.main.orders AS orders INNER JOIN memory.main.customers AS customers ON ((orders.cust_id = customers.customer_id))) GROUP BY customers.region
+
+query TRII
+SELECT * FROM ossie_query(['orders.revenue', 'orders.order_count', 'orders.shipped_count'], ['customers.region']) ORDER BY 1;
+----
+east	35.0	2	1
+west	4.0	1	1
+
+# AGG(dataset.metric) inlines the dataset-scoped metric's expression; each side keeps its own grain.
+query T
+SELECT ossie_compile(['revenue_per_customer'], [], []);
+----
+SELECT (orders.agg_0 / customers.agg_0) AS revenue_per_customer FROM ((SELECT count(DISTINCT customers.customer_id) AS agg_0 FROM memory.main.customers AS customers) AS customers CROSS JOIN (SELECT sum((orders.amount_cents / 100.0)) AS agg_0 FROM memory.main.orders AS orders) AS orders)
+
+query TR
+SELECT * FROM ossie_query(['revenue_per_customer'], ['customers.region']) ORDER BY 1;
+----
+east	35.0
+west	4.0
+
+# Filtering on a dataset-scoped metric evaluates it at its own grain.
+query T
+SELECT ossie_compile(['orders.revenue'], [], ['orders.order_count > 1']);
+----
+SELECT sum((orders.amount_cents / 100.0)) AS "orders.revenue" FROM memory.main.orders AS orders HAVING (count_star() > 1)
+
+# nonportable_extensions carry an object payload under any vendor name.
+query TTIIII
+CALL ossie_load('test/fixtures/open_vendor.yaml');
+----
+open_vendor	0.3.0.dev0	1	1	0	0
+
+query T
+SELECT nonportable_extensions FROM ossie_metadata() WHERE name = 'amount';
+----
+[{"data":{"owner":"finance","tags":["a","b"]},"vendor_name":"acme_internal"}]
+
+# --- expression shapes ---
+
+statement error
+CALL ossie_load('test/fixtures/invalid/expression_empty.yaml');
+----
+field "orders.amount" has an 'expression' with neither 'sql' nor 'dialects'
+
+statement error
+CALL ossie_load('test/fixtures/invalid/expression_dialects_empty.yaml');
+----
+field "orders.amount" has an 'expression' with an empty 'dialects' array
+
+statement error
+CALL ossie_load('test/fixtures/invalid/expression_dialects_scalar.yaml');
+----
+field "orders.amount" expression field 'dialects' must be an array
+
+statement error
+CALL ossie_load('test/fixtures/invalid/expression_foreign_dialect.yaml');
+----
+field "orders.amount" has no expression in a dialect this extension can execute (found: SNOWFLAKE, BIGQUERY; expected OSSIE_SQL_2026 or ANSI_SQL).
+
+# --- dataset-scoped metric name resolution ---
+
+statement error
+CALL ossie_load('test/fixtures/invalid/dataset_metric_unqualified.yaml');
+----
+metric "orders.revenue" references "amount_cents", which dataset "orders" declares no field for. A dataset-scoped metric names the dataset's fields; a column of its source is written source.amount_cents
+
+statement error
+CALL ossie_load('test/fixtures/invalid/dataset_metric_foreign.yaml');
+----
+metric "orders.revenue" references "customers.amount"; a dataset-scoped metric names its dataset's fields by bare name and its source columns as source.column, and cannot reach another dataset
+
+statement error
+CALL ossie_load('test/fixtures/invalid/dataset_metric_clash.yaml');
+----
+dataset "orders" declares both a field and a metric named "amount"; fields and dataset-scoped metrics share one namespace
+
+statement error
+CALL ossie_load('test/fixtures/invalid/dataset_metric_duplicate.yaml');
+----
+dataset "orders" declares metric "revenue" more than once
+
+statement error
+CALL ossie_load('test/fixtures/invalid/dataset_metrics_scalar.yaml');
+----
+dataset "orders" field 'metrics' must be an array
+
+# --- AGG(dataset.metric) ---
+
+statement error
+CALL ossie_load('test/fixtures/invalid/agg_in_field.yaml');
+----
+field "orders.amount" calls AGG, which only a model-scoped metric may use to evaluate a dataset-scoped metric as AGG(dataset.metric)
+
+statement error
+CALL ossie_load('test/fixtures/invalid/agg_in_dataset_metric.yaml');
+----
+metric "orders.doubled" calls AGG, which only a model-scoped metric may use
+
+statement error
+CALL ossie_load('test/fixtures/invalid/agg_bad_shape.yaml');
+----
+metric "filtered" calls AGG with something other than a single dataset.metric reference; AGG(dataset.metric) evaluates a dataset-scoped metric and takes no FILTER clause
+
+statement error
+CALL ossie_load('test/fixtures/invalid/agg_one_part.yaml');
+----
+metric "doubled" calls AGG with something other than a single dataset.metric reference
+
+statement error
+CALL ossie_load('test/fixtures/invalid/agg_unknown.yaml');
+----
+metric "doubled" calls AGG(orders.total), but the model declares no dataset-scoped metric of that name
+
+statement error
+CALL ossie_load('test/fixtures/invalid/agg_grainless.yaml');
+----
+metric "doubled" calls AGG(orders.order_count), whose expression aggregates without naming a column (for example COUNT(*)), so inlined here it would count the wrong rows. Request orders.order_count directly instead
+
+# --- nonportable_extensions shapes ---
+
+statement error
+CALL ossie_load('test/fixtures/invalid/extension_data_string.yaml');
+----
+nonportable_extensions member at index 0 field 'data' must be an object
+
+statement error
+CALL ossie_load('test/fixtures/invalid/extension_vendor_empty.yaml');
+----
+nonportable_extensions member at index 0 field 'vendor_name' must be a nonempty string
