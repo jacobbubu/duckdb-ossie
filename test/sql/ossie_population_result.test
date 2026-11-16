@@ -36,7 +36,7 @@ SELECT contains(result_json,'"bound_type":"DECIMAL(38,2)"')::INTEGER, contains(r
 statement error
 SELECT * FROM ossie_population_json('{"kind":"metrics","concept":"ValidUser","metrics":["gaap_sum","GAAP_SUM"],"dimensions":[],"filters":[]}');
 ----
-duplicate column name
+have the same output name
 
 statement error
 SELECT * FROM ossie_population_json('{"kind":"metrics","concept":"ValidUser","metrics":["missing_metric"],"dimensions":[],"filters":[]}');

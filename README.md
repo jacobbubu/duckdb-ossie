@@ -54,7 +54,7 @@ SELECT * FROM ossie_query(['total_sales'],           -- ask a question
 
 ```
 ┌───────────────────┬───────────────┐
-│   item.i_brand    │  total_sales  │
+│      i_brand      │  total_sales  │
 ├───────────────────┼───────────────┤
 │ amalgimporto #2   │     709288.31 │
 │ edu packamalg #2  │     565064.01 │
@@ -91,6 +91,10 @@ every refusal and why it exists.
 | `ossie_metadata()` | Descriptions, labels, AI instructions/synonyms/examples, preserved JSON and expression dialects |
 | `ossie_query(metrics, dimensions, filters)` | Compile the request and execute it |
 | `ossie_compile(metrics, dimensions, filters)` | Return the SQL without running it |
+
+A request names metrics as `metric` or `dataset.metric` and dimensions as `dataset.field`; each
+output column takes the final part of its name (`item.i_brand` becomes `i_brand`), and two entries
+that would share one are refused, as the Wide Table specification requires.
 
 `rebind` remaps warehouse-qualified prefixes onto the local catalog: a model saying
 `tpcds.public.store_sales` needs `rebind => MAP{'tpcds.public': 'tpcds.main'}` to find local tables.

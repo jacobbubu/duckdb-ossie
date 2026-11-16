@@ -61,8 +61,8 @@ with `left_joins => true`, the join the specification requires. Every case gets 
 
 | status | cases | meaning |
 |---|---|---|
-| `pass` | 1 | rows and output names match, or the refusal carries the expected error code |
-| `names` | 17 | rows match; output columns are named `dataset.name` where the specification wants the unqualified name |
+| `pass` | 18 | rows and output names match, or the refusal carries the expected error code |
+| `names` | 0 | rows match under different output names |
 | `wrong` | 0 | rows differ |
 | `false-refusal` | 2 | refused where rows were expected: queries without a metric (`a07`, `a12`) |
 | `false-acceptance` | 2 | answered where an error was expected: an aggregate in the filter (`e07`), a filter reading two datasets (`e09`) |

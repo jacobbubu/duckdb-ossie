@@ -12,6 +12,13 @@ pins). The DuckDB version each release targets is noted separately.
 ## [Unreleased]
 
 ### Changed
+- **Breaking: output columns are named without the dataset.** `ossie_query` and `ossie_compile`
+  name each column by the final part of its reference, as the Wide Table specification's output
+  name: `customers.region` is the column `region`, `orders.total_revenue` is `total_revenue`, where
+  they used to be `"customers.region"` and `"orders.total_revenue"`. SQL that reads the result by
+  the quoted qualified name must drop the dataset. Two entries with one output name, compared
+  without case, are refused naming both, where they used to produce two columns of one name.
+  Population results are unchanged: their columns were never qualified this way.
 - **Breaking: models are Ossie 0.3.0.dev0 documents (apache/ossie da73e0e).** `version` must be
   `"0.3.0.dev0"`; a 0.2.0.dev0 document is refused at load naming the supported string. What changed
   in the format, and is now read:
@@ -69,10 +76,9 @@ pins). The DuckDB version each release targets is noted separately.
 - **apache/ossie's wide-table compliance cases run against the extension.** The 46 cases of
   `compliance/wide_table` are vendored with their data, `scripts/wide_table_compliance.py` submits
   each through `ossie_query` and classifies the outcome, and
-  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 1 case
-  passes outright and 17 more return the right rows under qualified column names; the rest are
-  recorded as what they are (2 false refusals, 2 false acceptances, 19 refusals without the
-  specified error code, 5 the query function cannot express).
+  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 18 cases
+  pass; the rest are recorded as what they are (2 false refusals, 2 false acceptances, 19 refusals
+  without the specified error code, 5 the query function cannot express).
   `test/fixtures/conformance/README.md` lists the cases behind each number.
 - **Dataset-scoped metrics.** A dataset's `metrics` are loaded as `dataset.metric` and requested,
   filtered on and described under that name; their expressions are resolved against the dataset's

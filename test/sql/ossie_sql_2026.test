@@ -25,28 +25,28 @@ ossie_sql_2026	0.3.0.dev0	1	26	0	5
 # --- functions DuckDB spells differently or lacks ---------------------------------------------------
 
 query IT
-SELECT "o.id", "o.region_or_unknown" FROM ossie_query(['order_count'], ['o.id', 'o.region_or_unknown']) ORDER BY 1;
+SELECT id, region_or_unknown FROM ossie_query(['order_count'], ['o.id', 'o.region_or_unknown']) ORDER BY 1;
 ----
 1	east
 2	unknown
 3	west
 
 query IT
-SELECT "o.id", "o.has_discount" FROM ossie_query(['order_count'], ['o.id', 'o.has_discount']) ORDER BY 1;
+SELECT id, has_discount FROM ossie_query(['order_count'], ['o.id', 'o.has_discount']) ORDER BY 1;
 ----
 1	yes
 2	no
 3	yes
 
 query IT
-SELECT "o.id", "o.discount_state" FROM ossie_query(['order_count'], ['o.id', 'o.discount_state']) ORDER BY 1;
+SELECT id, discount_state FROM ossie_query(['order_count'], ['o.id', 'o.discount_state']) ORDER BY 1;
 ----
 1	some
 2	none
 3	some
 
 query IRR
-SELECT "o.id", "o.discount_or_zero", "o.amount_or_null"
+SELECT id, discount_or_zero, amount_or_null
 FROM ossie_query(['order_count'], ['o.id', 'o.discount_or_zero', 'o.amount_or_null']) ORDER BY 1;
 ----
 1	10.00	100.00
@@ -55,7 +55,7 @@ FROM ossie_query(['order_count'], ['o.id', 'o.discount_or_zero', 'o.amount_or_nu
 
 # CHARINDEX(substr, str) takes its arguments in the opposite order to DuckDB's strpos, and is 0 when absent
 query IITT
-SELECT "o.id", "o.dash_position", "o.starts_with_a", "o.ends_with_z"
+SELECT id, dash_position, starts_with_a, ends_with_z
 FROM ossie_query(['order_count'], ['o.id', 'o.dash_position', 'o.starts_with_a', 'o.ends_with_z']) ORDER BY 1;
 ----
 1	2	true	true
@@ -65,7 +65,7 @@ FROM ossie_query(['order_count'], ['o.id', 'o.dash_position', 'o.starts_with_a',
 # The date part is written bare, as the language does: DATEADD(day, 30, created). A DATE in gives a DATE
 # out, where DuckDB's own date_trunc and date_add would give a TIMESTAMP at midnight.
 query ITTI
-SELECT "o.id", "o.created_month", "o.due", "o.days_to_ship"
+SELECT id, created_month, due, days_to_ship
 FROM ossie_query(['order_count'], ['o.id', 'o.created_month', 'o.due', 'o.days_to_ship']) ORDER BY 1;
 ----
 1	2024-01-01	2024-03-01	2
@@ -73,13 +73,13 @@ FROM ossie_query(['order_count'], ['o.id', 'o.created_month', 'o.due', 'o.days_t
 3	2024-02-01	2024-03-30	31
 
 query TT
-SELECT typeof("o.created_month"), typeof("o.due") FROM ossie_query(['order_count'], ['o.created_month', 'o.due']) LIMIT 1;
+SELECT typeof(created_month), typeof(due) FROM ossie_query(['order_count'], ['o.created_month', 'o.due']) LIMIT 1;
 ----
 DATE	DATE
 
 # A month added to January 31 lands on the leap day.
 query IT
-SELECT "o.id", "o.month_later" FROM ossie_query(['order_count'], ['o.id', 'o.month_later']) ORDER BY 1;
+SELECT id, month_later FROM ossie_query(['order_count'], ['o.id', 'o.month_later']) ORDER BY 1;
 ----
 1	2024-02-29
 2	2024-03-15
@@ -89,13 +89,13 @@ SELECT "o.id", "o.month_later" FROM ossie_query(['order_count'], ['o.id', 'o.mon
 # `d + INTERVAL 1 MONTH` as duplicates (docs/limitations.md), which an ANSI_SQL model still hits; the
 # lowering here passes the part as a string argument, so the two calls are not equal and both survive.
 query IT
-SELECT "o.due", "o.month_later" FROM ossie_query(['order_count'], ['o.id', 'o.due', 'o.month_later']) WHERE "o.id" = 1;
+SELECT due, month_later FROM ossie_query(['order_count'], ['o.id', 'o.due', 'o.month_later']) WHERE id = 1;
 ----
 2024-03-01	2024-02-29
 
 # Sub-day parts stay on DuckDB's own functions: a DATE plus an hour has a time of day, so it is a TIMESTAMP.
 query TT
-SELECT "o.due_hour", typeof("o.due_hour") FROM ossie_query(['order_count'], ['o.id', 'o.due_hour']) WHERE "o.id" = 1;
+SELECT due_hour, typeof(due_hour) FROM ossie_query(['order_count'], ['o.id', 'o.due_hour']) WHERE id = 1;
 ----
 2024-01-31 01:00:00	TIMESTAMP
 
@@ -106,7 +106,7 @@ SELECT ossie_date_trunc('week', DATE '2024-02-29'), ossie_date_trunc('quarter', 
 2024-02-26	2024-01-01 00:00:00	2025-02-28
 
 query ITT
-SELECT "o.id", "o.launch", "o.launch_ts" FROM ossie_query(['order_count'], ['o.id', 'o.launch', 'o.launch_ts']) ORDER BY 1;
+SELECT id, launch, launch_ts FROM ossie_query(['order_count'], ['o.id', 'o.launch', 'o.launch_ts']) ORDER BY 1;
 ----
 1	2024-01-15	2024-01-15 10:30:00
 2	2024-01-15	2024-01-15 10:30:00
@@ -115,7 +115,7 @@ SELECT "o.id", "o.launch", "o.launch_ts" FROM ossie_query(['order_count'], ['o.i
 # Names the language has and DuckDB lacks, and standard forms DuckDB's parser rewrites on the way in:
 # REGEXP_COUNT, TRUNCATE, EXTRACT(part FROM d), POSITION(x IN y), PERCENTILE_CONT ... WITHIN GROUP.
 query IIRII
-SELECT "o.id", "o.digit_count", "o.third", "o.created_year", "o.dash_position_std"
+SELECT id, digit_count, third, created_year, dash_position_std
 FROM ossie_query(['order_count'], ['o.id', 'o.digit_count', 'o.third', 'o.created_year', 'o.dash_position_std']) ORDER BY 1;
 ----
 1	1	33.3	2024	2
@@ -132,14 +132,14 @@ SELECT * FROM ossie_query(['amount_median', 'amount_median_approx']);
 # so neither does CONCAT, GREATEST or LEAST here.
 
 query IT
-SELECT "o.id", "o.label" FROM ossie_query(['order_count'], ['o.id', 'o.label']) ORDER BY 1;
+SELECT id, label FROM ossie_query(['order_count'], ['o.id', 'o.label']) ORDER BY 1;
 ----
 1	east-A-1Z
 2	NULL
 3	west-A3
 
 query IRR
-SELECT "o.id", "o.larger", "o.smaller" FROM ossie_query(['order_count'], ['o.id', 'o.larger', 'o.smaller']) ORDER BY 1;
+SELECT id, larger, smaller FROM ossie_query(['order_count'], ['o.id', 'o.larger', 'o.smaller']) ORDER BY 1;
 ----
 1	100.00	10.00
 2	NULL	NULL
@@ -149,7 +149,7 @@ SELECT "o.id", "o.larger", "o.smaller" FROM ossie_query(['order_count'], ['o.id'
 # An expression carrying both runs the OSSIE_SQL_2026 variant: the spec defines what it means.
 
 query T
-SELECT DISTINCT "o.preferred" FROM ossie_query(['order_count'], ['o.preferred']);
+SELECT DISTINCT preferred FROM ossie_query(['order_count'], ['o.preferred']);
 ----
 ossie_sql_2026
 
@@ -163,7 +163,7 @@ SELECT * FROM ossie_query(['discount_total_ossie', 'discount_total_ansi']);
 query T
 SELECT ossie_compile(['order_count'], ['o.discount_state', 'o.dash_position'], []);
 ----
-SELECT CASE  WHEN ((o.discount IS NULL)) THEN ('none') ELSE 'some' END AS "o.discount_state", strpos(o.code, '-') AS "o.dash_position", count(o.id) AS order_count FROM memory.main.orders AS o GROUP BY CASE  WHEN ((o.discount IS NULL)) THEN ('none') ELSE 'some' END, strpos(o.code, '-')
+SELECT CASE  WHEN ((o.discount IS NULL)) THEN ('none') ELSE 'some' END AS discount_state, strpos(o.code, '-') AS dash_position, count(o.id) AS order_count FROM memory.main.orders AS o GROUP BY CASE  WHEN ((o.discount IS NULL)) THEN ('none') ELSE 'some' END, strpos(o.code, '-')
 
 # --- refused at load, naming the field --------------------------------------------------------------------
 
@@ -266,7 +266,7 @@ quoted	0.3.0.dev0	1	4	0	2
 
 # A string literal that looks like a quoted identifier is a literal.
 query ITTTR
-SELECT "o.id", "o.region", "o.region_loose", "o.literal", total
+SELECT id, region, region_loose, literal, total
 FROM ossie_query(['total'], ['o.id', 'o.region', 'o.region_loose', 'o.literal']) ORDER BY 1;
 ----
 1	east	east	"Region"east	10.00

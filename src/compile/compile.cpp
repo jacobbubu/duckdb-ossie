@@ -231,8 +231,26 @@ Dimension ResolveDimension(const Model &model, const string &request, const Comp
 	result.dataset = dataset;
 	result.expr = std::move(parsed[0]);
 	InlineFields(model, result.expr);
-	result.alias = request;
+	result.alias = names[1];
 	return result;
+}
+
+//! The final part of a metric's name: `total_revenue` for `orders.total_revenue`.
+string OutputName(const Metric &metric) {
+	return metric.dataset.empty() ? metric.name : metric.name.substr(metric.dataset.size() + 1);
+}
+
+//! Output columns are named by the final part of the reference, so two entries can name one column.
+void RequireDistinctOutputNames(const vector<std::pair<string, string>> &outputs) {
+	case_insensitive_map_t<string> named_by;
+	for (auto &output : outputs) {
+		auto previous = named_by.find(output.second);
+		if (previous != named_by.end()) {
+			throw InvalidInputException("ossie: \"%s\" and \"%s\" have the same output name \"%s\"", previous->second,
+			                            output.first, output.second);
+		}
+		named_by[output.second] = output.first;
+	}
 }
 
 //! Whether joining across this edge repeats rows of the side we started from. Travelling toward the
@@ -995,10 +1013,12 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 	string grainless_metric;
 	vector<unique_ptr<ParsedExpression>> metric_expressions;
 	AggregateHomes metric_homes;
+	vector<std::pair<string, string>> outputs;
 
 	for (auto &metric_name : metrics) {
 		auto analysis = AnalyzeMetric(model, metric_name);
 		auto metric = analysis.metric;
+		outputs.emplace_back(metric_name, OutputName(*metric));
 		for (auto &grain : analysis.grains) {
 			grains.insert(grain);
 		}
@@ -1013,9 +1033,13 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 		if (!metric->dataset.empty()) {
 			RecordHomes(*expr, metric->dataset, metric_homes);
 		}
-		expr->SetAlias(Identifier(metric->name));
+		expr->SetAlias(Identifier(OutputName(*metric)));
 		metric_expressions.push_back(std::move(expr));
 	}
+	for (auto &request : dimensions) {
+		outputs.emplace_back(request, ResolveDimension(model, request, options).alias);
+	}
+	RequireDistinctOutputNames(outputs);
 	for (auto &grain : options.required_grains) {
 		if (!model.FindDataset(grain)) {
 			throw InvalidInputException("ossie: required grain \"%s\" is not a declared dataset", grain);

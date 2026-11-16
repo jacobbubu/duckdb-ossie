@@ -74,7 +74,7 @@ SELECT (SELECT total_sales FROM ossie_query(['total_sales']))
 0.00
 
 query I
-SELECT (SELECT total_sales FROM ossie_query(['total_sales'], ['store.s_state']) WHERE "store.s_state" IS NULL)
+SELECT (SELECT total_sales FROM ossie_query(['total_sales'], ['store.s_state']) WHERE s_state IS NULL)
      - (SELECT sum(ss_ext_sales_price) FROM store_sales WHERE ss_store_sk IS NULL);
 ----
 0.00

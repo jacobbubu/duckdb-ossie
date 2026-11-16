@@ -43,7 +43,7 @@ OSSIE_SQL_2026,SNOWFLAKE
 query T
 SELECT ossie_compile(['orders.revenue', 'orders.shipped_count'], ['customers.region'], []);
 ----
-SELECT customers.region AS "customers.region", sum((orders.amount_cents / 100.0)) AS "orders.revenue", count(orders.shipped_at) AS "orders.shipped_count" FROM (memory.main.orders AS orders INNER JOIN memory.main.customers AS customers ON ((orders.cust_id = customers.customer_id))) GROUP BY customers.region
+SELECT customers.region AS region, sum((orders.amount_cents / 100.0)) AS revenue, count(orders.shipped_at) AS shipped_count FROM (memory.main.orders AS orders INNER JOIN memory.main.customers AS customers ON ((orders.cust_id = customers.customer_id))) GROUP BY customers.region
 
 query TRII
 SELECT * FROM ossie_query(['orders.revenue', 'orders.order_count', 'orders.shipped_count'], ['customers.region']) ORDER BY 1;
@@ -67,7 +67,7 @@ west	4.0
 query T
 SELECT ossie_compile(['orders.revenue'], [], ['orders.order_count > 1']);
 ----
-SELECT sum((orders.amount_cents / 100.0)) AS "orders.revenue" FROM memory.main.orders AS orders HAVING (count_star() > 1)
+SELECT sum((orders.amount_cents / 100.0)) AS revenue FROM memory.main.orders AS orders HAVING (count_star() > 1)
 
 # nonportable_extensions carry an object payload under any vendor name.
 query TTIIII
