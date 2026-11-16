@@ -39,12 +39,12 @@ SELECT len(regexp_extract_all(regexp_extract(program_json,'"vocabulary":\{"metri
 query T
 SELECT regexp_extract(program_json,'(\{"dataset":"dws_gaap_di","name":"ds","qualified_name":"dws_gaap_di.ds","object_column":"dws_gaap_di.ds","datatype":"Date","bound_type":"DATE".*?"is_time":true,"is_time_explicit":false)',1) FROM ossie_program();
 ----
-{"dataset":"dws_gaap_di","name":"ds","qualified_name":"dws_gaap_di.ds","object_column":"dws_gaap_di.ds","datatype":"Date","bound_type":"DATE","label":"","description":"","expression":"ds","selected_dialect":"OSSIE_SQL_2026","available_dialects":["OSSIE_SQL_2026"],"synonyms":[],"examples":[],"instructions":"","ai_context":null,"custom_extensions":null,"is_time":true,"is_time_explicit":false
+{"dataset":"dws_gaap_di","name":"ds","qualified_name":"dws_gaap_di.ds","object_column":"dws_gaap_di.ds","datatype":"Date","bound_type":"DATE","label":"","description":"","expression":"ds","selected_dialect":"OSSIE_SQL_2026","available_dialects":["OSSIE_SQL_2026"],"synonyms":[],"examples":[],"instructions":"","ai_context":null,"nonportable_extensions":null,"is_time":true,"is_time_explicit":false
 
 query TTTT
 SELECT regexp_extract(program_json,'"api_version":"([^"]+)"',1), regexp_extract(program_json,'"discovery_schema":"([^"]+)"',1), regexp_extract(program_json,'"plan_schema":"([^"]+)"',1), regexp_extract(program_json,'"ossie_spec_version":"([^"]+)"',1) FROM ossie_program();
 ----
-2.2.0	ossie-population-discovery-v1	ossie-population-plan-v1	0.2.0.dev0
+2.2.0	ossie-population-discovery-v1	ossie-population-plan-v1	0.3.0.dev0
 
 # Bundle identity is stated once in the header rather than repeated per embedded row.
 query I

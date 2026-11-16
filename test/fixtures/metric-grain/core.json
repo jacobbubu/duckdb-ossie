@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "metric_grain_control",
   "description": "Original-model designated-grain validation controls; not flattened execution.",
   "datasets": [

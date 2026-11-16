@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "two_fact_demo",
   "description": "Synthetic additive USD observations; independent fact grains, not GAAP or cumulative YTD.",
   "datasets": [

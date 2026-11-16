@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "gaap_demo",
   "description": "Research draft: original fictional 475-row daily fact dataset; no temporal user-state claim.",
   "datasets": [

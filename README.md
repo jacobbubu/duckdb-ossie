@@ -26,17 +26,20 @@ grain, and emits SQL that DuckDB runs.
 Claims about a file format should be checkable, so:
 
 - Models are validated against the format's own [`core-spec/ossie-schema.json`](https://github.com/apache/ossie/blob/main/core-spec/ossie-schema.json)
-- The suite includes six models from `apache/ossie`, vendored verbatim: five published by *other*
-  Ossie implementers — Databricks, GoodData, NVIDIA, Omni and OrionBelt — and the spec's own TPC-DS
-  example. Five load and answer queries. The Databricks model carries only `DATABRICKS`
-  expressions, which this extension does not execute
+- The suite includes fifteen models from `apache/ossie`, vendored verbatim: the spec's own examples
+  (TPC-DS, flights, renamed fields) and its compliance models (wide-table retail and stores, the
+  `scott` query model, the portability ladder m0–m3). Twelve load and answer queries. The three
+  refusals are the portability models that name a column without its dataset, which the spec
+  forbids
 - Generated SQL is diffed against hand-written TPC-DS equivalents with symmetric `EXCEPT` over
   `dsdgen(sf = 0.01)` data, so correctness is measured against the numbers rather than against our
   own output. This currently covers `total_sales` and `books_sales`. The remaining metrics are
   exercised by the golden-SQL, grain or vocabulary tests, none of which can catch a wrong *number*
 
-Models use the flat document shape of Ossie 0.2.0.dev0, one model per file, with expressions in
-`OSSIE_SQL_2026` (the spec's own expression language) or `ANSI_SQL`. What is not yet supported is
+Models use the document shape of Ossie 0.3.0.dev0, one model per file, with expressions in
+`OSSIE_SQL_2026` (the spec's own expression language, written as `expression.sql`) or `ANSI_SQL`.
+Dataset-scoped metrics are addressed as `dataset.metric`, and a model-scoped metric may combine them
+with `AGG(dataset.metric)`. What is not yet supported is
 listed in [docs/limitations.md](docs/limitations.md): table-backed sources only, and metrics that
 use a window function are refused rather than answered wrongly.
 

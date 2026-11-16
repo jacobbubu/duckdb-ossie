@@ -24,7 +24,7 @@ preserve the old bundle.
 Metrics return `name`, declared `datatype`, actual `bound_type`, `description`,
 declared selected `expression`, `selected_dialect`, `available_dialects_json`,
 `synonyms_json`, `examples_json`, `instructions`, `ai_context_json`,
-`custom_extensions_json`, `load_preflight_validated`, and `execution_verified`.
+`nonportable_extensions_json`, `load_preflight_validated`, and `execution_verified`.
 Fields return `dataset`, `name`, `qualified_name`, `object_column`, declared
 `datatype`, actual `bound_type`, `label`, `description`, the same expression and
 AI metadata, `is_time`, `is_time_explicit`, `is_computed`, and validation flags.
@@ -62,7 +62,7 @@ combined with concept constraints;
 `2.5.0` for [multiple direct children](direct-derived.md), with plan-v3),
 `discovery_schema=ossie-population-discovery-v1`,
 `plan_schema=ossie-population-plan-v1` for scalar/join profiles (`plan-v2` for
-the observation profile), `ossie_spec_version=0.2.0.dev0`,
+the observation profile), `ossie_spec_version=0.3.0.dev0`,
 and the `capabilities` object. These are separate identities:
 
 - API version describes this project's public population SQL contract and its

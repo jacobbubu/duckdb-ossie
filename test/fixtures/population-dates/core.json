@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "gaap_demo",
   "description": "Synthetic DATE boundary controls, not GAAP business data.",
   "datasets": [

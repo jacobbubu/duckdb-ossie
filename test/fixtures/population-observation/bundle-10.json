@@ -3,16 +3,16 @@
   "core": {
     "path": "core.json",
     "name": "daily_observation_demo",
-    "sha256": "5806bc1fae25b5f1912ac9de46923514abeac74d59220c52259c8e9cf2a2eb77"
+    "sha256": "0870bbeaa47ebdb0242b9b34786ef245fd8da6336b95de3bdb4960a5a2311795"
   },
   "ontology": {
     "path": "ontology.json",
     "name": "daily_observation_ontology",
-    "sha256": "16b28cbaef7d74311d18a5100d40164f1e83cea6b663b1a6e67e069b2d52e83e"
+    "sha256": "a3cfa3a0c221d875877832efc00fce232120461953b80a4d6b85efab2be4008b"
   },
   "mapping": {
     "path": "mapping.json",
     "name": "daily_observation_mapping",
-    "sha256": "b0368d338dd1c5526779218322952c843ef6b41d7a04b3ba14f6e71a67e51228"
+    "sha256": "c2560e602f8d0bb60ec588197222e74120ca843417c1795e92aa07c14b4ac73a"
   }
 }

@@ -1,0 +1,12 @@
+version: "0.3.0.dev0"
+name: extension_vendor_empty
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: amount
+        expression:
+          sql: amount
+nonportable_extensions:
+  - vendor_name: ""
+    data: {}

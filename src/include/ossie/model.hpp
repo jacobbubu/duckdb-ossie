@@ -7,6 +7,9 @@
 namespace duckdb {
 namespace ossie {
 
+//! The one `version:` this extension reads. Upstream accepts no earlier string.
+constexpr const char *OSSIE_SPEC_VERSION = "0.3.0.dev0";
+
 //! `ai_context` contains vocabulary for LLM consumers. An agent can discover what it can ask for by reading synonyms.
 struct AIContext {
 	vector<string> synonyms;
@@ -69,7 +72,7 @@ struct Field {
 	bool is_time_explicit = false;
 	AIContext ai_context;
 	//! Descriptive vendor data, preserved without executing or inferring units.
-	string custom_extensions_json;
+	string nonportable_extensions_json;
 	//! False only if the expression is exactly a reference to this field's own name
 	bool is_computed;
 };
@@ -85,7 +88,7 @@ struct Dataset {
 	string description;
 	AIContext ai_context;
 	//! Descriptive vendor data, preserved without executing or inferring units.
-	string custom_extensions_json;
+	string nonportable_extensions_json;
 	vector<Field> fields;
 	case_insensitive_map_t<idx_t> field_index;
 
@@ -118,30 +121,34 @@ struct Relationship {
 	vector<string> to_columns;
 	AIContext ai_context;
 	//! Descriptive vendor data, preserved without executing or inferring units.
-	string custom_extensions_json;
+	string nonportable_extensions_json;
 	//! Default to the most conservative value.
 	Cardinality cardinality = Cardinality::MANY_TO_MANY;
 };
 
 struct Metric {
+	//! `dataset.metric` for a dataset-scoped metric, the bare name for a model-scoped one.
 	string name;
+	//! Empty for a model-scoped metric. A dataset-scoped metric's aggregates run over this dataset's
+	//! rows, which is what anchors an aggregate without a column reference, such as COUNT(*).
+	string dataset;
 	ModelExpression expression;
 	//! Optional logical datatype
 	string datatype;
 	string description;
 	AIContext ai_context;
 	//! Descriptive vendor data, preserved without executing or inferring units.
-	string custom_extensions_json;
+	string nonportable_extensions_json;
 };
 
 struct Model {
-	//! Top-level `version:` of the Ossie document, e.g. "0.2.0.dev0".
+	//! Top-level `version:` of the Ossie document, e.g. "0.3.0.dev0".
 	string spec_version;
 	string name;
 	string description;
 	AIContext ai_context;
 	//! Descriptive vendor data, preserved without executing or inferring units.
-	string custom_extensions_json;
+	string nonportable_extensions_json;
 	vector<Dataset> datasets;
 	vector<Relationship> relationships;
 	vector<Metric> metrics;

@@ -7,7 +7,7 @@ all valid observations and counts distinct Users within the requested observatio
 scope. It does not implement period-end, every-day qualification, carry-forward,
 user-level averages or general entity navigation.
 
-This is a project implementation profile for the fixed Ossie `0.2.0.dev0` snapshot
+This is a project implementation profile for the fixed Ossie `0.3.0.dev0` snapshot
 and `OSSIE_SQL_2026`. The profile names, capability restrictions and SQL metadata
 versions are project contracts, not additional upstream standards.
 

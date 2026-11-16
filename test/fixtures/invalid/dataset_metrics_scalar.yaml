@@ -1,0 +1,10 @@
+version: "0.3.0.dev0"
+name: dataset_metrics_scalar
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: amount
+        expression:
+          sql: amount
+    metrics: revenue

@@ -3,10 +3,12 @@
   "name": "metadata_contract",
   "description": "模型说明",
   "ai_context": "阈值规则需要显式指定",
-  "custom_extensions": [
+  "nonportable_extensions": [
     {
       "vendor_name": "business",
-      "data": "{\"review\":\"pending\"}"
+      "data": {
+        "review": "pending"
+      }
     }
   ],
   "datasets": [

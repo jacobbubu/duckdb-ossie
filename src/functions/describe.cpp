@@ -198,22 +198,22 @@ unique_ptr<GlobalTableFunctionState> MetadataInit(ClientContext &context, TableF
 	}
 	auto &model = *state->model;
 	AddMetadataRow(*state, "model", "", model.name, model.description, "", model.ai_context,
-	               model.custom_extensions_json);
+	               model.nonportable_extensions_json);
 	for (auto &dataset : model.datasets) {
 		AddMetadataRow(*state, "dataset", "", dataset.name, dataset.description, "", dataset.ai_context,
-		               dataset.custom_extensions_json);
+		               dataset.nonportable_extensions_json);
 		for (auto &field : dataset.fields) {
 			AddMetadataRow(*state, "field", dataset.name, field.name, field.description, field.label, field.ai_context,
-			               field.custom_extensions_json, &field.expression, &field);
+			               field.nonportable_extensions_json, &field.expression, &field);
 		}
 	}
 	for (auto &relationship : model.relationships) {
 		AddMetadataRow(*state, "relationship", "", relationship.name, "", "", relationship.ai_context,
-		               relationship.custom_extensions_json);
+		               relationship.nonportable_extensions_json);
 	}
 	for (auto &metric : model.metrics) {
-		AddMetadataRow(*state, "metric", "", metric.name, metric.description, "", metric.ai_context,
-		               metric.custom_extensions_json, &metric.expression);
+		AddMetadataRow(*state, "metric", metric.dataset, metric.name, metric.description, "", metric.ai_context,
+		               metric.nonportable_extensions_json, &metric.expression);
 	}
 	return std::move(state);
 }
@@ -229,7 +229,7 @@ unique_ptr<FunctionData> MetadataBind(ClientContext &context, TableFunctionBindI
 	         "synonyms",
 	         "examples",
 	         "ai_context",
-	         "custom_extensions",
+	         "nonportable_extensions",
 	         "expression_dialect",
 	         "available_dialects",
 	         "is_time_explicit"};

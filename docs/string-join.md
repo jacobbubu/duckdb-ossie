@@ -4,7 +4,7 @@
 committed native tables, one forward single-column INNER join, `missing=reject`,
 and ManyToOne cardinality. It accepts matching native INTEGER/INTEGER or
 uncollated VARCHAR/VARCHAR. This is an implementation capability, not a change
-to the pinned Ossie `0.2.0.dev0` format or full ontology conformance.
+to the pinned Ossie `0.3.0.dev0` format or full ontology conformance.
 
 Add the capability to the implementation bundle manifest. It may appear alone or
 with `concept-scalar-requires-v1`, in either order; duplicates, empty lists,

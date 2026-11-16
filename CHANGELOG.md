@@ -12,6 +12,26 @@ pins). The DuckDB version each release targets is noted separately.
 ## [Unreleased]
 
 ### Changed
+- **Breaking: models are Ossie 0.3.0.dev0 documents (apache/ossie da73e0e).** `version` must be
+  `"0.3.0.dev0"`; a 0.2.0.dev0 document is refused at load naming the supported string. What changed
+  in the format, and is now read:
+  - `expression.sql` is the OSSIE_SQL_2026 text; `dialects` is optional beside it and carries only
+    other dialects. An `expression` with neither, an empty `dialects` array, or only dialects this
+    extension cannot execute is refused naming the field or metric.
+  - `custom_extensions` is now `nonportable_extensions`, and each entry's `data` is an object rather
+    than a string. `vendor_name` is any nonempty string; the old fixed vendor list is gone. The
+    payload is surfaced verbatim by `ossie_metadata()` and never interpreted.
+  - A dataset-scoped metric's expression names its dataset's fields by bare name and a source
+    column as `source.column`; a model-scoped metric qualifies every column as `dataset.field`.
+    Relationship `from_columns`/`to_columns` name fields. A model whose metric names a bare column
+    is refused with the qualified spelling in the message.
+  - The vendored conformance models are re-taken from that commit: the per-converter fixtures the
+    previous snapshot carried no longer exist upstream, and the spec's examples and compliance
+    models (retail, stores, scott, portability m0–m3) take their place. Twelve of fifteen load; the
+    three `*_bare` portability models are refused correctly. `test/fixtures/conformance/README.md`
+    has the table.
+- All fixtures, examples and the descriptor's inline model are 0.3.0.dev0 documents, and the
+  population bundle manifests re-pin the hashes of the migrated files.
 - CI's `mcp-round-trip` job runs again and `CI gate` requires it. The community registry now serves
   duckdb_mcp for DuckDB v2.0.0 (teaguesterling/duckdb_mcp#103, closed 2026-10-28).
 - The population surface is built against DuckDB v2.0.0 alongside the core, on the same parse-tree
@@ -36,6 +56,17 @@ pins). The DuckDB version each release targets is noted separately.
   reserved word in DuckDB 2.0.
 
 ### Added
+- **Dataset-scoped metrics.** A dataset's `metrics` are loaded as `dataset.metric` and requested,
+  filtered on and described under that name; their expressions are resolved against the dataset's
+  fields and its `source.column` references. A model-scoped metric may evaluate one with
+  `AGG(dataset.metric)`, which inlines the dataset metric's expression so each side of a ratio keeps
+  its own grain. `AGG` is refused in a field or a dataset metric, with anything but one
+  `dataset.metric` argument, naming a metric that is not dataset-scoped, or naming one whose
+  aggregate has no column (`COUNT(*)`), since inlined into another grain it would count the wrong
+  rows.
+- **A filter on a metric is evaluated at that metric's grain.** `['orders.total_revenue'], [],
+  ['customers.customer_count > 1']` aggregates `customers` in its own subquery and filters on that
+  result, where it used to be folded into the `orders` HAVING clause and count the wrong rows.
 - **Population profiles.** `ossie_bundle_load(manifest_path)` loads a hash-bound core, ontology and
   mapping bundle and captures the committed source batch, so a population is queried as frozen data
   through `ossie_program()`, `ossie_population_compile(request_json)` and

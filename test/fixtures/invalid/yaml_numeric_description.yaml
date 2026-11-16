@@ -1,6 +1,6 @@
 # Hostile-but-legal YAML. Every value here must survive the YAML -> JSON -> parser path exactly,
 # and test/sql/ossie_yaml.test asserts it reads identically to yaml_edge_cases.json.
-version: "0.2.0.dev0"
+version: "0.3.0.dev0"
 name: yaml_edge_cases
 description: &shared "shared via a YAML anchor"
 ai_context:

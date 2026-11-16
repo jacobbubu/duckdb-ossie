@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "metadata_contract",
   "description": "模型说明",
   "ai_context": {
@@ -8,10 +8,12 @@
       123
     ]
   },
-  "custom_extensions": [
+  "nonportable_extensions": [
     {
       "vendor_name": "business",
-      "data": "{\"review\":\"pending\"}"
+      "data": {
+        "review": "pending"
+      }
     }
   ],
   "datasets": [
@@ -171,10 +173,12 @@
               "keep": true
             }
           },
-          "custom_extensions": [
+          "nonportable_extensions": [
             {
               "vendor_name": "business",
-              "data": "{\"unit\":\"CNY\"}"
+              "data": {
+                "unit": "CNY"
+              }
             }
           ]
         },

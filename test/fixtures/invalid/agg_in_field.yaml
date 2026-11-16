@@ -1,0 +1,9 @@
+version: "0.3.0.dev0"
+name: agg_in_field
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: amount
+        expression:
+          sql: AGG(orders.revenue)

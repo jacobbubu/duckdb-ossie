@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "daily_observation_demo",
   "description": "Design draft only. Single daily snapshot per user/date/product. Synthetic additive amount USD, not GAAP or cumulative YTD.",
   "datasets": [

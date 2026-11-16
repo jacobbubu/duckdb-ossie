@@ -3,17 +3,17 @@
   "core": {
     "path": "core.json",
     "name": "two_fact_demo",
-    "sha256": "8347b6c8f3587af3945fbb826038153fc6980f628a1ec04b1bdf0b8b3dbf0942"
+    "sha256": "4a9e04e1f223d53ebe90ae2eefa386596ccdd4036d67b4e1655ce425240f97aa"
   },
   "ontology": {
     "path": "ontology.json",
     "name": "two_fact_ontology",
-    "sha256": "558d16200239cfcf40763b48e8a56dd756db52600fad37da1a04a2798547fed0"
+    "sha256": "f351970b907b400474b5cf0521a6c76a1b495b95ca6d4e4c70310cc0d6a58d54"
   },
   "mapping": {
     "path": "mapping.json",
     "name": "two_fact_mapping",
-    "sha256": "85bf1738d97295781a4b9d692b491d1c2c4c88a187a8289f0d829cff38d7f08f"
+    "sha256": "95105525c7ba70b7be494dcb8f94dc3300f7c413565957269837114c1b570b85"
   },
   "program": {
     "facts": [

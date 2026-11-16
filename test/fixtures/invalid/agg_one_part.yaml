@@ -1,0 +1,17 @@
+version: "0.3.0.dev0"
+name: agg_one_part
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: amount
+        expression:
+          sql: amount
+    metrics:
+      - name: revenue
+        expression:
+          sql: SUM(amount)
+metrics:
+  - name: doubled
+    expression:
+      sql: AGG(revenue) * 2

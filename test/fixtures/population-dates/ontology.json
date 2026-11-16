@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0.dev0",
+  "version": "0.3.0.dev0",
   "name": "gaap_population",
   "description": "Synthetic February 2024 record scope and explicit YTD threshold.",
   "ontology": [

@@ -3,16 +3,16 @@
   "core": {
     "path": "core.json",
     "name": "gaap_demo",
-    "sha256": "e5ee6a7a0d3adf4a3c59df970f28290a3a8c4ae0135f99e50a7c56364359c247"
+    "sha256": "6934b8b1ba0b0a93dd5c393acbee2bdd948b032cb363814aca9d6037e521039e"
   },
   "ontology": {
     "path": "ontology.json",
     "name": "gaap_population",
-    "sha256": "88f6e6eb2e360c860fdc1caab0cc5b764daadf975528b2e3b6c900ef7d57d6da"
+    "sha256": "47c1b8499e081e4257fa4fc7123b791aa77108b49e610f70c44fa2c39c797428"
   },
   "mapping": {
     "path": "mapping.json",
     "name": "gaap_binding",
-    "sha256": "621f6b1d41289b1c6bf19ac94afaa54a651f4fcfd2113e5188eacc4cacc9ec7a"
+    "sha256": "aa716479e710a8d87b34d0dd5ec7e336f9b26399e1beade0982df1a3a715f4e4"
   }
 }

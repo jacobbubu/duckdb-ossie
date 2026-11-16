@@ -1,0 +1,13 @@
+version: "0.3.0.dev0"
+name: dataset_metric_unqualified
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: order_id
+        expression:
+          sql: order_id
+    metrics:
+      - name: revenue
+        expression:
+          sql: SUM(amount_cents)

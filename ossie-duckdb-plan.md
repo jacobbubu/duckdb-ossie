@@ -104,7 +104,7 @@ Explicitly out of scope. Do not build these speculatively.
 - Converting Ossie to other semantic formats (that space is well covered)
 - Any ontology / OWL / RDF layer — the Ossie ontology layer is roadmap, not spec
 - Query result caching
-- Ossie `custom_extensions` vendor blocks — parse and ignore
+- Ossie `nonportable_extensions` vendor blocks — parse, surface in metadata, never interpret
 - Natural-language → metric-name mapping. The agent does that; the extension exposes
   vocabulary and accepts exact names.
 

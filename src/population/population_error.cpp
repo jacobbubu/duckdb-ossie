@@ -1,4 +1,5 @@
 #include "population_internal.hpp"
+#include "ossie/model.hpp"
 
 namespace duckdb {
 namespace ossie {
@@ -214,8 +215,8 @@ void Empty(yyjson_val *value, const char *key, const string &object) {
 }
 
 void Version(yyjson_val *root) {
-	if (Text(root, "version") != "0.2.0.dev0") {
-		Fail("version", "parse", "supported version is 0.2.0.dev0");
+	if (Text(root, "version") != OSSIE_SPEC_VERSION) {
+		Fail("version", "parse", string("supported version is ") + OSSIE_SPEC_VERSION);
 	}
 }
 

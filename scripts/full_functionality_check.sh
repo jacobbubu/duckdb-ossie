@@ -66,7 +66,7 @@ has "ossie_compile names the fix" "ossie_load" "SELECT ossie_compile(['total_sal
 g "J2  load a model against real tables"
 q "CALL dsdgen(sf = 0.01);" >/dev/null 2>&1 || true
 eq "TPC-DS data present" "true" "SELECT count(*) > 0 FROM tpcds.main.store_sales;"
-eq "model loads and every source resolves" "tpcds_retail_model|0.2.0.dev0|5|31|4|5" \
+eq "model loads and every source resolves" "tpcds_retail_model|0.3.0.dev0|5|31|4|5" \
    "CALL ossie_load('$FIX/tpcds_semantic_model.json', rebind => MAP{'tpcds.public':'tpcds.main'}, validate_sources => true);"
 has "a wrong rebind reports all unresolved sources at once" "dataset sources do not exist" \
    "CALL ossie_load('$FIX/tpcds_semantic_model.json', rebind => MAP{'tpcds.public':'nope.nope'}, validate_sources => true);"
@@ -181,7 +181,7 @@ python3 - "$NEST" <<'PY'
 import json,sys
 def f(n,e=None): return {"name":n,"datatype":"String",
   "expression":{"dialects":[{"dialect":"ANSI_SQL","expression":e or n}]}}
-json.dump({"version":"0.2.0.dev0","name":"nested","datasets":[
+json.dump({"version":"0.3.0.dev0","name":"nested","datasets":[
  {"name":"nf","source":"tpcds.main.nf","fields":[f("k1"),f("amt")]},
  {"name":"nd","source":"tpcds.main.nd","primary_key":["k1"],
   "fields":[f("k1"),f("label"),f("mid","label || 'M'"),f("outer_f","mid || 'O'")]}],

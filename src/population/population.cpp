@@ -4569,7 +4569,7 @@ vector<string> VocabularyColumns(const string &vocabulary) {
 		         "examples_json",
 		         "instructions",
 		         "ai_context_json",
-		         "custom_extensions_json",
+		         "nonportable_extensions_json",
 		         "load_preflight_validated",
 		         "execution_verified"};
 	} else if (vocabulary == "fields") {
@@ -4588,7 +4588,7 @@ vector<string> VocabularyColumns(const string &vocabulary) {
 		         "examples_json",
 		         "instructions",
 		         "ai_context_json",
-		         "custom_extensions_json",
+		         "nonportable_extensions_json",
 		         "is_time",
 		         "is_time_explicit",
 		         "is_computed",
@@ -4618,7 +4618,7 @@ void VocabularyRows(const Bundle &b, const string &vocabulary, vector<vector<Val
 			        Value(m.expression.sql), Value(m.expression.dialect),
 			        Value(JSONStrings(m.expression.available_dialects)), Value(JSONStrings(m.ai_context.synonyms)),
 			        Value(JSONStrings(m.ai_context.examples)), Value(m.ai_context.instructions),
-			        Value(m.ai_context.raw_json), Value(m.custom_extensions_json), Value::BOOLEAN(true),
+			        Value(m.ai_context.raw_json), Value(m.nonportable_extensions_json), Value::BOOLEAN(true),
 			        Value::BOOLEAN(false)});
 		}
 	} else if (vocabulary == "fields") {
@@ -4642,7 +4642,7 @@ void VocabularyRows(const Bundle &b, const string &vocabulary, vector<vector<Val
 				        Value(JSONStrings(f.ai_context.examples)),
 				        Value(f.ai_context.instructions),
 				        Value(f.ai_context.raw_json),
-				        Value(f.custom_extensions_json),
+				        Value(f.nonportable_extensions_json),
 				        Value::BOOLEAN(f.is_time),
 				        Value::BOOLEAN(f.is_time_explicit),
 				        Value::BOOLEAN(f.is_computed),

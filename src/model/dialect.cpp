@@ -164,7 +164,9 @@ bool IsLanguageFunction(const string &name) {
 	    "log", "log10", "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "radians", "degrees", "pi", "greatest",
 	    "least",
 	    // conditional
-	    "iff", "nullif", "coalesce", "nvl", "nvl2", "zeroifnull", "nullifzero"};
+	    "iff", "nullif", "coalesce", "nvl", "nvl2", "zeroifnull", "nullifzero",
+	    // AGG(dataset.metric), which the parser replaces with the dataset-scoped metric's expression
+	    "agg"};
 	return NAMES.count(name) > 0;
 }
 

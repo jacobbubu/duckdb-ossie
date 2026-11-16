@@ -1,0 +1,16 @@
+version: "0.3.0.dev0"
+name: agg_unknown
+datasets:
+  - name: orders
+    source: memory.main.orders
+    fields:
+      - name: amount
+        expression:
+          sql: amount
+metrics:
+  - name: total
+    expression:
+      sql: SUM(orders.amount)
+  - name: doubled
+    expression:
+      sql: AGG(orders.total) * 2

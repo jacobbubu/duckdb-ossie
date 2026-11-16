@@ -36,6 +36,10 @@ struct CompileOptions {
 	JoinType grain_join = JoinType::OUTER;
 };
 
+//! Whether `name` is an aggregate function this compiler recognises. Not exhaustive: anything missed
+//! reaches DuckDB as a plain function and is rejected there with DuckDB's own message.
+bool IsAggregateName(const string &name);
+
 //! Requires each metric's recognized original-model aggregate grain to be the designated dataset.
 //! Does not infer recognized grainless aggregates. Needs separate original/expanded expression
 //! validation, Compile/binding and data-key checks; the aggregate-name set is not exhaustive.

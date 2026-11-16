@@ -22,15 +22,24 @@ Apache Ossie semantic model fixtures
   (incubating) repository and are used as test data only. They are not part of the built
   extension and are not distributed in the released binary.
 
-  All are taken at apache/ossie commit 8dd6732da354f22ca71f16d82626a46039ecdcd9.
+  All are taken at apache/ossie commit da73e0e1b5c5b1d17aa7ca763fe1fc5db9bc943c.
 
-    test/fixtures/conformance/ossie-schema.json                     from core-spec/
-    test/fixtures/conformance/orionbelt/tpcds_ossie.yaml            from converters/orionbelt/tests/fixtures/
-    test/fixtures/conformance/gooddata/ossie_tpcds.yaml             from converters/gooddata/tests/fixtures/
-    test/fixtures/conformance/omni/fixtureA_ossie.yaml              from converters/omni/tests/fixtures/
-    test/fixtures/conformance/databricks/ossie_fixtureA_ossie.yaml  from converters/databricks/java/src/test/resources/
-    test/fixtures/conformance/nvidia/sales.ossie.yaml               from converters/nvidia/tests/fixtures/
-    test/fixtures/conformance/examples/tpcds_semantic_model.yaml    from examples/
+    test/fixtures/conformance/ossie-schema.json                                               from core-spec/
+    test/fixtures/conformance/examples/tpcds_semantic_model.yaml                              from examples/
+    test/fixtures/conformance/examples/renamed_fields.yaml                                    from examples/
+    test/fixtures/conformance/examples/flights.semantic_model.yaml                            from examples/
+    test/fixtures/conformance/compliance/wide_table/retail/retail_model.ossie.yaml            from compliance/wide_table/retail/
+    test/fixtures/conformance/compliance/wide_table/stores/stores_model.ossie.yaml            from compliance/wide_table/stores/
+    test/fixtures/conformance/compliance/wide_table/stores/stores_ambiguous_model.ossie.yaml  from compliance/wide_table/stores/
+    test/fixtures/conformance/compliance/query/scott/scott_model.ossie.yaml                   from compliance/query/scott/
+    test/fixtures/conformance/compliance/portability/m0/m0_ansi_qualified.ossie.yaml          from compliance/portability/m0/
+    test/fixtures/conformance/compliance/portability/m0/m0_ossiesql_qualified.ossie.yaml      from compliance/portability/m0/
+    test/fixtures/conformance/compliance/portability/m0/m0_sum_bare.ossie.yaml                from compliance/portability/m0/
+    test/fixtures/conformance/compliance/portability/m1/m1_scalar_field.ossie.yaml            from compliance/portability/m1/
+    test/fixtures/conformance/compliance/portability/m2/m2_aggregates_bare.ossie.yaml         from compliance/portability/m2/
+    test/fixtures/conformance/compliance/portability/m2/m2_aggregates_qualified.ossie.yaml    from compliance/portability/m2/
+    test/fixtures/conformance/compliance/portability/m3/m3_filtered_agg_bare.ossie.yaml       from compliance/portability/m3/
+    test/fixtures/conformance/compliance/portability/m3/m3_filtered_agg_qualified.ossie.yaml  from compliance/portability/m3/
 
   Copyright The Apache Software Foundation.
   Licensed under the Apache License, Version 2.0.

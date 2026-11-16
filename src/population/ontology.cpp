@@ -163,7 +163,7 @@ Ontology ParseOntology(yyjson_val *root) {
 Mapping ParseMapping(yyjson_val *root) {
 	Keys(root,
 	     {"version", "name", "description", "ontology_ref", "semantic_model_ref", "concept_mappings",
-	      "custom_extensions"},
+	      "nonportable_extensions"},
 	     "mapping");
 	Version(root);
 	Mapping mapping;
