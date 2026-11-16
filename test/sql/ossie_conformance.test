@@ -59,7 +59,7 @@ sales	0.2.0.dev0	2	6	1	1
 query T
 SELECT ossie_compile(['revenue_per_customer'], [], []);
 ----
-SELECT (orders.agg_0 / customers.agg_0) AS revenue_per_customer FROM (SELECT count(DISTINCT customers.customer_id) AS agg_0 FROM analytics.public.customers AS customers) AS customers CROSS JOIN (SELECT sum(orders.subtotal) AS agg_0 FROM analytics.public.orders AS orders) AS orders
+SELECT (orders.agg_0 / customers.agg_0) AS revenue_per_customer FROM ((SELECT count(DISTINCT customers.customer_id) AS agg_0 FROM analytics.public.customers AS customers) AS customers CROSS JOIN (SELECT sum(orders.subtotal) AS agg_0 FROM analytics.public.orders AS orders) AS orders)
 
 # --- upstream's own example model -------------------------------------------------------------------
 # The file the flat document shape was introduced with. Its plain metrics compile exactly as our
@@ -72,7 +72,7 @@ tpcds_retail_model	0.2.0.dev0	5	31	4	8
 query T
 SELECT ossie_compile(['total_sales'], ['store.s_state'], []);
 ----
-SELECT store.s_state AS "store.s_state", sum(store_sales.ss_ext_sales_price) AS total_sales FROM tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk)) GROUP BY store.s_state
+SELECT store.s_state AS "store.s_state", sum(store_sales.ss_ext_sales_price) AS total_sales FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk))) GROUP BY store.s_state
 
 # Three of its metrics are window functions. A window's rows depend on the dimensions requested, which
 # the metric cannot know: grouped by date and category, its running total runs across categories in an

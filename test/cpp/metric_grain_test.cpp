@@ -104,25 +104,28 @@ void Run(const std::string &root) {
 	bool groups_correct = true;
 	bool north = false, south = false;
 	for (idx_t row = 0; row < sums->RowCount(); row++) {
-		auto label = sums->GetValue(0, row).ToString();
+		auto label = sums->Collection().GetValue(0, row).ToString();
 		north |= label == "North";
 		south |= label == "South";
-		groups_correct &= (label == "North" && sums->GetValue(1, row).ToString() == "24.98" &&
-		                   sums->GetValue(2, row).ToString() == "4") ||
-		                  (label == "South" && sums->GetValue(1, row).ToString() == "30.03" &&
-		                   sums->GetValue(2, row).ToString() == "2");
+		groups_correct &= (label == "North" && sums->Collection().GetValue(1, row).ToString() == "24.98" &&
+		                   sums->Collection().GetValue(2, row).ToString() == "4") ||
+		                  (label == "South" && sums->Collection().GetValue(1, row).ToString() == "30.03" &&
+		                   sums->Collection().GetValue(2, row).ToString() == "2");
 	}
 	Check(groups_correct && north && south,
 	      "group membership, totals and counts match independent hand-derived oracle");
 	auto values = connection.Query(CompileToSQL(model, valid, {}, {}, options));
 	Check(!values->HasError() && values->RowCount() == 1, "all designated fact metrics execute");
-	Check(values->GetValue(0, 0).ToString() == "55.01" && values->GetValue(2, 0).ToString() == "5" &&
-	          values->GetValue(3, 0).ToString() == "6" && values->GetValue(4, 0).ToString() == "24.98" &&
-	          values->GetValue(5, 0).ToString() == "24.98" && values->GetValue(7, 0).ToString() == "6" &&
-	          values->GetValue(8, 0).ToString() == "55.01",
+	Check(values->Collection().GetValue(0, 0).ToString() == "55.01" &&
+	          values->Collection().GetValue(2, 0).ToString() == "5" &&
+	          values->Collection().GetValue(3, 0).ToString() == "6" &&
+	          values->Collection().GetValue(4, 0).ToString() == "24.98" &&
+	          values->Collection().GetValue(5, 0).ToString() == "24.98" &&
+	          values->Collection().GetValue(7, 0).ToString() == "6" &&
+	          values->Collection().GetValue(8, 0).ToString() == "55.01",
 	      "exact fact metrics/CASE/constant field match hand oracle");
-	Check(std::abs(values->GetValue(1, 0).GetValue<double>() - 11.002) < 1e-12 &&
-	          std::abs(values->GetValue(6, 0).GetValue<double>() - 55.01 / 6) < 1e-12,
+	Check(std::abs(values->Collection().GetValue(1, 0).GetValue<double>() - 11.002) < 1e-12 &&
+	          std::abs(values->Collection().GetValue(6, 0).GetValue<double>() - 55.01 / 6) < 1e-12,
 	      "AVG and wrapped ratio match hand oracle");
 	for (auto name : {"nested_star", "hidden_sum_metric", "hidden_window_metric"}) {
 		RequireMetricGrain(model, {name}, "fact");
@@ -132,7 +135,7 @@ void Run(const std::string &root) {
 	}
 	RequireMetricGrain(model, {"unrecognized_aggregate"}, "fact");
 	auto escaped = connection.Query(CompileToSQL(model, {"unrecognized_aggregate"}, {}, {}, options));
-	Check(!escaped->HasError() && escaped->GetValue(0, 0).ToString() == "58.01",
+	Check(!escaped->HasError() && escaped->Collection().GetValue(0, 0).ToString() == "58.01",
 	      "unrecognized aggregate requires separate strict expression whitelist; binder alone is insufficient");
 
 	CompileOptions keyed;
@@ -160,7 +163,7 @@ void Run(const std::string &root) {
 	       "bare name is a dimension only when declared as a shared key");
 	connection.Query("CREATE TABLE r6_dimension_alt AS SELECT * FROM r6_dimension WHERE id = 1");
 	BaseTableRef alt;
-	alt.table_name = "r6_dimension_alt";
+	alt.SetTable(Identifier("r6_dimension_alt"));
 	keyed.population_sources["dimension"] = &alt;
 	auto replaced = CompileToSQL(model, {"amount_sum"}, {"key"}, {}, keyed);
 	Check(replaced.find("r6_dimension_alt AS dimension") != string::npos && count_rows({"amount_sum"}, keyed) == 1,

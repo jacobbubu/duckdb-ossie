@@ -77,12 +77,12 @@ vector<unique_ptr<TableRef>> Sources(bool reversed = false) {
 	vector<unique_ptr<TableRef>> out;
 	for (auto &name : vector<string> {reversed ? "c" : "r", reversed ? "r" : "c"}) {
 		auto table = make_uniq<BaseTableRef>();
-		table->table_name = name;
+		table->SetTable(Identifier(name));
 		out.push_back(std::move(table));
 	}
 	return out;
 }
-unique_ptr<MaterializedQueryResult> Query(Connection &engine, const string &sql) {
+unique_ptr<QueryResult> Query(Connection &engine, const string &sql) {
 	auto result = engine.Query(sql);
 	if (result->HasError())
 		throw std::runtime_error(result->GetError() + "\n" + sql);
@@ -99,7 +99,7 @@ string Users(Connection &engine, const FactProgram &program, const FactCohort &c
 	auto result = Query(engine, query->ToString());
 	string users;
 	for (idx_t row = 0; row < result->RowCount(); row++)
-		users += result->GetValue(0, row).ToString();
+		users += result->Collection().GetValue(0, row).ToString();
 	return users;
 }
 void Run() {
@@ -121,23 +121,28 @@ void Run() {
 	    program, {"income", "expense", "balance", "revenue_rows", "revenue_values", "cost_rows", "cost_values"},
 	    "common", {"all", "", {}}, Sources());
 	auto actual = Query(engine, users->ToString());
-	Check(actual->RowCount() == 3 && actual->GetValue(0, 0).ToString() == "A" &&
-	          actual->GetValue(0, 1).ToString() == "B" && actual->GetValue(0, 2).ToString() == "C",
+	Check(actual->RowCount() == 3 && actual->Collection().GetValue(0, 0).ToString() == "A" &&
+	          actual->Collection().GetValue(0, 1).ToString() == "B" &&
+	          actual->Collection().GetValue(0, 2).ToString() == "C",
 	      "common domain uses row presence, retaining all-NULL C and excluding one-sided D/E");
-	Check(actual->GetValue(1, 0).ToString() == "375.00" && actual->GetValue(2, 0).ToString() == "85.00" &&
-	          actual->GetValue(3, 0).ToString() == "290.00",
+	Check(actual->Collection().GetValue(1, 0).ToString() == "375.00" &&
+	          actual->Collection().GetValue(2, 0).ToString() == "85.00" &&
+	          actual->Collection().GetValue(3, 0).ToString() == "290.00",
 	      "separately reduced amounts match independent cents totals 37500/8500/29000");
-	Check(actual->GetValue(1, 1).ToString() == "80.00" && actual->GetValue(2, 1).ToString() == "30.00" &&
-	          actual->GetValue(3, 1).ToString() == "50.00",
+	Check(actual->Collection().GetValue(1, 1).ToString() == "80.00" &&
+	          actual->Collection().GetValue(2, 1).ToString() == "30.00" &&
+	          actual->Collection().GetValue(3, 1).ToString() == "50.00",
 	      "second member independently totals 8000/3000/5000 cents");
-	Check(actual->GetValue(1, 2).IsNull() && actual->GetValue(2, 2).IsNull() && actual->GetValue(3, 2).IsNull() &&
-	          actual->GetValue(4, 2).GetValue<int64_t>() == 1 && actual->GetValue(5, 2).GetValue<int64_t>() == 0,
+	Check(actual->Collection().GetValue(1, 2).IsNull() && actual->Collection().GetValue(2, 2).IsNull() &&
+	          actual->Collection().GetValue(3, 2).IsNull() &&
+	          actual->Collection().GetValue(4, 2).GetValue<int64_t>() == 1 &&
+	          actual->Collection().GetValue(5, 2).GetValue<int64_t>() == 0,
 	      "SUM all-NULL stays NULL; COUNT(User) counts row, COUNT(amount) excludes NULL");
-	Check(actual->types[1] == LogicalType::DECIMAL(38, 2) && actual->types[3] == LogicalType::DECIMAL(38, 2) &&
-	          actual->types[4] == LogicalType::BIGINT,
+	Check(actual->GetTypes()[1] == LogicalType::DECIMAL(38, 2) &&
+	          actual->GetTypes()[3] == LogicalType::DECIMAL(38, 2) && actual->GetTypes()[4] == LogicalType::BIGINT,
 	      "actual DuckDB reduction and arithmetic bind money/scale and count types");
 	auto fanout = Query(engine, "SELECT sum(r.value) FROM r JOIN c ON r.who=c.who AND r.day=c.day WHERE r.who='A'");
-	Check(fanout->GetValue(0, 0).ToString() == "525.00",
+	Check(fanout->Collection().GetValue(0, 0).ToString() == "525.00",
 	      "raw fact join negative control inflates the same revenue to 525");
 	auto a = Predicate("income >= 100"), b = Predicate("expense < 80");
 	Check(Users(engine, program, a) == "A" && Users(engine, program, b) == "B",
@@ -151,29 +156,33 @@ void Run() {
 	      "A minus B retains TRUE A when B predicate is UNKNOWN");
 	auto not_nullable =
 	    Query(engine, "SELECT who FROM (SELECT who,sum(value) amount FROM c GROUP BY who) WHERE NOT(amount<80)");
-	Check(not_nullable->RowCount() == 1 && not_nullable->GetValue(0, 0).ToString() == "A",
+	Check(not_nullable->RowCount() == 1 && not_nullable->Collection().GetValue(0, 0).ToString() == "A",
 	      "plain nullable NOT negative control incorrectly drops N");
 	auto start = Value::DATE(2026, 2, 1), end = Value::DATE(2026, 2, 28);
 	auto windows = Query(
 	    engine,
 	    CompileFactWindows(program, {"previous", "rolling"}, "entire_capture", start, end, Sources())->ToString());
-	Check(windows->RowCount() == 6 && windows->GetValue(2, 0).ToString() == "200.00" &&
-	          windows->GetValue(3, 0).ToString() == "250.00" && windows->GetValue(2, 1).ToString() == "50.00" &&
-	          windows->GetValue(3, 1).ToString() == "75.00",
+	Check(windows->RowCount() == 6 && windows->Collection().GetValue(2, 0).ToString() == "200.00" &&
+	          windows->Collection().GetValue(3, 0).ToString() == "250.00" &&
+	          windows->Collection().GetValue(2, 1).ToString() == "50.00" &&
+	          windows->Collection().GetValue(3, 1).ToString() == "75.00",
 	      "display filter runs after sparse LAG and two-row SUM, preserving January input");
-	Check(windows->GetValue(0, 2).ToString() == "B" && windows->GetValue(2, 2).ToString() == "80.00" &&
-	          windows->GetValue(3, 2).ToString() == "80.00" && windows->GetValue(3, 3).IsNull(),
+	Check(windows->Collection().GetValue(0, 2).ToString() == "B" &&
+	          windows->Collection().GetValue(2, 2).ToString() == "80.00" &&
+	          windows->Collection().GetValue(3, 2).ToString() == "80.00" &&
+	          windows->Collection().GetValue(3, 3).IsNull(),
 	      "zero is observed money; all-NULL row window is NULL");
 	auto early = Query(engine, "SELECT lag(value,1,NULL) OVER(PARTITION BY who ORDER BY day) FROM r WHERE day BETWEEN "
 	                           "DATE '2026-02-01' AND DATE '2026-02-28' ORDER BY who,day");
-	Check(early->GetValue(0, 0).IsNull(), "filter-before-window negative control loses January predecessor");
+	Check(early->Collection().GetValue(0, 0).IsNull(),
+	      "filter-before-window negative control loses January predecessor");
 	Query(engine, "SET default_order='DESC'");
 	auto descending_session = Query(
 	    engine,
 	    CompileFactWindows(program, {"previous", "rolling"}, "entire_capture", start, end, Sources())->ToString());
-	Check(descending_session->GetValue(0, 0).ToString() == "A" &&
-	          descending_session->GetValue(2, 0).ToString() == "200.00" &&
-	          descending_session->GetValue(3, 0).ToString() == "250.00",
+	Check(descending_session->Collection().GetValue(0, 0).ToString() == "A" &&
+	          descending_session->Collection().GetValue(2, 0).ToString() == "200.00" &&
+	          descending_session->Collection().GetValue(3, 0).ToString() == "250.00",
 	      "window direction and output order independent of descending session default");
 	Query(engine, "RESET default_order");
 	auto zero_input = Input();
@@ -182,7 +191,7 @@ void Run() {
 	auto zero_program = BindFactProgram(zero_input);
 	auto zero = Query(
 	    engine, CompileFactWindows(zero_program, {"rolling"}, "entire_capture", start, end, Sources())->ToString());
-	Check(zero->GetValue(2, 0).ToString() == "50.00" && zero->GetValue(2, 3).IsNull(),
+	Check(zero->Collection().GetValue(2, 0).ToString() == "50.00" && zero->Collection().GetValue(2, 3).IsNull(),
 	      "zero preceding frame includes current row only and preserves all-NULL SUM");
 	Query(engine,
 	      "CREATE TABLE long_r(who,day,value) AS SELECT 'L'::VARCHAR, DATE '2020-01-01'+i::INTEGER, 1::DECIMAL(18,2) "
@@ -192,12 +201,13 @@ void Run() {
 	                               "BETWEEN 366 PRECEDING AND CURRENT ROW)";
 	auto maximum_program = BindFactProgram(maximum_input);
 	auto long_sources = Sources();
-	long_sources[0]->Cast<BaseTableRef>().table_name = "long_r";
+	long_sources[0]->Cast<BaseTableRef>().SetTable(Identifier("long_r"));
 	auto maximum = Query(engine, CompileFactWindows(maximum_program, {"rolling"}, "entire_capture", Value(), Value(),
 	                                                std::move(long_sources))
 	                                 ->ToString());
-	Check(maximum->RowCount() == 400 && maximum->GetValue(2, 365).ToString() == "366.00" &&
-	          maximum->GetValue(2, 366).ToString() == "367.00" && maximum->GetValue(2, 399).ToString() == "367.00",
+	Check(maximum->RowCount() == 400 && maximum->Collection().GetValue(2, 365).ToString() == "366.00" &&
+	          maximum->Collection().GetValue(2, 366).ToString() == "367.00" &&
+	          maximum->Collection().GetValue(2, 399).ToString() == "367.00",
 	      "366 preceding boundary means 367 observed rows, without calendar filling");
 	Query(engine, "INSERT INTO r VALUES "
 	              "('Z','2026-01-01',NULL),('Z','2026-01-03',2),('Z','2026-01-05',NULL),('Z','2026-01-09',3)");
@@ -205,9 +215,12 @@ void Run() {
 	    engine, CompileFactWindows(program, {"previous", "rolling"}, "entire_capture", Value(), Value(), Sources())
 	                ->ToString());
 	auto n = null_window->RowCount();
-	Check(null_window->GetValue(0, n - 4).ToString() == "Z" && null_window->GetValue(2, n - 4).IsNull() &&
-	          null_window->GetValue(2, n - 3).IsNull() && null_window->GetValue(2, n - 2).ToString() == "2.00" &&
-	          null_window->GetValue(2, n - 1).IsNull() && null_window->GetValue(3, n - 1).ToString() == "3.00",
+	Check(null_window->Collection().GetValue(0, n - 4).ToString() == "Z" &&
+	          null_window->Collection().GetValue(2, n - 4).IsNull() &&
+	          null_window->Collection().GetValue(2, n - 3).IsNull() &&
+	          null_window->Collection().GetValue(2, n - 2).ToString() == "2.00" &&
+	          null_window->Collection().GetValue(2, n - 1).IsNull() &&
+	          null_window->Collection().GetValue(3, n - 1).ToString() == "3.00",
 	      "LAG does not skip NULL; absent predecessor and NULL predecessor both produce explicit NULL");
 	Query(engine, "CREATE TABLE empty_c AS SELECT * FROM c WHERE FALSE");
 	auto single_input = Input();
@@ -216,11 +229,11 @@ void Run() {
 	auto single_program = BindFactProgram(single_input);
 	auto single_result =
 	    Query(engine, CompileFactUsers(single_program, {"income"}, "common", {"all", "", {}}, Sources())->ToString());
-	Check(single_result->RowCount() == 4 && single_result->GetValue(0, 2).ToString() == "C" &&
-	          single_result->GetValue(1, 2).IsNull(),
+	Check(single_result->RowCount() == 4 && single_result->Collection().GetValue(0, 2).ToString() == "C" &&
+	          single_result->Collection().GetValue(1, 2).IsNull(),
 	      "fact with no requested aggregates still contributes its row-presence domain");
 	auto empty_sources = Sources();
-	empty_sources[1]->Cast<BaseTableRef>().table_name = "empty_c";
+	empty_sources[1]->Cast<BaseTableRef>().SetTable(Identifier("empty_c"));
 	Check(Query(engine,
 	            CompileFactUsers(program, {"income"}, "common", {"all", "", {}}, std::move(empty_sources))->ToString())
 	              ->RowCount() == 0,
@@ -340,11 +353,10 @@ void Run() {
 		Refuse([&] { CompileFactUsers(program, {"income"}, "common", Predicate(sql), Sources()); },
 		       "reject cohort boundary: " + sql);
 	Refuse([&] { CompileFactUsers(program, {"income"}, "union", a, Sources()); }, "unsupported fact domain refused");
-	Refuse(
-	    [&] {
-		    CompileFactUsers(program, {"income", "INCOME"}, "common", a, Sources());
-	    },
-	    "duplicate selected metric refused");
+	auto duplicate_metric = [&] {
+		CompileFactUsers(program, {"income", "INCOME"}, "common", a, Sources());
+	};
+	Refuse(duplicate_metric, "duplicate selected metric refused");
 	Refuse([&] { CompileFactWindows(program, {"previous"}, "display_range", start, end, Sources()); },
 	       "pre-window input filtering refused");
 	Refuse([&] { CompileFactWindows(program, {"previous"}, "entire_capture", end, start, Sources()); },
@@ -367,8 +379,10 @@ void Run() {
 	          minimum_chunk->GetValue(2, 0).IsNull() && minimum_chunk->GetValue(3, 0).ToString() == "1.01",
 	      "complete minimum-date row and exact sparse window values preserved");
 	Check(!minimum_result->Fetch() && !minimum_result->HasError(), "minimum-date stream drains without error");
-	Check(engine.Query(minimum_tree->ToString())->HasError(),
-	      "rendered date text fails independently; typed plan is not promised replayable");
+	auto replayed = engine.Query(minimum_tree->ToString());
+	Check(!replayed->HasError() && replayed->RowCount() == 1 &&
+	          replayed->Collection().GetValue(1, 0).GetValue<date_t>().days == std::numeric_limits<int32_t>::min(),
+	      "rendered SQL reaches the INT32_MIN day by arithmetic, so the typed plan replays as text");
 }
 } // namespace
 int main() {

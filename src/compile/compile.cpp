@@ -18,6 +18,7 @@
 #include "duckdb/parser/tableref/subqueryref.hpp"
 #include "ossie/catalog.hpp"
 #include "ossie/dialect.hpp"
+#include "ossie/names.hpp"
 
 #include <algorithm>
 
@@ -36,7 +37,7 @@ const string &AliasFor(const Dataset &dataset) {
 void QualifyColumns(unique_ptr<ParsedExpression> &expr, const string &alias) {
 	if (expr->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
 		auto &colref = expr->Cast<ColumnRefExpression>();
-		expr = make_uniq<ColumnRefExpression>(colref.column_names.back(), alias);
+		expr = make_uniq<ColumnRefExpression>(Identifier(ColumnNames(colref).back()), Identifier(alias));
 		return;
 	}
 	ParsedExpressionIterator::EnumerateChildren(
@@ -48,18 +49,19 @@ void QualifyColumns(unique_ptr<ParsedExpression> &expr, const string &alias) {
 void InlineFields(const Model &model, unique_ptr<ParsedExpression> &expr) {
 	if (expr->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
 		auto &colref = expr->Cast<ColumnRefExpression>();
-		if (colref.column_names.size() == 2) {
-			auto dataset = model.FindDataset(colref.column_names[0]);
+		if (ColumnNames(colref).size() == 2) {
+			auto dataset = model.FindDataset(ColumnNames(colref)[0]);
 			if (!dataset) {
 				// Not a model dataset -- already a physical reference, leave it alone.
 				return;
 			}
-			auto field = dataset->FindField(colref.column_names[1]);
+			auto field = dataset->FindField(ColumnNames(colref)[1]);
 			if (!field) {
 				// The Ossie schema does not require that every column a model expression names be
 				// declared as a field, and real models rely on that. Such a name is a physical
 				// column: qualify it to the bound alias and let DuckDB's binder resolve it.
-				expr = make_uniq<ColumnRefExpression>(colref.column_names[1], AliasFor(*dataset));
+				expr =
+				    make_uniq<ColumnRefExpression>(Identifier(ColumnNames(colref)[1]), Identifier(AliasFor(*dataset)));
 				return;
 			}
 			auto replacement = field->expression.tree->Copy();
@@ -75,8 +77,8 @@ void InlineFields(const Model &model, unique_ptr<ParsedExpression> &expr) {
 void CollectDatasets(const ParsedExpression &expr, case_insensitive_set_t &datasets) {
 	if (expr.GetExpressionClass() == ExpressionClass::COLUMN_REF) {
 		auto &colref = expr.Cast<ColumnRefExpression>();
-		if (colref.column_names.size() == 2) {
-			datasets.insert(colref.column_names[0]);
+		if (ColumnNames(colref).size() == 2) {
+			datasets.insert(ColumnNames(colref)[0]);
 		}
 	}
 	ParsedExpressionIterator::EnumerateChildren(
@@ -132,12 +134,14 @@ unique_ptr<TableRef> BindTable(const Dataset &dataset, const CompileOptions &opt
 	auto frozen = options.population_sources.find(dataset.name);
 	if (frozen != options.population_sources.end()) {
 		auto table_ref = frozen->second->Copy();
-		table_ref->alias = AliasFor(dataset);
+		table_ref->alias = Identifier(AliasFor(dataset));
 		return table_ref;
 	}
 	auto table_ref = make_uniq<BaseTableRef>();
-	SplitSource(dataset.source_bound, table_ref->catalog_name, table_ref->schema_name, table_ref->table_name);
-	table_ref->alias = AliasFor(dataset);
+	string catalog, schema, name;
+	SplitSource(dataset.source_bound, catalog, schema, name);
+	table_ref->SetQualifiedName(Identifier(catalog), Identifier(schema), Identifier(name));
+	table_ref->alias = Identifier(AliasFor(dataset));
 	return std::move(table_ref);
 }
 
@@ -174,7 +178,7 @@ unique_ptr<ParsedExpression> DimensionAt(const Dimension &dimension, const Datas
 Dimension ResolveDimension(const Model &model, const string &request, const CompileOptions &options) {
 	vector<unique_ptr<ParsedExpression>> parsed;
 	try {
-		parsed = Parser::ParseExpressionList(request);
+		parsed = Parser::GetBuiltinParser().ParseExpressionList(request);
 	} catch (const ParserException &) {
 		throw InvalidInputException("ossie: dimension \"%s\" is not a valid name", request);
 	}
@@ -182,9 +186,10 @@ Dimension ResolveDimension(const Model &model, const string &request, const Comp
 		throw InvalidInputException("ossie: dimension \"%s\" must be a dataset.field name", request);
 	}
 	auto &colref = parsed[0]->Cast<ColumnRefExpression>();
-	if (colref.column_names.size() == 1) {
+	auto names = ColumnNames(colref);
+	if (names.size() == 1) {
 		for (auto &key : options.shared_keys) {
-			if (StringUtil::CIEquals(key.name, colref.column_names[0])) {
+			if (StringUtil::CIEquals(key.name, names[0])) {
 				Dimension result;
 				result.shared_key = &key;
 				result.alias = key.name;
@@ -192,19 +197,18 @@ Dimension ResolveDimension(const Model &model, const string &request, const Comp
 			}
 		}
 	}
-	if (colref.column_names.size() != 2) {
+	if (names.size() != 2) {
 		throw InvalidInputException("ossie: dimension \"%s\" must be qualified as dataset.field", request);
 	}
 
-	auto dataset = model.FindDataset(colref.column_names[0]);
+	auto dataset = model.FindDataset(names[0]);
 	if (!dataset) {
 		throw InvalidInputException("ossie: dimension \"%s\" names dataset \"%s\", which the model does not "
 		                            "declare",
-		                            request, colref.column_names[0]);
+		                            request, names[0]);
 	}
-	if (!dataset->FindField(colref.column_names[1])) {
-		throw InvalidInputException("ossie: dataset \"%s\" has no field \"%s\".%s", dataset->name,
-		                            colref.column_names[1],
+	if (!dataset->FindField(names[1])) {
+		throw InvalidInputException("ossie: dataset \"%s\" has no field \"%s\".%s", dataset->name, names[1],
 		                            StringUtil::CandidatesErrorMessage(DimensionNames(model), request, "Did you mean"));
 	}
 
@@ -311,12 +315,13 @@ void CheckFilterNode(const ParsedExpression &expr, const string &request, const 
 	case ExpressionClass::FUNCTION: {
 		auto &function = expr.Cast<FunctionExpression>();
 		// Arithmetic, || and LIKE all arrive here with is_operator set.
-		if (function.is_operator || IsAggregateName(function.function_name) || options.allow_filter_functions) {
+		auto &name = function.FunctionName().GetIdentifierName();
+		if (function.IsOperator() || IsAggregateName(name) || options.allow_filter_functions) {
 			return;
 		}
 		throw InvalidInputException("ossie: filter \"%s\" calls function \"%s\". Load the model with "
 		                            "allow_filter_functions => true to permit function calls in filters",
-		                            request, function.function_name);
+		                            request, name);
 	}
 	case ExpressionClass::SUBQUERY:
 		throw InvalidInputException("ossie: filter \"%s\" contains a subquery, which could read tables the "
@@ -373,7 +378,7 @@ const WindowExpression *FindWindow(const ParsedExpression &expr) {
 void CollectGrains(const Model &model, const ParsedExpression &expr, const string &metric_name,
                    case_insensitive_set_t &grains, bool &has_grainless) {
 	if (expr.GetExpressionClass() == ExpressionClass::FUNCTION &&
-	    IsAggregateName(expr.Cast<FunctionExpression>().function_name)) {
+	    IsAggregateName(expr.Cast<FunctionExpression>().FunctionName().GetIdentifierName())) {
 		case_insensitive_set_t datasets;
 		CollectDatasets(expr, datasets);
 		if (datasets.empty()) {
@@ -407,7 +412,7 @@ MetricAnalysis AnalyzeMetric(const Model &model, const string &metric_name) {
 		    "ossie: metric \"%s\" uses the window function %s, whose result changes with the dimensions "
 		    "requested in a way the model does not define: the rows it runs over depend on the request, but "
 		    "its partition and order are fixed in the metric. Window metrics are not supported yet",
-		    metric->name, StringUtil::Upper(window->function_name));
+		    metric->name, StringUtil::Upper(window->FunctionName().GetIdentifierName()));
 	}
 	MetricAnalysis result;
 	result.metric = metric;
@@ -428,14 +433,14 @@ void ResolveFilterNames(const Model &model, unique_ptr<ParsedExpression> &expr, 
                         bool &is_aggregate) {
 	if (expr->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
 		auto &colref = expr->Cast<ColumnRefExpression>();
-		if (colref.column_names.size() == 1) {
-			auto metric = model.FindMetric(colref.column_names[0]);
+		if (ColumnNames(colref).size() == 1) {
+			auto metric = model.FindMetric(ColumnNames(colref)[0]);
 			if (!metric) {
 				throw InvalidInputException(
 				    "ossie: filter \"%s\" references \"%s\", which is neither a "
 				    "metric nor a dataset.field name.%s",
-				    request, colref.column_names[0],
-				    StringUtil::CandidatesErrorMessage(MetricNames(model), colref.column_names[0], "Did you mean"));
+				    request, ColumnNames(colref)[0],
+				    StringUtil::CandidatesErrorMessage(MetricNames(model), ColumnNames(colref)[0], "Did you mean"));
 			}
 			auto replacement = metric->expression.tree->Copy();
 			InlineFields(model, replacement);
@@ -443,32 +448,32 @@ void ResolveFilterNames(const Model &model, unique_ptr<ParsedExpression> &expr, 
 			is_aggregate = true;
 			return;
 		}
-		if (colref.column_names.size() != 2) {
+		if (ColumnNames(colref).size() != 2) {
 			throw InvalidInputException("ossie: filter \"%s\" references \"%s\"; columns must be qualified "
 			                            "as dataset.field",
-			                            request, StringUtil::Join(colref.column_names, "."));
+			                            request, StringUtil::Join(ColumnNames(colref), "."));
 		}
-		auto dataset = model.FindDataset(colref.column_names[0]);
+		auto dataset = model.FindDataset(ColumnNames(colref)[0]);
 		if (!dataset) {
 			throw InvalidInputException("ossie: filter \"%s\" references dataset \"%s\", which the model does "
 			                            "not declare",
-			                            request, colref.column_names[0]);
+			                            request, ColumnNames(colref)[0]);
 		}
-		if (!dataset->FindField(colref.column_names[1])) {
+		if (!dataset->FindField(ColumnNames(colref)[1])) {
 			throw InvalidInputException(
 			    "ossie: filter \"%s\" references \"%s.%s\", which the model does not declare.%s", request,
-			    colref.column_names[0], colref.column_names[1],
+			    ColumnNames(colref)[0], ColumnNames(colref)[1],
 			    StringUtil::CandidatesErrorMessage(
-			        DimensionNames(model), colref.column_names[0] + "." + colref.column_names[1], "Did you mean"));
+			        DimensionNames(model), ColumnNames(colref)[0] + "." + ColumnNames(colref)[1], "Did you mean"));
 		}
-		auto replacement = dataset->FindField(colref.column_names[1])->expression.tree->Copy();
+		auto replacement = dataset->FindField(ColumnNames(colref)[1])->expression.tree->Copy();
 		QualifyColumns(replacement, AliasFor(*dataset));
 		expr = std::move(replacement);
 		return;
 	}
 
 	if (expr->GetExpressionClass() == ExpressionClass::FUNCTION &&
-	    IsAggregateName(expr->Cast<FunctionExpression>().function_name)) {
+	    IsAggregateName(expr->Cast<FunctionExpression>().FunctionName().GetIdentifierName())) {
 		is_aggregate = true;
 	}
 	ParsedExpressionIterator::EnumerateChildren(
@@ -484,7 +489,7 @@ void CheckFilterTree(const ParsedExpression &expr, const string &request, const 
 Filter ResolveFilter(const Model &model, const string &request, const CompileOptions &options) {
 	vector<unique_ptr<ParsedExpression>> parsed;
 	try {
-		parsed = Parser::ParseExpressionList(request);
+		parsed = Parser::GetBuiltinParser().ParseExpressionList(request);
 	} catch (const ParserException &ex) {
 		throw InvalidInputException("ossie: filter \"%s\" does not parse: %s", request, ErrorData(ex).RawMessage());
 	}
@@ -577,8 +582,10 @@ vector<PlannedJoin> PlanJoins(const Model &model, const Dataset &root, const vec
 unique_ptr<ParsedExpression> JoinCondition(const Relationship &relationship) {
 	unique_ptr<ParsedExpression> condition;
 	for (idx_t i = 0; i < relationship.from_columns.size(); i++) {
-		auto left = make_uniq<ColumnRefExpression>(relationship.from_columns[i], relationship.from_dataset);
-		auto right = make_uniq<ColumnRefExpression>(relationship.to_columns[i], relationship.to_dataset);
+		auto left = make_uniq<ColumnRefExpression>(Identifier(relationship.from_columns[i]),
+		                                           Identifier(relationship.from_dataset));
+		auto right =
+		    make_uniq<ColumnRefExpression>(Identifier(relationship.to_columns[i]), Identifier(relationship.to_dataset));
 		auto equality =
 		    make_uniq<ComparisonExpression>(ExpressionType::COMPARE_EQUAL, std::move(left), std::move(right));
 		if (!condition) {
@@ -632,7 +639,7 @@ void GroupByAll(SelectNode &select, idx_t count) {
 	GroupingSet grouping_set;
 	for (idx_t i = 0; i < count; i++) {
 		select.groups.group_expressions.push_back(select.select_list[i]->Copy());
-		grouping_set.insert(i);
+		grouping_set.insert(ProjectionIndex(i));
 	}
 	select.groups.grouping_sets.push_back(std::move(grouping_set));
 }
@@ -670,7 +677,7 @@ void RequireReachable(GrainQuery &query, const string &dataset, const string &ki
 void HoistAggregates(const Model &model, unique_ptr<ParsedExpression> &expr, const string &request,
                      vector<GrainQuery> &grain_queries) {
 	if (expr->GetExpressionClass() == ExpressionClass::FUNCTION &&
-	    IsAggregateName(expr->Cast<FunctionExpression>().function_name)) {
+	    IsAggregateName(expr->Cast<FunctionExpression>().FunctionName().GetIdentifierName())) {
 		case_insensitive_set_t datasets;
 		CollectDatasets(*expr, datasets);
 		auto grain = AggregateGrain(model, datasets, request);
@@ -692,7 +699,8 @@ void HoistAggregates(const Model &model, unique_ptr<ParsedExpression> &expr, con
 			for (auto &name : SortedNames(datasets)) {
 				AddRequired(query.required, query.required_seen, name, query.dataset->name);
 			}
-			expr = make_uniq<ColumnRefExpression>("agg_" + to_string(index), query.dataset->name);
+			expr =
+			    make_uniq<ColumnRefExpression>(Identifier("agg_" + to_string(index)), Identifier(query.dataset->name));
 			return;
 		}
 		throw InternalException("ossie: aggregate grain \"%s\" has no subquery", grain);
@@ -729,9 +737,9 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 	}
 
 	for (auto &expr : metric_expressions) {
-		auto alias = expr->GetAlias();
+		auto alias = expr->GetAlias().GetIdentifierName();
 		HoistAggregates(model, expr, alias, grain_queries);
-		expr->SetAlias(alias);
+		expr->SetAlias(Identifier(alias));
 	}
 
 	vector<Dimension> resolved_dimensions;
@@ -772,13 +780,13 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 		auto select = make_uniq<SelectNode>();
 		for (idx_t i = 0; i < resolved_dimensions.size(); i++) {
 			auto expr = DimensionAt(resolved_dimensions[i], *query.dataset);
-			expr->SetAlias("dim_" + to_string(i));
+			expr->SetAlias(Identifier("dim_" + to_string(i)));
 			select->select_list.push_back(std::move(expr));
 		}
 		GroupByAll(*select, resolved_dimensions.size());
 		for (idx_t i = 0; i < query.aggregates.size(); i++) {
 			auto &expr = query.aggregates[i];
-			expr->SetAlias("agg_" + to_string(i));
+			expr->SetAlias(Identifier("agg_" + to_string(i)));
 			select->select_list.push_back(std::move(expr));
 		}
 		select->where_clause = std::move(query.where_clause);
@@ -787,7 +795,7 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 		select->aggregate_handling = AggregateHandling::STANDARD_HANDLING;
 		auto statement = make_uniq<SelectStatement>();
 		statement->node = std::move(select);
-		auto subquery = make_uniq<SubqueryRef>(std::move(statement), query.dataset->name);
+		auto subquery = make_uniq<SubqueryRef>(std::move(statement), Identifier(query.dataset->name));
 
 		if (!from) {
 			from = std::move(subquery);
@@ -800,7 +808,8 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 				for (auto &ref : dimension_refs[i]) {
 					seen.push_back(ref->Copy());
 				}
-				auto right = make_uniq<ColumnRefExpression>("dim_" + to_string(i), query.dataset->name);
+				auto right =
+				    make_uniq<ColumnRefExpression>(Identifier("dim_" + to_string(i)), Identifier(query.dataset->name));
 				AndInto(join->condition, make_uniq<ComparisonExpression>(ExpressionType::COMPARE_NOT_DISTINCT_FROM,
 				                                                         Coalesce(std::move(seen)), std::move(right)));
 			}
@@ -808,13 +817,14 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 			from = std::move(join);
 		}
 		for (idx_t i = 0; i < resolved_dimensions.size(); i++) {
-			dimension_refs[i].push_back(make_uniq<ColumnRefExpression>("dim_" + to_string(i), query.dataset->name));
+			dimension_refs[i].push_back(
+			    make_uniq<ColumnRefExpression>(Identifier("dim_" + to_string(i)), Identifier(query.dataset->name)));
 		}
 	}
 
 	for (idx_t i = 0; i < resolved_dimensions.size(); i++) {
 		auto expr = Coalesce(std::move(dimension_refs[i]));
-		expr->SetAlias(resolved_dimensions[i].alias);
+		expr->SetAlias(Identifier(resolved_dimensions[i].alias));
 		outer->select_list.push_back(std::move(expr));
 	}
 	for (auto &expr : metric_expressions) {
@@ -881,7 +891,7 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 
 		auto expr = metric->expression.tree->Copy();
 		InlineFields(model, expr);
-		expr->SetAlias(metric->name);
+		expr->SetAlias(Identifier(metric->name));
 		metric_expressions.push_back(std::move(expr));
 	}
 	for (auto &grain : options.required_grains) {
@@ -931,7 +941,7 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 			AddRequired(required, required_seen, dimension.dataset->name, root.name);
 		}
 		auto expr = DimensionAt(dimension, root);
-		expr->SetAlias(dimension.alias);
+		expr->SetAlias(Identifier(dimension.alias));
 		select->select_list.push_back(std::move(expr));
 	}
 	GroupByAll(*select, select->select_list.size());

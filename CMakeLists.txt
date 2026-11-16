@@ -3,18 +3,22 @@ cmake_minimum_required(VERSION 3.5)
 # Set extension name here
 set(TARGET_NAME ossie)
 
-# DuckDB's extension distribution supports vcpkg: add dependencies to ./vcpkg.json and pull them in here with
-# find_package. duckdb_ossie deliberately uses none. JSON parsing uses the yyjson DuckDB already vendors, and
-# YAML support comes from fkYAML, pinned as a submodule (third_party/fkYAML) exactly the way duckdb and
-# extension-ci-tools are. Keeping vcpkg off the critical path matters here: the code-quality workflow does not
-# set up vcpkg at all, so a find_package dependency breaks the tidy job.
+# DuckDB's extension distribution supports vcpkg: add dependencies to
+# ./vcpkg.json and pull them in here with find_package. duckdb_ossie
+# deliberately uses none. JSON parsing uses the yyjson DuckDB already vendors,
+# and YAML support comes from fkYAML, pinned as a submodule (third_party/fkYAML)
+# exactly the way duckdb and extension-ci-tools are. Keeping vcpkg off the
+# critical path matters here: the code-quality workflow does not set up vcpkg at
+# all, so a find_package dependency breaks the tidy job.
 
 set(EXTENSION_NAME ${TARGET_NAME}_extension)
 set(LOADABLE_EXTENSION_NAME ${TARGET_NAME}_loadable_extension)
 
 project(${TARGET_NAME})
 
-set(CMAKE_CXX_STANDARD "17" CACHE STRING "C++ standard to enforce")
+set(CMAKE_CXX_STANDARD
+    "17"
+    CACHE STRING "C++ standard to enforce")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(src/include)
@@ -49,37 +53,51 @@ install(
   LIBRARY DESTINATION "${INSTALL_LIB_DIR}"
   ARCHIVE DESTINATION "${INSTALL_LIB_DIR}")
 
-# A controlled cross-connection/state contract test, independent of DuckDB's
+# Controlled C++ contract tests, independent of DuckDB's
 # ENABLE_UNITTEST_CPP_TESTS (extension-ci-tools defaults that option to FALSE).
+# DuckDB 2.0 links extensions per target and resolves the default set only after
+# every extension is added, so the tests take that set plus ossie itself once
+# the top-level directory finishes.
 if(BUILD_UNITTESTS AND NOT EXTENSION_TESTS_ONLY)
-  add_executable(ossie_state_test EXCLUDE_FROM_ALL test/cpp/state_snapshot_test.cpp)
-  target_link_libraries(ossie_state_test duckdb_static)
-  link_extension_libraries(ossie_state_test "")
-  add_executable(ossie_population_capture_test EXCLUDE_FROM_ALL test/cpp/population_capture_test.cpp)
-  target_link_libraries(ossie_population_capture_test duckdb_static)
-  link_extension_libraries(ossie_population_capture_test "")
-  add_executable(ossie_metric_grain_test EXCLUDE_FROM_ALL test/cpp/metric_grain_test.cpp)
-  target_link_libraries(ossie_metric_grain_test duckdb_static)
-  link_extension_libraries(ossie_metric_grain_test "")
+  set(OSSIE_CPP_TESTS
+      ossie_state_test ossie_population_capture_test ossie_metric_grain_test
+      ossie_relation_program_test ossie_fact_program_test
+      ossie_fact_capture_test)
+  add_executable(ossie_state_test EXCLUDE_FROM_ALL
+                 test/cpp/state_snapshot_test.cpp)
+  add_executable(ossie_population_capture_test EXCLUDE_FROM_ALL
+                 test/cpp/population_capture_test.cpp)
+  add_executable(ossie_metric_grain_test EXCLUDE_FROM_ALL
+                 test/cpp/metric_grain_test.cpp)
   add_executable(ossie_relation_program_test EXCLUDE_FROM_ALL
-                 test/cpp/relation_program_test.cpp src/population/relation_program.cpp)
-  target_link_libraries(ossie_relation_program_test duckdb_static)
-  link_extension_libraries(ossie_relation_program_test "")
-
+                 test/cpp/relation_program_test.cpp)
   add_executable(ossie_fact_program_test EXCLUDE_FROM_ALL
-                 test/cpp/fact_program_test.cpp src/population/fact_program.cpp)
-  target_link_libraries(ossie_fact_program_test duckdb_static)
-  link_extension_libraries(ossie_fact_program_test "")
-
-  add_executable(ossie_fact_capture_test EXCLUDE_FROM_ALL test/cpp/fact_capture_test.cpp)
-  target_link_libraries(ossie_fact_capture_test duckdb_static)
-  link_extension_libraries(ossie_fact_capture_test "")
+                 test/cpp/fact_program_test.cpp)
+  add_executable(ossie_fact_capture_test EXCLUDE_FROM_ALL
+                 test/cpp/fact_capture_test.cpp)
+  foreach(OSSIE_TEST IN LISTS OSSIE_CPP_TESTS)
+    target_link_libraries(${OSSIE_TEST} duckdb_static)
+  endforeach()
+  # Deferred-call arguments are evaluated in the top-level scope, where
+  # OSSIE_CPP_TESTS is unset.
+  function(ossie_link_test_extensions)
+    foreach(
+      OSSIE_TEST IN
+      ITEMS ossie_state_test ossie_population_capture_test
+            ossie_metric_grain_test ossie_relation_program_test
+            ossie_fact_program_test ossie_fact_capture_test)
+      duckdb_link_extensions(
+        ${OSSIE_TEST} ${DUCKDB_STATICALLY_LINKED_CAPABILITIES}
+        ${DUCKDB_STATICALLY_LINKED_EXTENSIONS} ossie)
+    endforeach()
+  endfunction()
+  cmake_language(DEFER DIRECTORY ${CMAKE_SOURCE_DIR} CALL
+                 ossie_link_test_extensions)
 
   # The upstream Windows workflow initializes MSVC only in its build step.
   # Compile these executables there; the later test step runs without vcvars.
   # Other toolchains keep the explicit build performed by our test Make targets.
   if(MSVC)
-    set_target_properties(ossie_state_test ossie_population_capture_test ossie_metric_grain_test ossie_relation_program_test ossie_fact_program_test ossie_fact_capture_test
-                          PROPERTIES EXCLUDE_FROM_ALL FALSE)
+    set_target_properties(${OSSIE_CPP_TESTS} PROPERTIES EXCLUDE_FROM_ALL FALSE)
   endif()
 endif()

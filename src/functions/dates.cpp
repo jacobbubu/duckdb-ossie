@@ -46,7 +46,7 @@ DatePart ParsePart(const string_t &part, const char *function_name) {
 }
 
 date_t TruncateDate(date_t date, DatePart part) {
-	if (!Date::IsFinite(date)) {
+	if (!date.IsFinite()) {
 		return date;
 	}
 	int32_t year, month, day;
@@ -101,7 +101,7 @@ date_t TruncDate(string_t part, date_t date) {
 }
 
 timestamp_t TruncTimestamp(string_t part, timestamp_t timestamp) {
-	if (!Timestamp::IsFinite(timestamp)) {
+	if (!timestamp.IsFinite()) {
 		return timestamp;
 	}
 	date_t date;
@@ -129,21 +129,25 @@ void DateTruncTimestamp(DataChunk &args, ExpressionState &, Vector &result) {
 
 void DateAddDate(DataChunk &args, ExpressionState &, Vector &result) {
 	TernaryExecutor::Execute<string_t, int64_t, date_t, date_t>(args.data[0], args.data[1], args.data[2], result,
-	                                                            args.size(), AddDate);
+	                                                            AddDate);
 }
 
 void DateAddTimestamp(DataChunk &args, ExpressionState &, Vector &result) {
 	TernaryExecutor::Execute<string_t, int64_t, timestamp_t, timestamp_t>(args.data[0], args.data[1], args.data[2],
-	                                                                      result, args.size(), AddTimestamp);
+	                                                                      result, AddTimestamp);
 }
 
 } // namespace
 
 void RegisterDateFunctions(ExtensionLoader &loader) {
 	ScalarFunctionSet date_trunc("ossie_date_trunc");
-	date_trunc.AddFunction(ScalarFunction({LogicalType::VARCHAR, LogicalType::DATE}, LogicalType::DATE, DateTruncDate));
-	date_trunc.AddFunction(
-	    ScalarFunction({LogicalType::VARCHAR, LogicalType::TIMESTAMP}, LogicalType::TIMESTAMP, DateTruncTimestamp));
+	ScalarFunction trunc_date({LogicalType::VARCHAR, LogicalType::DATE}, LogicalType::DATE, DateTruncDate);
+	NameParameters(trunc_date.GetSignature(), {"part", "date_expr"});
+	date_trunc.AddFunction(std::move(trunc_date));
+	ScalarFunction trunc_timestamp({LogicalType::VARCHAR, LogicalType::TIMESTAMP}, LogicalType::TIMESTAMP,
+	                               DateTruncTimestamp);
+	NameParameters(trunc_timestamp.GetSignature(), {"part", "timestamp_expr"});
+	date_trunc.AddFunction(std::move(trunc_timestamp));
 	CreateScalarFunctionInfo trunc_info(std::move(date_trunc));
 	auto trunc_description = "OSSIE_SQL_2026 DATE_TRUNC(part, date_expr) for the parts year, quarter, month, week "
 	                         "and day: truncates and keeps the input type, so a DATE stays a DATE where DuckDB's "
@@ -158,10 +162,14 @@ void RegisterDateFunctions(ExtensionLoader &loader) {
 	loader.RegisterFunction(std::move(trunc_info));
 
 	ScalarFunctionSet dateadd("ossie_dateadd");
-	dateadd.AddFunction(
-	    ScalarFunction({LogicalType::VARCHAR, LogicalType::BIGINT, LogicalType::DATE}, LogicalType::DATE, DateAddDate));
-	dateadd.AddFunction(ScalarFunction({LogicalType::VARCHAR, LogicalType::BIGINT, LogicalType::TIMESTAMP},
-	                                   LogicalType::TIMESTAMP, DateAddTimestamp));
+	ScalarFunction add_date({LogicalType::VARCHAR, LogicalType::BIGINT, LogicalType::DATE}, LogicalType::DATE,
+	                        DateAddDate);
+	NameParameters(add_date.GetSignature(), {"part", "amount", "date_expr"});
+	dateadd.AddFunction(std::move(add_date));
+	ScalarFunction add_timestamp({LogicalType::VARCHAR, LogicalType::BIGINT, LogicalType::TIMESTAMP},
+	                             LogicalType::TIMESTAMP, DateAddTimestamp);
+	NameParameters(add_timestamp.GetSignature(), {"part", "amount", "timestamp_expr"});
+	dateadd.AddFunction(std::move(add_timestamp));
 	CreateScalarFunctionInfo add_info(std::move(dateadd));
 	auto add_description = "OSSIE_SQL_2026 DATEADD(part, amount, date_expr) for the parts year, quarter, month, "
 	                       "week and day: adds and keeps the input type, so a DATE stays a DATE where DuckDB's "

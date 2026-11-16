@@ -1,7 +1,7 @@
 # Single-table population execution
 
 `gaap-scalar-population-v1` is a bounded single-table execution profile against
-pinned Ossie `0.2.0.dev0` and DuckDB 1.5.6. It provides one root
+pinned Ossie `0.2.0.dev0` and DuckDB 2.0.0. It provides one root
 EntityType and one derived EntityType with scalar attributes and a scalar
 membership rule. It does not represent full Ossie ontology conformance.
 
@@ -116,7 +116,7 @@ NULLIF itself permits any two accepted scalar arguments, not only comparison to 
 Core OSSIE_SQL_2026 NULLIFZERO lowering is supported; the alias is not accepted in
 ontology rules or request filters, which have no dialect lowering step.
 
-For this pinned DuckDB 1.5.6 profile, integer or DECIMAL division yields DOUBLE,
+For this pinned DuckDB 2.0.0 profile, integer or DECIMAL division yields DOUBLE,
 including `SUM(x) / NULLIF(SUM(y),0)`. This is approximate arithmetic, distinct
 from exact DECIMAL storage/addition/SUM. A zero or NULL guarded denominator yields
 NULL; opposite signs may cancel an aggregate denominator to zero. Row ratios and
@@ -130,7 +130,7 @@ The fixed Ossie expression source
 defines / and NULLIF but leaves Decimal precision/scale and zero-division results
 unspecified. DuckDB documents [approximate Decimal division](https://duckdb.org/docs/current/sql/data_types/numeric)
 and [IEEE zero division](https://duckdb.org/docs/current/sql/dialect/postgresql_compatibility);
-the pinned 1.5.6 engine determines the behavior stated here. This is an explicit implementation restriction,
+the pinned 2.0.0 engine determines the behavior stated here. This is an explicit implementation restriction,
 not a claim of full OSSIE_SQL_2026 compliance. The existing core APIs retain their
 host arithmetic behavior; this stricter population guard does not rewrite them.
 
@@ -203,9 +203,9 @@ engine result type does not establish acceptance by this profile.
 
 CAST invalid calendar values fails, while TRY_CAST invalid calendar values yields
 NULL. This does not impose strict ISO input validation: the pinned engine also
-accepts slash-separated dates and some trailing text. A timestamp-shaped string
-with a time/offset suffix is parsed from its date prefix, without converting the
-instant to another timezone. TRY_CAST accepts these engine-valid inputs too.
+accepts slash-separated dates and surrounding whitespace, and refuses other
+trailing text. A timestamp-shaped string with a time/offset suffix is parsed from
+its date prefix, without converting the instant to another timezone. TRY_CAST accepts these engine-valid inputs too.
 Normalize input explicitly if a strict format is required. No SQL short-circuit
 or complete eager evaluation of every unused computed field is promised.
 
@@ -219,7 +219,7 @@ Primary references: [DuckDB DATE and special values](https://duckdb.org/docs/cur
 [CAST and TRY_CAST](https://duckdb.org/docs/current/sql/expressions/cast), and
 [comparison/BETWEEN semantics](https://duckdb.org/docs/current/sql/expressions/comparison_operators).
 The fixed Ossie expression source defines broader temporal constructs; this
-profile implements the narrower behavior above against pinned DuckDB 1.5.6.
+profile implements the narrower behavior above against pinned DuckDB 2.0.0.
 
 ## Limits
 

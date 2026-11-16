@@ -51,7 +51,7 @@ SELECT * FROM ossie_population_json(
 `population_fact_windows_compile`四工具和`ossie://facts/program`、
 `ossie://facts/surface`、`ossie://facts/request-contract`三资源。运营者先创建来源并加载bundle；使用包含新函数的
 本地产物时，将示例的community安装/LOAD改为该产物的LOAD，再在项目根目录
-启动标准DuckDB1.5.6客户端。
+启动标准DuckDB 2.0.0客户端。
 
 客户端先读取program、实际surface和共享请求契约，再调用工具。四工具唯一必填参数都是
 `request_json`字符串，内容与上文SQL请求相同。固定duckdb_mcp上游实际忽略

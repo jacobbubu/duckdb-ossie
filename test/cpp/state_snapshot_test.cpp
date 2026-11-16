@@ -136,7 +136,8 @@ void ConnectionAndTiming(const std::string &root) {
 	                ", allow_filter_functions => true, left_joins => true)");
 	Check(Scalar(first, "EXECUTE deferred").find("facts_b") != std::string::npos, "prepared scalar execution reads B");
 	Check(Scalar(first, "EXECUTE policy").find("abs(") != std::string::npos, "prepared scalar reads B policy");
-	Check(Scalar(first, "EXECUTE bound") == "3", "prepared table query retains A binding");
+	// DuckDB 2.0 rebinds a prepared statement whose plan scans a catalog table, so the table query follows B.
+	Check(Scalar(first, "EXECUTE bound") == "60", "prepared table query is rebound to B");
 	Check(Scalar(first, "SELECT * FROM ossie_query(['total'], [], ['ABS(facts.amount) > 0'])") == "60",
 	      "new cross-connection query reads B model and policy");
 	Check(first.Query("CALL ossie_load('does-not-exist.json')")->HasError(), "failed load refused");

@@ -36,7 +36,7 @@ guard 与比较可交换顺序。Integer 属性只接受 TINYINT、SMALLINT、IN
 双源映射沿原字段 provenance 绑定，不按字段名、模型名或业务场景选择算法。
 整数常量必须非 NULL、无损适合实际整数类型；DATE 常量必须有显式 DATE 类型。
 不接受计算列表达式、隐式字符串转换、两列比较、其他比较运算符、函数、聚合、窗口或子查询。
-DATE 保持既有 DuckDB 1.5.6 类型/解析行为，包括其特殊值边界；没有新增严格 ISO、
+DATE 保持既有 DuckDB 2.0.0 类型/解析行为，包括其特殊值边界；没有新增严格 ISO、
 有限性、timestamp、时区政策或 JS Date 转换。
 文本解析范围与物理存储范围不同，见[DATE 边界说明](concept-requires-boundaries.md#date-storage-boundary)。
 

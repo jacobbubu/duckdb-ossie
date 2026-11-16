@@ -55,8 +55,19 @@ SELECT len(regexp_extract_all(program_json,'"snapshot_id":"([^"]+)"',1)) FROM os
 statement ok
 CREATE TABLE old_manifest AS SELECT regexp_extract(program_json,'"manifest_sha256":"([^"]+)"',1) AS manifest_sha256 FROM ossie_program();
 
+# DuckDB 2.0 rebinds any prepared statement whose plan scans a catalog table, so the
+# frozen-binding check must not join old_manifest: it inspects the bound snapshot sequence.
 statement ok
-PREPARE old_discovery AS SELECT (regexp_extract(program_json,'"manifest_sha256":"([^"]+)"',1)=old_manifest.manifest_sha256)::INTEGER FROM ossie_program(),old_manifest;
+PREPARE old_discovery AS SELECT regexp_extract(program_json,'"snapshot_id":"[0-9a-f]+:([0-9]+)"',1) FROM ossie_program();
+
+query I
+SELECT (regexp_extract(program_json,'"snapshot_id":"[0-9a-f]+:([0-9]+)"',1)::INTEGER > 0)::INTEGER FROM ossie_program();
+----
+1
+
+query T nosort old_discovery_snapshot
+EXECUTE old_discovery;
+----
 
 statement ok
 CALL ossie_bundle_load('test/fixtures/population/bundle-20.json');
@@ -66,10 +77,9 @@ SELECT (old_manifest.manifest_sha256 <> regexp_extract(program_json,'"manifest_s
 ----
 1
 
-query I
+query T nosort old_discovery_snapshot
 EXECUTE old_discovery;
 ----
-1
 
 # Legacy manifests retain their original active-contract version and no opt-in payload.
 query I

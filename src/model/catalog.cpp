@@ -1,4 +1,5 @@
 #include "ossie/catalog.hpp"
+#include "ossie/names.hpp"
 
 #include "duckdb/catalog/catalog.hpp"
 #include "duckdb/catalog/catalog_entry/table_catalog_entry.hpp"
@@ -24,16 +25,16 @@ void SplitSource(const string &source, string &catalog, string &schema, string &
 	auto parts = QualifiedName::ParseComponents(source);
 	switch (parts.size()) {
 	case 3:
-		catalog = parts[0];
-		schema = parts[1];
-		name = parts[2];
+		catalog = parts[0].GetIdentifierName();
+		schema = parts[1].GetIdentifierName();
+		name = parts[2].GetIdentifierName();
 		break;
 	case 2:
-		schema = parts[0];
-		name = parts[1];
+		schema = parts[0].GetIdentifierName();
+		name = parts[1].GetIdentifierName();
 		break;
 	case 1:
-		name = parts[0];
+		name = parts[0].GetIdentifierName();
 		break;
 	default:
 		break;
@@ -50,9 +51,10 @@ optional_ptr<CatalogEntry> SourceEntry(ClientContext &context, const string &sou
 	}
 
 	// Looking up TABLE_ENTRY also finds views, which the spec allows as a source.
-	EntryLookupInfo lookup_info(CatalogType::TABLE_ENTRY, name);
+	EntryLookupInfo lookup_info(CatalogType::TABLE_ENTRY,
+	                            QualifiedName(Identifier(catalog), Identifier(schema), Identifier(name)));
 	try {
-		return Catalog::GetEntry(context, catalog, schema, lookup_info, OnEntryNotFound::RETURN_NULL);
+		return Catalog::GetEntry(context, lookup_info, OnEntryNotFound::RETURN_NULL);
 	} catch (const std::exception &) {
 		// An unattached database throws rather than returning null.
 		return nullptr;
@@ -165,9 +167,12 @@ bool SourceColumns(ClientContext &context, const string &source, vector<string> 
 		if (!info) {
 			return false;
 		}
-		columns = info->names;
+		columns.clear();
+		for (auto &name : info->names) {
+			columns.push_back(name.GetIdentifierName());
+		}
 		for (idx_t i = 0; i < view.aliases.size() && i < columns.size(); i++) {
-			columns[i] = view.aliases[i];
+			columns[i] = view.aliases[i].GetIdentifierName();
 		}
 		return true;
 	}
@@ -191,7 +196,7 @@ void CheckQuotedIdentifiers(ClientContext &context, const Model &model) {
 			auto context_name = StringUtil::Format("field \"%s.%s\"", dataset.name, field.name);
 			// Every column reference in a field is a physical column of the field's own dataset.
 			for (auto &ref : ColumnRefs(*field.expression.tree)) {
-				CheckQuotedColumn(ref.get().column_names.back(), quoted, columns, dataset.source_bound, context_name);
+				CheckQuotedColumn(ColumnNames(ref.get()).back(), quoted, columns, dataset.source_bound, context_name);
 			}
 		}
 		for (auto &metric : model.metrics) {
@@ -205,7 +210,7 @@ void CheckQuotedIdentifiers(ClientContext &context, const Model &model) {
 			auto context_name = StringUtil::Format("metric \"%s\"", metric.name);
 			// In a metric, dataset.column is physical when column is not a declared field of that dataset.
 			for (auto &ref : ColumnRefs(*metric.expression.tree)) {
-				auto &names = ref.get().column_names;
+				auto names = ColumnNames(ref.get());
 				if (names.size() != 2 || model.FindDataset(names[0]) != &dataset || dataset.FindField(names[1])) {
 					continue;
 				}
