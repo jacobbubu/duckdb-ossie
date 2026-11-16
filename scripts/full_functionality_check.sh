@@ -174,6 +174,13 @@ eq "same filter permitted when the flag is on" "true" \
 has "LIKE is an operator, so it passes with the flag off" "SELECT" \
    "$LOAD_T SELECT ossie_compile(['total_sales'],[],['item.i_brand LIKE item.i_brand']);"
 
+# --------------------------------------------------------------- J8  upstream compliance
+g "J8  apache/ossie wide-table compliance cases stand where they are pinned"
+WT="$(python3 "$REPO/scripts/wide_table_compliance.py" --duckdb "$DUCKDB" --check 2>&1)" \
+  && ok "$(printf '%s' "$WT" | tail -1)" \
+  || bad "wide-table statuses match test/fixtures/conformance/wide_table_status.tsv" "no CHANGED lines" \
+         "$(printf '%s' "$WT" | grep -E '^CHANGED|Error' | head -5 | tr '\n' ' ')"
+
 # --------------------------------------------------------------- known defects
 g "KNOWN DEFECTS  (reported, do not gate exit code)"
 NEST="$TMP/nested.json"

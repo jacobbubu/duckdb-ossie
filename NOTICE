@@ -31,6 +31,10 @@ Apache Ossie semantic model fixtures
     test/fixtures/conformance/compliance/wide_table/retail/retail_model.ossie.yaml            from compliance/wide_table/retail/
     test/fixtures/conformance/compliance/wide_table/stores/stores_model.ossie.yaml            from compliance/wide_table/stores/
     test/fixtures/conformance/compliance/wide_table/stores/stores_ambiguous_model.ossie.yaml  from compliance/wide_table/stores/
+    test/fixtures/conformance/compliance/wide_table/README.md                                 from compliance/wide_table/
+    test/fixtures/conformance/compliance/wide_table/retail/retail.sql                         from compliance/wide_table/retail/
+    test/fixtures/conformance/compliance/wide_table/stores/stores.sql                         from compliance/wide_table/stores/
+    test/fixtures/conformance/compliance/wide_table/cases/ (46 cases, two files each)         from compliance/wide_table/cases/
     test/fixtures/conformance/compliance/query/scott/scott_model.ossie.yaml                   from compliance/query/scott/
     test/fixtures/conformance/compliance/portability/m0/m0_ansi_qualified.ossie.yaml          from compliance/portability/m0/
     test/fixtures/conformance/compliance/portability/m0/m0_ossiesql_qualified.ossie.yaml      from compliance/portability/m0/
