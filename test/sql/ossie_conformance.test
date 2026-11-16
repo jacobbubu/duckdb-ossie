@@ -85,17 +85,19 @@ SELECT ossie_compile(['orders.total_revenue'], ['customers.region'], []);
 ----
 SELECT customers.region AS "customers.region", sum(orders.amount) AS "orders.total_revenue" FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region
 
+# A group that only the other grain produced has no row here, and a count over no rows is 0, not the
+# NULL the outer join leaves.
 query T
 SELECT ossie_compile(['customers.customer_count', 'orders.total_revenue'], ['customers.region'], []);
 ----
-SELECT COALESCE(customers.dim_0, orders.dim_0) AS "customers.region", customers.agg_0 AS "customers.customer_count", orders.agg_0 AS "orders.total_revenue" FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM retail.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0)))
+SELECT COALESCE(customers.dim_0, orders.dim_0) AS "customers.region", COALESCE(customers.agg_0, CAST(0 AS BIGINT)) AS "customers.customer_count", orders.agg_0 AS "orders.total_revenue" FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM retail.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0)))
 
 # A filter on a dataset-scoped metric runs over that dataset's rows too, even when no requested metric
 # aggregates there: its COUNT(*) must not silently count the rows of whatever grain the query has.
 query T
 SELECT ossie_compile(['orders.total_revenue'], ['customers.region'], ['customers.customer_count > 1']);
 ----
-SELECT COALESCE(customers.dim_0, orders.dim_0) AS "customers.region", orders.agg_0 AS "orders.total_revenue" FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM retail.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0))) WHERE (customers.agg_0 > 1)
+SELECT COALESCE(customers.dim_0, orders.dim_0) AS "customers.region", orders.agg_0 AS "orders.total_revenue" FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM retail.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0))) WHERE (COALESCE(customers.agg_0, CAST(0 AS BIGINT)) > 1)
 
 query T
 SELECT ossie_compile(['orders.total_revenue'], [], ['orders.total_revenue > 10']);
@@ -129,6 +131,14 @@ SELECT ossie_compile(['store_sales.total_sales', 'store_returns.total_returns'],
 ----
 SELECT COALESCE(store_returns.dim_0, store_sales.dim_0) AS "item.item_id", store_sales.agg_0 AS "store_sales.total_sales", store_returns.agg_0 AS "store_returns.total_returns" FROM ((SELECT item.item_id AS dim_0, sum(store_returns.return_amount) AS agg_0 FROM (stores.store_returns AS store_returns INNER JOIN stores.item AS item ON ((store_returns.item_id = item.item_id))) GROUP BY item.item_id) AS store_returns FULL JOIN (SELECT item.item_id AS dim_0, sum(store_sales.sales_amount) AS agg_0 FROM (stores.store_sales AS store_sales INNER JOIN stores.item AS item ON ((store_sales.item_id = item.item_id))) GROUP BY item.item_id) AS store_sales ON ((store_returns.dim_0 IS NOT DISTINCT FROM store_sales.dim_0)))
 
+# store_returns reaches date_dim one way, by its return date. That store_sales reaches date_dim too, and
+# shares item with store_returns, is not a second path: a path only crosses a relationship toward its
+# one side.
+query T
+SELECT ossie_compile(['store_sales.total_sales', 'store_returns.total_returns'], ['item.brand', 'date_dim.year'], []);
+----
+SELECT COALESCE(store_returns.dim_0, store_sales.dim_0) AS "item.brand", COALESCE(store_returns.dim_1, store_sales.dim_1) AS "date_dim.year", store_sales.agg_0 AS "store_sales.total_sales", store_returns.agg_0 AS "store_returns.total_returns" FROM ((SELECT item.brand AS dim_0, date_dim.d_year AS dim_1, sum(store_returns.return_amount) AS agg_0 FROM ((stores.store_returns AS store_returns INNER JOIN stores.item AS item ON ((store_returns.item_id = item.item_id))) INNER JOIN stores.date_dim AS date_dim ON ((store_returns.return_date_id = date_dim.date_id))) GROUP BY item.brand, date_dim.d_year) AS store_returns FULL JOIN (SELECT item.brand AS dim_0, date_dim.d_year AS dim_1, sum(store_sales.sales_amount) AS agg_0 FROM ((stores.store_sales AS store_sales INNER JOIN stores.item AS item ON ((store_sales.item_id = item.item_id))) INNER JOIN stores.date_dim AS date_dim ON ((store_sales.sale_date_id = date_dim.date_id))) GROUP BY item.brand, date_dim.d_year) AS store_sales ON (((store_returns.dim_0 IS NOT DISTINCT FROM store_sales.dim_0) AND (store_returns.dim_1 IS NOT DISTINCT FROM store_sales.dim_1))))
+
 # The same model with a second path from store_sales to date_dim, which the compliance cases expect
 # to be refused as ambiguous.
 query TTIIII
@@ -140,6 +150,13 @@ statement error
 SELECT ossie_compile(['store_sales.total_sales'], ['date_dim.date_id'], []);
 ----
 more than one join path connects "store_sales" to "date_dim"
+
+# Only the paths a request joins are checked: store_returns has no relationship to store, so the second
+# route does not exist for it.
+query T
+SELECT ossie_compile(['store_returns.total_returns'], ['date_dim.year'], []);
+----
+SELECT date_dim.d_year AS "date_dim.year", sum(store_returns.return_amount) AS "store_returns.total_returns" FROM (stores.store_returns AS store_returns INNER JOIN stores.date_dim AS date_dim ON ((store_returns.return_date_id = date_dim.date_id))) GROUP BY date_dim.d_year
 
 # --- compliance/query: the SCOTT schema, every metric dataset-scoped -------------------------------
 

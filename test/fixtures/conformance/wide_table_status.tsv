@@ -1,6 +1,6 @@
 a01_shared_dimension	names
-a02_count_empty_input	wrong
-a03_three_branches	wrong
+a02_count_empty_input	names
+a03_three_branches	names
 a04_filter_on_dimension	names
 a05_groups_from_orders	names
 a06_groups_from_returns	names
@@ -13,12 +13,12 @@ a12_anchor_from_dimensions	false-refusal
 a13_filter_false_with_dimension	names
 a14_filter_false_without_dimension	names
 a15_unconnected_filter_false	names
-a16_shared_dimensions_stores	false-refusal
+a16_shared_dimensions_stores	names
 a17_unmatched_home_null_group	names
 a18_anchor_with_metric	names
-a19_sales_by_year	false-refusal
-a20_filter_on_sale_year	false-refusal
-a21_single_path_on_ambiguous_model	false-refusal
+a19_sales_by_year	names
+a20_filter_on_sale_year	names
+a21_single_path_on_ambiguous_model	names
 e01_invalid_query_unknown_key	inexpressible
 e02_invalid_query_null	inexpressible
 e03_empty_aggregation_query	refused

@@ -54,14 +54,24 @@ pins). The DuckDB version each release targets is noted separately.
   resolves the default set only after every extension is added.
 - A population expression test that defined a macro named `nullif` now drops it first; `nullif` is a
   reserved word in DuckDB 2.0.
+- **A join path is searched the way the Wide Table specification defines one.** A path crosses a
+  relationship only toward its one side and visits no dataset twice, and only the datasets a
+  request joins are checked. A request used to be refused as ambiguous when a second route existed
+  that no path could take: on the specification's `stores` model, `store_returns` by `date_dim.year`
+  was refused because `store_sales` reaches `date_dim` as well and shares `item` with it. Such
+  requests are answered now. Two real paths are still refused, including when one is shorter.
+- **A count over a group its grain has no row for is 0.** When metrics at two grains are joined on
+  the dimension values, a group only one grain produced left the other grain's `COUNT`,
+  `COUNT(*)`, `COUNT(DISTINCT ...)` and `APPROX_COUNT_DISTINCT` NULL. They are 0 now, in the result
+  and in a filter on the metric; other aggregates stay NULL, as they are over no rows.
 
 ### Added
 - **apache/ossie's wide-table compliance cases run against the extension.** The 46 cases of
   `compliance/wide_table` are vendored with their data, `scripts/wide_table_compliance.py` submits
   each through `ossie_query` and classifies the outcome, and
   `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 1 case
-  passes outright and 11 more return the right rows under qualified column names; the rest are
-  recorded as what they are (2 wrong, 6 false refusals, 2 false acceptances, 19 refusals without the
+  passes outright and 17 more return the right rows under qualified column names; the rest are
+  recorded as what they are (2 false refusals, 2 false acceptances, 19 refusals without the
   specified error code, 5 the query function cannot express).
   `test/fixtures/conformance/README.md` lists the cases behind each number.
 - **Dataset-scoped metrics.** A dataset's `metrics` are loaded as `dataset.metric` and requested,

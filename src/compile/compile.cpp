@@ -6,6 +6,7 @@
 #include "duckdb/parser/expression/columnref_expression.hpp"
 #include "duckdb/parser/expression/comparison_expression.hpp"
 #include "duckdb/parser/expression/conjunction_expression.hpp"
+#include "duckdb/parser/expression/constant_expression.hpp"
 #include "duckdb/parser/expression/function_expression.hpp"
 #include "duckdb/parser/expression/operator_expression.hpp"
 #include "duckdb/parser/expression/window_expression.hpp"
@@ -586,63 +587,97 @@ struct PlannedJoin {
 	const Dataset *dataset;
 };
 
-//! Executes BFS through the relationship graph outward from the metric's dataset, returning the joins needed to
-//! reach every required dataset. Refuses ambiguous joins (when multiple routes to join two datasets exist).
-vector<PlannedJoin> PlanJoins(const Model &model, const Dataset &root, const vector<string> &required) {
-	case_insensitive_set_t required_lookup(required.begin(), required.end());
-	case_insensitive_map_t<const Relationship *> parent_edge;
+//! Collects the paths from `current` to `target`, stopping at the second. A path crosses a relationship only in the
+//! direction that matches at most one row, and visits no dataset twice.
+void FindPaths(const Model &model, const string &current, const string &target, vector<PlannedJoin> &path,
+               case_insensitive_set_t &on_path, vector<vector<PlannedJoin>> &found) {
+	if (StringUtil::CIEquals(current, target)) {
+		found.push_back(path);
+		return;
+	}
+	for (auto &relationship : model.relationships) {
+		if (found.size() > 1) {
+			return;
+		}
+		bool moving_to_target = StringUtil::CIEquals(relationship.from_dataset, current);
+		if (!moving_to_target && !StringUtil::CIEquals(relationship.to_dataset, current)) {
+			continue;
+		}
+		auto &other = moving_to_target ? relationship.to_dataset : relationship.from_dataset;
+		if (FansOut(relationship, moving_to_target) || on_path.find(other) != on_path.end()) {
+			continue;
+		}
+		path.push_back({&relationship, model.FindDataset(other)});
+		on_path.insert(other);
+		FindPaths(model, other, target, path, on_path, found);
+		on_path.erase(other);
+		path.pop_back();
+	}
+}
+
+//! Reports why no path leads from `root` to `target`: nothing connects them, or the shortest route between them
+//! crosses a relationship in the direction that repeats rows.
+void ThrowNoPath(const Model &model, const Dataset &root, const string &target) {
+	case_insensitive_map_t<PlannedJoin> arrived_by;
 	case_insensitive_map_t<string> parent;
 	case_insensitive_set_t visited {root.name};
 	vector<string> queue {root.name};
-
 	for (idx_t head = 0; head < queue.size(); head++) {
 		auto current = queue[head];
 		for (auto &relationship : model.relationships) {
-			string other;
-			if (StringUtil::CIEquals(relationship.from_dataset, current)) {
-				other = relationship.to_dataset;
-			} else if (StringUtil::CIEquals(relationship.to_dataset, current)) {
-				other = relationship.from_dataset;
-			} else {
+			bool moving_to_target = StringUtil::CIEquals(relationship.from_dataset, current);
+			if (!moving_to_target && !StringUtil::CIEquals(relationship.to_dataset, current)) {
 				continue;
 			}
-
-			if (visited.find(other) == visited.end()) {
-				visited.insert(other);
-				parent_edge[other] = &relationship;
+			auto &other = moving_to_target ? relationship.to_dataset : relationship.from_dataset;
+			if (visited.insert(other).second) {
+				arrived_by[other] = {&relationship, model.FindDataset(other)};
 				parent[other] = current;
 				queue.push_back(other);
-				continue;
-			}
-			// A second edge into an already-reached dataset means two routes exist, and they can
-			// produce different numbers. We refuse this ambiguous case.
-			auto reached_by = parent_edge.find(other);
-			auto came_by = parent_edge.find(current);
-			bool is_tree_edge = (reached_by != parent_edge.end() && reached_by->second == &relationship) ||
-			                    (came_by != parent_edge.end() && came_by->second == &relationship);
-			if (!is_tree_edge && required_lookup.find(other) != required_lookup.end()) {
-				throw InvalidInputException("ossie: more than one join path connects \"%s\" to \"%s\"; "
-				                            "the model must disambiguate before this can be answered",
-				                            root.name, other);
 			}
 		}
 	}
+	if (visited.find(target) == visited.end()) {
+		throw InvalidInputException("ossie: no relationship connects \"%s\" to \"%s\"", root.name, target);
+	}
+	vector<PlannedJoin> route;
+	for (auto node = target; !StringUtil::CIEquals(node, root.name); node = parent[node]) {
+		route.push_back(arrived_by[node]);
+	}
+	for (auto hop = route.rbegin(); hop != route.rend(); ++hop) {
+		bool moving_to_target = StringUtil::CIEquals(hop->relationship->to_dataset, hop->dataset->name);
+		if (FansOut(*hop->relationship, moving_to_target)) {
+			throw InvalidInputException("ossie: joining \"%s\" repeats each \"%s\" row once per match, which "
+			                            "would inflate every aggregate. Relationship \"%s\" is %s",
+			                            hop->dataset->name, root.name, hop->relationship->name,
+			                            CardinalityName(hop->relationship->cardinality));
+		}
+	}
+	throw InternalException("ossie: \"%s\" has a path to \"%s\" that the path search did not find", root.name, target);
+}
 
-	// Collect the tree edges on the path from each required dataset back to the root.
+//! The joins that reach every required dataset from `root`, root-first so each attaches to a dataset already joined.
+//! Two paths to one dataset can produce different numbers, so that is refused rather than one being picked. Routes
+//! between datasets the request does not join are not looked at.
+vector<PlannedJoin> PlanJoins(const Model &model, const Dataset &root, const vector<string> &required) {
 	vector<PlannedJoin> joins;
-	case_insensitive_set_t added;
+	case_insensitive_set_t joined;
 	for (auto &name : required) {
-		if (visited.find(name) == visited.end()) {
-			throw InvalidInputException("ossie: no relationship connects \"%s\" to \"%s\"", root.name, name);
+		vector<PlannedJoin> path;
+		case_insensitive_set_t on_path {root.name};
+		vector<vector<PlannedJoin>> found;
+		FindPaths(model, root.name, name, path, on_path, found);
+		if (found.empty()) {
+			ThrowNoPath(model, root, name);
 		}
-		vector<string> path;
-		for (auto node = name; !StringUtil::CIEquals(node, root.name); node = parent[node]) {
-			path.push_back(node);
+		if (found.size() > 1) {
+			throw InvalidInputException("ossie: more than one join path connects \"%s\" to \"%s\"; "
+			                            "the model must disambiguate before this can be answered",
+			                            root.name, name);
 		}
-		// Root-first, so every join attaches to a dataset already in the tree.
-		for (auto entry = path.rbegin(); entry != path.rend(); ++entry) {
-			if (added.insert(*entry).second) {
-				joins.push_back({parent_edge[*entry], model.FindDataset(*entry)});
+		for (auto &step : found[0]) {
+			if (joined.insert(step.dataset->name).second) {
+				joins.push_back(step);
 			}
 		}
 	}
@@ -670,20 +705,10 @@ unique_ptr<ParsedExpression> JoinCondition(const Model &model, const Relationshi
 	return condition;
 }
 
-//! Joins every dataset in `required` onto `root`, refusing any hop that would repeat root rows.
+//! Joins every dataset in `required` onto `root`. No hop repeats root rows, since a path never crosses one that would.
 unique_ptr<TableRef> JoinRequired(const Model &model, const Dataset &root, const vector<string> &required,
                                   unique_ptr<TableRef> from, const CompileOptions &options) {
-	auto planned_joins = PlanJoins(model, root, required);
-	for (auto &planned : planned_joins) {
-		bool moving_to_target = StringUtil::CIEquals(planned.relationship->to_dataset, planned.dataset->name);
-		if (FansOut(*planned.relationship, moving_to_target)) {
-			throw InvalidInputException("ossie: joining \"%s\" repeats each \"%s\" row once per match, which "
-			                            "would inflate every aggregate. Relationship \"%s\" is %s",
-			                            planned.dataset->name, root.name, planned.relationship->name,
-			                            CardinalityName(planned.relationship->cardinality));
-		}
-	}
-	for (auto &planned : planned_joins) {
+	for (auto &planned : PlanJoins(model, root, required)) {
 		auto join = make_uniq<JoinRef>(JoinRefType::REGULAR);
 		// Ossie does not declare a join type. INNER matches hand-written SQL, but drops fact rows
 		// where the foreign key is NULL; left_joins keeps them.
@@ -744,13 +769,23 @@ void RequireReachable(GrainQuery &query, const string &dataset, const string &ki
 	                            StringUtil::Join(grains, ", "));
 }
 
+//! Aggregates whose value over no rows is 0. Every other aggregate IsAggregateName knows gives NULL.
+bool CountsRows(const string &name) {
+	static const case_insensitive_set_t COUNTS {"count", "count_star", "approx_count_distinct"};
+	return COUNTS.find(name) != COUNTS.end();
+}
+
 //! Replaces each aggregate in `expr` with a reference to the column that its grain's subquery will
 //! compute it under, registering the aggregate there. Identical aggregates share one column.
-//! `request` is the metric name or filter text, for messages.
+//! `request` is the metric name or filter text, for messages. When `rows_may_be_missing`, a group can
+//! exist that this grain's subquery has no row for; the aggregate then takes its value over no rows,
+//! which the outer join's NULL already is for all but the counts.
 void HoistAggregates(const Model &model, unique_ptr<ParsedExpression> &expr, const string &request,
-                     const AggregateHomes &homes, vector<GrainQuery> &grain_queries) {
+                     const AggregateHomes &homes, vector<GrainQuery> &grain_queries, bool rows_may_be_missing) {
 	if (expr->GetExpressionClass() == ExpressionClass::FUNCTION &&
 	    IsAggregateName(expr->Cast<FunctionExpression>().FunctionName().GetIdentifierName())) {
+		bool zero_when_missing =
+		    rows_may_be_missing && CountsRows(expr->Cast<FunctionExpression>().FunctionName().GetIdentifierName());
 		case_insensitive_set_t datasets;
 		CollectDatasets(*expr, datasets);
 		auto home = homes.find(expr.get());
@@ -775,12 +810,18 @@ void HoistAggregates(const Model &model, unique_ptr<ParsedExpression> &expr, con
 			}
 			expr =
 			    make_uniq<ColumnRefExpression>(Identifier("agg_" + to_string(index)), Identifier(query.dataset->name));
+			if (zero_when_missing) {
+				vector<unique_ptr<ParsedExpression>> children;
+				children.push_back(std::move(expr));
+				children.push_back(ConstantExpression::FromValue(Value::BIGINT(0)));
+				expr = make_uniq<OperatorExpression>(ExpressionType::OPERATOR_COALESCE, std::move(children));
+			}
 			return;
 		}
 		throw InternalException("ossie: aggregate grain \"%s\" has no subquery", grain);
 	}
 	ParsedExpressionIterator::EnumerateChildren(*expr, [&](unique_ptr<ParsedExpression> &child) {
-		HoistAggregates(model, child, request, homes, grain_queries);
+		HoistAggregates(model, child, request, homes, grain_queries, rows_may_be_missing);
 	});
 }
 
@@ -811,9 +852,12 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 		grain_queries.push_back(std::move(query));
 	}
 
+	// The subqueries are joined on the dimension values, so only a request with dimensions can have a group
+	// that one of them lacks; without dimensions each yields exactly one row.
+	bool rows_may_be_missing = !dimensions.empty() && options.grain_join == JoinType::OUTER;
 	for (auto &expr : metric_expressions) {
 		auto alias = expr->GetAlias().GetIdentifierName();
-		HoistAggregates(model, expr, alias, metric_homes, grain_queries);
+		HoistAggregates(model, expr, alias, metric_homes, grain_queries, rows_may_be_missing);
 		expr->SetAlias(Identifier(alias));
 	}
 
@@ -831,7 +875,7 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 	unique_ptr<ParsedExpression> outer_where;
 	for (auto &filter : filters) {
 		if (filter.is_aggregate) {
-			HoistAggregates(model, filter.expr, filter.request, filter.homes, grain_queries);
+			HoistAggregates(model, filter.expr, filter.request, filter.homes, grain_queries, rows_may_be_missing);
 			AndInto(outer_where, std::move(filter.expr));
 			continue;
 		}

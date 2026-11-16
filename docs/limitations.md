@@ -62,9 +62,10 @@ further validation. Extensions are descriptive and do not execute vendor code.
 0)`; joining `store` to `store_sales` would replicate each store's employee count once per sale
 line and inflate the denominator by roughly the number of sales per store. Instead each grain gets
 its own grouped subquery, the subqueries are joined on the dimension values (`FULL JOIN ... ON a
-IS NOT DISTINCT FROM b`, so a group only one side produced is kept, with NULL for the other side's
-aggregates), and the metric expression is evaluated over the aggregate columns. What this
-implies for a request:
+IS NOT DISTINCT FROM b`, so a group only one side produced is kept), and the metric expression is
+evaluated over the aggregate columns. For a group one side did not produce, that side's aggregates
+take the value they have over no rows: 0 for `COUNT`, `COUNT(*)`, `COUNT(DISTINCT ...)` and
+`APPROX_COUNT_DISTINCT`, NULL for the rest. What this implies for a request:
 
 - A row filter is applied inside *every* grain's subquery, so each grain must reach the filter's
   dataset without fanning out. `store_productivity` filtered by `date_dim.d_year = 2001` is refused:
@@ -102,9 +103,12 @@ a join is refused whether it was pulled in by a metric, a dimension, or a filter
 
 ## Joins
 
-**Ambiguous paths.** When two distinct routes connect the grain to a required dataset, they can
-produce different numbers, so the request is refused with the endpoints named rather than resolved
-to whichever route was found first.
+**Ambiguous paths.** A path runs from the grain to a required dataset, crossing each relationship
+only toward the side that matches at most one row and visiting no dataset twice. When two such
+paths exist they can produce different numbers, so the request is refused with the endpoints named
+rather than resolved to the shorter one or to whichever was found first. Only the datasets a
+request joins are checked, and a route that would fan out is not a path: `store_returns` reaches
+`date_dim` one way even where `store_sales` reaches it too and both facts share `item`.
 
 **Join type is not declared.** Ossie describes a relationship's endpoints and columns but not
 whether it is inner or outer. By default joins are emitted as `INNER`, which matches hand-written

@@ -70,11 +70,12 @@ grain subquery for a dataset that contributes only row presence, `grain_join` pi
 default OUTER join, and `population_sources` substitute a frozen `TableRef` for a dataset's declared
 source. The population fact profile builds its per-User reductions and common-domain count this way.
 
-**Plan joins.** BFS outward from the root over the relationship graph. Reaching a required dataset
-by a second, non-tree edge means two routes exist that could produce different numbers, so it
-refuses. Each planned edge is then checked for fan-out: travelling *toward* the unique side of a
-relationship matches at most one row, travelling away from it repeats rows of the grain and would
-inflate every aggregate.
+**Plan joins.** For each required dataset, search the relationship graph from the root for paths to
+it. A path crosses a relationship only *toward* its unique side, where each row matches at most one;
+travelling away from it repeats rows of the grain and would inflate every aggregate. A path visits
+no dataset twice. Exactly one path is joined. Two could produce different numbers, so the request is
+refused, whichever is shorter. None is refused too, naming the hop that fans out when the datasets
+are connected at all.
 
 **Rewrite.** Each `dataset.field` reference is replaced by the field's own expression, with its
 inner columns qualified to the bound alias. This substitution is unconditional: a field's name is
