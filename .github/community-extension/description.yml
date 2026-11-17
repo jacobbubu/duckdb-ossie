@@ -75,7 +75,10 @@ docs:
       `validate_sources` requires every dataset's table to exist, `allow_filter_functions`
       sets the filter policy at load so a caller supplying filters cannot widen its own policy,
       and `left_joins` keeps fact rows whose foreign key matches no dimension row
-    - `ossie_query(metrics, dimensions, filters)` -- compile the request and execute it
+    - `ossie_query(metrics, dimensions, filters)` -- compile the request and execute it. `filters`
+      are conditions on rows; the named argument `metric_filters` takes conditions on metrics,
+      applied after aggregation. `ossie_query(query)` takes the same request as one JSON object,
+      which can also name its output columns
     - `ossie_compile(metrics, dimensions, filters)` -- the same SQL as text, without running it
     - `ossie_datasets()`, `ossie_fields()`, `ossie_metrics()`, `ossie_relationships()` -- the
       model's vocabulary, including `ai_context` synonyms and cardinality derived from declared keys
@@ -84,11 +87,12 @@ docs:
 
     The primary consumer is an AI agent, which cannot check the number it receives, so a plausible
     wrong answer is worse than an error. Where the model or the request underdetermines the query,
-    the extension refuses and names the offending object: metrics that aggregate at more than one
-    grain, joins that would fan out and inflate every aggregate, and requests where two different
-    join paths could produce two different numbers. Error text is part of the interface -- an agent
-    reads it and retries -- so refusals are tested on their message, not merely on the fact that
-    they threw.
+    the extension refuses and names the offending object: an aggregate that does not say which
+    dataset's rows it runs over, joins that would fan out and inflate every aggregate, and requests
+    where two different join paths could produce two different numbers. A refusal the Ossie Wide
+    Table specification defines starts with its error code, such as `E_NO_PATH` or
+    `E_AMBIGUOUS_PATH`. Error text is part of the interface -- an agent reads it and retries -- so
+    refusals are tested on their message, not merely on the fact that they threw.
 
     **Conformance**
 
@@ -99,10 +103,12 @@ docs:
     are the portability models that name a column without its dataset, which the spec forbids.
     Generated SQL is diffed against hand-written TPC-DS equivalents with symmetric EXCEPT over
     dsdgen(sf = 0.01) data, so correctness is measured against the numbers rather than against our
-    own output. That covers total_sales and books_sales against hand-written SQL, and total_sales,
-    total_profit and a computed customer field against the same model written in OSSIE_SQL_2026.
-    The remaining metrics are exercised by golden-SQL, grain or vocabulary tests, none of which can
-    catch a wrong number.
+    own output. That covers total_sales, store_productivity and customer_lifetime_value against
+    hand-written SQL, and total_sales, total_profit and a computed customer field against the same
+    model written in OSSIE_SQL_2026. The remaining metrics are exercised by golden-SQL, grain or
+    vocabulary tests, none of which can catch a wrong number. The 46 wide-table compliance cases of
+    apache/ossie are run against the extension as well, and all 46 pass with the model loaded with
+    `left_joins => true`, the join the specification requires.
 
     Models use the document shape of Ossie 0.3.0.dev0, with expressions in OSSIE_SQL_2026 (the
     spec's own expression language, written as expression.sql) or ANSI_SQL. Dataset-scoped metrics
