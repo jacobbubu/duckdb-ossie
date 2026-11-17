@@ -34,6 +34,10 @@ struct CompileOptions {
 	vector<string> required_grains;
 	//! How the per-grain subqueries of a multi-grain request are joined on their dimension values.
 	JoinType grain_join = JoinType::OUTER;
+	//! Internal. Whether an aggregate may read, beside the dataset whose rows it runs over, datasets those rows
+	//! determine. A population bundle designates its grain and checks each metric against it; a query against
+	//! a model alone has only the aggregate's arguments to go by, and those must read one dataset.
+	bool determined_arguments = false;
 };
 
 //! Whether `name` is an aggregate function this compiler recognises. Not exhaustive: anything missed
@@ -41,7 +45,7 @@ struct CompileOptions {
 bool IsAggregateName(const string &name);
 
 //! Requires each metric's recognized original-model aggregate grain to be the designated dataset.
-//! Does not infer recognized grainless aggregates. Needs separate original/expanded expression
+//! An aggregate that reads no dataset has none. Needs separate original/expanded expression
 //! validation, Compile/binding and data-key checks; the aggregate-name set is not exhaustive.
 void RequireMetricGrain(const Model &model, const vector<string> &metrics, const string &designated_dataset);
 

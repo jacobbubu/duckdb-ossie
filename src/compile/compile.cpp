@@ -416,8 +416,8 @@ void CheckFilterNode(const ParsedExpression &expr, const string &subject, const 
 	}
 }
 
-//! An aggregate's grain is the dataset that functionally determines the others it touches: their
-//! values are replicated onto its rows, so each of its rows is still counted exactly once.
+//! Among the datasets an aggregate touches, the one that functionally determines the others: their values are
+//! replicated onto its rows, so each of its rows is still counted exactly once.
 string AggregateGrain(const Model &model, const case_insensitive_set_t &datasets, const string &subject) {
 	vector<string> candidates;
 	for (auto &candidate : datasets) {
@@ -443,6 +443,65 @@ string AggregateGrain(const Model &model, const case_insensitive_set_t &datasets
 	return candidates[0];
 }
 
+//! The datasets an aggregate reads outside its FILTER clause: through its arguments, and through the ORDER BY that
+//! is the argument of an ordered-set aggregate.
+case_insensitive_set_t ArgumentDatasets(const FunctionExpression &aggregate) {
+	case_insensitive_set_t datasets;
+	for (auto &argument : aggregate.GetArguments()) {
+		CollectDatasets(argument.GetExpression(), datasets);
+	}
+	if (aggregate.OrderBy()) {
+		for (auto &order : aggregate.OrderBy()->orders) {
+			CollectDatasets(*order.expression, datasets);
+		}
+	}
+	return datasets;
+}
+
+//! The home of an aggregate that no dataset-scoped metric brought: the dataset whose rows it runs over. It is the
+//! one dataset the arguments read; the FILTER may read that dataset only, and has no say in which it is. Where
+//! the caller checks the grain itself, it is instead the dataset that determines every other the aggregate reads.
+string AggregateHome(const Model &model, const ParsedExpression &expr, const string &subject,
+                     const CompileOptions &options) {
+	auto &aggregate = expr.Cast<FunctionExpression>();
+	if (options.determined_arguments) {
+		case_insensitive_set_t datasets;
+		CollectDatasets(expr, datasets);
+		if (!datasets.empty()) {
+			return AggregateGrain(model, datasets, subject);
+		}
+	}
+	auto &function = aggregate.FunctionName().GetIdentifierName();
+	auto name = StringUtil::CIEquals(function, "count_star") ? "COUNT(*)" : StringUtil::Upper(function);
+	auto read = ArgumentDatasets(aggregate);
+	if (read.empty()) {
+		throw InvalidInputException("ossie: E_AMBIGUOUS_MEASURE_GRAIN: %s has the aggregate %s, whose arguments read "
+		                            "no dataset, so nothing says whose rows it runs over. Declare it as a metric of "
+		                            "the dataset whose rows it counts, and name that metric",
+		                            subject, name);
+	}
+	if (read.size() > 1) {
+		throw InvalidInputException("ossie: E_AMBIGUOUS_MEASURE_GRAIN: %s has the aggregate %s, whose arguments read "
+		                            "%s datasets (%s). An aggregate runs over the rows of the one dataset its "
+		                            "arguments read; one over several is not supported yet",
+		                            subject, name, to_string(read.size()), StringUtil::Join(SortedNames(read), ", "));
+	}
+	string home = *read.begin();
+	if (aggregate.Filter()) {
+		case_insensitive_set_t filtered;
+		CollectDatasets(*aggregate.Filter(), filtered);
+		for (auto &dataset : SortedNames(filtered)) {
+			if (!StringUtil::CIEquals(dataset, home)) {
+				throw InvalidInputException("ossie: E_AMBIGUOUS_MEASURE_GRAIN: %s has the aggregate %s over \"%s\", "
+				                            "whose FILTER reads \"%s\". The FILTER of an aggregate may read only the "
+				                            "dataset its arguments read",
+				                            subject, name, home, dataset);
+			}
+		}
+	}
+	return home;
+}
+
 //! The first window function in `expr`, or nullptr. A window's frame and partition are written into the
 //! metric, but the rows it runs over are decided by the request's dimensions, which the model cannot know.
 const WindowExpression *FindWindow(const ParsedExpression &expr) {
@@ -458,32 +517,24 @@ const WindowExpression *FindWindow(const ParsedExpression &expr) {
 	return found;
 }
 
-//! Collects the grain of every aggregate in a metric. An aggregate with no column reference, such
-//! as COUNT(*), names no dataset: a dataset-scoped metric's runs over its own dataset (`home`); a
-//! model-scoped metric's is recorded separately.
+//! Collects the home of every aggregate in a metric. A dataset-scoped metric is one measure of its dataset
+//! whatever its expression, so COUNT(*) in it counts that dataset's rows; in a model-scoped metric each aggregate
+//! has a home of its own.
 void CollectGrains(const Model &model, const ParsedExpression &expr, const Metric &metric,
-                   case_insensitive_set_t &grains, bool &has_grainless) {
+                   case_insensitive_set_t &grains, const CompileOptions &options) {
 	if (expr.GetExpressionClass() == ExpressionClass::FUNCTION &&
 	    IsAggregateName(expr.Cast<FunctionExpression>().FunctionName().GetIdentifierName())) {
-		case_insensitive_set_t datasets;
-		CollectDatasets(expr, datasets);
-		if (datasets.empty() && !metric.dataset.empty()) {
-			grains.insert(metric.dataset);
-		} else if (datasets.empty()) {
-			has_grainless = true;
-		} else {
-			grains.insert(AggregateGrain(model, datasets, "metric \"" + metric.name + "\""));
-		}
+		grains.insert(metric.dataset.empty() ? AggregateHome(model, expr, "metric \"" + metric.name + "\"", options)
+		                                     : metric.dataset);
 		return;
 	}
 	ParsedExpressionIterator::EnumerateChildren(
-	    expr, [&](const ParsedExpression &child) { CollectGrains(model, child, metric, grains, has_grainless); });
+	    expr, [&](const ParsedExpression &child) { CollectGrains(model, child, metric, grains, options); });
 }
 
 struct MetricAnalysis {
 	const Metric *metric = nullptr;
 	case_insensitive_set_t grains;
-	bool grainless = false;
 };
 
 [[noreturn]] void ThrowUnknownMetric(const Model &model, const string &metric_name) {
@@ -543,7 +594,7 @@ void RequireAggregatedFields(const Metric &metric) {
 	}
 }
 
-MetricAnalysis AnalyzeMetric(const Model &model, const string &metric_name) {
+MetricAnalysis AnalyzeMetric(const Model &model, const string &metric_name, const CompileOptions &options) {
 	auto metric = model.FindMetric(metric_name);
 	if (!metric) {
 		ThrowUnknownMetric(model, metric_name);
@@ -551,23 +602,19 @@ MetricAnalysis AnalyzeMetric(const Model &model, const string &metric_name) {
 	RefuseWindowMetric(*metric);
 	MetricAnalysis result;
 	result.metric = metric;
-	CollectGrains(model, *metric->expression.tree, *metric, result.grains, result.grainless);
+	CollectGrains(model, *metric->expression.tree, *metric, result.grains, options);
 	return result;
 }
 
-//! The dataset each aggregate without a column reference counts, keyed by node. Such an aggregate
-//! reaches a request through a dataset-scoped metric, and counts that dataset's rows wherever the
-//! expression it sits in ends up.
+//! The dataset each aggregate of a dataset-scoped metric runs over, keyed by node. The metric's dataset is its
+//! home whatever the aggregate reads, so COUNT(*) counts that dataset's rows wherever the expression it sits in
+//! ends up.
 using AggregateHomes = std::unordered_map<const ParsedExpression *, string>;
 
 void RecordHomes(const ParsedExpression &expr, const string &home, AggregateHomes &homes) {
 	if (expr.GetExpressionClass() == ExpressionClass::FUNCTION &&
 	    IsAggregateName(expr.Cast<FunctionExpression>().FunctionName().GetIdentifierName())) {
-		case_insensitive_set_t datasets;
-		CollectDatasets(expr, datasets);
-		if (datasets.empty()) {
-			homes[&expr] = home;
-		}
+		homes[&expr] = home;
 		return;
 	}
 	ParsedExpressionIterator::EnumerateChildren(
@@ -591,6 +638,9 @@ struct Filter {
 	//! does, so a grain only the entry needs still gets its own subquery.
 	case_insensitive_set_t grains;
 	AggregateHomes homes;
+	//! The model-scoped metrics a metric filter names. Each answers for its own aggregates, so a refusal names
+	//! the metric rather than the entry that asked for it.
+	vector<const Metric *> metrics;
 };
 
 //! Replaces `expr` with the metric's expression, which makes the predicate an aggregate at the
@@ -604,7 +654,9 @@ void InlineMetric(const Model &model, const Metric &metric, unique_ptr<ParsedExp
 	}
 	auto replacement = metric.expression.tree->Copy();
 	InlineFields(model, replacement);
-	if (!metric.dataset.empty()) {
+	if (metric.dataset.empty()) {
+		filter.metrics.push_back(&metric);
+	} else {
 		RecordHomes(*replacement, metric.dataset, filter.homes);
 	}
 	expr = std::move(replacement);
@@ -675,24 +727,19 @@ void CheckFilterTree(const ParsedExpression &expr, const string &subject, const 
 	    expr, [&](const ParsedExpression &child) { CheckFilterTree(child, subject, options); });
 }
 
-//! The grain of each aggregate in a metric filter whose names have resolved. An aggregate with no column reference
-//! counts its dataset's rows if a dataset-scoped metric brought it, and otherwise the rows of whatever grain the
-//! query has, as it does in a metric.
-void CollectFilterGrains(const Model &model, const ParsedExpression &expr, Filter &filter) {
+//! The home of each aggregate in a metric filter whose names have resolved. An aggregate written in the entry
+//! itself is held to what a model-scoped metric's is.
+void CollectFilterGrains(const Model &model, const ParsedExpression &expr, Filter &filter,
+                         const CompileOptions &options) {
 	if (expr.GetExpressionClass() == ExpressionClass::FUNCTION &&
 	    IsAggregateName(expr.Cast<FunctionExpression>().FunctionName().GetIdentifierName())) {
-		case_insensitive_set_t datasets;
-		CollectDatasets(expr, datasets);
 		auto home = filter.homes.find(&expr);
-		if (home != filter.homes.end()) {
-			filter.grains.insert(home->second);
-		} else if (!datasets.empty()) {
-			filter.grains.insert(AggregateGrain(model, datasets, filter.subject));
-		}
+		filter.grains.insert(home != filter.homes.end() ? home->second
+		                                                : AggregateHome(model, expr, filter.subject, options));
 		return;
 	}
 	ParsedExpressionIterator::EnumerateChildren(
-	    expr, [&](const ParsedExpression &child) { CollectFilterGrains(model, child, filter); });
+	    expr, [&](const ParsedExpression &child) { CollectFilterGrains(model, child, filter, options); });
 }
 
 //! Parses one entry of `filters` or `metric_filters`. Its names are resolved by ResolveFilterNames, and what it may
@@ -1080,7 +1127,8 @@ void RequireFiltersReachable(const Model &model, const vector<Source> &sources, 
 //! exist that this grain's subquery has no row for; the aggregate then takes its value over no rows,
 //! which the outer join's NULL already is for all but the counts.
 void HoistAggregates(const Model &model, unique_ptr<ParsedExpression> &expr, const string &request,
-                     const AggregateHomes &homes, vector<GrainQuery> &grain_queries, bool rows_may_be_missing) {
+                     const AggregateHomes &homes, vector<GrainQuery> &grain_queries, bool rows_may_be_missing,
+                     const CompileOptions &options) {
 	if (expr->GetExpressionClass() == ExpressionClass::FUNCTION &&
 	    IsAggregateName(expr->Cast<FunctionExpression>().FunctionName().GetIdentifierName())) {
 		bool zero_when_missing =
@@ -1088,7 +1136,7 @@ void HoistAggregates(const Model &model, unique_ptr<ParsedExpression> &expr, con
 		case_insensitive_set_t datasets;
 		CollectDatasets(*expr, datasets);
 		auto home = homes.find(expr.get());
-		auto grain = home != homes.end() ? home->second : AggregateGrain(model, datasets, "\"" + request + "\"");
+		auto grain = home != homes.end() ? home->second : AggregateHome(model, *expr, "\"" + request + "\"", options);
 		for (auto &query : grain_queries) {
 			if (!StringUtil::CIEquals(query.dataset->name, grain)) {
 				continue;
@@ -1120,7 +1168,7 @@ void HoistAggregates(const Model &model, unique_ptr<ParsedExpression> &expr, con
 		throw InternalException("ossie: aggregate grain \"%s\" has no subquery", grain);
 	}
 	ParsedExpressionIterator::EnumerateChildren(*expr, [&](unique_ptr<ParsedExpression> &child) {
-		HoistAggregates(model, child, request, homes, grain_queries, rows_may_be_missing);
+		HoistAggregates(model, child, request, homes, grain_queries, rows_may_be_missing, options);
 	});
 }
 
@@ -1157,7 +1205,7 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 	bool rows_may_be_missing = !resolved_dimensions.empty() && options.grain_join == JoinType::OUTER;
 	for (auto &expr : metric_expressions) {
 		auto alias = expr->GetAlias().GetIdentifierName();
-		HoistAggregates(model, expr, alias, metric_homes, grain_queries, rows_may_be_missing);
+		HoistAggregates(model, expr, alias, metric_homes, grain_queries, rows_may_be_missing, options);
 		expr->SetAlias(Identifier(alias));
 	}
 
@@ -1172,7 +1220,8 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 	unique_ptr<ParsedExpression> outer_where;
 	for (auto &filter : filters) {
 		if (filter.on_metrics) {
-			HoistAggregates(model, filter.expr, filter.request, filter.homes, grain_queries, rows_may_be_missing);
+			HoistAggregates(model, filter.expr, filter.request, filter.homes, grain_queries, rows_may_be_missing,
+			                options);
 			AndInto(outer_where, std::move(filter.expr));
 			continue;
 		}
@@ -1261,13 +1310,10 @@ void RequireMetricGrain(const Model &model, const vector<string> &metrics, const
 	if (metrics.empty()) {
 		throw InvalidInputException("ossie: at least one metric is required for designated grain validation");
 	}
+	CompileOptions options;
+	options.determined_arguments = true;
 	for (auto &name : metrics) {
-		auto analysis = AnalyzeMetric(model, name);
-		if (analysis.grainless) {
-			throw InvalidInputException("ossie: metric \"%s\" contains an aggregate without a dataset; "
-			                            "designated grain validation does not infer a grain for it",
-			                            name);
-		}
+		auto analysis = AnalyzeMetric(model, name, options);
 		if (analysis.grains.size() != 1 || !StringUtil::CIEquals(*analysis.grains.begin(), designated_dataset)) {
 			throw InvalidInputException("ossie: metric \"%s\" must aggregate only at designated grain \"%s\"; "
 			                            "inferred grains: [%s]",
@@ -1370,8 +1416,6 @@ unique_ptr<SelectStatement> Compile(const Model &model, const Request &asked, co
 	// 12. Each aggregate has one dataset whose rows it runs over.
 	case_insensitive_set_t grains;
 	case_insensitive_set_t metric_datasets;
-	bool has_grainless = false;
-	string grainless_metric;
 	vector<unique_ptr<ParsedExpression>> metric_expressions;
 	AggregateHomes metric_homes;
 	vector<Source> sources;
@@ -1379,13 +1423,8 @@ unique_ptr<SelectStatement> Compile(const Model &model, const Request &asked, co
 		auto &metric = *requested[i];
 		Source source;
 		source.label = StringUtil::Format("metric \"%s\"", metrics[i]);
-		bool grainless = false;
-		CollectGrains(model, *metric.expression.tree, metric, source.homes, grainless);
+		CollectGrains(model, *metric.expression.tree, metric, source.homes, options);
 		CollectDatasets(*metric.expression.tree, metric_datasets);
-		if (grainless) {
-			has_grainless = true;
-			grainless_metric = metric.name;
-		}
 		sources.push_back(std::move(source));
 
 		auto expr = metric.expression.tree->Copy();
@@ -1400,7 +1439,10 @@ unique_ptr<SelectStatement> Compile(const Model &model, const Request &asked, co
 	// evaluated over that grain's rows rather than over whatever rows the metrics happen to group.
 	for (auto &filter : resolved_filters) {
 		if (filter.on_metrics) {
-			CollectFilterGrains(model, *filter.expr, filter);
+			for (auto metric : filter.metrics) {
+				CollectGrains(model, *metric->expression.tree, *metric, filter.grains, options);
+			}
+			CollectFilterGrains(model, *filter.expr, filter, options);
 			sources.push_back({filter.subject, filter.grains});
 		}
 	}
@@ -1413,25 +1455,11 @@ unique_ptr<SelectStatement> Compile(const Model &model, const Request &asked, co
 		}
 		grains.insert(grain);
 	}
-	if (has_grainless && grains.size() > 1) {
-		throw InvalidInputException("ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric \"%s\" has an aggregate with no column "
-		                            "reference, and the requested metrics aggregate at %s different grains (%s), so "
-		                            "there is no single dataset for it to count. Qualify it, for example "
-		                            "COUNT(store_sales.ss_item_sk) rather than COUNT(*)",
-		                            grainless_metric, to_string(grains.size()),
-		                            StringUtil::Join(SortedNames(grains), ", "));
-	}
-	if (has_grainless && grains.empty()) {
-		throw InvalidInputException("ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric \"%s\" has an aggregate with no column "
-		                            "reference, so there is no dataset to aggregate over. Qualify it, for example "
-		                            "COUNT(store_sales.ss_item_sk) rather than COUNT(*)",
-		                            grainless_metric);
-	}
 	if (!metrics.empty() && grains.empty()) {
 		throw InvalidInputException("ossie: no requested metric contains an aggregate, so the query has no "
 		                            "grain to group by");
 	}
-	// An aggregate with no column reference runs over the one grain there is.
+	// A metric with no aggregate of its own, a constant, appears beside every grain's rows.
 	for (auto &source : sources) {
 		if (source.homes.empty()) {
 			source.homes = grains;
@@ -1478,7 +1506,8 @@ unique_ptr<SelectStatement> Compile(const Model &model, const Request &asked, co
 	if (options.population_predicate) {
 		select->where_clause = options.population_predicate->Copy();
 	}
-	// A metric may reference a second dataset as a scalar, which still has to be joined.
+	// A dataset a metric reads beside its grain still has to be joined: one the grain determines, where the
+	// caller allows that, or one read by a function DuckDB is left to judge.
 	vector<string> required;
 	case_insensitive_set_t required_seen;
 	for (auto &name : SortedNames(metric_datasets)) {

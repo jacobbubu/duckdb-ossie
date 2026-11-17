@@ -600,13 +600,25 @@ bool HasColumnRef(const ParsedExpression &expr) {
 	return found;
 }
 
-//! An aggregate that names no column, such as COUNT(*), takes its rows from the metric's own dataset.
-//! Inlined into another metric that anchor is gone, so such a reference is refused rather than
-//! counting whatever dataset the enclosing metric happens to be grouped on.
+//! An aggregate whose arguments name no column, such as COUNT(*), takes its rows from the metric's own dataset.
+//! Inlined into another metric that anchor is gone, and a FILTER does not stand in for it.
 bool HasGrainlessAggregate(const ParsedExpression &expr) {
 	if (expr.GetExpressionClass() == ExpressionClass::FUNCTION &&
 	    IsAggregateName(expr.Cast<FunctionExpression>().FunctionName().GetIdentifierName())) {
-		return !HasColumnRef(expr);
+		auto &call = expr.Cast<FunctionExpression>();
+		for (auto &argument : call.GetArguments()) {
+			if (HasColumnRef(argument.GetExpression())) {
+				return false;
+			}
+		}
+		if (call.OrderBy()) {
+			for (auto &order : call.OrderBy()->orders) {
+				if (HasColumnRef(*order.expression)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	bool found = false;
 	ParsedExpressionIterator::EnumerateChildren(expr, [&](const ParsedExpression &child) {
@@ -643,9 +655,9 @@ void SubstituteAggregateReferences(const Model &model, unique_ptr<ParsedExpressi
 		                            context, reference);
 	}
 	if (HasGrainlessAggregate(*metric->expression.tree)) {
-		throw InvalidInputException("ossie_load: %s calls AGG(%s), whose expression aggregates without naming a "
-		                            "column (for example COUNT(*)), so inlined here it would count the wrong "
-		                            "rows. Request %s directly instead",
+		throw InvalidInputException("ossie_load: %s calls AGG(%s), whose expression has an aggregate with no "
+		                            "column in its arguments (for example COUNT(*)), so inlined here nothing "
+		                            "would say whose rows it counts. Request %s directly instead",
 		                            context, reference, reference);
 	}
 	expr = metric->expression.tree->Copy();

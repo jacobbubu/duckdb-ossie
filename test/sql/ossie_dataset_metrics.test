@@ -159,7 +159,7 @@ metric "doubled" calls AGG(orders.total), but the model declares no dataset-scop
 statement error
 CALL ossie_load('test/fixtures/invalid/agg_grainless.yaml');
 ----
-metric "doubled" calls AGG(orders.order_count), whose expression aggregates without naming a column (for example COUNT(*)), so inlined here it would count the wrong rows. Request orders.order_count directly instead
+metric "doubled" calls AGG(orders.order_count), whose expression has an aggregate with no column in its arguments (for example COUNT(*)), so inlined here nothing would say whose rows it counts. Request orders.order_count directly instead
 
 # --- nonportable_extensions shapes ---
 

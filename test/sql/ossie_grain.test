@@ -39,36 +39,29 @@ SELECT ossie_compile(['customer_lifetime_value'], ['item.i_brand'], []);
 ----
 E_NO_PATH: dimension "item.i_brand" is a field of "item", which metric "customer_lifetime_value" cannot reach from "customer": joining "store_sales" repeats each "customer" row once per match
 
-# COUNT(*) has no grain of its own, and with two grains there is no single one to inherit.
+# An aggregate runs over the rows of the one dataset its arguments read. One that reads a second is refused,
+# even where the first determines the second and joining them would repeat no row.
 statement error
-SELECT ossie_compile(['total_sales', 'store_productivity', 'transaction_count'], [], []);
-----
-aggregate with no column reference, and the requested metrics aggregate at 2 different grains (store, store_sales)
-
-# A second dataset referenced as a scalar is functionally determined by the grain, so it is an
-# ordinary join rather than a fan-out. item must still be joined for the reference to bind.
-query T
 SELECT ossie_compile(['books_sales'], [], []);
 ----
-SELECT sum(CASE  WHEN ((item.i_category = 'Books')) THEN (store_sales.ss_ext_sales_price) ELSE 0 END) AS books_sales FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.item AS item ON ((store_sales.ss_item_sk = item.i_item_sk)))
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "books_sales" has the aggregate SUM, whose arguments read 2 datasets (item, store_sales). An aggregate runs over the rows of the one dataset its arguments read; one over several is not supported yet
 
-# COUNT(*) names no dataset, so alone there is no table to count.
+# COUNT(*) in a model-scoped metric reads no dataset, so nothing says whose rows it counts: not alone, not
+# beside a metric that has a grain, not with a dimension.
 statement error
 SELECT ossie_compile(['transaction_count'], [], []);
 ----
-has an aggregate with no column reference
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "transaction_count" has the aggregate COUNT(*), whose arguments read no dataset, so nothing says whose rows it runs over. Declare it as a metric of the dataset whose rows it counts, and name that metric
 
-# Alongside a metric that does have a grain, COUNT(*) inherits it.
-query T
+statement error
 SELECT ossie_compile(['total_sales', 'transaction_count'], [], []);
 ----
-SELECT sum(store_sales.ss_ext_sales_price) AS total_sales, count_star() AS transaction_count FROM tpcds.main.store_sales AS store_sales
+E_AMBIGUOUS_MEASURE_GRAIN: metric "transaction_count" has the aggregate COUNT(*), whose arguments read no dataset
 
-# A dimension is not a grain: which dataset to count remains undetermined.
 statement error
 SELECT ossie_compile(['transaction_count'], ['item.i_brand'], []);
 ----
-has an aggregate with no column reference
+E_AMBIGUOUS_MEASURE_GRAIN: metric "transaction_count" has the aggregate COUNT(*), whose arguments read no dataset
 
 # Joining across a many-to-many edge repeats fact rows into every aggregate.
 statement ok

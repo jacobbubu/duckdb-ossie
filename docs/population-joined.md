@@ -90,10 +90,12 @@ become visible only through an explicit reload.
 ## Metric grain
 
 Before fields are expanded, every metric is checked against the designated fact
-grain using the same grain analysis as the core compiler. Fact `SUM`/`AVG`/`COUNT`
-and a dimension condition inside a fact-grain `CASE` pass; dimension-grain
-aggregates, mixed grains, windows, grainless `COUNT(*)` or `COUNT(1)` and
-unrecognized aggregate functions are refused. Nested aggregates and hidden field
+grain using the core compiler's grain analysis. Unlike a query against a model
+alone, an aggregate here may read a dataset the fact rows determine. Fact
+`SUM`/`AVG`/`COUNT` and a dimension condition inside a fact-grain `CASE` pass;
+dimension-grain aggregates, mixed grains, windows, grainless `COUNT(*)` or
+`COUNT(1)` and unrecognized aggregate functions are refused. Nested aggregates
+and hidden field
 expressions can pass the grain check and still fail at binding. This check
 supplements the normal reference/path checks and physical binding; it does not
 prove that an arbitrary expression is safe.

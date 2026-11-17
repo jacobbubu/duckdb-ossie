@@ -108,12 +108,12 @@ SELECT sum(orders.amount) AS total_revenue FROM retail.orders AS orders HAVING (
 statement error
 SELECT ossie_compile(['row_count'], [], []);
 ----
-metric "row_count" has an aggregate with no column reference
+metric "row_count" has the aggregate COUNT(*), whose arguments read no dataset, so nothing says whose rows it runs over. Declare it as a metric of the dataset whose rows it counts, and name that metric
 
 statement error
 SELECT ossie_compile(['order_less_return'], [], []);
 ----
-an aggregate in metric "order_less_return" spans datasets orders, returns
+metric "order_less_return" has the aggregate SUM, whose arguments read 2 datasets (orders, returns). An aggregate runs over the rows of the one dataset its arguments read; one over several is not supported yet
 
 statement error
 SELECT ossie_compile(['running_revenue'], [], []);
@@ -155,9 +155,36 @@ SELECT ossie_compile([], ['customers.region'], [], metric_filters => ['orders.to
 ----
 SELECT customers.region AS region FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region HAVING (sum(orders.amount) > 10)
 
-# Without a metric of its own to say which rows, an aggregate is evaluated over the anchor's.
+# An aggregate written in a metric filter is held to what a model-scoped metric's is: its arguments read one
+# dataset, whose rows it runs over, and its FILTER reads no other.
 query T
+SELECT ossie_compile([], ['customers.region'], [], metric_filters => ['COUNT(customers.customer_id) > 1']);
+----
+SELECT customers.region AS region FROM retail.customers AS customers GROUP BY customers.region HAVING (count(customers.customer_id) > 1)
+
+query T
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['SUM(orders.amount) FILTER (WHERE orders.amount > 5) > 1']);
+----
+SELECT sum(orders.amount) AS total_revenue FROM retail.orders AS orders HAVING (sum(orders.amount) FILTER (WHERE (orders.amount > 5)) > 1)
+
+statement error
 SELECT ossie_compile([], ['customers.region'], [], metric_filters => ['COUNT(*) > 1']);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric filter "COUNT(*) > 1" has the aggregate COUNT(*), whose arguments read no dataset, so nothing says whose rows it runs over. Declare it as a metric of the dataset whose rows it counts, and name that metric
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['SUM(orders.amount * customers.customer_id) > 1']);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric filter "SUM(orders.amount * customers.customer_id) > 1" has the aggregate SUM, whose arguments read 2 datasets (customers, orders). An aggregate runs over the rows of the one dataset its arguments read; one over several is not supported yet
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['SUM(orders.amount) FILTER (WHERE customers.region = ''WEST'') > 1']);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric filter "SUM(orders.amount) FILTER (WHERE customers.region = 'WEST') > 1" has the aggregate SUM over "orders", whose FILTER reads "customers". The FILTER of an aggregate may read only the dataset its arguments read
+
+# The dataset-scoped metric the refusal points to counts its dataset's rows.
+query T
+SELECT ossie_compile([], ['customers.region'], [], metric_filters => ['customers.customer_count > 1']);
 ----
 SELECT customers.region AS region FROM retail.customers AS customers GROUP BY customers.region HAVING (count_star() > 1)
 

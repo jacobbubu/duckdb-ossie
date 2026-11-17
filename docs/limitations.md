@@ -72,21 +72,39 @@ take the value they have over no rows: 0 for `COUNT`, `COUNT(*)`, `COUNT(DISTINC
   `store` cannot reach `date_dim` except through `store_sales`, and a filter that silently applied
   to one side of the ratio only would be a different metric. The same holds for dimensions.
 - A metric filter (`metric_filters => ['total_sales > 100']`) applies to the joined result.
-- `COUNT(*)` alongside metrics at two grains is refused, as there is no single grain for it to
-  inherit (see below).
 - Population requests are single-grain by construction and refuse multi-grain metrics.
 
-A metric referencing a second dataset is *not* by itself multi-grain. Where the second dataset is
-functionally determined by the grain — `item.i_category` inside an aggregate over `store_sales` —
-its values are replicated onto fact rows without changing their count, and the aggregate stays at
-the `store_sales` grain.
+**Which dataset an aggregate runs over.** A metric declared on a dataset runs over that dataset's
+rows, whatever its expression: `orders.completed_count`, declared as `COUNT(*) FILTER (WHERE status
+= 'completed')`, counts `orders`. In a model-scoped metric each aggregate runs over the one dataset
+its arguments read, and three shapes that name no such dataset are refused with
+`E_AMBIGUOUS_MEASURE_GRAIN`, as the Wide Table specification requires:
 
-**Aggregates with no column reference.** A metric defined as `COUNT(*)` names no dataset, and
-Ossie has no field binding a metric to one. Asking for it alone leaves no candidate for the `FROM`
-clause; against the TPC-DS model the answer could be 2.9M (sales), 100K (customers) or 12
-(stores), with nothing to choose between them. Requesting it *alongside* a metric that does have a
-grain works, since it then inherits that grain. Model authors can avoid the case entirely by
-writing `COUNT(store_sales.ss_item_sk)`.
+- An aggregate whose arguments read several datasets: `SUM(store_sales.ss_quantity *
+  item.i_current_price)`. An `ORDER BY` inside the call counts as an argument. The specification
+  defers this shape rather than calling it wrong. Declare the product as a field of `store_sales`
+  if the source has it, or aggregate each dataset on its own.
+- An aggregate whose `FILTER` reads a dataset its arguments do not: `SUM(orders.amount) FILTER
+  (WHERE customers.region = 'west')`. Pass the condition as a row filter of the request instead.
+- An aggregate whose arguments read no dataset: `COUNT(*)`, `COUNT(1)`, and `COUNT(*) FILTER (WHERE
+  orders.status = 'completed')`, where the `FILTER` does not stand in for the arguments. Against
+  the TPC-DS model a bare `COUNT(*)` could be 2.9M (sales), 100K (customers) or 12 (stores), with
+  nothing to choose between them, and the other metrics of a request do not choose either. Declare
+  the count as a metric of the dataset it counts and request `dataset.metric`, or write
+  `COUNT(store_sales.ss_item_sk)`.
+
+An aggregate written directly in a `metric_filters` entry is held to the same rule, so
+`metric_filters => ['COUNT(*) > 1']` is refused and `['customers.customer_count > 1']` is the way to
+write it.
+
+`AGG(dataset.metric)` inlines the dataset metric's expression into the model-scoped metric, and the
+inlined aggregates are then read by the rule above rather than kept with the dataset that declared
+them. A dataset metric whose aggregate has no column in its arguments therefore cannot be named in
+`AGG` and is refused at load; request it directly.
+
+Population requests check each metric against the grain the bundle designates instead: there an
+aggregate over the fact rows may read a dataset those rows determine, as in `SUM(CASE WHEN
+dimension.eligible THEN fact.amount END)`.
 
 **Window-function metrics.** A metric such as `SUM(SUM(store_sales.ss_ext_sales_price)) OVER (ORDER
 BY date_dim.d_date ...)` fixes its partition and order in the model, but the rows it runs over are
@@ -192,7 +210,7 @@ written.
 | 9 | `E_NAME_COLLISION` | two output columns have one name |
 | 10 | `E_UNAGGREGATED_FINER_GRAIN_REFERENCE` | a model-scoped metric reads a field outside every aggregate |
 | 11 | `E_DEFERRED_WINDOWED_METRIC` | a metric contains a window function |
-| 12 | `E_AMBIGUOUS_MEASURE_GRAIN` | an aggregate reads datasets none of which determines the others, or reads none and has no single grain to inherit |
+| 12 | `E_AMBIGUOUS_MEASURE_GRAIN` | an aggregate of a model-scoped metric, or one written in a metric filter, has arguments that read several datasets or none, or a `FILTER` that reads a dataset its arguments do not |
 | 13 | `E_NO_PATH` | no requested metric reaches a dimension's dataset |
 | 14 | `E_PARTIAL_DIMENSION_REACHABILITY` | some requested metrics reach a dimension's dataset and others do not |
 | 15 | `E_NO_ANCHOR` | a request without metrics has no dimension dataset that reaches all the others |
@@ -202,20 +220,6 @@ written.
 **Refusals the specification does not define carry no code.** `metric_filters` is this extension's
 parameter, so a metric filter with no metric and no aggregate, or with a window function, is refused
 as `ossie: metric filter ...`. So are the refusals of the population surface and of `ossie_load`.
-
-**Three metric shapes the specification refuses are answered.** Each is one the grain rules above
-give a single answer for, and the specification defers them rather than calling them wrong:
-
-- An aggregate whose arguments read several datasets, when one of them determines the others:
-  `SUM(store_sales.ss_quantity * item.i_current_price)` is aggregated over `store_sales` rows. The
-  specification requires `E_AMBIGUOUS_MEASURE_GRAIN` whenever the arguments read more than one
-  dataset; here that code is raised only when no dataset determines the rest.
-- An aggregate whose `FILTER` reads a dataset its arguments do not, under the same condition.
-- A model-scoped `COUNT(*)` requested with metrics that share one grain, which counts that grain's
-  rows. The specification requires the code for any model-scoped aggregate that reads no dataset;
-  here it is raised when the request has no grain, or more than one, for the count to take.
-
-A model that must behave the same on every engine should not rely on these.
 
 ## Model conformance
 

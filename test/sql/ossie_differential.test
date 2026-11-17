@@ -165,16 +165,8 @@ SELECT count(*) FROM store_sales WHERE ss_store_sk IS NULL AND ss_ext_sales_pric
 statement ok
 CALL ossie_load('test/fixtures/tpcds_semantic_model.json', rebind => MAP{'tpcds.public': 'memory.main'});
 
-# A metric referencing a second dataset as a scalar joins without fanning out.
 statement ok
 CALL ossie_load('test/fixtures/grain_model.json', rebind => MAP{'tpcds.public': 'memory.main'});
-
-query I
-SELECT (SELECT books_sales FROM ossie_query(['books_sales']))
-     - (SELECT sum(CASE WHEN i_category = 'Books' THEN ss_ext_sales_price ELSE 0 END)
-        FROM store_sales JOIN item ON ss_item_sk = i_item_sk);
-----
-0.00
 
 # A metric at two grains divides the whole of one dataset by the whole of the other: the
 # denominator counts every store once, not once per sale.

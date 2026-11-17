@@ -1,0 +1,132 @@
+# name: test/sql/ossie_aggregate_home.test
+# description: the dataset whose rows each aggregate of a metric runs over, and the shapes that name none
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE TABLE orders(order_id INT, customer_id INT, amount INT, status VARCHAR);
+
+statement ok
+INSERT INTO orders VALUES (1, 1, 10, 'completed'), (2, 1, 20, 'open'), (3, 2, 40, 'completed'), (4, NULL, 5, 'completed');
+
+statement ok
+CREATE TABLE customers(customer_id INT, region VARCHAR, rate INT);
+
+statement ok
+INSERT INTO customers VALUES (1, 'east', 2), (2, 'west', 3), (3, 'west', 4);
+
+statement ok
+CALL ossie_load('test/fixtures/aggregate_home.yaml');
+
+# An aggregate of a model-scoped metric runs over the rows of the one dataset its arguments read. Its
+# FILTER and an ORDER BY inside the call may read that dataset too.
+query T
+SELECT ossie_compile(['completed_revenue', 'median_amount', 'status_list'], ['customers.region'], []);
+----
+SELECT customers.region AS region, sum(orders.amount) FILTER (WHERE (orders.status = 'completed')) AS completed_revenue, quantile_cont(0.5 ORDER BY orders.amount) AS median_amount, string_agg(orders.status, ',' ORDER BY orders.order_id) AS status_list FROM (memory.main.orders AS orders INNER JOIN memory.main.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region
+
+query TIRT
+SELECT * FROM ossie_query(['completed_revenue', 'median_amount', 'status_list'], ['customers.region']) ORDER BY 1;
+----
+east	10	15.0	completed,open
+west	40	40.0	completed
+
+# Two aggregates of one metric may read different datasets: each is aggregated over its own.
+query T
+SELECT ossie_compile(['revenue_per_customer'], ['customers.region'], []);
+----
+SELECT COALESCE(customers.dim_0, orders.dim_0) AS region, (orders.agg_0 / COALESCE(customers.agg_0, CAST(0 AS BIGINT))) AS revenue_per_customer FROM ((SELECT customers.region AS dim_0, count(customers.customer_id) AS agg_0 FROM memory.main.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (memory.main.orders AS orders INNER JOIN memory.main.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0)))
+
+query TR
+SELECT * FROM ossie_query(['revenue_per_customer'], ['customers.region']) ORDER BY 1;
+----
+east	30.0
+west	20.0
+
+# One aggregate whose arguments read two datasets has no single dataset to run over, whether the second
+# one is in a multiplied value or in the ORDER BY of the call.
+statement error
+SELECT ossie_compile(['rated_revenue'], [], []);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "rated_revenue" has the aggregate SUM, whose arguments read 2 datasets (customers, orders). An aggregate runs over the rows of the one dataset its arguments read; one over several is not supported yet
+
+statement error
+SELECT ossie_compile(['status_by_region'], [], []);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "status_by_region" has the aggregate STRING_AGG, whose arguments read 2 datasets (customers, orders). An aggregate runs over the rows of the one dataset its arguments read; one over several is not supported yet
+
+# The FILTER of an aggregate may read only the dataset the arguments read.
+statement error
+SELECT ossie_compile(['west_revenue'], [], []);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "west_revenue" has the aggregate SUM over "orders", whose FILTER reads "customers". The FILTER of an aggregate may read only the dataset its arguments read
+
+# An aggregate whose arguments read no dataset has none to run over. A FILTER does not stand in for the
+# arguments, and neither do the other metrics of the request.
+statement error
+SELECT ossie_compile(['completed_rows'], [], []);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "completed_rows" has the aggregate COUNT(*), whose arguments read no dataset, so nothing says whose rows it runs over. Declare it as a metric of the dataset whose rows it counts, and name that metric
+
+statement error
+SELECT ossie_compile(['constant_rows'], [], []);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "constant_rows" has the aggregate COUNT, whose arguments read no dataset, so nothing says whose rows it runs over. Declare it as a metric of the dataset whose rows it counts, and name that metric
+
+statement error
+SELECT ossie_compile(['completed_revenue', 'constant_rows'], [], []);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "constant_rows" has the aggregate COUNT, whose arguments read no dataset
+
+# A metric declared on a dataset runs over that dataset's rows whatever its expression, so the same
+# COUNT(*) shapes are answered there.
+query T
+SELECT ossie_compile(['orders.completed_count', 'orders.average_amount'], [], []);
+----
+SELECT count_star() FILTER (WHERE (orders.status = 'completed')) AS completed_count, (sum(orders.amount) / "nullif"(count_star(), 0)) AS average_amount FROM memory.main.orders AS orders
+
+query IR
+SELECT * FROM ossie_query(['orders.completed_count', 'orders.average_amount']);
+----
+3	18.75
+
+# Beside a metric of another dataset each COUNT(*) stays with the dataset that declared it.
+query T
+SELECT ossie_compile(['orders.completed_count', 'orders.average_amount', 'customers.customer_count'], ['customers.region'], []);
+----
+SELECT COALESCE(customers.dim_0, orders.dim_0) AS region, COALESCE(orders.agg_0, CAST(0 AS BIGINT)) AS completed_count, (orders.agg_1 / "nullif"(COALESCE(orders.agg_2, CAST(0 AS BIGINT)), 0)) AS average_amount, COALESCE(customers.agg_0, CAST(0 AS BIGINT)) AS customer_count FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM memory.main.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, count_star() FILTER (WHERE (orders.status = 'completed')) AS agg_0, sum(orders.amount) AS agg_1, count_star() AS agg_2 FROM (memory.main.orders AS orders INNER JOIN memory.main.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0)))
+
+query TIRI
+SELECT * FROM ossie_query(['orders.completed_count', 'orders.average_amount', 'customers.customer_count'], ['customers.region']) ORDER BY 1;
+----
+east	1	15.0	1
+west	1	40.0	2
+
+# A metric filter is held to the same rule: a dataset's metric keeps its dataset, a model-scoped metric
+# is checked under its own name.
+query T
+SELECT ossie_compile(['customers.customer_count'], ['customers.region'], [], metric_filters => ['orders.completed_count >= 1']);
+----
+SELECT COALESCE(customers.dim_0, orders.dim_0) AS region, COALESCE(customers.agg_0, CAST(0 AS BIGINT)) AS customer_count FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM memory.main.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, count_star() FILTER (WHERE (orders.status = 'completed')) AS agg_0 FROM (memory.main.orders AS orders INNER JOIN memory.main.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0))) WHERE (COALESCE(orders.agg_0, CAST(0 AS BIGINT)) >= 1)
+
+query TI
+SELECT * FROM ossie_query(['customers.customer_count'], ['customers.region'], metric_filters => ['orders.completed_count >= 1']) ORDER BY 1;
+----
+east	1
+west	2
+
+query T
+SELECT ossie_compile(['customers.customer_count'], [], [], metric_filters => ['completed_revenue > 1']);
+----
+SELECT customers.agg_0 AS customer_count FROM ((SELECT count_star() AS agg_0 FROM memory.main.customers AS customers) AS customers CROSS JOIN (SELECT sum(orders.amount) FILTER (WHERE (orders.status = 'completed')) AS agg_0 FROM memory.main.orders AS orders) AS orders) WHERE (orders.agg_0 > 1)
+
+statement error
+SELECT ossie_compile(['customers.customer_count'], [], [], metric_filters => ['west_revenue > 1']);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "west_revenue" has the aggregate SUM over "orders", whose FILTER reads "customers". The FILTER of an aggregate may read only the dataset its arguments read
+
+statement error
+SELECT ossie_compile(['customers.customer_count'], [], [], metric_filters => ['COUNT(*) > 1']);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric filter "COUNT(*) > 1" has the aggregate COUNT(*), whose arguments read no dataset

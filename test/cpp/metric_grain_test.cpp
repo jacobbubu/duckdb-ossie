@@ -42,6 +42,8 @@ void Run(const std::string &root) {
 	using namespace duckdb::ossie;
 	auto model = ParseModel(Read(root + "test/fixtures/metric-grain/core.json"), RebindMap());
 	CompileOptions options;
+	options.determined_arguments = true;
+	CompileOptions plain;
 	auto before = CompileToSQL(model, {"amount_sum", "record_count"}, {"dimension.label"}, {}, {}, options);
 	vector<string> valid {"amount_sum",       "amount_avg",   "value_count",        "record_count", "eligible_amount",
 	                      "dimension_scalar", "wrapped_fact", "constant_field_sum", "quoted_fact"};
@@ -61,17 +63,34 @@ void Run(const std::string &root) {
 		       "reject different/absent grain: " + string(name));
 	}
 	for (auto name : {"star", "with_star", "one"}) {
-		Refuse([&] { RequireMetricGrain(model, {name}, "fact"); }, "without a dataset",
+		Refuse([&] { RequireMetricGrain(model, {name}, "fact"); }, "arguments read no dataset",
 		       "reject grainless aggregate: " + string(name));
 	}
 	auto both = [&] {
 		RequireMetricGrain(model, {"amount_sum", "star"}, "fact");
 	};
-	Refuse(both, "without a dataset", "new checker does not infer standalone COUNT(*) grain from another metric");
-	Check(CompileToSQL(model, {"amount_sum", "star"}, {}, {}, {}, options).find("count_star()") != string::npos,
-	      "existing core grainless inheritance retained");
-	Check(CompileToSQL(model, {"with_star"}, {}, {}, {}, options).find("count_star()") != string::npos,
-	      "existing core in-metric grainless inheritance retained");
+	Refuse(both, "arguments read no dataset", "COUNT(*) does not take its grain from another metric");
+	auto beside_metric = [&] {
+		CompileToSQL(model, {"amount_sum", "star"}, {}, {}, {}, plain);
+	};
+	Refuse(beside_metric, "arguments read no dataset",
+	       "a query does not give COUNT(*) the grain of the metric beside it");
+	auto beside_aggregate = [&] {
+		CompileToSQL(model, {"with_star"}, {}, {}, {}, plain);
+	};
+	Refuse(beside_aggregate, "arguments read no dataset",
+	       "a query does not give COUNT(*) the grain of the aggregate beside it");
+	auto designated = [&] {
+		CompileToSQL(model, {"with_star"}, {}, {}, {}, options);
+	};
+	Refuse(designated, "arguments read no dataset", "a designated grain does not give COUNT(*) a grain either");
+	for (auto name : {"eligible_amount", "dimension_scalar"}) {
+		auto over_two = [&] {
+			CompileToSQL(model, {name}, {}, {}, {}, plain);
+		};
+		Refuse(over_two, "arguments read 2 datasets",
+		       "a query refuses an aggregate over two datasets: " + string(name));
+	}
 	Refuse([&] { RequireMetricGrain(model, {"windowed"}, "fact"); }, "Window metrics",
 	       "window rejected by shared analysis");
 	Refuse([&] { RequireMetricGrain(model, {"absent"}, "fact"); }, "no metric", "unknown metric rejected");

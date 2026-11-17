@@ -469,6 +469,7 @@ unique_ptr<SelectStatement> CoreUsers(const FactProgram &p, const vector<string>
                                       vector<unique_ptr<TableRef>> &sources) {
 	auto model = CoreModel(p);
 	CompileOptions options;
+	options.determined_arguments = true;
 	SharedKey user;
 	user.name = "user_id";
 	for (idx_t i = 0; i < p.sources.size(); i++) {

@@ -97,12 +97,12 @@ ossie: E_DEFERRED_WINDOWED_METRIC: metric "running_revenue" uses the window func
 statement error
 SELECT ossie_compile(['order_less_return'], [], []);
 ----
-ossie: E_AMBIGUOUS_MEASURE_GRAIN: an aggregate in metric "order_less_return" spans datasets orders, returns
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "order_less_return" has the aggregate SUM, whose arguments read 2 datasets (orders, returns). An aggregate runs over the rows of the one dataset its arguments read; one over several is not supported yet
 
 statement error
 SELECT ossie_compile(['row_count'], [], []);
 ----
-ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "row_count" has an aggregate with no column reference
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "row_count" has the aggregate COUNT(*), whose arguments read no dataset, so nothing says whose rows it runs over. Declare it as a metric of the dataset whose rows it counts, and name that metric
 
 # No requested metric reaches the dimension's dataset: the message names the dimension, a metric that
 # does not reach it, the dataset the metric aggregates and why the join is refused.
@@ -148,7 +148,7 @@ ossie: E_UNSUPPORTED_FILTER_PATH: filter "orders.amount > 1" reads "orders", whi
 statement error
 SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['order_less_return > 1']);
 ----
-ossie: E_AMBIGUOUS_MEASURE_GRAIN: an aggregate in metric filter "order_less_return > 1" spans datasets orders, returns
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "order_less_return" has the aggregate SUM, whose arguments read 2 datasets (orders, returns)
 
 # --- a request with several faults gets the code listed first ----------------------------------------
 # Each request below adds an earlier fault to the one before it.

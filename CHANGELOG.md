@@ -34,6 +34,26 @@ pins). The DuckDB version each release targets is noted separately.
   - A request that cannot be read (a dimension that is not a name, a filter that does not parse or
     uses what the filter policy forbids) is refused before any name in it is looked up.
   Refusals the specification has no code for carry none. `docs/limitations.md` lists the codes.
+- **Breaking: three metric shapes the Wide Table specification refuses are refused.** In a
+  model-scoped metric each aggregate runs over the one dataset its arguments read, and a request
+  for a metric that names no such dataset fails with `E_AMBIGUOUS_MEASURE_GRAIN`. These used to be
+  answered:
+  - An aggregate whose arguments read several datasets (`SUM(store_sales.ss_quantity *
+    item.i_current_price)`), which was aggregated over the dataset that determines the others.
+  - An aggregate whose `FILTER` reads a dataset its arguments do not (`SUM(orders.amount) FILTER
+    (WHERE customers.region = 'west')`).
+  - An aggregate whose arguments read no dataset (`COUNT(*)`, `COUNT(1)`, `COUNT(*) FILTER (WHERE
+    orders.status = 'completed')`), which counted the rows of the grain the request's other
+    metrics shared.
+  The model still loads; the refusal comes when the metric is requested. A metric declared on a
+  dataset is not affected and is where such a count belongs: `orders.completed_count` declared as
+  `COUNT(*) FILTER (WHERE status = 'completed')` counts `orders`, alone, beside metrics of other
+  datasets, and in a metric filter. An aggregate written directly in `metric_filters` follows the
+  same rule, so `'COUNT(*) > 1'` is refused where it used to count the request's grain; name a
+  dataset's metric (`'customers.customer_count > 1'`). `AGG(dataset.metric)` is refused at load
+  when the dataset metric's aggregate has no column in its arguments, now also when it has a
+  `FILTER` that names one. Population bundles are unchanged: a bundle designates its fact grain,
+  and an aggregate over it may still read a dataset the fact rows determine.
 - **Breaking: `filters` take conditions on rows; a condition on a metric goes in `metric_filters`.**
   Each entry of `filters` is a filter as the Wide Table specification defines one: applied before
   aggregation, reading the fields of one dataset, with no metric, aggregate or window function.

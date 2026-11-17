@@ -33,8 +33,9 @@ Claims about a file format should be checkable, so:
   forbids
 - Generated SQL is diffed against hand-written TPC-DS equivalents with symmetric `EXCEPT` over
   `dsdgen(sf = 0.01)` data, so correctness is measured against the numbers rather than against our
-  own output. This currently covers `total_sales` and `books_sales`. The remaining metrics are
-  exercised by the golden-SQL, grain or vocabulary tests, none of which can catch a wrong *number*
+  own output. This currently covers `total_sales`, `store_productivity` and
+  `customer_lifetime_value`. The remaining metrics are exercised by the golden-SQL, grain or
+  vocabulary tests, none of which can catch a wrong *number*
 
 Models use the document shape of Ossie 0.3.0.dev0, one model per file, with expressions in
 `OSSIE_SQL_2026` (the spec's own expression language, written as `expression.sql`) or `ANSI_SQL`.
