@@ -188,6 +188,21 @@ own names, and an alias collides with another output name the way any two output
 And `metric_filters` is this extension's parameter, not part of the specification's query, so it is
 not a key of the object; pass it as the named argument in either form.
 
+## The Relational Query Interface
+
+**There is none.** The Ossie specification defines a second way to query a model: SQL that reads the
+model's datasets as relations and evaluates a measure with `AGG()`, as in
+`SELECT deptno, AGG(sum_sal) FROM scott_model.emp GROUP BY deptno`. The extension does not accept
+such a query. A model is queried through `ossie_query` and `ossie_compile`, by naming metrics,
+dimensions and filters.
+
+That leaves questions a request cannot ask: measures of both sides of a self-join, a join on anything
+but a declared relationship, a join type chosen per query, a filter that holds a subquery, a group
+that is an expression, `ROLLUP`. Upstream's 32 query compliance cases are the measure of it: 12 can
+be asked as one request and give the expected rows, 20 cannot. The
+[conformance fixtures](../test/fixtures/conformance/README.md#query-compliance-cases) list which and
+why.
+
 ## Error codes
 
 **A refusal the Wide Table specification defines carries its code.** The message is `ossie: `, the

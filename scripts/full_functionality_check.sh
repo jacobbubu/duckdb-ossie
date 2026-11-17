@@ -189,6 +189,13 @@ WT="$(python3 "$REPO/scripts/wide_table_compliance.py" --duckdb "$DUCKDB" --chec
   || bad "wide-table statuses match test/fixtures/conformance/wide_table_status.tsv" "no CHANGED lines" \
          "$(printf '%s' "$WT" | grep -E '^CHANGED|Error' | head -5 | tr '\n' ' ')"
 
+# --------------------------------------------------------------- J9  upstream compliance, query cases
+g "J9  apache/ossie query compliance cases stand where they are pinned"
+QC="$(python3 "$REPO/scripts/query_compliance.py" --duckdb "$DUCKDB" --check 2>&1)" \
+  && ok "$(printf '%s' "$QC" | grep -E '^[0-9]+ cases:')" \
+  || bad "query statuses match test/fixtures/conformance/query_status.tsv" "no CHANGED or BROKEN lines" \
+         "$(printf '%s' "$QC" | grep -E '^CHANGED|^BROKEN|Error|differ' | head -5 | tr '\n' ' ')"
+
 # --------------------------------------------------------------- known defects
 g "KNOWN DEFECTS  (reported, do not gate exit code)"
 NEST="$TMP/nested.json"
