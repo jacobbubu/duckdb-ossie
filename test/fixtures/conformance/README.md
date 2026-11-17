@@ -12,7 +12,7 @@ share the same assumptions. These files are the only ones that can.
 They are **copied in, not fetched at test time**: CI must not depend on the network, and upstream
 moves.
 
-All fifteen files are taken at apache/ossie commit `da73e0e1b5c5b1d17aa7ca763fe1fc5db9bc943c` and
+All files are taken at apache/ossie commit `da73e0e1b5c5b1d17aa7ca763fe1fc5db9bc943c` and
 keep upstream's own paths under this directory, so where each came from is visible in its path. The
 per-converter fixtures the previous snapshot carried (databricks, gooddata, nvidia, omni, orionbelt)
 no longer exist upstream; the compliance models replace them.
@@ -46,6 +46,34 @@ Twelve of fifteen models load. The three refusals are correct: the `*_bare` port
 reference a column by bare name inside a model-scoped metric, which the spec requires to be written
 `dataset.field`; upstream keeps them as pending variants of the `*_qualified` siblings. Keep this
 table and `test/sql/ossie_conformance.test` in step when the number changes.
+
+## Wide-table compliance cases
+
+`compliance/wide_table/` also carries upstream's 46 compliance cases for the Wide Table Query
+Interface (Layer 3), with the data they run on and upstream's own README: `cases/<case>/query.json`
+and `expected.json`, `retail/retail.sql`, `stores/stores.sql`. Each case is a query plus the rows or
+the Section 8 error code it must produce.
+
+`scripts/wide_table_compliance.py` runs them: it loads the fixture's SQL and model in a duckdb CLI,
+submits the query through `ossie_query`, and compares as upstream's README prescribes (rows as a
+multiset, values by position, exact numerics equal, approximate ones within 1e-9). Models are loaded
+with `left_joins => true`, the join the specification requires. Every case gets one status:
+
+| status | cases | meaning |
+|---|---|---|
+| `pass` | 1 | rows and output names match, or the refusal carries the expected error code |
+| `names` | 11 | rows match; output columns are named `dataset.name` where the specification wants the unqualified name |
+| `wrong` | 2 | rows differ: a `COUNT` metric with no input rows for a group is NULL, not 0 (`a02`, `a03`) |
+| `false-refusal` | 6 | refused where rows were expected: queries without a metric (`a07`, `a12`), and paths reported ambiguous because the search walks relationships in both directions (`a16`, `a19`, `a20`, `a21`) |
+| `false-acceptance` | 2 | answered where an error was expected: an aggregate in the filter (`e07`), a filter reading two datasets (`e09`) |
+| `refused` | 19 | refused as required, but the message does not carry the `E_*` code; six of them (`e05`, `e08`, `e17`, `e19`, `e21`, `e23`) are refused only because the query has no metric |
+| `inexpressible` | 5 | the query uses a part of the JSON binding `ossie_query` has no argument for: an alias (`a09`, `e10`), an unknown key (`e01`, `e20`), a null filter (`e02`) |
+
+`wide_table_status.tsv` pins the status of every case, and `scripts/full_functionality_check.sh`
+fails when a run disagrees with it. A case that improves is a failure too: update the pin with
+`scripts/wide_table_compliance.py --update` and this table in the same change, so the file always
+says where the implementation stands against the specification. Run with `-v` to see what each case
+returned.
 
 The small `*.json` files beside the upstream copies are written here, not vendored: each exercises
 one malformed document shape against the loader.

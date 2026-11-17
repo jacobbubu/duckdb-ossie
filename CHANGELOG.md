@@ -56,6 +56,14 @@ pins). The DuckDB version each release targets is noted separately.
   reserved word in DuckDB 2.0.
 
 ### Added
+- **apache/ossie's wide-table compliance cases run against the extension.** The 46 cases of
+  `compliance/wide_table` are vendored with their data, `scripts/wide_table_compliance.py` submits
+  each through `ossie_query` and classifies the outcome, and
+  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 1 case
+  passes outright and 11 more return the right rows under qualified column names; the rest are
+  recorded as what they are (2 wrong, 6 false refusals, 2 false acceptances, 19 refusals without the
+  specified error code, 5 the query function cannot express).
+  `test/fixtures/conformance/README.md` lists the cases behind each number.
 - **Dataset-scoped metrics.** A dataset's `metrics` are loaded as `dataset.metric` and requested,
   filtered on and described under that name; their expressions are resolved against the dataset's
   fields and its `source.column` references. A model-scoped metric may evaluate one with
