@@ -129,6 +129,15 @@ pins). The DuckDB version each release targets is noted separately.
   `compliance/wide_table` are vendored with their data, `scripts/wide_table_compliance.py` submits
   each query as written through `ossie_query(query)` and classifies the outcome, and
   `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. All 46 pass.
+  The copy is apache/ossie `e4f545a`, where a case's expected result is `expected.txt`, a table as
+  upstream's `ost` runner prints it; the worked example that commit adds to the specification
+  (Appendix B.6, `store_productivity` over two grains) is a test here and gives the 30 it states.
+- **apache/ossie's query compliance cases are vendored and measured.** The 32 cases of
+  `compliance/query` are written for the Relational Query Interface, SQL with `AGG()` over a
+  model's relations, which this extension does not have, so none can be submitted as written.
+  `scripts/query_compliance.py` measures what can be: for 12 cases one `ossie_query` request asks
+  the same question, and all 12 return the expected rows; 20 have no such request, each for a
+  stated reason. The statuses are pinned and `scripts/full_functionality_check.sh` checks them.
 - **A request can be written as the Wide Table specification's JSON query, and can name its output
   columns.** `ossie_query(query)` and `ossie_compile(query)` take one string holding an object with
   `metrics`, `dimensions` and `filter`. An entry is a reference, or an object that adds an alias:

@@ -12,7 +12,7 @@ share the same assumptions. These files are the only ones that can.
 They are **copied in, not fetched at test time**: CI must not depend on the network, and upstream
 moves.
 
-All files are taken at apache/ossie commit `da73e0e1b5c5b1d17aa7ca763fe1fc5db9bc943c` and
+All files are taken at apache/ossie commit `e4f545a4fd6aef1a98a8438c22e550d67a992e06` and
 keep upstream's own paths under this directory, so where each came from is visible in its path. The
 per-converter fixtures the previous snapshot carried (databricks, gooddata, nvidia, omni, orionbelt)
 no longer exist upstream; the compliance models replace them.
@@ -50,13 +50,16 @@ table and `test/sql/ossie_conformance.test` in step when the number changes.
 ## Wide-table compliance cases
 
 `compliance/wide_table/` also carries upstream's 46 compliance cases for the Wide Table Query
-Interface (Layer 3), with the data they run on and upstream's own README: `cases/<case>/query.json`
-and `expected.json`, `retail/retail.sql`, `stores/stores.sql`. Each case is a query plus the rows or
-the Section 8 error code it must produce.
+Interface (Layer 3), with the data they run on and upstream's own READMEs: `cases/<case>/query.json`
+and `expected.txt`, `cases/README.md`, `retail/retail.sql`, `stores/stores.sql`. Each case is a query
+plus the rows or the Section 8 error code it must produce; `expected.txt` names the fixture to load
+and holds the result as upstream's `ost` runner prints it, and `cases/README.md` says what each case
+shows.
 
 `scripts/wide_table_compliance.py` runs them: it loads the fixture's SQL and model in a duckdb CLI,
 submits `query.json` as it stands through `ossie_query(query)`, and compares as upstream's README prescribes (rows as a
-multiset, values by position, exact numerics equal, approximate ones within 1e-9). Models are loaded
+multiset, values by position, exact numerics equal, the one approximate column within 1e-9; an empty
+cell is NULL). Models are loaded
 with `left_joins => true`, the join the specification requires. Every case gets one status:
 
 | status | cases | meaning |
@@ -73,6 +76,56 @@ fails when a run disagrees with it. A case that improves is a failure too: updat
 `scripts/wide_table_compliance.py --update` and this table in the same change, so the file always
 says where the implementation stands against the specification. Run with `-v` to see what each case
 returned.
+
+## Query compliance cases
+
+`compliance/query/` carries upstream's 32 compliance cases for the Relational Query Interface
+(Layer 2), with the SCOTT data and upstream's README: `cases/<case>/query.ossie.sql`,
+`expected.sql` and `reference.duckdb.sql`, and `scott/scott.sql`.
+
+**None of the 32 can be submitted as written.** A case is SQL over the model's relations, with
+`AGG()` evaluating a measure: `SELECT deptno, AGG(sum_sal) FROM scott_model.emp GROUP BY deptno`.
+The extension has no interface that takes such a query. What it has is the Wide Table interface,
+`ossie_query`, so what is measured is narrower: can the question of a case be asked as **one**
+`ossie_query` request, and does that request return the rows of `expected.sql`?
+
+`query_requests.sql`, written here, holds that request for each case that has one, and for each
+that has none a line saying what stops it. A request is one `SELECT` over one `ossie_query` call.
+Around the call it may order, limit, select and rename columns and compute scalars from them, which
+is what the cases do to the values of `AGG()`; it reads no table itself.
+
+`scripts/query_compliance.py` runs the requests against the SCOTT data, model loaded with
+`left_joins => true`, and compares as upstream's README prescribes (columns by position, rows as a
+multiset or in order when the case has `ORDER BY`, exact numerics equal, approximate ones within
+1e-9). Every case gets one status:
+
+| status | cases | meaning |
+|---|---|---|
+| `pass` | 12 | a request asks the question, and its rows and column names match |
+| `names` | 0 | its rows match under different column names |
+| `wrong` | 0 | its rows differ |
+| `refused` | 0 | the request is refused |
+| `no-request` | 20 | no single `ossie_query` request asks the question |
+
+What stops the 20:
+
+| cases | what the query does that a request cannot |
+|---|---|
+| `b05`, `b08`, `b09`–`b13` | joins `emp` to itself and reads measures of both roles, under a join type the query chooses |
+| `b06`, `b07` | joins on a range (`sal BETWEEN losal AND hisal`); the model has no relationship there |
+| `b04`, `b18`, `b20` | groups a measure of the "one" side by a field of the "many" side; the Wide Table specification refuses this (`E_PARTIAL_DIMENSION_REACHABILITY`), and `ossie_query` does |
+| `b14`, `b16` | lets the join, or a condition in `ON`, restrict one side's measure and not the other's |
+| `a11`, `b03`, `b19` | filters by a subquery or joins a derived relation |
+| `a08` | groups by an expression rather than a declared field |
+| `a09`, `a12` | combines grouping sets (`ROLLUP`) or aggregates measure values again; two requests and the caller's SQL can |
+
+The script also runs each case's `reference.duckdb.sql` and compares it with `expected.sql`, with
+no part of the extension involved; all 32 agree, so the vendored data and the comparison are sound.
+If one stops agreeing the script exits 2.
+
+`query_status.tsv` pins the status of every case, and `scripts/full_functionality_check.sh` fails
+when a run disagrees with it. Update the pin with `scripts/query_compliance.py --update` and these
+tables in the same change. Run with `-v` to see what a request returned, or why a case has none.
 
 The small `*.json` files beside the upstream copies are written here, not vendored: each exercises
 one malformed document shape against the loader.

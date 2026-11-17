@@ -22,7 +22,7 @@ Apache Ossie semantic model fixtures
   (incubating) repository and are used as test data only. They are not part of the built
   extension and are not distributed in the released binary.
 
-  All are taken at apache/ossie commit da73e0e1b5c5b1d17aa7ca763fe1fc5db9bc943c.
+  All are taken at apache/ossie commit e4f545a4fd6aef1a98a8438c22e550d67a992e06.
 
     test/fixtures/conformance/ossie-schema.json                                               from core-spec/
     test/fixtures/conformance/examples/tpcds_semantic_model.yaml                              from examples/
@@ -34,8 +34,11 @@ Apache Ossie semantic model fixtures
     test/fixtures/conformance/compliance/wide_table/README.md                                 from compliance/wide_table/
     test/fixtures/conformance/compliance/wide_table/retail/retail.sql                         from compliance/wide_table/retail/
     test/fixtures/conformance/compliance/wide_table/stores/stores.sql                         from compliance/wide_table/stores/
-    test/fixtures/conformance/compliance/wide_table/cases/ (46 cases, two files each)         from compliance/wide_table/cases/
+    test/fixtures/conformance/compliance/wide_table/cases/ (README.md; 46 cases, two files each)  from compliance/wide_table/cases/
     test/fixtures/conformance/compliance/query/scott/scott_model.ossie.yaml                   from compliance/query/scott/
+    test/fixtures/conformance/compliance/query/scott/scott.sql                                from compliance/query/scott/
+    test/fixtures/conformance/compliance/query/README.md                                      from compliance/query/
+    test/fixtures/conformance/compliance/query/cases/ (32 cases, three files each)            from compliance/query/cases/
     test/fixtures/conformance/compliance/portability/m0/m0_ansi_qualified.ossie.yaml          from compliance/portability/m0/
     test/fixtures/conformance/compliance/portability/m0/m0_ossiesql_qualified.ossie.yaml      from compliance/portability/m0/
     test/fixtures/conformance/compliance/portability/m0/m0_sum_bare.ossie.yaml                from compliance/portability/m0/

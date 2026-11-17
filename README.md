@@ -39,6 +39,11 @@ Claims about a file format should be checkable, so:
   `scott` query model, the portability ladder m0–m3). Twelve load and answer queries. The three
   refusals are the portability models that name a column without its dataset, which the spec
   forbids
+- Upstream's compliance cases are vendored with them and their status is pinned. All 46 Wide Table
+  cases pass. The 32 query cases are written for the Relational Query Interface, SQL with `AGG()`
+  over a model's relations, which this extension does not have: none runs as written, 12 can be
+  asked as one `ossie_query` request and return the expected rows, 20 cannot. See
+  [test/fixtures/conformance/README.md](test/fixtures/conformance/README.md)
 - Generated SQL is diffed against hand-written TPC-DS equivalents with symmetric `EXCEPT` over
   `dsdgen(sf = 0.01)` data, so correctness is measured against the numbers rather than against our
   own output. This currently covers `total_sales`, `store_productivity` and
