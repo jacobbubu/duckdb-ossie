@@ -45,8 +45,28 @@ bool IsAggregateName(const string &name);
 //! validation, Compile/binding and data-key checks; the aggregate-name set is not exhaustive.
 void RequireMetricGrain(const Model &model, const vector<string> &metrics, const string &designated_dataset);
 
-//! Compiles a semantic request, throwing when it cannot answer. `filters` are conditions on rows, applied
-//! before aggregation; `metric_filters` are conditions on metrics, applied after.
+//! What a caller asks for. `filters` are conditions on rows, applied before aggregation; `metric_filters` are
+//! conditions on metrics, applied after.
+struct Request {
+	vector<string> metrics;
+	vector<string> dimensions;
+	vector<string> filters;
+	vector<string> metric_filters;
+	//! Output names by position. An entry that is missing or empty leaves its column named by the final part
+	//! of the reference.
+	vector<string> metric_aliases;
+	vector<string> dimension_aliases;
+};
+
+//! Reads a query in the Wide Table specification's JSON form: an object with `metrics`, `dimensions` and
+//! `filter`, where an entry is a reference string or an object that adds an alias. Anything else in it is
+//! refused with E_INVALID_QUERY rather than ignored.
+Request ParseRequest(const string &json);
+
+//! Compiles a semantic request, throwing when it cannot answer.
+unique_ptr<SelectStatement> Compile(const Model &model, const Request &request, const CompileOptions &options);
+
+//! The same, for a request without aliases.
 unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,
                                     const vector<string> &filters, const vector<string> &metric_filters,
                                     const CompileOptions &options);

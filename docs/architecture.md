@@ -97,9 +97,16 @@ model-level and need not exist on the table — `customer_full_name` is really
 `filters` in `WHERE` and the entries of `metric_filters` in `HAVING`. Which clause a predicate goes
 to is the caller's statement, not an inference: a filter that names a metric or contains an
 aggregate is refused, and so is a metric filter that does neither. Each output
-column is aliased to the final part of its reference, `region` for `customers.region`, which is the
-Wide Table specification's output name; two entries with one output name, compared without case,
-are refused before anything is planned.
+column is aliased to the alias the request gave the entry, or else to the final part of its
+reference, `region` for `customers.region`, which is the Wide Table specification's output name; two
+entries with one output name, compared without case, are refused before anything is planned.
+
+**Request.** Both spellings of a request become one `Request` before the compiler sees them: the
+lists of `ossie_query(metrics, dimensions, filters)` are copied into it, and the JSON object of
+`ossie_query(query)` is read by `ParseRequest` (`src/compile/request.cpp`), which refuses anything
+the Wide Table specification's JSON form does not define. Aliases exist only in the JSON form, and
+travel beside the references by position, so the compiler's checks and messages still speak of the
+reference the caller wrote.
 
 `ossie_query` returns the statement wrapped in a `SubqueryRef` from `bind_replace`, which runs
 before binding — so DuckDB plans and optimizes the generated query as though it had been typed by

@@ -107,11 +107,17 @@ pins). The DuckDB version each release targets is noted separately.
 ### Added
 - **apache/ossie's wide-table compliance cases run against the extension.** The 46 cases of
   `compliance/wide_table` are vendored with their data, `scripts/wide_table_compliance.py` submits
-  each through `ossie_query` and classifies the outcome, and
-  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 41 cases
-  pass; the other 5 use a part of the query's JSON form `ossie_query` has no argument for, and are
-  recorded as that.
-  `test/fixtures/conformance/README.md` lists the cases behind each number.
+  each query as written through `ossie_query(query)` and classifies the outcome, and
+  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. All 46 pass.
+- **A request can be written as the Wide Table specification's JSON query, and can name its output
+  columns.** `ossie_query(query)` and `ossie_compile(query)` take one string holding an object with
+  `metrics`, `dimensions` and `filter`. An entry is a reference, or an object that adds an alias:
+  `{"metric": "orders.total_revenue", "alias": "revenue"}` in `metrics`,
+  `{"field": "customers.region", "alias": "area"}` in `dimensions`. The alias is the column's name
+  in the result and counts as its output name, so two references that end in the same name can be
+  requested together once one has an alias. A key or property the form does not define, a `null`,
+  or a value of the wrong type is refused with `E_INVALID_QUERY`. The list form is unchanged and
+  has no aliases; `metric_filters` is a named argument of both.
 - **A request can have dimensions and no metric.** `ossie_query([], ['customers.region'])` returns
   the distinct regions, where it used to be refused. The rows come from the one dimension dataset
   that joins every other without repeating its own rows, which the Wide Table specification calls

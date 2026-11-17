@@ -28,16 +28,26 @@ unique_ptr<TableRef> QueryBindReplace(ClientContext &context, TableFunctionBindI
 	options.allow_filter_functions = snapshot.allow_filter_functions;
 	options.left_joins = snapshot.left_joins;
 
-	auto argument = [&](idx_t index) {
-		return index < input.inputs.size() ? ToStringList(input.inputs[index], "ossie_query") : vector<string>();
-	};
-	vector<string> metric_filters;
+	Request request;
+	if (input.inputs[0].type().id() == LogicalTypeId::VARCHAR) {
+		if (input.inputs[0].IsNull()) {
+			throw InvalidInputException("ossie: E_INVALID_QUERY: the query is NULL");
+		}
+		request = ParseRequest(input.inputs[0].GetValue<string>());
+	} else {
+		auto argument = [&](idx_t index) {
+			return index < input.inputs.size() ? ToStringList(input.inputs[index], "ossie_query") : vector<string>();
+		};
+		request.metrics = argument(0);
+		request.dimensions = argument(1);
+		request.filters = argument(2);
+	}
 	for (auto &entry : input.named_parameters) {
 		if (StringUtil::CIEquals(entry.first.GetIdentifierName(), "metric_filters")) {
-			metric_filters = ToStringList(entry.second, "ossie_query");
+			request.metric_filters = ToStringList(entry.second, "ossie_query");
 		}
 	}
-	auto statement = Compile(*model, argument(0), argument(1), argument(2), metric_filters, options);
+	auto statement = Compile(*model, request, options);
 	return make_uniq<SubqueryRef>(std::move(statement));
 }
 
@@ -54,6 +64,11 @@ void RegisterQueryFunction(ExtensionLoader &loader) {
 		variant.GetSignature().AddKeywordOnly("metric_filters", string_list, Value::LIST(LogicalType::VARCHAR, {}));
 		ossie_query.AddFunction(std::move(variant));
 	}
+	TableFunction json_variant("ossie_query", {LogicalType::VARCHAR}, nullptr);
+	json_variant.bind_replace = QueryBindReplace;
+	NameParameters(json_variant.GetSignature(), {"query"});
+	json_variant.GetSignature().AddKeywordOnly("metric_filters", string_list, Value::LIST(LogicalType::VARCHAR, {}));
+	ossie_query.AddFunction(std::move(json_variant));
 	CreateTableFunctionInfo info(std::move(ossie_query));
 	auto describe = [&list](vector<string> params) {
 		vector<LogicalType> types(params.size(), list);
@@ -79,6 +94,19 @@ void RegisterQueryFunction(ExtensionLoader &loader) {
 	info.descriptions.push_back(describe({"metrics"}));
 	info.descriptions.push_back(describe({"metrics", "dimensions"}));
 	info.descriptions.push_back(describe({"metrics", "dimensions", "filters"}));
+	info.descriptions.push_back(
+	    Describe({"query"},
+	             "Answer a question written as one JSON object, the query form of the Ossie Wide Table "
+	             "specification: metrics and dimensions are arrays and filter is one condition on the rows of a "
+	             "dataset. An entry is a reference, or an object that names its output column -- {\"metric\": "
+	             "reference, \"alias\": name} in metrics, {\"field\": reference, \"alias\": name} in "
+	             "dimensions. A key the form does not define, or a null, is refused rather than ignored. "
+	             "Conditions on metrics stay in the named parameter metric_filters.",
+	             {"SELECT * FROM ossie_query('{\"metrics\": [\"total_sales\"], \"dimensions\": "
+	              "[\"item.i_brand\"]}')",
+	              "SELECT * FROM ossie_query('{\"metrics\": [{\"metric\": \"total_sales\", \"alias\": "
+	              "\"sales\"}], \"filter\": \"date_dim.d_year = 2001\"}')"},
+	             {LogicalType::VARCHAR}));
 	loader.RegisterFunction(std::move(info));
 }
 

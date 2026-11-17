@@ -2,8 +2,8 @@
 """Run apache/ossie's wide-table compliance cases against the built extension.
 
 Each case is a query in the JSON binding of the Wide Table Query Interface plus the rows or the
-error it must produce. The case is translated to ossie_query(metrics, dimensions, filters), run in
-a fresh duckdb CLI, and classified:
+error it must produce. The query is handed to ossie_query(query) as the case wrote it, run in a
+fresh duckdb CLI, and classified:
 
   pass              rows and output names match, or the refusal names the expected error code
   names             rows match, output names differ
@@ -11,7 +11,6 @@ a fresh duckdb CLI, and classified:
   wrong             rows differ
   false-refusal     an error where rows were expected
   false-acceptance  rows where an error was expected
-  inexpressible     the query uses a part of the binding ossie_query has no argument for
 
 Usage: scripts/wide_table_compliance.py [--duckdb CLI] [--joins left|inner] [--check | --update] [-v]
 Exit:  0, or 1 when --check finds a status that differs from the pinned one.
@@ -34,7 +33,6 @@ FIXTURES = {
     "stores": ("stores/stores.sql", "stores/stores_model.ossie.yaml"),
     "stores_ambiguous": ("stores/stores.sql", "stores/stores_ambiguous_model.ossie.yaml"),
 }
-QUERY_KEYS = {"dimensions", "metrics", "filter"}
 # The shell's JSON mode writes HUGEINT and DECIMAL as strings, so the described type says which strings are numbers.
 NUMERIC_TYPES = {"TINYINT", "SMALLINT", "INTEGER", "BIGINT", "HUGEINT", "UTINYINT", "USMALLINT", "UINTEGER"}
 NUMERIC_TYPES |= {"UBIGINT", "UHUGEINT", "DECIMAL", "FLOAT", "DOUBLE"}
@@ -44,34 +42,12 @@ def sql_string(text):
     return "'" + text.replace("'", "''") + "'"
 
 
-def sql_list(items):
-    return "[" + ", ".join(sql_string(item) for item in items) + "]"
-
-
-def translate(query):
-    """Return (metrics, dimensions, filters), or the reason the query cannot be submitted."""
-    unknown = sorted(set(query) - QUERY_KEYS)
-    if unknown:
-        return None, "key " + ", ".join(unknown)
-    names = {"dimensions": [], "metrics": []}
-    for part, key in (("dimensions", "field"), ("metrics", "metric")):
-        for entry in query.get(part, []):
-            if not isinstance(entry, str):
-                return None, "alias"
-            names[part].append(entry)
-    filters = []
-    if "filter" in query:
-        if query["filter"] is None:
-            return None, "null filter"
-        filters.append(query["filter"])
-    return (names["metrics"], names["dimensions"], filters), None
-
-
-def run(shell, fixture, arguments, joins):
+def run(shell, fixture, query, joins):
     data, model = FIXTURES[fixture]
     option = ", left_joins => true" if joins == "left" else ""
     load = "CALL ossie_load(%s%s);" % (sql_string(str(SUITE / model)), option)
-    call = ", ".join(sql_list(argument) for argument in arguments)
+    # A JSON string holds no line break, so joining the lines leaves the query as the case wrote it.
+    call = sql_string(" ".join(query.splitlines()))
     script = "\n".join(
         [
             ".bail on",
@@ -133,10 +109,7 @@ def show(rows):
 
 
 def classify(shell, query, expected, joins):
-    arguments, reason = translate(query)
-    if arguments is None:
-        return "inexpressible", reason
-    columns, rows, error = run(shell, expected.get("fixture", "retail"), arguments, joins)
+    columns, rows, error = run(shell, expected.get("fixture", "retail"), query, joins)
     if "error" in expected:
         if error is None:
             return "false-acceptance", show(rows)
@@ -161,7 +134,7 @@ def main():
 
     statuses = {}
     for case in sorted((SUITE / "cases").iterdir()):
-        query = json.loads((case / "query.json").read_text())
+        query = (case / "query.json").read_text()
         expected = json.loads((case / "expected.json").read_text(), parse_float=Decimal)
         status, detail = classify(options.duckdb, query, expected, options.joins)
         statuses[case.name] = status

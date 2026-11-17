@@ -92,7 +92,9 @@ every refusal and why it exists.
 | `ossie_relationships()` | Relationships with derived cardinality |
 | `ossie_metadata()` | Descriptions, labels, AI instructions/synonyms/examples, preserved JSON and expression dialects |
 | `ossie_query(metrics, dimensions, filters)` | Compile the request and execute it. Named arg: `metric_filters` |
+| `ossie_query(query)` | The same, with the request written as one JSON object, which can also name its output columns |
 | `ossie_compile(metrics, dimensions, filters)` | Return the SQL without running it. Named arg: `metric_filters` |
+| `ossie_compile(query)` | The same, for a JSON query |
 
 A request names metrics as `metric` or `dataset.metric` and dimensions as `dataset.field`; each
 output column takes the final part of its name (`item.i_brand` becomes `i_brand`), and two entries
@@ -101,6 +103,21 @@ that would share one are refused, as the Wide Table specification requires. `met
 that joins the others without repeating its rows. Each entry of `filters` is a condition on the rows
 of one dataset, applied before aggregation; a condition on a metric goes in
 `metric_filters => ['total_sales > 1000']` and is applied after.
+
+The same request can be written as one JSON object, the query form of the Wide Table specification,
+and that form is where an output column gets a name of the caller's choosing:
+
+```sql
+SELECT * FROM ossie_query('{
+  "metrics":    [{"metric": "total_sales", "alias": "sales"}],
+  "dimensions": ["item.i_brand"],
+  "filter":     "date_dim.d_year = 2001"
+}');
+```
+
+An entry of `metrics` or `dimensions` is a reference, or an object holding the reference under
+`metric` or `field` with an `alias` beside it; `filter` is one condition. A key the form does not
+define, or a `null`, is refused rather than ignored. `metric_filters` stays a named argument.
 
 `rebind` remaps warehouse-qualified prefixes onto the local catalog: a model saying
 `tpcds.public.store_sales` needs `rebind => MAP{'tpcds.public': 'tpcds.main'}` to find local tables.

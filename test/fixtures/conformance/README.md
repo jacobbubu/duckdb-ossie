@@ -55,19 +55,18 @@ and `expected.json`, `retail/retail.sql`, `stores/stores.sql`. Each case is a qu
 the Section 8 error code it must produce.
 
 `scripts/wide_table_compliance.py` runs them: it loads the fixture's SQL and model in a duckdb CLI,
-submits the query through `ossie_query`, and compares as upstream's README prescribes (rows as a
+submits `query.json` as it stands through `ossie_query(query)`, and compares as upstream's README prescribes (rows as a
 multiset, values by position, exact numerics equal, approximate ones within 1e-9). Models are loaded
 with `left_joins => true`, the join the specification requires. Every case gets one status:
 
 | status | cases | meaning |
 |---|---|---|
-| `pass` | 41 | rows and output names match, or the refusal carries the expected error code |
+| `pass` | 46 | rows and output names match, or the refusal carries the expected error code |
 | `names` | 0 | rows match under different output names |
 | `wrong` | 0 | rows differ |
 | `false-refusal` | 0 | refused where rows were expected |
 | `false-acceptance` | 0 | answered where an error was expected |
 | `refused` | 0 | refused as required, but the message does not carry the `E_*` code |
-| `inexpressible` | 5 | the query uses a part of the JSON binding `ossie_query` has no argument for: an alias (`a09`, `e10`), an unknown key (`e01`, `e20`), a null filter (`e02`) |
 
 `wide_table_status.tsv` pins the status of every case, and `scripts/full_functionality_check.sh`
 fails when a run disagrees with it. A case that improves is a failure too: update the pin with

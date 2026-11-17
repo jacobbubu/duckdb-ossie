@@ -6,7 +6,7 @@ a05_groups_from_orders	pass
 a06_groups_from_returns	pass
 a07_dimension_only	pass
 a08_model_metric_components	pass
-a09_aliases	inexpressible
+a09_aliases	pass
 a10_filter_without_dimension	pass
 a11_filter_on_home_dataset	pass
 a12_anchor_from_dimensions	pass
@@ -19,8 +19,8 @@ a18_anchor_with_metric	pass
 a19_sales_by_year	pass
 a20_filter_on_sale_year	pass
 a21_single_path_on_ambiguous_model	pass
-e01_invalid_query_unknown_key	inexpressible
-e02_invalid_query_null	inexpressible
+e01_invalid_query_unknown_key	pass
+e02_invalid_query_null	pass
 e03_empty_aggregation_query	pass
 e04_name_not_found	pass
 e05_metric_in_dimensions	pass
@@ -28,7 +28,7 @@ e06_field_in_metrics	pass
 e07_aggregate_in_filter	pass
 e08_window_in_filter	pass
 e09_cross_dataset_filter	pass
-e10_name_collision	inexpressible
+e10_name_collision	pass
 e11_unaggregated_field_in_metric	pass
 e12_windowed_metric	pass
 e13_measure_grain_two_datasets	pass
@@ -38,7 +38,7 @@ e16_partial_dimension_reachability	pass
 e17_no_anchor	pass
 e18_filter_path_from_metric	pass
 e19_filter_path_from_anchor	pass
-e20_order_invalid_before_name	inexpressible
+e20_order_invalid_before_name	pass
 e21_order_name_before_filter	pass
 e22_no_path_stores	pass
 e23_no_anchor_stores	pass

@@ -16,10 +16,10 @@ void RegisterLoadFunction(ExtensionLoader &loader);
 //! Registers the model description table functions.
 void RegisterDescribeFunctions(ExtensionLoader &loader);
 
-//! Registers ossie_compile(metrics, dimensions, filters).
+//! Registers ossie_compile(metrics, dimensions, filters) and ossie_compile(query).
 void RegisterCompileFunction(ExtensionLoader &loader);
 
-//! Registers ossie_query(metrics, dimensions, filters).
+//! Registers ossie_query(metrics, dimensions, filters) and ossie_query(query).
 void RegisterQueryFunction(ExtensionLoader &loader);
 
 //! Registers ossie_date_trunc and ossie_dateadd, the DATE-preserving forms the OSSIE_SQL_2026 lowering emits.

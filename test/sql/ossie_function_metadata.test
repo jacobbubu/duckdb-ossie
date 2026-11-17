@@ -28,13 +28,13 @@ WHERE starts_with(function_name, 'ossie_') AND (examples IS NULL OR len(examples
 ----
 0
 
-# Twenty-one registrations: seventeen names, with ossie_query contributing three overloads and
-# ossie_date_trunc and ossie_dateadd two each (DATE and TIMESTAMP).
+# Twenty-three registrations: seventeen names, with ossie_query contributing four overloads (three of lists,
+# one of a JSON query) and ossie_compile, ossie_date_trunc and ossie_dateadd two each.
 query II
 SELECT count(*), count(DISTINCT function_name) FROM duckdb_functions()
 WHERE starts_with(function_name, 'ossie_');
 ----
-21	17
+23	17
 
 # Each date overload resolves to its own description.
 query TTT
@@ -46,14 +46,28 @@ ossie_date_trunc	TIMESTAMP	present
 ossie_dateadd	DATE	present
 ossie_dateadd	TIMESTAMP	present
 
-# Each ossie_query overload resolves to its own description rather than falling through to none.
-query II
-SELECT len(parameters), CASE WHEN description IS NULL THEN 'MISSING' ELSE 'present' END
-FROM duckdb_functions() WHERE function_name = 'ossie_query' ORDER BY len(parameters);
+# Each ossie_query and ossie_compile overload resolves to its own description rather than falling through to
+# none, and the JSON form's description is the one that speaks of JSON.
+query TTTI
+SELECT function_name, parameters[1], CASE WHEN description IS NULL THEN 'MISSING' ELSE 'present' END,
+       len(parameters)
+FROM duckdb_functions() WHERE function_name IN ('ossie_query', 'ossie_compile') ORDER BY 1, 2, 4;
 ----
-2	present
-3	present
-4	present
+ossie_compile	metrics	present	4
+ossie_compile	query	present	2
+ossie_query	metrics	present	2
+ossie_query	metrics	present	3
+ossie_query	metrics	present	4
+ossie_query	query	present	2
+
+query TTI
+SELECT function_name, parameters[1], contains(description, 'JSON')
+FROM duckdb_functions() WHERE function_name IN ('ossie_query', 'ossie_compile') AND len(parameters) = 2
+ORDER BY 1, 2;
+----
+ossie_compile	query	true
+ossie_query	metrics	false
+ossie_query	query	true
 
 # Categories are set, so the page groups these functions rather than scattering them.
 query I
@@ -79,9 +93,10 @@ ossie_program	0
 # reads FunctionDescription.parameter_names, so without NameParameters these all read col0, col1, ...
 query TT
 SELECT function_name, parameters::VARCHAR FROM duckdb_functions()
-WHERE starts_with(function_name, 'ossie_') ORDER BY function_name, len(parameters);
+WHERE starts_with(function_name, 'ossie_') ORDER BY function_name, len(parameters), 2;
 ----
 ossie_bundle_load	[path]
+ossie_compile	[query, metric_filters]
 ossie_compile	[metrics, dimensions, filters, metric_filters]
 ossie_concept_query	[concept, metrics, dimensions, filters, include_trace]
 ossie_concepts	[]
@@ -99,6 +114,7 @@ ossie_population_compile	[request_json]
 ossie_population_json	[request_json]
 ossie_program	[]
 ossie_query	[metrics, metric_filters]
+ossie_query	[query, metric_filters]
 ossie_query	[metrics, dimensions, metric_filters]
 ossie_query	[metrics, dimensions, filters, metric_filters]
 ossie_relationships	[]

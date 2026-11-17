@@ -279,7 +279,12 @@ string OutputName(const Metric &metric) {
 	return metric.dataset.empty() ? metric.name : metric.name.substr(metric.dataset.size() + 1);
 }
 
-//! Output columns are named by the final part of the reference, so two entries can name one column.
+//! The alias the caller gave the entry at `index`, or `fallback` when it gave none.
+string AliasOr(const vector<string> &aliases, idx_t index, const string &fallback) {
+	return index < aliases.size() && !aliases[index].empty() ? aliases[index] : fallback;
+}
+
+//! Output columns are named by the alias or the final part of the reference, so two entries can name one column.
 void RequireDistinctOutputNames(const vector<std::pair<string, string>> &outputs) {
 	case_insensitive_map_t<string> named_by;
 	for (auto &output : outputs) {
@@ -1274,9 +1279,12 @@ void RequireMetricGrain(const Model &model, const vector<string> &metrics, const
 //! The checks run in the order the Wide Table specification lists its errors (Section 8), each over the whole
 //! request before the next, so a request that is wrong in two ways is refused for the same one every time. A
 //! message carries a specification code when the specification defines its condition.
-unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,
-                                    const vector<string> &filters, const vector<string> &metric_filters,
-                                    const CompileOptions &options) {
+unique_ptr<SelectStatement> Compile(const Model &model, const Request &asked, const CompileOptions &options) {
+	auto &metrics = asked.metrics;
+	auto &dimensions = asked.dimensions;
+	auto &filters = asked.filters;
+	auto &metric_filters = asked.metric_filters;
+
 	// 1. Every entry is well formed, and asks for nothing unsupported.
 	vector<unique_ptr<ParsedExpression>> parsed_dimensions;
 	for (auto &request : dimensions) {
@@ -1306,7 +1314,9 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 	}
 	vector<Dimension> resolved_dimensions;
 	for (idx_t i = 0; i < dimensions.size(); i++) {
-		resolved_dimensions.push_back(ResolveDimension(model, dimensions[i], std::move(parsed_dimensions[i]), options));
+		auto dimension = ResolveDimension(model, dimensions[i], std::move(parsed_dimensions[i]), options);
+		dimension.alias = AliasOr(asked.dimension_aliases, i, dimension.alias);
+		resolved_dimensions.push_back(std::move(dimension));
 	}
 	for (auto &filter : resolved_filters) {
 		ResolveFilterNames(model, filter.expr, filter);
@@ -1338,9 +1348,11 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 	}
 
 	// 9. Output columns are told apart by name.
+	vector<string> metric_names;
 	vector<std::pair<string, string>> outputs;
 	for (idx_t i = 0; i < metrics.size(); i++) {
-		outputs.emplace_back(metrics[i], OutputName(*requested[i]));
+		metric_names.push_back(AliasOr(asked.metric_aliases, i, OutputName(*requested[i])));
+		outputs.emplace_back(metrics[i], metric_names[i]);
 	}
 	for (auto &dimension : resolved_dimensions) {
 		outputs.emplace_back(dimension.request, dimension.alias);
@@ -1381,7 +1393,7 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 		if (!metric.dataset.empty()) {
 			RecordHomes(*expr, metric.dataset, metric_homes);
 		}
-		expr->SetAlias(Identifier(OutputName(metric)));
+		expr->SetAlias(Identifier(metric_names[i]));
 		metric_expressions.push_back(std::move(expr));
 	}
 	// A metric filter's aggregates count toward the grains, so a condition on a metric at another grain is
@@ -1504,6 +1516,17 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 	auto statement = make_uniq<SelectStatement>();
 	statement->node = std::move(select);
 	return statement;
+}
+
+unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,
+                                    const vector<string> &filters, const vector<string> &metric_filters,
+                                    const CompileOptions &options) {
+	Request request;
+	request.metrics = metrics;
+	request.dimensions = dimensions;
+	request.filters = filters;
+	request.metric_filters = metric_filters;
+	return Compile(model, request, options);
 }
 
 string CompileToSQL(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,

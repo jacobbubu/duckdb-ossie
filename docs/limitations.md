@@ -149,6 +149,27 @@ that `SIMILAR TO` desugars to a `regexp_full_match` call and so falls under that
 does not. Subqueries are refused unconditionally and no option enables them, since they could read
 tables the model never declared.
 
+## The JSON query form
+
+**`ossie_query(query)` and `ossie_compile(query)` take the Wide Table specification's JSON query and
+nothing more.** The object has `metrics` and `dimensions`, each an array, and `filter`, one
+expression string. An entry of an array is a reference string, or an object with the reference under
+`metric` (in `metrics`) or `field` (in `dimensions`) and optionally an `alias`. Everything else is
+refused with `E_INVALID_QUERY`, as the specification requires, rather than skipped: a key or
+property outside those, a key written in another case or given twice, a `null` anywhere, a value of
+the wrong type, text that is not JSON, and a NULL argument.
+
+**An alias is one identifier.** It is written the way a model writes a name, bare or in double
+quotes, so `"alias": "net_sales"` and `"alias": "\"net sales\""` are accepted and `"net sales"`,
+`"a.b"`, a reserved word such as `"order"` and the empty string are refused. It names the result
+column and nothing else: `filter` and `metric_filters` go on reading fields and metrics by their
+own names, and an alias collides with another output name the way any two output names do.
+
+**The two forms differ in three ways.** Aliases exist only in the JSON form. The JSON form has one
+`filter`, as the specification does, where the list form takes several entries combined with AND.
+And `metric_filters` is this extension's parameter, not part of the specification's query, so it is
+not a key of the object; pass it as the named argument in either form.
+
 ## Error codes
 
 **A refusal the Wide Table specification defines carries its code.** The message is `ossie: `, the
@@ -160,7 +181,7 @@ written.
 
 | | code | raised when |
 |---|---|---|
-| 1 | `E_INVALID_QUERY` | a dimension is not a name; a filter does not parse, is not one predicate, or uses a function, subquery or expression the filter policy refuses |
+| 1 | `E_INVALID_QUERY` | a dimension is not a name; a filter does not parse, is not one predicate, or uses a function, subquery or expression the filter policy refuses; a JSON query is not the object the specification describes |
 | 2 | `E_EMPTY_AGGREGATION_QUERY` | the request has no metric and no dimension |
 | 3 | `E_NAME_NOT_FOUND` | a metric, dataset or field is not in the model, or a field is not written `dataset.field` |
 | 4 | `E_METRIC_IN_DIMENSIONS` | a dimension names a metric |
