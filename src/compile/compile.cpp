@@ -793,6 +793,40 @@ bool CountsRows(const string &name) {
 	return COUNTS.find(name) != COUNTS.end();
 }
 
+//! The dataset a query without metrics takes its rows from: the one dimension dataset that joins every other
+//! without repeating its own rows. With a metric the aggregate says which rows are grouped; without one only
+//! the dimensions can.
+const Dataset &Anchor(const Model &model, const vector<string> &dimensions, const CompileOptions &options) {
+	vector<string> candidates;
+	case_insensitive_set_t seen;
+	for (auto &request : dimensions) {
+		auto dimension = ResolveDimension(model, request, options);
+		if (dimension.dataset && seen.insert(dimension.dataset->name).second) {
+			candidates.push_back(dimension.dataset->name);
+		}
+	}
+	vector<string> anchors;
+	for (auto &candidate : candidates) {
+		auto reachable = SafelyReachable(model, candidate);
+		bool reaches_all = true;
+		for (auto &other : candidates) {
+			reaches_all = reaches_all && reachable.find(other) != reachable.end();
+		}
+		if (reaches_all) {
+			anchors.push_back(candidate);
+		}
+	}
+	if (anchors.size() != 1) {
+		throw InvalidInputException("ossie: a query without metrics reads the rows of the one dimension dataset "
+		                            "that joins every other without repeating its rows, and %s of [%s] %s. "
+		                            "Request a metric to say which rows to group",
+		                            anchors.empty() ? "none" : "more than one",
+		                            StringUtil::Join(anchors.empty() ? candidates : anchors, ", "),
+		                            anchors.empty() ? "does" : "do");
+	}
+	return *model.FindDataset(anchors[0]);
+}
+
 //! Replaces each aggregate in `expr` with a reference to the column that its grain's subquery will
 //! compute it under, registering the aggregate there. Identical aggregates share one column.
 //! `request` is the metric name or filter text, for messages. When `rows_may_be_missing`, a group can
@@ -999,8 +1033,8 @@ void RequireMetricGrain(const Model &model, const vector<string> &metrics, const
 
 unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,
                                     const vector<string> &filters, const CompileOptions &options) {
-	if (metrics.empty()) {
-		throw InvalidInputException("ossie: at least one metric is required");
+	if (metrics.empty() && dimensions.empty()) {
+		throw InvalidInputException("ossie: at least one metric or dimension is required");
 	}
 
 	auto select = make_uniq<SelectNode>();
@@ -1054,6 +1088,31 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 		for (auto &grain : resolved_filters.back().grains) {
 			grains.insert(grain);
 		}
+	}
+
+	if (metrics.empty()) {
+		for (auto &filter : resolved_filters) {
+			if (filter.is_aggregate) {
+				throw InvalidInputException("ossie: filter \"%s\" contains an aggregate, which a query without "
+				                            "metrics cannot evaluate; request the metric it filters on",
+				                            filter.request);
+			}
+		}
+		auto &anchor = Anchor(model, dimensions, options);
+		auto reachable = SafelyReachable(model, anchor.name);
+		for (auto &filter : resolved_filters) {
+			case_insensitive_set_t referenced;
+			CollectDatasets(*filter.expr, referenced);
+			for (auto &name : SortedNames(referenced)) {
+				if (reachable.find(name) == reachable.end()) {
+					throw InvalidInputException("ossie: filter \"%s\" reads \"%s\", but a query without metrics takes "
+					                            "its rows from \"%s\", which has no join path to \"%s\" that keeps "
+					                            "one row per \"%s\" row",
+					                            filter.request, name, anchor.name, name, anchor.name);
+				}
+			}
+		}
+		grains.insert(anchor.name);
 	}
 
 	// One query has one set of rows to group, so when aggregates sit at several grains each grain gets

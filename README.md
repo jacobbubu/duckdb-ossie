@@ -94,7 +94,9 @@ every refusal and why it exists.
 
 A request names metrics as `metric` or `dataset.metric` and dimensions as `dataset.field`; each
 output column takes the final part of its name (`item.i_brand` becomes `i_brand`), and two entries
-that would share one are refused, as the Wide Table specification requires.
+that would share one are refused, as the Wide Table specification requires. `metrics` may be empty:
+`ossie_query([], ['item.i_brand'])` returns the distinct brands, read from the one dimension dataset
+that joins the others without repeating its rows.
 
 `rebind` remaps warehouse-qualified prefixes onto the local catalog: a model saying
 `tpcds.public.store_sales` needs `rebind => MAP{'tpcds.public': 'tpcds.main'}` to find local tables.

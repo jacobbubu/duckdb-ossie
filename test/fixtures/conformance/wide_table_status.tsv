@@ -4,12 +4,12 @@ a03_three_branches	pass
 a04_filter_on_dimension	pass
 a05_groups_from_orders	pass
 a06_groups_from_returns	pass
-a07_dimension_only	false-refusal
+a07_dimension_only	pass
 a08_model_metric_components	pass
 a09_aliases	inexpressible
 a10_filter_without_dimension	pass
 a11_filter_on_home_dataset	pass
-a12_anchor_from_dimensions	false-refusal
+a12_anchor_from_dimensions	pass
 a13_filter_false_with_dimension	pass
 a14_filter_false_without_dimension	pass
 a15_unconnected_filter_false	pass

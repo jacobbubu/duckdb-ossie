@@ -76,10 +76,16 @@ pins). The DuckDB version each release targets is noted separately.
 - **apache/ossie's wide-table compliance cases run against the extension.** The 46 cases of
   `compliance/wide_table` are vendored with their data, `scripts/wide_table_compliance.py` submits
   each through `ossie_query` and classifies the outcome, and
-  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 18 cases
-  pass; the rest are recorded as what they are (2 false refusals, 2 false acceptances, 19 refusals
-  without the specified error code, 5 the query function cannot express).
+  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 20 cases
+  pass; the rest are recorded as what they are (2 false acceptances, 19 refusals without the
+  specified error code, 5 the query function cannot express).
   `test/fixtures/conformance/README.md` lists the cases behind each number.
+- **A request can have dimensions and no metric.** `ossie_query([], ['customers.region'])` returns
+  the distinct regions, where it used to be refused. The rows come from the one dimension dataset
+  that joins every other without repeating its own rows, which the Wide Table specification calls
+  the anchor; a request where no dataset or more than one qualifies is refused, as is a filter on a
+  dataset the anchor cannot reach that way, or a filter on a metric. A request with neither metrics
+  nor dimensions is still refused.
 - **Dataset-scoped metrics.** A dataset's `metrics` are loaded as `dataset.metric` and requested,
   filtered on and described under that name; their expressions are resolved against the dataset's
   fields and its `source.column` references. A model-scoped metric may evaluate one with

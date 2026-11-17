@@ -64,6 +64,10 @@ every aggregate in a query agrees on one grain, that grain becomes the root of t
 they do not, each grain gets its own grouped subquery, rooted at that grain, and the subqueries are
 joined on the dimension values; the metric expressions then run over the hoisted aggregate columns.
 An aggregate with no column reference, like `COUNT(*)`, inherits the grain when exactly one exists.
+A request with no metric has no aggregate to take a grain from, so its root is the *anchor*: the one
+dimension dataset that reaches every other dimension dataset without repeating its own rows. Zero or
+several such datasets are refused, and so is a filter on a dataset the anchor cannot reach that way;
+the filter has no say in which dataset is the anchor.
 `CompileOptions` lets a caller extend this path without a second compiler: `shared_keys` declare a
 bare dimension name that resolves to a different field on each grain, `required_grains` force a
 grain subquery for a dataset that contributes only row presence, `grain_join` picks INNER over the

@@ -72,7 +72,7 @@ names dataset "nosuch", which the model does not declare
 statement error
 SELECT ossie_compile([], [], []);
 ----
-at least one metric is required
+at least one metric or dimension is required
 
 # A filter pulls in the join it needs, even when no dimension uses that dataset. Dimensions are
 # joined before filter-only datasets, so item precedes date_dim here.

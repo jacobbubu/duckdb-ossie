@@ -54,6 +54,36 @@ SELECT count(*) FROM (
 ----
 0
 
+# Without a metric the dimensions alone say which rows are read: the distinct brands of item, including
+# brands nothing was sold under, and the distinct (brand, year) pairs of the sales that have both.
+query I
+SELECT count(*) FROM (
+  (SELECT * FROM ossie_query([], ['item.i_brand']) EXCEPT SELECT DISTINCT i_brand FROM item)
+  UNION ALL
+  (SELECT DISTINCT i_brand FROM item EXCEPT SELECT * FROM ossie_query([], ['item.i_brand']))
+);
+----
+0
+
+query I
+SELECT count(*) FROM (
+  (SELECT * FROM ossie_query([], ['store_sales.ss_item_sk', 'item.i_brand'], ['date_dim.d_year = 2001'])
+   EXCEPT
+   SELECT DISTINCT ss_item_sk, i_brand FROM store_sales
+     JOIN item ON ss_item_sk = i_item_sk
+     JOIN date_dim ON ss_sold_date_sk = d_date_sk
+   WHERE d_year = 2001)
+  UNION ALL
+  (SELECT DISTINCT ss_item_sk, i_brand FROM store_sales
+     JOIN item ON ss_item_sk = i_item_sk
+     JOIN date_dim ON ss_sold_date_sk = d_date_sk
+   WHERE d_year = 2001
+   EXCEPT
+   SELECT * FROM ossie_query([], ['store_sales.ss_item_sk', 'item.i_brand'], ['date_dim.d_year = 2001']))
+);
+----
+0
+
 # Joins are INNER, so grouping by a dimension whose foreign key is nullable drops those rows.
 # The shortfall is exactly the sales with no store, which pins the documented behaviour.
 query I

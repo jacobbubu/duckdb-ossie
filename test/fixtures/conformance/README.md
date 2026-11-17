@@ -61,12 +61,12 @@ with `left_joins => true`, the join the specification requires. Every case gets 
 
 | status | cases | meaning |
 |---|---|---|
-| `pass` | 18 | rows and output names match, or the refusal carries the expected error code |
+| `pass` | 20 | rows and output names match, or the refusal carries the expected error code |
 | `names` | 0 | rows match under different output names |
 | `wrong` | 0 | rows differ |
-| `false-refusal` | 2 | refused where rows were expected: queries without a metric (`a07`, `a12`) |
+| `false-refusal` | 0 | refused where rows were expected |
 | `false-acceptance` | 2 | answered where an error was expected: an aggregate in the filter (`e07`), a filter reading two datasets (`e09`) |
-| `refused` | 19 | refused as required, but the message does not carry the `E_*` code; six of them (`e05`, `e08`, `e17`, `e19`, `e21`, `e23`) are refused only because the query has no metric |
+| `refused` | 19 | refused as required, but the message does not carry the `E_*` code |
 | `inexpressible` | 5 | the query uses a part of the JSON binding `ossie_query` has no argument for: an alias (`a09`, `e10`), an unknown key (`e01`, `e20`), a null filter (`e02`) |
 
 `wide_table_status.tsv` pins the status of every case, and `scripts/full_functionality_check.sh`
