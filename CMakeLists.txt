@@ -33,6 +33,7 @@ set(EXTENSION_SOURCES
     src/model/dialect.cpp
     src/model/yaml.cpp
     src/compile/compile.cpp
+    src/compile/request.cpp
     src/functions/load.cpp
     src/functions/compile.cpp
     src/functions/describe.cpp

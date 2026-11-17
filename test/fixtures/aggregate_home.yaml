@@ -1,0 +1,101 @@
+version: "0.3.0.dev0"
+name: aggregate_home
+description: Which dataset's rows each aggregate of a metric runs over
+datasets:
+  - name: orders
+    source: memory.main.orders
+    primary_key: [order_id]
+    fields:
+      - name: order_id
+        datatype: Integer
+        expression:
+          sql: order_id
+      - name: customer_id
+        datatype: Integer
+        expression:
+          sql: customer_id
+      - name: amount
+        datatype: Integer
+        expression:
+          sql: amount
+      - name: status
+        datatype: String
+        expression:
+          sql: status
+    metrics:
+      - name: completed_count
+        datatype: Integer
+        expression:
+          sql: COUNT(*) FILTER (WHERE status = 'completed')
+      - name: average_amount
+        datatype: Decimal
+        expression:
+          sql: SUM(amount) / NULLIF(COUNT(*), 0)
+  - name: customers
+    source: memory.main.customers
+    primary_key: [customer_id]
+    fields:
+      - name: customer_id
+        datatype: Integer
+        expression:
+          sql: customer_id
+      - name: region
+        datatype: String
+        expression:
+          sql: region
+      - name: rate
+        datatype: Integer
+        expression:
+          sql: rate
+    metrics:
+      - name: customer_count
+        datatype: Integer
+        expression:
+          sql: COUNT(*)
+relationships:
+  - name: orders_to_customers
+    from: orders
+    to: customers
+    from_columns: [customer_id]
+    to_columns: [customer_id]
+metrics:
+  - name: completed_revenue
+    datatype: Integer
+    expression:
+      sql: SUM(orders.amount) FILTER (WHERE orders.status = 'completed')
+  - name: revenue_per_customer
+    datatype: Decimal
+    expression:
+      sql: SUM(orders.amount) / COUNT(customers.customer_id)
+  - name: median_amount
+    datatype: Decimal
+    expression:
+      sql: PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY orders.amount)
+  - name: status_list
+    datatype: String
+    expression:
+      dialects:
+        - dialect: ANSI_SQL
+          expression: STRING_AGG(orders.status, ',' ORDER BY orders.order_id)
+  - name: rated_revenue
+    datatype: Integer
+    expression:
+      sql: SUM(orders.amount * customers.rate)
+  - name: status_by_region
+    datatype: String
+    expression:
+      dialects:
+        - dialect: ANSI_SQL
+          expression: STRING_AGG(orders.status, ',' ORDER BY customers.region)
+  - name: west_revenue
+    datatype: Integer
+    expression:
+      sql: SUM(orders.amount) FILTER (WHERE customers.region = 'west')
+  - name: completed_rows
+    datatype: Integer
+    expression:
+      sql: COUNT(*) FILTER (WHERE orders.status = 'completed')
+  - name: constant_rows
+    datatype: Integer
+    expression:
+      sql: COUNT(1)

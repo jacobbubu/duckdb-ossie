@@ -23,52 +23,45 @@ SELECT (store_sales.agg_0 / customer.agg_0) AS customer_lifetime_value FROM ((SE
 # An aggregate shared between metrics is computed once. Row filters go into every subquery, metric
 # filters apply to the joined result.
 query T
-SELECT ossie_compile(['total_sales', 'store_productivity'], ['store.s_state'], ['store.s_state <> ''ZZ''', 'total_sales > 100']);
+SELECT ossie_compile(['total_sales', 'store_productivity'], ['store.s_state'], ['store.s_state <> ''ZZ'''], metric_filters => ['total_sales > 100']);
 ----
-SELECT COALESCE(store.dim_0, store_sales.dim_0) AS "store.s_state", store_sales.agg_0 AS total_sales, (store_sales.agg_0 / "nullif"(store.agg_0, 0)) AS store_productivity FROM ((SELECT store.s_state AS dim_0, sum(store.s_number_employees) AS agg_0 FROM tpcds.main.store AS store WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store FULL JOIN (SELECT store.s_state AS dim_0, sum(store_sales.ss_ext_sales_price) AS agg_0 FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk))) WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store_sales ON ((store.dim_0 IS NOT DISTINCT FROM store_sales.dim_0))) WHERE (store_sales.agg_0 > 100)
+SELECT COALESCE(store.dim_0, store_sales.dim_0) AS s_state, store_sales.agg_0 AS total_sales, (store_sales.agg_0 / "nullif"(store.agg_0, 0)) AS store_productivity FROM ((SELECT store.s_state AS dim_0, sum(store.s_number_employees) AS agg_0 FROM tpcds.main.store AS store WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store FULL JOIN (SELECT store.s_state AS dim_0, sum(store_sales.ss_ext_sales_price) AS agg_0 FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk))) WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store_sales ON ((store.dim_0 IS NOT DISTINCT FROM store_sales.dim_0))) WHERE (store_sales.agg_0 > 100)
 
-# A filter or dimension must apply to every grain, so each grain has to reach its dataset without
-# repeating rows. store cannot reach date_dim except through store_sales.
+# A filter or dimension must apply to every metric, so each metric has to reach its dataset from every
+# dataset it aggregates without repeating rows. store cannot reach date_dim except through store_sales.
 statement error
 SELECT ossie_compile(['store_productivity'], [], ['date_dim.d_year = 2001']);
 ----
-filter "date_dim.d_year = 2001" names dataset "date_dim", which "store" cannot join without repeating its rows
+E_UNSUPPORTED_FILTER_PATH: filter "date_dim.d_year = 2001" reads "date_dim", which metric "store_productivity" cannot reach from "store", and a filter applies to every metric of the request: joining "store_sales" repeats each "store" row once per match
 
 statement error
 SELECT ossie_compile(['customer_lifetime_value'], ['item.i_brand'], []);
 ----
-dimension "item.i_brand" names dataset "item", which "customer" cannot join without repeating its rows
+E_NO_PATH: dimension "item.i_brand" is a field of "item", which metric "customer_lifetime_value" cannot reach from "customer": joining "store_sales" repeats each "customer" row once per match
 
-# COUNT(*) has no grain of its own, and with two grains there is no single one to inherit.
+# An aggregate runs over the rows of the one dataset its arguments read. One that reads a second is refused,
+# even where the first determines the second and joining them would repeat no row.
 statement error
-SELECT ossie_compile(['total_sales', 'store_productivity', 'transaction_count'], [], []);
-----
-aggregate with no column reference, and the requested metrics aggregate at 2 different grains (store, store_sales)
-
-# A second dataset referenced as a scalar is functionally determined by the grain, so it is an
-# ordinary join rather than a fan-out. item must still be joined for the reference to bind.
-query T
 SELECT ossie_compile(['books_sales'], [], []);
 ----
-SELECT sum(CASE  WHEN ((item.i_category = 'Books')) THEN (store_sales.ss_ext_sales_price) ELSE 0 END) AS books_sales FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.item AS item ON ((store_sales.ss_item_sk = item.i_item_sk)))
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "books_sales" has the aggregate SUM, whose arguments read 2 datasets (item, store_sales). An aggregate runs over the rows of the one dataset its arguments read; one over several is not supported yet
 
-# COUNT(*) names no dataset, so alone there is no table to count.
+# COUNT(*) in a model-scoped metric reads no dataset, so nothing says whose rows it counts: not alone, not
+# beside a metric that has a grain, not with a dimension.
 statement error
 SELECT ossie_compile(['transaction_count'], [], []);
 ----
-has an aggregate with no column reference
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "transaction_count" has the aggregate COUNT(*), whose arguments read no dataset, so nothing says whose rows it runs over. Declare it as a metric of the dataset whose rows it counts, and name that metric
 
-# Alongside a metric that does have a grain, COUNT(*) inherits it.
-query T
+statement error
 SELECT ossie_compile(['total_sales', 'transaction_count'], [], []);
 ----
-SELECT sum(store_sales.ss_ext_sales_price) AS total_sales, count_star() AS transaction_count FROM tpcds.main.store_sales AS store_sales
+E_AMBIGUOUS_MEASURE_GRAIN: metric "transaction_count" has the aggregate COUNT(*), whose arguments read no dataset
 
-# A dimension is not a grain: which dataset to count remains undetermined.
 statement error
 SELECT ossie_compile(['transaction_count'], ['item.i_brand'], []);
 ----
-has an aggregate with no column reference
+E_AMBIGUOUS_MEASURE_GRAIN: metric "transaction_count" has the aggregate COUNT(*), whose arguments read no dataset
 
 # Joining across a many-to-many edge repeats fact rows into every aggregate.
 statement ok

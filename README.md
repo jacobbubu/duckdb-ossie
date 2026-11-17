@@ -33,8 +33,9 @@ Claims about a file format should be checkable, so:
   forbids
 - Generated SQL is diffed against hand-written TPC-DS equivalents with symmetric `EXCEPT` over
   `dsdgen(sf = 0.01)` data, so correctness is measured against the numbers rather than against our
-  own output. This currently covers `total_sales` and `books_sales`. The remaining metrics are
-  exercised by the golden-SQL, grain or vocabulary tests, none of which can catch a wrong *number*
+  own output. This currently covers `total_sales`, `store_productivity` and
+  `customer_lifetime_value`. The remaining metrics are exercised by the golden-SQL, grain or
+  vocabulary tests, none of which can catch a wrong *number*
 
 Models use the document shape of Ossie 0.3.0.dev0, one model per file, with expressions in
 `OSSIE_SQL_2026` (the spec's own expression language, written as `expression.sql`) or `ANSI_SQL`.
@@ -54,7 +55,7 @@ SELECT * FROM ossie_query(['total_sales'],           -- ask a question
 
 ```
 ┌───────────────────┬───────────────┐
-│   item.i_brand    │  total_sales  │
+│      i_brand      │  total_sales  │
 ├───────────────────┼───────────────┤
 │ amalgimporto #2   │     709288.31 │
 │ edu packamalg #2  │     565064.01 │
@@ -69,8 +70,10 @@ guess. Ask for `total_sales` grouped by `store.s_state` on a model where the sal
 relationship is declared many-to-many, and you get:
 
 ```
-ossie: joining "store" repeats each "store_sales" row once per match, which would
-inflate every aggregate. Relationship "store_sales_to_store" is many_to_many
+ossie: E_NO_PATH: dimension "store.s_state" is a field of "store", which metric
+"total_sales" cannot reach from "store_sales": joining "store" repeats each
+"store_sales" row once per match, which would inflate every aggregate.
+Relationship "store_sales_to_store" is many_to_many
 ```
 
 rather than a number inflated by the number of matches. Where the model *does* determine the
@@ -89,8 +92,33 @@ every refusal and why it exists.
 | `ossie_metrics()` | Metrics with datatype, expression, synonyms |
 | `ossie_relationships()` | Relationships with derived cardinality |
 | `ossie_metadata()` | Descriptions, labels, AI instructions/synonyms/examples, preserved JSON and expression dialects |
-| `ossie_query(metrics, dimensions, filters)` | Compile the request and execute it |
-| `ossie_compile(metrics, dimensions, filters)` | Return the SQL without running it |
+| `ossie_query(metrics, dimensions, filters)` | Compile the request and execute it. Named arg: `metric_filters` |
+| `ossie_query(query)` | The same, with the request written as one JSON object, which can also name its output columns |
+| `ossie_compile(metrics, dimensions, filters)` | Return the SQL without running it. Named arg: `metric_filters` |
+| `ossie_compile(query)` | The same, for a JSON query |
+
+A request names metrics as `metric` or `dataset.metric` and dimensions as `dataset.field`; each
+output column takes the final part of its name (`item.i_brand` becomes `i_brand`), and two entries
+that would share one are refused, as the Wide Table specification requires. `metrics` may be empty:
+`ossie_query([], ['item.i_brand'])` returns the distinct brands, read from the one dimension dataset
+that joins the others without repeating its rows. Each entry of `filters` is a condition on the rows
+of one dataset, applied before aggregation; a condition on a metric goes in
+`metric_filters => ['total_sales > 1000']` and is applied after.
+
+The same request can be written as one JSON object, the query form of the Wide Table specification,
+and that form is where an output column gets a name of the caller's choosing:
+
+```sql
+SELECT * FROM ossie_query('{
+  "metrics":    [{"metric": "total_sales", "alias": "sales"}],
+  "dimensions": ["item.i_brand"],
+  "filter":     "date_dim.d_year = 2001"
+}');
+```
+
+An entry of `metrics` or `dimensions` is a reference, or an object holding the reference under
+`metric` or `field` with an `alias` beside it; `filter` is one condition. A key the form does not
+define, or a `null`, is refused rather than ignored. `metric_filters` stays a named argument.
 
 `rebind` remaps warehouse-qualified prefixes onto the local catalog: a model saying
 `tpcds.public.store_sales` needs `rebind => MAP{'tpcds.public': 'tpcds.main'}` to find local tables.

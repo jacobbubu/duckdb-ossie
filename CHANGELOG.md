@@ -12,6 +12,65 @@ pins). The DuckDB version each release targets is noted separately.
 ## [Unreleased]
 
 ### Changed
+- **A refusal the Wide Table specification defines carries its error code, and a request with
+  several faults gets the one the specification lists first.** A message now reads
+  `ossie: E_NO_PATH: dimension "orders.order_id" is a field of "orders", which metric ...`: the
+  code from Section 8 of the specification, then the text. Code that matched a whole message, or
+  its start, must allow for the code; the text after it is unchanged except where noted here.
+  The checks run in the specification's order, so a request with an unknown name and a filter on
+  two datasets is refused for the name. What else changed with it:
+  - A dimension that names a metric is `E_METRIC_IN_DIMENSIONS` and a metric that names a field is
+    `E_FIELD_IN_METRICS`, each saying where the entry belongs. Both used to be reported as a name
+    the model does not declare.
+  - A model-scoped metric that reads a field outside every aggregate (`SUM(orders.amount) -
+    orders.order_id`) is refused, naming the field. `ossie_compile` used to return SQL for it,
+    which DuckDB then refused to bind.
+  - A dimension or filter on a dataset a metric cannot reach names that metric, the dataset it
+    aggregates and the relationship that stops it, and tells a dimension no requested metric
+    reaches (`E_NO_PATH`) from one only some reach (`E_PARTIAL_DIMENSION_REACHABILITY`). The old
+    texts (`joining "store" repeats each "store_sales" row ...` on its own, and `... which "store"
+    cannot join without repeating its rows`) are gone; the first survives as the reason at the end
+    of the new message.
+  - A request that cannot be read (a dimension that is not a name, a filter that does not parse or
+    uses what the filter policy forbids) is refused before any name in it is looked up.
+  Refusals the specification has no code for carry none. `docs/limitations.md` lists the codes.
+- **Breaking: three metric shapes the Wide Table specification refuses are refused.** In a
+  model-scoped metric each aggregate runs over the one dataset its arguments read, and a request
+  for a metric that names no such dataset fails with `E_AMBIGUOUS_MEASURE_GRAIN`. These used to be
+  answered:
+  - An aggregate whose arguments read several datasets (`SUM(store_sales.ss_quantity *
+    item.i_current_price)`), which was aggregated over the dataset that determines the others.
+  - An aggregate whose `FILTER` reads a dataset its arguments do not (`SUM(orders.amount) FILTER
+    (WHERE customers.region = 'west')`).
+  - An aggregate whose arguments read no dataset (`COUNT(*)`, `COUNT(1)`, `COUNT(*) FILTER (WHERE
+    orders.status = 'completed')`), which counted the rows of the grain the request's other
+    metrics shared.
+  The model still loads; the refusal comes when the metric is requested. A metric declared on a
+  dataset is not affected and is where such a count belongs: `orders.completed_count` declared as
+  `COUNT(*) FILTER (WHERE status = 'completed')` counts `orders`, alone, beside metrics of other
+  datasets, and in a metric filter. An aggregate written directly in `metric_filters` follows the
+  same rule, so `'COUNT(*) > 1'` is refused where it used to count the request's grain; name a
+  dataset's metric (`'customers.customer_count > 1'`). `AGG(dataset.metric)` is refused at load
+  when the dataset metric's aggregate has no column in its arguments, now also when it has a
+  `FILTER` that names one. Population bundles are unchanged: a bundle designates its fact grain,
+  and an aggregate over it may still read a dataset the fact rows determine.
+- **Breaking: `filters` take conditions on rows; a condition on a metric goes in `metric_filters`.**
+  Each entry of `filters` is a filter as the Wide Table specification defines one: applied before
+  aggregation, reading the fields of one dataset, with no metric, aggregate or window function.
+  `ossie_query` and `ossie_compile` gain the named parameter `metric_filters => [...]` for
+  conditions applied after aggregation, which is where `'total_sales > 100'` now goes; in `filters`
+  it is refused, and the message names the parameter. An entry reading two datasets
+  (`'orders.amount > 100 AND customers.region = ''EAST'''`) is refused as well. Pass each dataset's
+  condition as its own entry; entries are combined with AND, as before. A row condition joining two
+  datasets with OR can no longer be written. The MCP example's `semantic_query` tool takes
+  `metric_filters` beside `filters`.
+- **Breaking: output columns are named without the dataset.** `ossie_query` and `ossie_compile`
+  name each column by the final part of its reference, as the Wide Table specification's output
+  name: `customers.region` is the column `region`, `orders.total_revenue` is `total_revenue`, where
+  they used to be `"customers.region"` and `"orders.total_revenue"`. SQL that reads the result by
+  the quoted qualified name must drop the dataset. Two entries with one output name, compared
+  without case, are refused naming both, where they used to produce two columns of one name.
+  Population results are unchanged: their columns were never qualified this way.
 - **Breaking: models are Ossie 0.3.0.dev0 documents (apache/ossie da73e0e).** `version` must be
   `"0.3.0.dev0"`; a 0.2.0.dev0 document is refused at load naming the supported string. What changed
   in the format, and is now read:
@@ -54,16 +113,38 @@ pins). The DuckDB version each release targets is noted separately.
   resolves the default set only after every extension is added.
 - A population expression test that defined a macro named `nullif` now drops it first; `nullif` is a
   reserved word in DuckDB 2.0.
+- **A join path is searched the way the Wide Table specification defines one.** A path crosses a
+  relationship only toward its one side and visits no dataset twice, and only the datasets a
+  request joins are checked. A request used to be refused as ambiguous when a second route existed
+  that no path could take: on the specification's `stores` model, `store_returns` by `date_dim.year`
+  was refused because `store_sales` reaches `date_dim` as well and shares `item` with it. Such
+  requests are answered now. Two real paths are still refused, including when one is shorter.
+- **A count over a group its grain has no row for is 0.** When metrics at two grains are joined on
+  the dimension values, a group only one grain produced left the other grain's `COUNT`,
+  `COUNT(*)`, `COUNT(DISTINCT ...)` and `APPROX_COUNT_DISTINCT` NULL. They are 0 now, in the result
+  and in a filter on the metric; other aggregates stay NULL, as they are over no rows.
 
 ### Added
 - **apache/ossie's wide-table compliance cases run against the extension.** The 46 cases of
   `compliance/wide_table` are vendored with their data, `scripts/wide_table_compliance.py` submits
-  each through `ossie_query` and classifies the outcome, and
-  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 1 case
-  passes outright and 11 more return the right rows under qualified column names; the rest are
-  recorded as what they are (2 wrong, 6 false refusals, 2 false acceptances, 19 refusals without the
-  specified error code, 5 the query function cannot express).
-  `test/fixtures/conformance/README.md` lists the cases behind each number.
+  each query as written through `ossie_query(query)` and classifies the outcome, and
+  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. All 46 pass.
+- **A request can be written as the Wide Table specification's JSON query, and can name its output
+  columns.** `ossie_query(query)` and `ossie_compile(query)` take one string holding an object with
+  `metrics`, `dimensions` and `filter`. An entry is a reference, or an object that adds an alias:
+  `{"metric": "orders.total_revenue", "alias": "revenue"}` in `metrics`,
+  `{"field": "customers.region", "alias": "area"}` in `dimensions`. The alias is the column's name
+  in the result and counts as its output name, so two references that end in the same name can be
+  requested together once one has an alias. A key or property the form does not define, a `null`,
+  or a value of the wrong type is refused with `E_INVALID_QUERY`. The list form is unchanged and
+  has no aliases; `metric_filters` is a named argument of both.
+- **A request can have dimensions and no metric.** `ossie_query([], ['customers.region'])` returns
+  the distinct regions, where it used to be refused. The rows come from the one dimension dataset
+  that joins every other without repeating its own rows, which the Wide Table specification calls
+  the anchor; a request where no dataset or more than one qualifies is refused, as is a filter on a
+  dataset the anchor cannot reach that way. A metric filter that names a metric takes the place of
+  the anchor: `ossie_query([], ['item.i_brand'], metric_filters => ['total_sales > 1000'])` reads
+  the rows `total_sales` aggregates. A request with neither metrics nor dimensions is still refused.
 - **Dataset-scoped metrics.** A dataset's `metrics` are loaded as `dataset.metric` and requested,
   filtered on and described under that name; their expressions are resolved against the dataset's
   fields and its `source.column` references. A model-scoped metric may evaluate one with

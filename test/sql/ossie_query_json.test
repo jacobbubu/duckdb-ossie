@@ -1,0 +1,265 @@
+# name: test/sql/ossie_query_json.test
+# description: a query written as the Wide Table specification's JSON object: aliases, and what makes one malformed
+# group: [sql]
+
+require ossie
+
+statement ok
+CREATE SCHEMA retail;
+
+statement ok
+CREATE TABLE retail.customers AS
+SELECT * FROM (VALUES ('C1', 'EAST'), ('C2', 'EAST'), ('C3', 'WEST'), ('C4', 'NORTH')) t(customer_id, region);
+
+statement ok
+CREATE TABLE retail.orders AS
+SELECT * FROM (VALUES ('O1', 'C1', 100), ('O2', 'C1', 200), ('O3', 'C2', 50), ('O4', 'C3', 300)) t(order_id, customer_id, amount);
+
+statement ok
+CREATE TABLE retail."returns" AS
+SELECT * FROM (VALUES ('R1', 'C1', 25), ('R2', 'C4', 10)) t(return_id, customer_id, amount);
+
+statement ok
+CALL ossie_load('test/fixtures/conformance/compliance/wide_table/retail/retail_model.ossie.yaml');
+
+# --- the same request, written either way ------------------------------------------------------------
+
+query TI rowsort
+SELECT * FROM ossie_query('{"metrics": ["orders.total_revenue"], "dimensions": ["customers.region"]}');
+----
+EAST	350
+WEST	300
+
+query I
+SELECT ossie_compile('{"metrics": ["orders.total_revenue"], "dimensions": ["customers.region"], "filter": "orders.amount > 60"}')
+     = ossie_compile(['orders.total_revenue'], ['customers.region'], ['orders.amount > 60']);
+----
+true
+
+# An entry written as an object says the same thing as the bare reference when it gives no alias.
+query I
+SELECT ossie_compile('{"metrics": [{"metric": "orders.total_revenue"}], "dimensions": [{"field": "customers.region"}]}')
+     = ossie_compile(['orders.total_revenue'], ['customers.region'], []);
+----
+true
+
+# The list form still takes lists: a string argument is a JSON query, a list argument is the metrics.
+query I
+SELECT * FROM ossie_query(['orders.total_revenue']);
+----
+650
+
+# --- aliases -----------------------------------------------------------------------------------------
+
+query TT
+SELECT column_name, column_type FROM (DESCRIBE SELECT * FROM ossie_query('{"dimensions": [{"field": "customers.region", "alias": "area"}], "metrics": [{"metric": "orders.total_revenue", "alias": "revenue"}]}'));
+----
+area	VARCHAR
+revenue	HUGEINT
+
+query TI rowsort
+SELECT area, revenue FROM ossie_query('{"dimensions": [{"field": "customers.region", "alias": "area"}], "metrics": [{"metric": "orders.total_revenue", "alias": "revenue"}]}');
+----
+EAST	350
+WEST	300
+
+# Metrics at two grains keep their aliases on the columns of the joined result.
+query TII rowsort
+SELECT area, revenue, refunds FROM ossie_query('{"dimensions": [{"field": "customers.region", "alias": "area"}], "metrics": [{"metric": "orders.total_revenue", "alias": "revenue"}, {"metric": "returns.total_returns", "alias": "refunds"}]}');
+----
+EAST	350	25
+NORTH	NULL	10
+WEST	300	NULL
+
+# Two references that end in the same name can be asked for together once one of them has an alias.
+statement error
+SELECT ossie_compile('{"dimensions": ["customers.customer_id", "orders.customer_id"], "metrics": ["orders.total_revenue"]}');
+----
+ossie: E_NAME_COLLISION: "customers.customer_id" and "orders.customer_id" have the same output name "customer_id"
+
+query T
+SELECT ossie_compile('{"dimensions": ["customers.customer_id", {"field": "orders.customer_id", "alias": "buyer"}], "metrics": ["orders.total_revenue"]}');
+----
+SELECT customers.customer_id AS customer_id, orders.customer_id AS buyer, sum(orders.amount) AS total_revenue FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.customer_id, orders.customer_id
+
+# An alias is an output name like any other, so it can collide, and names differing only in case are one name.
+statement error
+SELECT ossie_compile('{"dimensions": ["customers.region", {"field": "customers.customer_id", "alias": "region"}]}');
+----
+ossie: E_NAME_COLLISION: "customers.region" and "customers.customer_id" have the same output name "region"
+
+statement error
+SELECT ossie_compile('{"dimensions": ["customers.region"], "metrics": [{"metric": "orders.total_revenue", "alias": "REGION"}]}');
+----
+ossie: E_NAME_COLLISION: "orders.total_revenue" and "customers.region" have the same output name "region"
+
+# An alias names a column of the result. Conditions go on reading fields and metrics by their own names.
+statement error
+SELECT ossie_compile('{"dimensions": [{"field": "customers.region", "alias": "area"}], "filter": "area = ''EAST''"}');
+----
+ossie: E_NAME_NOT_FOUND: filter "area = 'EAST'" references "area"
+
+query I
+SELECT revenue FROM ossie_query('{"metrics": [{"metric": "orders.total_revenue", "alias": "revenue"}], "dimensions": ["customers.region"]}', metric_filters => ['orders.total_revenue > 300']);
+----
+350
+
+# A name that is not a plain word is written the way a model writes one, in double quotes.
+query I
+SELECT "my revenue" FROM ossie_query('{"metrics": [{"metric": "orders.total_revenue", "alias": "\"my revenue\""}]}');
+----
+650
+
+statement error
+SELECT ossie_compile('{"metrics": [{"metric": "orders.total_revenue", "alias": "my revenue"}]}');
+----
+ossie: E_INVALID_QUERY: the alias "my revenue" of "orders.total_revenue" is not an identifier
+
+statement error
+SELECT ossie_compile('{"metrics": [{"metric": "orders.total_revenue", "alias": "order"}]}');
+----
+ossie: E_INVALID_QUERY: the alias "order" of "orders.total_revenue" is not an identifier
+
+statement error
+SELECT ossie_compile('{"metrics": [{"metric": "orders.total_revenue", "alias": "a.b"}]}');
+----
+ossie: E_INVALID_QUERY: the alias "a.b" of "orders.total_revenue" is not an identifier
+
+statement error
+SELECT ossie_compile('{"metrics": [{"metric": "orders.total_revenue", "alias": ""}]}');
+----
+ossie: E_INVALID_QUERY: the alias "" of "orders.total_revenue" is not an identifier
+
+statement error
+SELECT ossie_compile('{"metrics": [{"metric": "orders.total_revenue", "alias": 7}]}');
+----
+ossie: E_INVALID_QUERY: the alias of "orders.total_revenue" must be a string, not a number
+
+# --- a malformed query is refused, never read as something nearby ------------------------------------
+
+statement error
+SELECT ossie_compile('{"metrics": ["orders.total_revenue"], "limit": 10}');
+----
+ossie: E_INVALID_QUERY: the query does not take "limit"; it takes metrics, dimensions, filter
+
+# Keys are spelled as the specification spells them.
+statement error
+SELECT ossie_compile('{"Metrics": ["orders.total_revenue"]}');
+----
+ossie: E_INVALID_QUERY: the query does not take "Metrics"; it takes metrics, dimensions, filter
+
+statement error
+SELECT ossie_compile('{"metrics": ["orders.total_revenue"], "metrics": ["customers.customer_count"]}');
+----
+ossie: E_INVALID_QUERY: the query gives "metrics" twice
+
+statement error
+SELECT ossie_compile('{"metrics": ["orders.total_revenue"], "filter": null}');
+----
+ossie: E_INVALID_QUERY: "filter" must be an expression string, not null
+
+statement error
+SELECT ossie_compile('{"metrics": ["orders.total_revenue"], "filter": ["orders.amount > 60"]}');
+----
+ossie: E_INVALID_QUERY: "filter" must be an expression string, not an array
+
+statement error
+SELECT ossie_compile('{"metrics": null}');
+----
+ossie: E_INVALID_QUERY: "metrics" must be an array, not null
+
+statement error
+SELECT ossie_compile('{"metrics": "orders.total_revenue"}');
+----
+ossie: E_INVALID_QUERY: "metrics" must be an array, not a string
+
+statement error
+SELECT ossie_compile('{"dimensions": [null]}');
+----
+ossie: E_INVALID_QUERY: an entry of "dimensions" must be a reference string, or an object with "field" and "alias", not null
+
+statement error
+SELECT ossie_compile('{"metrics": [{"metric": "orders.total_revenue", "role": "x"}]}');
+----
+ossie: E_INVALID_QUERY: an entry of "metrics" does not take "role"; it takes metric, alias
+
+# A metric is named under "metric" and a dimension under "field"; neither key stands in for the other.
+statement error
+SELECT ossie_compile('{"metrics": [{"field": "orders.total_revenue"}]}');
+----
+ossie: E_INVALID_QUERY: an entry of "metrics" does not take "field"; it takes metric, alias
+
+statement error
+SELECT ossie_compile('{"dimensions": [{"alias": "area"}]}');
+----
+ossie: E_INVALID_QUERY: an entry of "dimensions" must give "field" as a reference string
+
+statement error
+SELECT ossie_compile('{"dimensions": [{"field": null, "alias": "area"}]}');
+----
+ossie: E_INVALID_QUERY: an entry of "dimensions" must give "field" as a reference string
+
+statement error
+SELECT ossie_compile('orders.total_revenue');
+----
+ossie: E_INVALID_QUERY: the query is not valid JSON
+
+statement error
+SELECT ossie_compile('["orders.total_revenue"]');
+----
+ossie: E_INVALID_QUERY: the query must be a JSON object, not an array
+
+statement error
+SELECT * FROM ossie_query(NULL::VARCHAR);
+----
+ossie: E_INVALID_QUERY: the query is NULL
+
+statement error
+SELECT ossie_compile(q) FROM (VALUES (NULL::VARCHAR)) t(q);
+----
+ossie: E_INVALID_QUERY: the query is NULL
+
+statement error
+SELECT ossie_compile('{}');
+----
+ossie: E_EMPTY_AGGREGATION_QUERY: at least one metric or dimension is required
+
+# --- a malformed query is refused before any of its names is looked up -------------------------------
+
+statement error
+SELECT ossie_compile('{"dimensions": ["customers.no_such_field"], "limit": 10}');
+----
+ossie: E_INVALID_QUERY: the query does not take "limit"
+
+statement error
+SELECT ossie_compile('{"dimensions": [{"field": "customers.no_such_field", "alias": "a b"}]}');
+----
+ossie: E_INVALID_QUERY: the alias "a b" of "customers.no_such_field" is not an identifier
+
+statement error
+SELECT ossie_compile('{"dimensions": [{"field": "customers.no_such_field", "alias": "area"}]}');
+----
+ossie: E_NAME_NOT_FOUND: dataset "customers" has no field "no_such_field"
+
+# --- prepared statements -----------------------------------------------------------------------------
+
+statement ok
+PREPARE answer AS SELECT * FROM ossie_query(?);
+
+query I
+EXECUTE answer('{"metrics": [{"metric": "orders.total_revenue", "alias": "revenue"}]}');
+----
+650
+
+query I
+EXECUTE answer(['orders.total_revenue']);
+----
+650
+
+statement ok
+PREPARE shown AS SELECT ossie_compile(?);
+
+query T
+EXECUTE shown('{"metrics": [{"metric": "orders.total_revenue", "alias": "revenue"}]}');
+----
+SELECT sum(orders.amount) AS revenue FROM retail.orders AS orders

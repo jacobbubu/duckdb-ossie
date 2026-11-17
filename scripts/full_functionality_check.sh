@@ -138,14 +138,18 @@ eq "multi-grain ratio == hand-written ratio of two plain aggregates" "0.0" \
   "$LOAD_G SELECT (SELECT store_productivity FROM ossie_query(['store_productivity']))
                 - (SELECT (SELECT sum(ss_ext_sales_price) FROM tpcds.main.store_sales)
                          / NULLIF((SELECT sum(s_number_employees) FROM tpcds.main.store), 0));"
-has "multi-grain filter on an unreachable dataset refused, both named" "which \"store\" cannot join without repeating its rows" \
+has "multi-grain filter on an unreachable dataset refused, both named" "which metric \"store_productivity\" cannot reach from \"store\"" \
    "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['store_productivity'],[],['date_dim.d_year = 2001']);"
-has "COUNT(*) with two grains refused (no single grain to inherit)" "2 different grains" \
-   "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['total_sales','store_productivity','transaction_count'],[],[]);"
-has "COUNT(*) metric alone refused (no grain to group by)" "no column reference" \
+has "model-scoped COUNT(*) refused beside another metric (it inherits no grain)" "arguments read no dataset" \
+   "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['total_sales','transaction_count'],[],[]);"
+has "model-scoped COUNT(*) alone refused (no dataset to count)" "E_AMBIGUOUS_MEASURE_GRAIN" \
    "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['transaction_count'],[],[]);"
-has "scalar reference to a 2nd dataset COMPILES (not a fan-out)" "INNER JOIN" \
+has "aggregate whose arguments read two datasets refused, both named" "arguments read 2 datasets (item, store_sales)" \
    "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['books_sales'],[],[]);"
+has "aggregate FILTER reading another dataset refused" "whose FILTER reads \"customers\"" \
+   "CALL ossie_load('$FIX/aggregate_home.yaml'); SELECT ossie_compile(['west_revenue'],[],[]);"
+has "dataset-scoped COUNT(*) FILTER answered over its dataset" "count_star() FILTER" \
+   "CALL ossie_load('$FIX/aggregate_home.yaml'); SELECT ossie_compile(['orders.completed_count'],[],[]);"
 has "fan-out join refused, relationship named" "would inflate every aggregate" \
    "CALL ossie_load('$FIX/many_to_many_model.json'); SELECT ossie_compile(['total_sales'],['store.s_state'],[]);"
 has "ambiguous join path refused, endpoints named" "more than one join path" \
@@ -156,8 +160,12 @@ has "unknown dimension suggests a candidate" "Did you mean" \
    "$LOAD_T SELECT ossie_compile(['total_sales'],['item.i_brandd'],[]);"
 has "subquery in a filter refused unconditionally" "subquery" \
    "$LOAD_T SELECT ossie_compile(['total_sales'],[],['item.i_brand IN (SELECT 1)']);"
-has "window function in a filter refused" "not allowed" \
+has "window function in a filter refused" "contains the window function" \
    "$LOAD_T SELECT ossie_compile(['total_sales'],[],['row_number() OVER () > 0']);"
+has "metric condition in a filter refused, metric_filters named" "metric_filters" \
+   "$LOAD_T SELECT ossie_compile(['total_sales'],[],['total_sales > 100']);"
+has "metric_filters applied after aggregation" "HAVING" \
+   "$LOAD_T SELECT ossie_compile(['total_sales'],['item.i_brand'],[], metric_filters => ['total_sales > 100']);"
 
 g "J6b  malformed models rejected at LOAD, not at query time"
 for f in dangling_relationship malformed_expression unqualified_metric; do

@@ -22,7 +22,7 @@ no longer exist upstream; the compliance models replace them.
 | `examples/tpcds_semantic_model.yaml` | `examples/` | yes (its three window-function metrics are refused when queried) |
 | `examples/renamed_fields.yaml` | `examples/` | yes (field names differ from source columns) |
 | `examples/flights.semantic_model.yaml` | `examples/` | yes |
-| `compliance/wide_table/retail/retail_model.ossie.yaml` | `compliance/wide_table/retail/` | yes (dataset-scoped metrics; `row_count`, `order_less_return` and `running_revenue` are refused when queried) |
+| `compliance/wide_table/retail/retail_model.ossie.yaml` | `compliance/wide_table/retail/` | yes (dataset-scoped metrics; `row_count`, `order_less_return`, `amount_less_order` and `running_revenue` are refused when queried) |
 | `compliance/wide_table/stores/stores_model.ossie.yaml` | `compliance/wide_table/stores/` | yes |
 | `compliance/wide_table/stores/stores_ambiguous_model.ossie.yaml` | `compliance/wide_table/stores/` | yes (its two paths to `date_dim` are refused as ambiguous when queried) |
 | `compliance/query/scott/scott_model.ossie.yaml` | `compliance/query/scott/` | yes |
@@ -55,19 +55,18 @@ and `expected.json`, `retail/retail.sql`, `stores/stores.sql`. Each case is a qu
 the Section 8 error code it must produce.
 
 `scripts/wide_table_compliance.py` runs them: it loads the fixture's SQL and model in a duckdb CLI,
-submits the query through `ossie_query`, and compares as upstream's README prescribes (rows as a
+submits `query.json` as it stands through `ossie_query(query)`, and compares as upstream's README prescribes (rows as a
 multiset, values by position, exact numerics equal, approximate ones within 1e-9). Models are loaded
 with `left_joins => true`, the join the specification requires. Every case gets one status:
 
 | status | cases | meaning |
 |---|---|---|
-| `pass` | 1 | rows and output names match, or the refusal carries the expected error code |
-| `names` | 11 | rows match; output columns are named `dataset.name` where the specification wants the unqualified name |
-| `wrong` | 2 | rows differ: a `COUNT` metric with no input rows for a group is NULL, not 0 (`a02`, `a03`) |
-| `false-refusal` | 6 | refused where rows were expected: queries without a metric (`a07`, `a12`), and paths reported ambiguous because the search walks relationships in both directions (`a16`, `a19`, `a20`, `a21`) |
-| `false-acceptance` | 2 | answered where an error was expected: an aggregate in the filter (`e07`), a filter reading two datasets (`e09`) |
-| `refused` | 19 | refused as required, but the message does not carry the `E_*` code; six of them (`e05`, `e08`, `e17`, `e19`, `e21`, `e23`) are refused only because the query has no metric |
-| `inexpressible` | 5 | the query uses a part of the JSON binding `ossie_query` has no argument for: an alias (`a09`, `e10`), an unknown key (`e01`, `e20`), a null filter (`e02`) |
+| `pass` | 46 | rows and output names match, or the refusal carries the expected error code |
+| `names` | 0 | rows match under different output names |
+| `wrong` | 0 | rows differ |
+| `false-refusal` | 0 | refused where rows were expected |
+| `false-acceptance` | 0 | answered where an error was expected |
+| `refused` | 0 | refused as required, but the message does not carry the `E_*` code |
 
 `wide_table_status.tsv` pins the status of every case, and `scripts/full_functionality_check.sh`
 fails when a run disagrees with it. A case that improves is a failure too: update the pin with

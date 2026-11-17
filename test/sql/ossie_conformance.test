@@ -21,14 +21,14 @@ tpcds_retail_model	0.3.0.dev0	5	32	4	9
 query T
 SELECT ossie_compile(['total_sales'], ['store.s_state'], []);
 ----
-SELECT store.s_state AS "store.s_state", sum(store_sales.ss_ext_sales_price) AS total_sales FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk))) GROUP BY store.s_state
+SELECT store.s_state AS s_state, sum(store_sales.ss_ext_sales_price) AS total_sales FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk))) GROUP BY store.s_state
 
 # A dataset-scoped metric is requested as `dataset.metric`, and its unqualified `ss_quantity` is a field
 # of store_sales, so the two aggregate at the same grain.
 query T
 SELECT ossie_compile(['store_sales.total_quantity', 'total_sales'], ['store.s_state'], []);
 ----
-SELECT store.s_state AS "store.s_state", sum(store_sales.ss_quantity) AS "store_sales.total_quantity", sum(store_sales.ss_ext_sales_price) AS total_sales FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk))) GROUP BY store.s_state
+SELECT store.s_state AS s_state, sum(store_sales.ss_quantity) AS total_quantity, sum(store_sales.ss_ext_sales_price) AS total_sales FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk))) GROUP BY store.s_state
 
 query T
 SELECT nonportable_extensions FROM ossie_metadata() WHERE kind = 'model';
@@ -63,7 +63,7 @@ renamed_fields	0.3.0.dev0	2	8	1	4
 query T
 SELECT ossie_compile(['total_revenue', 'order_count'], ['customers.segment'], []);
 ----
-SELECT customers.c_mktsegment AS "customers.segment", sum((orders.total_cents / 100.0)) AS total_revenue, count(DISTINCT orders.o_orderkey) AS order_count FROM (sales.public.orders AS orders INNER JOIN sales.public.customers AS customers ON ((orders.o_custkey = customers.c_custkey))) GROUP BY customers.c_mktsegment
+SELECT customers.c_mktsegment AS segment, sum((orders.total_cents / 100.0)) AS total_revenue, count(DISTINCT orders.o_orderkey) AS order_count FROM (sales.public.orders AS orders INNER JOIN sales.public.customers AS customers ON ((orders.o_custkey = customers.c_custkey))) GROUP BY customers.c_mktsegment
 
 # A dimensional model with no metrics and no relationships.
 query TTIIII
@@ -83,41 +83,153 @@ retail	0.3.0.dev0	5	11	3	11
 query T
 SELECT ossie_compile(['orders.total_revenue'], ['customers.region'], []);
 ----
-SELECT customers.region AS "customers.region", sum(orders.amount) AS "orders.total_revenue" FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region
+SELECT customers.region AS region, sum(orders.amount) AS total_revenue FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region
 
+# A group that only the other grain produced has no row here, and a count over no rows is 0, not the
+# NULL the outer join leaves.
 query T
 SELECT ossie_compile(['customers.customer_count', 'orders.total_revenue'], ['customers.region'], []);
 ----
-SELECT COALESCE(customers.dim_0, orders.dim_0) AS "customers.region", customers.agg_0 AS "customers.customer_count", orders.agg_0 AS "orders.total_revenue" FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM retail.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0)))
+SELECT COALESCE(customers.dim_0, orders.dim_0) AS region, COALESCE(customers.agg_0, CAST(0 AS BIGINT)) AS customer_count, orders.agg_0 AS total_revenue FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM retail.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0)))
 
-# A filter on a dataset-scoped metric runs over that dataset's rows too, even when no requested metric
+# A metric filter on a dataset-scoped metric runs over that dataset's rows too, even when no requested metric
 # aggregates there: its COUNT(*) must not silently count the rows of whatever grain the query has.
 query T
-SELECT ossie_compile(['orders.total_revenue'], ['customers.region'], ['customers.customer_count > 1']);
+SELECT ossie_compile(['orders.total_revenue'], ['customers.region'], [], metric_filters => ['customers.customer_count > 1']);
 ----
-SELECT COALESCE(customers.dim_0, orders.dim_0) AS "customers.region", orders.agg_0 AS "orders.total_revenue" FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM retail.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0))) WHERE (customers.agg_0 > 1)
+SELECT COALESCE(customers.dim_0, orders.dim_0) AS region, orders.agg_0 AS total_revenue FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM retail.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0))) WHERE (COALESCE(customers.agg_0, CAST(0 AS BIGINT)) > 1)
 
 query T
-SELECT ossie_compile(['orders.total_revenue'], [], ['orders.total_revenue > 10']);
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['orders.total_revenue > 10']);
 ----
-SELECT sum(orders.amount) AS "orders.total_revenue" FROM retail.orders AS orders HAVING (sum(orders.amount) > 10)
+SELECT sum(orders.amount) AS total_revenue FROM retail.orders AS orders HAVING (sum(orders.amount) > 10)
 
-# The model-scoped metrics the compliance cases expect to be refused. row_count, order_less_return and
-# running_revenue are; amount_less_order (a field outside every aggregate) is not refused yet.
+# The model-scoped metrics the compliance cases expect to be refused.
 statement error
 SELECT ossie_compile(['row_count'], [], []);
 ----
-metric "row_count" has an aggregate with no column reference
+metric "row_count" has the aggregate COUNT(*), whose arguments read no dataset, so nothing says whose rows it runs over. Declare it as a metric of the dataset whose rows it counts, and name that metric
 
 statement error
 SELECT ossie_compile(['order_less_return'], [], []);
 ----
-an aggregate in metric "order_less_return" spans datasets orders, returns
+metric "order_less_return" has the aggregate SUM, whose arguments read 2 datasets (orders, returns). An aggregate runs over the rows of the one dataset its arguments read; one over several is not supported yet
 
 statement error
 SELECT ossie_compile(['running_revenue'], [], []);
 ----
 metric "running_revenue" uses the window function SUM
+
+statement error
+SELECT ossie_compile(['amount_less_order'], [], []);
+----
+metric "amount_less_order" reads "orders.amount" outside every aggregate
+
+# A query without metrics reads the rows of its anchor: the one dimension dataset that joins every
+# other without repeating its rows. The result is the distinct tuples of the dimensions.
+query T
+SELECT ossie_compile([], ['customers.region'], []);
+----
+SELECT customers.region AS region FROM retail.customers AS customers GROUP BY customers.region
+
+query T
+SELECT ossie_compile([], ['orders.order_id', 'customers.region'], ['orders.amount > 100']);
+----
+SELECT orders.order_id AS order_id, customers.region AS region FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) WHERE (orders.amount > 100) GROUP BY orders.order_id, customers.region
+
+# orders and returns each have many rows per row of the other's side, so neither can be the anchor.
+statement error
+SELECT ossie_compile([], ['orders.order_id', 'returns.return_id'], []);
+----
+none of [orders, returns] does. Request a metric to say which rows to group
+
+# The filter does not choose the anchor: customers is, and it has one row for many orders.
+statement error
+SELECT ossie_compile([], ['customers.region'], ['orders.amount > 100']);
+----
+filter "orders.amount > 100" reads "orders", but a query without metrics takes its rows from "customers", which has no join path to "orders" that keeps one row per "customers" row
+
+# A metric filter gives a query without metrics its rows, as a requested metric would.
+query T
+SELECT ossie_compile([], ['customers.region'], [], metric_filters => ['orders.total_revenue > 10']);
+----
+SELECT customers.region AS region FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region HAVING (sum(orders.amount) > 10)
+
+# An aggregate written in a metric filter is held to what a model-scoped metric's is: its arguments read one
+# dataset, whose rows it runs over, and its FILTER reads no other.
+query T
+SELECT ossie_compile([], ['customers.region'], [], metric_filters => ['COUNT(customers.customer_id) > 1']);
+----
+SELECT customers.region AS region FROM retail.customers AS customers GROUP BY customers.region HAVING (count(customers.customer_id) > 1)
+
+query T
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['SUM(orders.amount) FILTER (WHERE orders.amount > 5) > 1']);
+----
+SELECT sum(orders.amount) AS total_revenue FROM retail.orders AS orders HAVING (sum(orders.amount) FILTER (WHERE (orders.amount > 5)) > 1)
+
+statement error
+SELECT ossie_compile([], ['customers.region'], [], metric_filters => ['COUNT(*) > 1']);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric filter "COUNT(*) > 1" has the aggregate COUNT(*), whose arguments read no dataset, so nothing says whose rows it runs over. Declare it as a metric of the dataset whose rows it counts, and name that metric
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['SUM(orders.amount * customers.customer_id) > 1']);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric filter "SUM(orders.amount * customers.customer_id) > 1" has the aggregate SUM, whose arguments read 2 datasets (customers, orders). An aggregate runs over the rows of the one dataset its arguments read; one over several is not supported yet
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['SUM(orders.amount) FILTER (WHERE customers.region = ''WEST'') > 1']);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric filter "SUM(orders.amount) FILTER (WHERE customers.region = 'WEST') > 1" has the aggregate SUM over "orders", whose FILTER reads "customers". The FILTER of an aggregate may read only the dataset its arguments read
+
+# The dataset-scoped metric the refusal points to counts its dataset's rows.
+query T
+SELECT ossie_compile([], ['customers.region'], [], metric_filters => ['customers.customer_count > 1']);
+----
+SELECT customers.region AS region FROM retail.customers AS customers GROUP BY customers.region HAVING (count_star() > 1)
+
+# Each entry of filters is a condition on the rows of one dataset. A condition on a metric, or an
+# aggregate, belongs in metric_filters, and the refusal says so.
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.total_revenue > 10']);
+----
+filter "orders.total_revenue > 10" references metric "orders.total_revenue", and a filter is applied to rows before they are aggregated. Pass a condition on a metric in metric_filters
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['SUM(orders.amount) > 10']);
+----
+filter "SUM(orders.amount) > 10" contains the aggregate SUM, and a filter is applied to rows before they are aggregated. Pass a condition on a metric in metric_filters
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['SUM(orders.amount) OVER () > 10']);
+----
+filter "SUM(orders.amount) OVER () > 10" contains the window function SUM, which neither filters nor metric_filters can evaluate
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.amount > 100 AND customers.region = ''EAST''']);
+----
+reads fields of 2 datasets (customers, orders), and a filter reads one. Pass the condition on each dataset as its own entry of filters
+
+# Entries are combined with AND, so the same condition is two entries.
+query T
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.amount > 100', 'customers.region = ''EAST''']);
+----
+SELECT sum(orders.amount) AS total_revenue FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) WHERE ((orders.amount > 100) AND (customers.region = 'EAST'))
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['orders.amount > 100']);
+----
+metric filter "orders.amount > 100" names no metric and contains no aggregate. Pass a condition on rows in filters
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['SUM(orders.amount) OVER () > 10']);
+----
+metric filter "SUM(orders.amount) OVER () > 10" contains the window function SUM, which neither filters nor metric_filters can evaluate
+
+statement error
+SELECT ossie_compile([], [], ['TRUE']);
+----
+at least one metric or dimension is required
 
 query TTIIII
 CALL ossie_load('test/fixtures/conformance/compliance/wide_table/stores/stores_model.ossie.yaml');
@@ -127,7 +239,31 @@ stores	0.3.0.dev0	6	19	6	3
 query T
 SELECT ossie_compile(['store_sales.total_sales', 'store_returns.total_returns'], ['item.item_id'], []);
 ----
-SELECT COALESCE(store_returns.dim_0, store_sales.dim_0) AS "item.item_id", store_sales.agg_0 AS "store_sales.total_sales", store_returns.agg_0 AS "store_returns.total_returns" FROM ((SELECT item.item_id AS dim_0, sum(store_returns.return_amount) AS agg_0 FROM (stores.store_returns AS store_returns INNER JOIN stores.item AS item ON ((store_returns.item_id = item.item_id))) GROUP BY item.item_id) AS store_returns FULL JOIN (SELECT item.item_id AS dim_0, sum(store_sales.sales_amount) AS agg_0 FROM (stores.store_sales AS store_sales INNER JOIN stores.item AS item ON ((store_sales.item_id = item.item_id))) GROUP BY item.item_id) AS store_sales ON ((store_returns.dim_0 IS NOT DISTINCT FROM store_sales.dim_0)))
+SELECT COALESCE(store_returns.dim_0, store_sales.dim_0) AS item_id, store_sales.agg_0 AS total_sales, store_returns.agg_0 AS total_returns FROM ((SELECT item.item_id AS dim_0, sum(store_returns.return_amount) AS agg_0 FROM (stores.store_returns AS store_returns INNER JOIN stores.item AS item ON ((store_returns.item_id = item.item_id))) GROUP BY item.item_id) AS store_returns FULL JOIN (SELECT item.item_id AS dim_0, sum(store_sales.sales_amount) AS agg_0 FROM (stores.store_sales AS store_sales INNER JOIN stores.item AS item ON ((store_sales.item_id = item.item_id))) GROUP BY item.item_id) AS store_sales ON ((store_returns.dim_0 IS NOT DISTINCT FROM store_sales.dim_0)))
+
+# store_returns reaches date_dim one way, by its return date. That store_sales reaches date_dim too, and
+# shares item with store_returns, is not a second path: a path only crosses a relationship toward its
+# one side.
+query T
+SELECT ossie_compile(['store_sales.total_sales', 'store_returns.total_returns'], ['item.brand', 'date_dim.year'], []);
+----
+SELECT COALESCE(store_returns.dim_0, store_sales.dim_0) AS brand, COALESCE(store_returns.dim_1, store_sales.dim_1) AS "year", store_sales.agg_0 AS total_sales, store_returns.agg_0 AS total_returns FROM ((SELECT item.brand AS dim_0, date_dim.d_year AS dim_1, sum(store_returns.return_amount) AS agg_0 FROM ((stores.store_returns AS store_returns INNER JOIN stores.item AS item ON ((store_returns.item_id = item.item_id))) INNER JOIN stores.date_dim AS date_dim ON ((store_returns.return_date_id = date_dim.date_id))) GROUP BY item.brand, date_dim.d_year) AS store_returns FULL JOIN (SELECT item.brand AS dim_0, date_dim.d_year AS dim_1, sum(store_sales.sales_amount) AS agg_0 FROM ((stores.store_sales AS store_sales INNER JOIN stores.item AS item ON ((store_sales.item_id = item.item_id))) INNER JOIN stores.date_dim AS date_dim ON ((store_sales.sale_date_id = date_dim.date_id))) GROUP BY item.brand, date_dim.d_year) AS store_sales ON (((store_returns.dim_0 IS NOT DISTINCT FROM store_sales.dim_0) AND (store_returns.dim_1 IS NOT DISTINCT FROM store_sales.dim_1))))
+
+# An output column is named by the final part of the reference, so two entries can name one column.
+statement error
+SELECT ossie_compile(['store_sales.total_sales'], ['item.item_id', 'store_sales.item_id'], []);
+----
+"item.item_id" and "store_sales.item_id" have the same output name "item_id"
+
+statement error
+SELECT ossie_compile(['store_sales.total_sales', 'STORE_SALES.Total_Sales'], [], []);
+----
+"store_sales.total_sales" and "STORE_SALES.Total_Sales" have the same output name "total_sales"
+
+statement error
+SELECT ossie_compile(['store_sales.total_sales'], ['customers.region', 'customers.Region'], []);
+----
+"customers.region" and "customers.Region" have the same output name "Region"
 
 # The same model with a second path from store_sales to date_dim, which the compliance cases expect
 # to be refused as ambiguous.
@@ -141,6 +277,13 @@ SELECT ossie_compile(['store_sales.total_sales'], ['date_dim.date_id'], []);
 ----
 more than one join path connects "store_sales" to "date_dim"
 
+# Only the paths a request joins are checked: store_returns has no relationship to store, so the second
+# route does not exist for it.
+query T
+SELECT ossie_compile(['store_returns.total_returns'], ['date_dim.year'], []);
+----
+SELECT date_dim.d_year AS "year", sum(store_returns.return_amount) AS total_returns FROM (stores.store_returns AS store_returns INNER JOIN stores.date_dim AS date_dim ON ((store_returns.return_date_id = date_dim.date_id))) GROUP BY date_dim.d_year
+
 # --- compliance/query: the SCOTT schema, every metric dataset-scoped -------------------------------
 
 query TTIIII
@@ -151,7 +294,7 @@ scott_model	0.3.0.dev0	3	14	2	8
 query T
 SELECT ossie_compile(['emp.sum_sal', 'emp.emp_count'], ['dept.dname'], ['emp.sal > 1000']);
 ----
-SELECT dept.dname AS "dept.dname", sum(emp.sal) AS "emp.sum_sal", count_star() AS "emp.emp_count" FROM (scott.emp AS emp INNER JOIN scott.dept AS dept ON ((emp.deptno = dept.deptno))) WHERE (emp.sal > 1000) GROUP BY dept.dname
+SELECT dept.dname AS dname, sum(emp.sal) AS sum_sal, count_star() AS emp_count FROM (scott.emp AS emp INNER JOIN scott.dept AS dept ON ((emp.deptno = dept.deptno))) WHERE (emp.sal > 1000) GROUP BY dept.dname
 
 # --- compliance/portability: the M0-M3 ladder ------------------------------------------------------
 
