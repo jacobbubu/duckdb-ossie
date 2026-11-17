@@ -42,7 +42,7 @@ void Run(const std::string &root) {
 	using namespace duckdb::ossie;
 	auto model = ParseModel(Read(root + "test/fixtures/metric-grain/core.json"), RebindMap());
 	CompileOptions options;
-	auto before = CompileToSQL(model, {"amount_sum", "record_count"}, {"dimension.label"}, {}, options);
+	auto before = CompileToSQL(model, {"amount_sum", "record_count"}, {"dimension.label"}, {}, {}, options);
 	vector<string> valid {"amount_sum",       "amount_avg",   "value_count",        "record_count", "eligible_amount",
 	                      "dimension_scalar", "wrapped_fact", "constant_field_sum", "quoted_fact"};
 	for (auto &metric : valid) {
@@ -53,7 +53,7 @@ void Run(const std::string &root) {
 	Check(true, "independent metrics all have designated fact grain");
 	RequireMetricGrain(model, {"AMOUNT_SUM"}, "FACT");
 	Check(true, "case-insensitive declared metric and dataset");
-	Check(CompileToSQL(model, {"dimension_count"}, {}, {}, options).find("r6_dimension") != string::npos,
+	Check(CompileToSQL(model, {"dimension_count"}, {}, {}, {}, options).find("r6_dimension") != string::npos,
 	      "core dimension metric independently compiles");
 	for (auto name :
 	     {"dimension_count", "dimension_distinct", "mixed", "wrapped_mixed", "scalar", "unknown_function"}) {
@@ -68,9 +68,9 @@ void Run(const std::string &root) {
 		RequireMetricGrain(model, {"amount_sum", "star"}, "fact");
 	};
 	Refuse(both, "without a dataset", "new checker does not infer standalone COUNT(*) grain from another metric");
-	Check(CompileToSQL(model, {"amount_sum", "star"}, {}, {}, options).find("count_star()") != string::npos,
+	Check(CompileToSQL(model, {"amount_sum", "star"}, {}, {}, {}, options).find("count_star()") != string::npos,
 	      "existing core grainless inheritance retained");
-	Check(CompileToSQL(model, {"with_star"}, {}, {}, options).find("count_star()") != string::npos,
+	Check(CompileToSQL(model, {"with_star"}, {}, {}, {}, options).find("count_star()") != string::npos,
 	      "existing core in-metric grainless inheritance retained");
 	Refuse([&] { RequireMetricGrain(model, {"windowed"}, "fact"); }, "Window metrics",
 	       "window rejected by shared analysis");
@@ -79,16 +79,16 @@ void Run(const std::string &root) {
 	       "unknown designated dataset rejected");
 	Refuse([&] { RequireMetricGrain(model, {}, "fact"); }, "at least one metric", "empty request rejected");
 	RequireMetricGrain(model, {"dimension_count"}, "dimension");
-	Refuse([&] { CompileToSQL(model, {"dimension_count"}, {"fact.id"}, {}, options); }, "repeats each",
+	Refuse([&] { CompileToSQL(model, {"dimension_count"}, {"fact.id"}, {}, {}, options); }, "repeats each",
 	       "designated grain does not replace fan-out planning");
 	auto ambiguous = model;
 	auto second = ambiguous.relationships[0];
 	second.name = "another_path";
 	ambiguous.relationships.push_back(second);
 	RequireMetricGrain(ambiguous, {"amount_sum"}, "fact");
-	Refuse([&] { CompileToSQL(ambiguous, {"amount_sum"}, {"dimension.label"}, {}, options); },
+	Refuse([&] { CompileToSQL(ambiguous, {"amount_sum"}, {"dimension.label"}, {}, {}, options); },
 	       "more than one join path", "designated grain does not replace ambiguity planning");
-	Check(before == CompileToSQL(model, {"amount_sum", "record_count"}, {"dimension.label"}, {}, options),
+	Check(before == CompileToSQL(model, {"amount_sum", "record_count"}, {"dimension.label"}, {}, {}, options),
 	      "validation leaves original model and SQL unchanged");
 
 	DuckDB database(nullptr);
@@ -96,7 +96,7 @@ void Run(const std::string &root) {
 	auto rows = connection.Query(Read(root + "test/fixtures/safe-join-research/rows.sql"));
 	Check(!rows->HasError(), "native binding fixture created");
 	RequireMetricGrain(model, {"nested"}, "fact");
-	auto nested = connection.Query(CompileToSQL(model, {"nested"}, {}, {}, options));
+	auto nested = connection.Query(CompileToSQL(model, {"nested"}, {}, {}, {}, options));
 	Check(nested->HasError() && nested->GetError().find("cannot be nested") != string::npos,
 	      "nested aggregates still require physical binder refusal");
 	auto sums = connection.Query(before);
@@ -114,7 +114,7 @@ void Run(const std::string &root) {
 	}
 	Check(groups_correct && north && south,
 	      "group membership, totals and counts match independent hand-derived oracle");
-	auto values = connection.Query(CompileToSQL(model, valid, {}, {}, options));
+	auto values = connection.Query(CompileToSQL(model, valid, {}, {}, {}, options));
 	Check(!values->HasError() && values->RowCount() == 1, "all designated fact metrics execute");
 	Check(values->Collection().GetValue(0, 0).ToString() == "55.01" &&
 	          values->Collection().GetValue(2, 0).ToString() == "5" &&
@@ -129,12 +129,12 @@ void Run(const std::string &root) {
 	      "AVG and wrapped ratio match hand oracle");
 	for (auto name : {"nested_star", "hidden_sum_metric", "hidden_window_metric"}) {
 		RequireMetricGrain(model, {name}, "fact");
-		auto bound = connection.Query(CompileToSQL(model, {name}, {}, {}, options));
+		auto bound = connection.Query(CompileToSQL(model, {name}, {}, {}, {}, options));
 		Check(bound->HasError(),
 		      "grain prerequisite passes; physical binder rejects hidden/nested expression: " + string(name));
 	}
 	RequireMetricGrain(model, {"unrecognized_aggregate"}, "fact");
-	auto escaped = connection.Query(CompileToSQL(model, {"unrecognized_aggregate"}, {}, {}, options));
+	auto escaped = connection.Query(CompileToSQL(model, {"unrecognized_aggregate"}, {}, {}, {}, options));
 	Check(!escaped->HasError() && escaped->Collection().GetValue(0, 0).ToString() == "58.01",
 	      "unrecognized aggregate requires separate strict expression whitelist; binder alone is insufficient");
 
@@ -145,7 +145,7 @@ void Run(const std::string &root) {
 	key.fields["dimension"] = "id";
 	keyed.shared_keys.push_back(key);
 	auto count_rows = [&](const vector<string> &metrics, const CompileOptions &with) {
-		auto result = connection.Query(CompileToSQL(model, metrics, {"key"}, {}, with));
+		auto result = connection.Query(CompileToSQL(model, metrics, {"key"}, {}, {}, with));
 		if (result->HasError())
 			throw std::runtime_error(result->GetError());
 		return result->RowCount();
@@ -159,17 +159,17 @@ void Run(const std::string &root) {
 	keyed.required_grains.push_back("dimension");
 	Check(count_rows({"amount_sum"}, keyed) == 3,
 	      "required grain without aggregates still contributes its row presence to the INNER join");
-	Refuse([&] { CompileToSQL(model, {"amount_sum"}, {"key"}, {}, CompileOptions()); }, "qualified as dataset.field",
-	       "bare name is a dimension only when declared as a shared key");
+	Refuse([&] { CompileToSQL(model, {"amount_sum"}, {"key"}, {}, {}, CompileOptions()); },
+	       "qualified as dataset.field", "bare name is a dimension only when declared as a shared key");
 	connection.Query("CREATE TABLE r6_dimension_alt AS SELECT * FROM r6_dimension WHERE id = 1");
 	BaseTableRef alt;
 	alt.SetTable(Identifier("r6_dimension_alt"));
 	keyed.population_sources["dimension"] = &alt;
-	auto replaced = CompileToSQL(model, {"amount_sum"}, {"key"}, {}, keyed);
+	auto replaced = CompileToSQL(model, {"amount_sum"}, {"key"}, {}, {}, keyed);
 	Check(replaced.find("r6_dimension_alt AS dimension") != string::npos && count_rows({"amount_sum"}, keyed) == 1,
 	      "population source replaces the dataset's declared source under the dataset alias");
 	keyed.required_grains = {"absent"};
-	Refuse([&] { CompileToSQL(model, {"amount_sum"}, {"key"}, {}, keyed); }, "not a declared dataset",
+	Refuse([&] { CompileToSQL(model, {"amount_sum"}, {"key"}, {}, {}, keyed); }, "not a declared dataset",
 	       "required grain must be declared");
 }
 } // namespace

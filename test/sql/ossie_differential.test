@@ -84,6 +84,53 @@ SELECT count(*) FROM (
 ----
 0
 
+# A condition on a metric is applied after aggregation, as HAVING is. It keeps some brands and drops
+# others, so the comparison below is not between two empty or two complete results.
+query I
+SELECT count(*) BETWEEN 1 AND 110
+FROM ossie_query(['total_sales'], ['item.i_brand'], metric_filters => ['total_sales > 300000']);
+----
+true
+
+query I
+SELECT count(*) FROM (
+  (SELECT * FROM ossie_query(['total_sales'], ['item.i_brand'], ['date_dim.d_year = 2001'],
+                             metric_filters => ['total_sales > 50000', 'total_profit < 0'])
+   EXCEPT
+   SELECT i_brand, sum(ss_ext_sales_price) FROM store_sales
+     JOIN item ON ss_item_sk = i_item_sk
+     JOIN date_dim ON ss_sold_date_sk = d_date_sk
+   WHERE d_year = 2001 GROUP BY i_brand
+   HAVING sum(ss_ext_sales_price) > 50000 AND sum(ss_net_profit) < 0)
+  UNION ALL
+  (SELECT i_brand, sum(ss_ext_sales_price) FROM store_sales
+     JOIN item ON ss_item_sk = i_item_sk
+     JOIN date_dim ON ss_sold_date_sk = d_date_sk
+   WHERE d_year = 2001 GROUP BY i_brand
+   HAVING sum(ss_ext_sales_price) > 50000 AND sum(ss_net_profit) < 0
+   EXCEPT
+   SELECT * FROM ossie_query(['total_sales'], ['item.i_brand'], ['date_dim.d_year = 2001'],
+                             metric_filters => ['total_sales > 50000', 'total_profit < 0']))
+);
+----
+0
+
+# With no metric requested, the metric filter still decides which groups are returned.
+query I
+SELECT count(*) FROM (
+  (SELECT * FROM ossie_query([], ['item.i_brand'], metric_filters => ['total_sales > 300000'])
+   EXCEPT
+   SELECT i_brand FROM store_sales JOIN item ON ss_item_sk = i_item_sk
+   GROUP BY i_brand HAVING sum(ss_ext_sales_price) > 300000)
+  UNION ALL
+  (SELECT i_brand FROM store_sales JOIN item ON ss_item_sk = i_item_sk
+   GROUP BY i_brand HAVING sum(ss_ext_sales_price) > 300000
+   EXCEPT
+   SELECT * FROM ossie_query([], ['item.i_brand'], metric_filters => ['total_sales > 300000']))
+);
+----
+0
+
 # Joins are INNER, so grouping by a dimension whose foreign key is nullable drops those rows.
 # The shortfall is exactly the sales with no store, which pins the documented behaviour.
 query I

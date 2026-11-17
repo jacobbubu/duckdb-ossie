@@ -65,7 +65,7 @@ west	4.0
 
 # Filtering on a dataset-scoped metric evaluates it at its own grain.
 query T
-SELECT ossie_compile(['orders.revenue'], [], ['orders.order_count > 1']);
+SELECT ossie_compile(['orders.revenue'], [], [], metric_filters => ['orders.order_count > 1']);
 ----
 SELECT sum((orders.amount_cents / 100.0)) AS revenue FROM memory.main.orders AS orders HAVING (count_star() > 1)
 

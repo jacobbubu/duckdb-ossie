@@ -25,10 +25,12 @@ void CompileFunction(DataChunk &args, ExpressionState &state, Vector &result) {
 		auto metrics = ToStringList(args.data[0].GetValue(row), "ossie_compile");
 		auto dimensions = ToStringList(args.data[1].GetValue(row), "ossie_compile");
 		auto filters = ToStringList(args.data[2].GetValue(row), "ossie_compile");
+		auto metric_filters =
+		    args.ColumnCount() > 3 ? ToStringList(args.data[3].GetValue(row), "ossie_compile") : vector<string>();
 		CompileOptions options;
 		options.allow_filter_functions = snapshot.allow_filter_functions;
 		options.left_joins = snapshot.left_joins;
-		auto sql = CompileToSQL(*model, metrics, dimensions, filters, options);
+		auto sql = CompileToSQL(*model, metrics, dimensions, filters, metric_filters, options);
 		result.SetValue(row, Value(sql));
 	}
 }
@@ -54,6 +56,7 @@ void RegisterCompileFunction(ExtensionLoader &loader) {
 	ScalarFunction ossie_compile("ossie_compile", {string_list, string_list, string_list}, LogicalType::VARCHAR,
 	                             CompileFunction);
 	NameParameters(ossie_compile.GetSignature(), {"metrics", "dimensions", "filters"});
+	ossie_compile.GetSignature().AddKeywordOnly("metric_filters", string_list, Value::LIST(LogicalType::VARCHAR, {}));
 
 	// Model/policy is captured at execution per scalar chunk, never constant-folded at PREPARE.
 	ossie_compile.SetVolatile();
@@ -66,9 +69,13 @@ void RegisterCompileFunction(ExtensionLoader &loader) {
 	    Describe({"metrics", "dimensions", "filters"},
 	             "Compile a semantic request into SQL and return it as text without executing it. Runs the "
 	             "identical compiler ossie_query does, so the SQL shown here is the SQL that would run. Useful "
-	             "wherever DuckDB is not the executor, and needs no tables to exist.",
+	             "wherever DuckDB is not the executor, and needs no tables to exist. Each entry of filters is "
+	             "a condition on the rows of one dataset; a condition on a metric goes in the named parameter "
+	             "metric_filters.",
 	             {"SELECT ossie_compile(['total_sales'], ['item.i_brand'], [])",
-	              "SELECT ossie_compile(['total_sales'], [], ['date_dim.d_year = 2001'])"}));
+	              "SELECT ossie_compile(['total_sales'], [], ['date_dim.d_year = 2001'])",
+	              "SELECT ossie_compile(['total_sales'], ['item.i_brand'], [], "
+	              "metric_filters => ['total_sales > 1000'])"}));
 	loader.RegisterFunction(std::move(info));
 }
 

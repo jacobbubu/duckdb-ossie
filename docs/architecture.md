@@ -86,8 +86,10 @@ inner columns qualified to the bound alias. This substitution is unconditional: 
 model-level and need not exist on the table — `customer_full_name` is really
 `c_first_name || ' ' || c_last_name`.
 
-**Emit.** A `SelectNode` with nested `JoinRef`s, `GROUP BY` over the dimensions, and predicates
-split between `WHERE` and `HAVING` depending on whether they contain an aggregate. Each output
+**Emit.** A `SelectNode` with nested `JoinRef`s, `GROUP BY` over the dimensions, the entries of
+`filters` in `WHERE` and the entries of `metric_filters` in `HAVING`. Which clause a predicate goes
+to is the caller's statement, not an inference: a filter that names a metric or contains an
+aggregate is refused, and so is a metric filter that does neither. Each output
 column is aliased to the final part of its reference, `region` for `customers.region`, which is the
 Wide Table specification's output name; two entries with one output name, compared without case,
 are refused before anything is planned.

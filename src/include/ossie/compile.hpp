@@ -45,14 +45,16 @@ bool IsAggregateName(const string &name);
 //! validation, Compile/binding and data-key checks; the aggregate-name set is not exhaustive.
 void RequireMetricGrain(const Model &model, const vector<string> &metrics, const string &designated_dataset);
 
-//! Compiles a semantic request, throwing when it cannot answer.
+//! Compiles a semantic request, throwing when it cannot answer. `filters` are conditions on rows, applied
+//! before aggregation; `metric_filters` are conditions on metrics, applied after.
 unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,
-                                    const vector<string> &filters, const CompileOptions &options);
+                                    const vector<string> &filters, const vector<string> &metric_filters,
+                                    const CompileOptions &options);
 
 //! The same query rendered as text. ossie_query executes the statement instead, so the SQL shown
 //! here and the SQL run cannot drift apart.
 string CompileToSQL(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,
-                    const vector<string> &filters, const CompileOptions &options);
+                    const vector<string> &filters, const vector<string> &metric_filters, const CompileOptions &options);
 
 } // namespace ossie
 } // namespace duckdb

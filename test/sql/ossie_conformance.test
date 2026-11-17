@@ -92,15 +92,15 @@ SELECT ossie_compile(['customers.customer_count', 'orders.total_revenue'], ['cus
 ----
 SELECT COALESCE(customers.dim_0, orders.dim_0) AS region, COALESCE(customers.agg_0, CAST(0 AS BIGINT)) AS customer_count, orders.agg_0 AS total_revenue FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM retail.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0)))
 
-# A filter on a dataset-scoped metric runs over that dataset's rows too, even when no requested metric
+# A metric filter on a dataset-scoped metric runs over that dataset's rows too, even when no requested metric
 # aggregates there: its COUNT(*) must not silently count the rows of whatever grain the query has.
 query T
-SELECT ossie_compile(['orders.total_revenue'], ['customers.region'], ['customers.customer_count > 1']);
+SELECT ossie_compile(['orders.total_revenue'], ['customers.region'], [], metric_filters => ['customers.customer_count > 1']);
 ----
 SELECT COALESCE(customers.dim_0, orders.dim_0) AS region, orders.agg_0 AS total_revenue FROM ((SELECT customers.region AS dim_0, count_star() AS agg_0 FROM retail.customers AS customers GROUP BY customers.region) AS customers FULL JOIN (SELECT customers.region AS dim_0, sum(orders.amount) AS agg_0 FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region) AS orders ON ((customers.dim_0 IS NOT DISTINCT FROM orders.dim_0))) WHERE (COALESCE(customers.agg_0, CAST(0 AS BIGINT)) > 1)
 
 query T
-SELECT ossie_compile(['orders.total_revenue'], [], ['orders.total_revenue > 10']);
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['orders.total_revenue > 10']);
 ----
 SELECT sum(orders.amount) AS total_revenue FROM retail.orders AS orders HAVING (sum(orders.amount) > 10)
 
@@ -145,10 +145,55 @@ SELECT ossie_compile([], ['customers.region'], ['orders.amount > 100']);
 ----
 filter "orders.amount > 100" reads "orders", but a query without metrics takes its rows from "customers", which has no join path to "orders" that keeps one row per "customers" row
 
-statement error
-SELECT ossie_compile([], ['customers.region'], ['orders.total_revenue > 10']);
+# A metric filter gives a query without metrics its rows, as a requested metric would.
+query T
+SELECT ossie_compile([], ['customers.region'], [], metric_filters => ['orders.total_revenue > 10']);
 ----
-filter "orders.total_revenue > 10" contains an aggregate, which a query without metrics cannot evaluate; request the metric it filters on
+SELECT customers.region AS region FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) GROUP BY customers.region HAVING (sum(orders.amount) > 10)
+
+# Without a metric of its own to say which rows, an aggregate is evaluated over the anchor's.
+query T
+SELECT ossie_compile([], ['customers.region'], [], metric_filters => ['COUNT(*) > 1']);
+----
+SELECT customers.region AS region FROM retail.customers AS customers GROUP BY customers.region HAVING (count_star() > 1)
+
+# Each entry of filters is a condition on the rows of one dataset. A condition on a metric, or an
+# aggregate, belongs in metric_filters, and the refusal says so.
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.total_revenue > 10']);
+----
+filter "orders.total_revenue > 10" references metric "orders.total_revenue", and a filter is applied to rows before they are aggregated. Pass a condition on a metric in metric_filters
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['SUM(orders.amount) > 10']);
+----
+filter "SUM(orders.amount) > 10" contains the aggregate SUM, and a filter is applied to rows before they are aggregated. Pass a condition on a metric in metric_filters
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['SUM(orders.amount) OVER () > 10']);
+----
+filter "SUM(orders.amount) OVER () > 10" contains the window function SUM, which neither filters nor metric_filters can evaluate
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.amount > 100 AND customers.region = ''EAST''']);
+----
+reads fields of 2 datasets (customers, orders), and a filter reads one. Pass the condition on each dataset as its own entry of filters
+
+# Entries are combined with AND, so the same condition is two entries.
+query T
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.amount > 100', 'customers.region = ''EAST''']);
+----
+SELECT sum(orders.amount) AS total_revenue FROM (retail.orders AS orders INNER JOIN retail.customers AS customers ON ((orders.customer_id = customers.customer_id))) WHERE ((orders.amount > 100) AND (customers.region = 'EAST'))
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['orders.amount > 100']);
+----
+metric filter "orders.amount > 100" names no metric and contains no aggregate. Pass a condition on rows in filters
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['SUM(orders.amount) OVER () > 10']);
+----
+metric filter "SUM(orders.amount) OVER () > 10" contains the window function SUM, which neither filters nor metric_filters can evaluate
 
 statement error
 SELECT ossie_compile([], [], ['TRUE']);

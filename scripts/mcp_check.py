@@ -122,7 +122,7 @@ r = read()
 body = json.dumps((r or {}).get("result", {}))
 # Assert on the column names we asked for and on there being a data row beneath the header.
 # Asserting on brand names would couple this to whatever dsdgen happens to generate.
-returned_columns = "item.i_brand" in body and "total_sales" in body
+returned_columns = "i_brand" in body and "total_sales" in body
 has_data_row = body.count("|") > 6
 check("semantic_query returns rows for the requested columns",
       returned_columns and has_data_row, body[:110])
@@ -133,6 +133,26 @@ send({"jsonrpc":"2.0","id":5,"method":"tools/call","params":{
 r = read()
 body = json.dumps((r or {}).get("result", {})) + json.dumps((r or {}).get("error", {}))
 check("a refusal reaches the agent as a message", "repeating its rows" in body, body[:110])
+
+# A condition on a metric has its own parameter. No brand sells a negative amount, so the same
+# condition that returns rows one way round returns only the header the other.
+def brands(condition):
+    send({"jsonrpc":"2.0","id":6,"method":"tools/call","params":{
+        "name":"semantic_query",
+        "arguments":{"metrics":"total_sales","dimensions":"item.i_brand","metric_filters":condition}}})
+    r = read()
+    return json.dumps((r or {}).get("result", {})) + json.dumps((r or {}).get("error", {}))
+kept, dropped = brands("total_sales > 0"), brands("total_sales < 0")
+check("metric_filters is applied to the aggregated result",
+      "i_brand" in kept and kept.count("|") > 6 and kept.count("|") > dropped.count("|"),
+      f"{kept.count('|')} cells kept, {dropped.count('|')} with the condition reversed")
+
+send({"jsonrpc":"2.0","id":7,"method":"tools/call","params":{
+    "name":"semantic_query",
+    "arguments":{"metrics":"total_sales","filters":"total_sales > 0"}}})
+r = read()
+body = json.dumps((r or {}).get("result", {})) + json.dumps((r or {}).get("error", {}))
+check("a metric condition in filters is refused, naming metric_filters", "metric_filters" in body, body[:110])
 
 proc.terminate()
 try:

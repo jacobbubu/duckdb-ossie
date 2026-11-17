@@ -89,14 +89,16 @@ every refusal and why it exists.
 | `ossie_metrics()` | Metrics with datatype, expression, synonyms |
 | `ossie_relationships()` | Relationships with derived cardinality |
 | `ossie_metadata()` | Descriptions, labels, AI instructions/synonyms/examples, preserved JSON and expression dialects |
-| `ossie_query(metrics, dimensions, filters)` | Compile the request and execute it |
-| `ossie_compile(metrics, dimensions, filters)` | Return the SQL without running it |
+| `ossie_query(metrics, dimensions, filters)` | Compile the request and execute it. Named arg: `metric_filters` |
+| `ossie_compile(metrics, dimensions, filters)` | Return the SQL without running it. Named arg: `metric_filters` |
 
 A request names metrics as `metric` or `dataset.metric` and dimensions as `dataset.field`; each
 output column takes the final part of its name (`item.i_brand` becomes `i_brand`), and two entries
 that would share one are refused, as the Wide Table specification requires. `metrics` may be empty:
 `ossie_query([], ['item.i_brand'])` returns the distinct brands, read from the one dimension dataset
-that joins the others without repeating its rows.
+that joins the others without repeating its rows. Each entry of `filters` is a condition on the rows
+of one dataset, applied before aggregation; a condition on a metric goes in
+`metric_filters => ['total_sales > 1000']` and is applied after.
 
 `rebind` remaps warehouse-qualified prefixes onto the local catalog: a model saying
 `tpcds.public.store_sales` needs `rebind => MAP{'tpcds.public': 'tpcds.main'}` to find local tables.

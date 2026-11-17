@@ -156,8 +156,12 @@ has "unknown dimension suggests a candidate" "Did you mean" \
    "$LOAD_T SELECT ossie_compile(['total_sales'],['item.i_brandd'],[]);"
 has "subquery in a filter refused unconditionally" "subquery" \
    "$LOAD_T SELECT ossie_compile(['total_sales'],[],['item.i_brand IN (SELECT 1)']);"
-has "window function in a filter refused" "not allowed" \
+has "window function in a filter refused" "contains the window function" \
    "$LOAD_T SELECT ossie_compile(['total_sales'],[],['row_number() OVER () > 0']);"
+has "metric condition in a filter refused, metric_filters named" "metric_filters" \
+   "$LOAD_T SELECT ossie_compile(['total_sales'],[],['total_sales > 100']);"
+has "metric_filters applied after aggregation" "HAVING" \
+   "$LOAD_T SELECT ossie_compile(['total_sales'],['item.i_brand'],[], metric_filters => ['total_sales > 100']);"
 
 g "J6b  malformed models rejected at LOAD, not at query time"
 for f in dangling_relationship malformed_expression unqualified_metric; do

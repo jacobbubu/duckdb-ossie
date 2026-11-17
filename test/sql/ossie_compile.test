@@ -81,9 +81,9 @@ SELECT ossie_compile(['total_sales'], ['item.i_brand'], ['date_dim.d_year = 2001
 ----
 SELECT item.i_brand AS i_brand, sum(store_sales.ss_ext_sales_price) AS total_sales FROM ((tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.item AS item ON ((store_sales.ss_item_sk = item.i_item_sk))) INNER JOIN tpcds.main.date_dim AS date_dim ON ((store_sales.ss_sold_date_sk = date_dim.d_date_sk))) WHERE (date_dim.d_year = 2001) GROUP BY item.i_brand
 
-# A filter naming a metric is an aggregate, so it becomes HAVING rather than WHERE.
+# A condition on a metric goes in metric_filters and becomes HAVING rather than WHERE.
 query T
-SELECT ossie_compile(['total_sales'], ['item.i_brand'], ['total_sales > 1000']);
+SELECT ossie_compile(['total_sales'], ['item.i_brand'], [], metric_filters => ['total_sales > 1000']);
 ----
 SELECT item.i_brand AS i_brand, sum(store_sales.ss_ext_sales_price) AS total_sales FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.item AS item ON ((store_sales.ss_item_sk = item.i_item_sk))) GROUP BY item.i_brand HAVING (sum(store_sales.ss_ext_sales_price) > 1000)
 

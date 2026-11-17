@@ -33,14 +33,18 @@ PRAGMA mcp_publish_tool(
     'semantic_query',
     'Answer a question against the semantic model. Call the metrics and dimensions tools first and
      use exact names. metrics and dimensions are comma-separated; filters are semicolon-separated
-     SQL predicates over dataset.field names, e.g. date_dim.d_year = 2001',
+     SQL predicates over the dataset.field names of one dataset each, e.g. date_dim.d_year = 2001;
+     metric_filters are semicolon-separated conditions on metrics, e.g. total_sales > 1000',
     'SELECT * FROM ossie_query(
          string_split($metrics, '','') ,
          CASE WHEN $dimensions IS NULL THEN []::VARCHAR[] ELSE string_split($dimensions, '','') END,
-         CASE WHEN $filters IS NULL THEN []::VARCHAR[] ELSE string_split($filters, '';'') END)',
+         CASE WHEN $filters IS NULL THEN []::VARCHAR[] ELSE string_split($filters, '';'') END,
+         metric_filters =>
+             CASE WHEN $metric_filters IS NULL THEN []::VARCHAR[] ELSE string_split($metric_filters, '';'') END)',
     '{"metrics":    {"type": "string", "description": "Comma-separated metric names"},
       "dimensions": {"type": "string", "description": "Comma-separated dataset.field names"},
-      "filters":    {"type": "string", "description": "Semicolon-separated SQL predicates"}}',
+      "filters":    {"type": "string", "description": "Semicolon-separated SQL predicates on rows"},
+      "metric_filters": {"type": "string", "description": "Semicolon-separated conditions on metrics"}}',
     '["metrics"]',
     'markdown'
 );

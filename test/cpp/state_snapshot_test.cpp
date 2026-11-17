@@ -42,9 +42,10 @@ duckdb::shared_ptr<duckdb::ossie::Model> ReadModel(const std::string &path) {
 std::string Compile(const duckdb::ossie::OssieSnapshot &snapshot, bool filter) {
 	duckdb::ossie::CompileOptions options;
 	options.allow_filter_functions = snapshot.allow_filter_functions;
-	return duckdb::ossie::CompileToSQL(
-	    *snapshot.model, {"total"}, {},
-	    filter ? duckdb::vector<duckdb::string> {"ABS(facts.amount) > 0"} : duckdb::vector<duckdb::string>(), options);
+	return duckdb::ossie::CompileToSQL(*snapshot.model, {"total"}, {},
+	                                   filter ? duckdb::vector<duckdb::string> {"ABS(facts.amount) > 0"}
+	                                          : duckdb::vector<duckdb::string>(),
+	                                   {}, options);
 }
 void ControlledSnapshot(const std::string &root) {
 	duckdb::ossie::OssieState state;

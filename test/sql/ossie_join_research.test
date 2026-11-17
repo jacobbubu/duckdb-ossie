@@ -42,7 +42,7 @@ North	4	6.245
 South	1	30.03
 
 query TI rowsort
-SELECT * FROM ossie_query(['record_count'],['fact.id'],['fact.active AND dimension.eligible']);
+SELECT * FROM ossie_query(['record_count'],['fact.id'],['fact.active', 'dimension.eligible']);
 ----
 f1	1
 f2	1
@@ -50,7 +50,7 @@ f5	1
 f6	1
 
 query IT
-SELECT * FROM ossie_query(['record_count','amount_sum'],[],['fact.active AND dimension.eligible']);
+SELECT * FROM ossie_query(['record_count','amount_sum'],[],['fact.active', 'dimension.eligible']);
 ----
 4	24.98
 

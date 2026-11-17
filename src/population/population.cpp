@@ -1601,7 +1601,7 @@ void FreezeJoin(ClientContext &context, Bundle &bundle, yyjson_val *policy, Conn
 		ExpandOriginal(original, expanded);
 		Strict(*expanded, true);
 		RequireMetricGrain(original, {metric.name}, fact->name);
-		CompileToSQL(original, {metric.name}, {}, {}, CompileOptions());
+		CompileToSQL(original, {metric.name}, {}, {}, {}, CompileOptions());
 	}
 	Connection source(DatabaseInstance::GetDatabase(context));
 	Run(context, source, "BEGIN TRANSACTION");
@@ -3131,7 +3131,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		if (!HasAggregate(*expanded)) {
 			Fail(metric.name, "capability", "metric requires SUM, COUNT or AVG aggregation");
 		}
-		CompileToSQL(bundle->model, {metric.name}, {}, {}, CompileOptions());
+		CompileToSQL(bundle->model, {metric.name}, {}, {}, {}, CompileOptions());
 	}
 	if (bundle->profile == OBSERVATION_PROFILE || bundle->profile == RELATION_PROFILE) {
 		ObservationDefinitions(*bundle, ontology, mapping);
@@ -3194,7 +3194,7 @@ shared_ptr<Bundle> LoadBundle(ClientContext &context, const string &manifest_pat
 		auto source_ref = SnapshotTable(*bundle);
 		CompileOptions options;
 		options.population_sources[bundle->model.datasets[0].name] = source_ref.get();
-		auto statement = Compile(bundle->model, {metric.name}, {}, {}, options);
+		auto statement = Compile(bundle->model, {metric.name}, {}, {}, {}, options);
 		for (auto &expression : statement->node->Cast<SelectNode>().select_list) {
 			EngineFunctions(*expression);
 		}
@@ -3340,7 +3340,7 @@ unique_ptr<SelectStatement> QueryAST(Bundle &bundle, const string &concept, cons
 				                         ->ToString());
 			}
 		}
-		auto statement = Compile(bundle.model, metrics, translated, {}, options);
+		auto statement = Compile(bundle.model, metrics, translated, {}, {}, options);
 		if (!bundle.provenance.empty()) {
 			auto &select = statement->node->Cast<SelectNode>();
 			for (idx_t i = 0; i < dimensions.size(); i++) {

@@ -25,9 +25,9 @@ e03_empty_aggregation_query	refused
 e04_name_not_found	refused
 e05_metric_in_dimensions	refused
 e06_field_in_metrics	refused
-e07_aggregate_in_filter	false-acceptance
+e07_aggregate_in_filter	refused
 e08_window_in_filter	refused
-e09_cross_dataset_filter	false-acceptance
+e09_cross_dataset_filter	refused
 e10_name_collision	inexpressible
 e11_unaggregated_field_in_metric	refused
 e12_windowed_metric	refused

@@ -338,8 +338,10 @@ namespace {
 
 //! Filters come from the caller, so they are allowlisted: operators always, named calls on request,
 //! subqueries never.
-void CheckFilterNode(const ParsedExpression &expr, const string &request, const CompileOptions &options) {
+void CheckFilterNode(const ParsedExpression &expr, const string &subject, const CompileOptions &options) {
 	switch (expr.GetExpressionClass()) {
+	// A window is refused once names have resolved, in the order the Wide Table specification gives its errors.
+	case ExpressionClass::WINDOW:
 	case ExpressionClass::COLUMN_REF:
 	case ExpressionClass::CONSTANT:
 	case ExpressionClass::COMPARISON:
@@ -356,16 +358,16 @@ void CheckFilterNode(const ParsedExpression &expr, const string &request, const 
 		if (function.IsOperator() || IsAggregateName(name) || options.allow_filter_functions) {
 			return;
 		}
-		throw InvalidInputException("ossie: filter \"%s\" calls function \"%s\". Load the model with "
+		throw InvalidInputException("ossie: %s calls function \"%s\". Load the model with "
 		                            "allow_filter_functions => true to permit function calls in filters",
-		                            request, name);
+		                            subject, name);
 	}
 	case ExpressionClass::SUBQUERY:
-		throw InvalidInputException("ossie: filter \"%s\" contains a subquery, which could read tables the "
-		                            "model does not declare",
-		                            request);
+		throw InvalidInputException("ossie: %s contains a subquery, which could read tables the model does not "
+		                            "declare",
+		                            subject);
 	default:
-		throw InvalidInputException("ossie: filter \"%s\" uses an expression that is not allowed in a filter", request);
+		throw InvalidInputException("ossie: %s uses an expression that is not allowed in a filter", subject);
 	}
 }
 
@@ -479,21 +481,34 @@ void RecordHomes(const ParsedExpression &expr, const string &home, AggregateHome
 	    expr, [&](const ParsedExpression &child) { RecordHomes(child, home, homes); });
 }
 
+//! One entry of `filters`, a condition on rows before they are aggregated, or of `metric_filters`, a condition on
+//! metrics after.
 struct Filter {
 	string request;
+	//! How a message names the entry: `filter "..."` or `metric filter "..."`.
+	string subject;
 	unique_ptr<ParsedExpression> expr;
-	//! Aggregates cannot appear in WHERE, so such a predicate goes to HAVING whole rather than
-	//! being split -- HAVING may also reference grouped columns, so the halves stay valid together.
-	bool is_aggregate = false;
-	//! The grain of each aggregate in the predicate. A filter's aggregate runs over its own dataset's
-	//! rows like a metric's does, so a grain only the filter needs still gets its own subquery.
+	bool on_metrics = false;
+	//! How the entry names its first metric or aggregate, empty when it has none. A filter may have none
+	//! and a metric filter must have one.
+	string aggregate;
+	//! The datasets whose fields the entry reads, as written.
+	case_insensitive_set_t datasets;
+	//! The grain of each aggregate in a metric filter. It runs over its own dataset's rows like a metric's
+	//! does, so a grain only the entry needs still gets its own subquery.
 	case_insensitive_set_t grains;
 	AggregateHomes homes;
 };
 
 //! Replaces `expr` with the metric's expression, which makes the predicate an aggregate at the
-//! metric's grains.
+//! metric's grains. A filter is refused for naming a metric, so there it is only recorded.
 void InlineMetric(const Model &model, const Metric &metric, unique_ptr<ParsedExpression> &expr, Filter &filter) {
+	if (filter.aggregate.empty()) {
+		filter.aggregate = StringUtil::Format("references metric \"%s\"", metric.name);
+	}
+	if (!filter.on_metrics) {
+		return;
+	}
 	auto replacement = metric.expression.tree->Copy();
 	InlineFields(model, replacement);
 	bool grainless = false;
@@ -502,37 +517,33 @@ void InlineMetric(const Model &model, const Metric &metric, unique_ptr<ParsedExp
 		RecordHomes(*replacement, metric.dataset, filter.homes);
 	}
 	expr = std::move(replacement);
-	filter.is_aggregate = true;
 }
 
 //! Resolves the names inside a filter: `dataset.field` inlines to the field's expression, and a
 //! metric name, bare or `dataset.metric`, inlines to the metric's.
 void ResolveFilterNames(const Model &model, unique_ptr<ParsedExpression> &expr, Filter &filter) {
-	auto &request = filter.request;
+	auto &subject = filter.subject;
 	if (expr->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
 		auto &colref = expr->Cast<ColumnRefExpression>();
 		if (ColumnNames(colref).size() == 1) {
 			auto metric = model.FindMetric(ColumnNames(colref)[0]);
 			if (!metric) {
 				throw InvalidInputException(
-				    "ossie: filter \"%s\" references \"%s\", which is neither a "
-				    "metric nor a dataset.field name.%s",
-				    request, ColumnNames(colref)[0],
+				    "ossie: %s references \"%s\", which is neither a metric nor a dataset.field name.%s", subject,
+				    ColumnNames(colref)[0],
 				    StringUtil::CandidatesErrorMessage(MetricNames(model), ColumnNames(colref)[0], "Did you mean"));
 			}
 			InlineMetric(model, *metric, expr, filter);
 			return;
 		}
 		if (ColumnNames(colref).size() != 2) {
-			throw InvalidInputException("ossie: filter \"%s\" references \"%s\"; columns must be qualified "
-			                            "as dataset.field",
-			                            request, StringUtil::Join(ColumnNames(colref), "."));
+			throw InvalidInputException("ossie: %s references \"%s\"; columns must be qualified as dataset.field",
+			                            subject, StringUtil::Join(ColumnNames(colref), "."));
 		}
 		auto dataset = model.FindDataset(ColumnNames(colref)[0]);
 		if (!dataset) {
-			throw InvalidInputException("ossie: filter \"%s\" references dataset \"%s\", which the model does "
-			                            "not declare",
-			                            request, ColumnNames(colref)[0]);
+			throw InvalidInputException("ossie: %s references dataset \"%s\", which the model does not declare",
+			                            subject, ColumnNames(colref)[0]);
 		}
 		auto dataset_metric = model.FindMetric(ColumnNames(colref)[0] + "." + ColumnNames(colref)[1]);
 		if (dataset_metric && !dataset->FindField(ColumnNames(colref)[1])) {
@@ -541,11 +552,12 @@ void ResolveFilterNames(const Model &model, unique_ptr<ParsedExpression> &expr, 
 		}
 		if (!dataset->FindField(ColumnNames(colref)[1])) {
 			throw InvalidInputException(
-			    "ossie: filter \"%s\" references \"%s.%s\", which the model does not declare.%s", request,
-			    ColumnNames(colref)[0], ColumnNames(colref)[1],
+			    "ossie: %s references \"%s.%s\", which the model does not declare.%s", subject, ColumnNames(colref)[0],
+			    ColumnNames(colref)[1],
 			    StringUtil::CandidatesErrorMessage(
 			        DimensionNames(model), ColumnNames(colref)[0] + "." + ColumnNames(colref)[1], "Did you mean"));
 		}
+		filter.datasets.insert(dataset->name);
 		auto replacement = dataset->FindField(ColumnNames(colref)[1])->expression.tree->Copy();
 		QualifyColumns(replacement, AliasFor(*dataset));
 		expr = std::move(replacement);
@@ -554,50 +566,100 @@ void ResolveFilterNames(const Model &model, unique_ptr<ParsedExpression> &expr, 
 
 	if (expr->GetExpressionClass() == ExpressionClass::FUNCTION &&
 	    IsAggregateName(expr->Cast<FunctionExpression>().FunctionName().GetIdentifierName())) {
-		filter.is_aggregate = true;
-		// An aggregate written into the filter itself. Its arguments name its datasets whether or not
+		if (filter.aggregate.empty()) {
+			filter.aggregate = "contains the aggregate " +
+			                   StringUtil::Upper(expr->Cast<FunctionExpression>().FunctionName().GetIdentifierName());
+		}
+		// An aggregate written into the entry itself. Its arguments name its datasets whether or not
 		// they are resolved yet, since a field inlines to columns of the same dataset. One with no
 		// column reference counts the rows of whatever grain the query has, as it does in a metric.
 		case_insensitive_set_t datasets;
 		CollectDatasets(*expr, datasets);
-		if (!datasets.empty()) {
-			filter.grains.insert(AggregateGrain(model, datasets, request));
+		if (filter.on_metrics && !datasets.empty()) {
+			filter.grains.insert(AggregateGrain(model, datasets, filter.request));
 		}
 	}
 	ParsedExpressionIterator::EnumerateChildren(
 	    *expr, [&](unique_ptr<ParsedExpression> &child) { ResolveFilterNames(model, child, filter); });
 }
 
-void CheckFilterTree(const ParsedExpression &expr, const string &request, const CompileOptions &options) {
-	CheckFilterNode(expr, request, options);
+void CheckFilterTree(const ParsedExpression &expr, const string &subject, const CompileOptions &options) {
+	CheckFilterNode(expr, subject, options);
 	ParsedExpressionIterator::EnumerateChildren(
-	    expr, [&](const ParsedExpression &child) { CheckFilterTree(child, request, options); });
+	    expr, [&](const ParsedExpression &child) { CheckFilterTree(child, subject, options); });
 }
 
-Filter ResolveFilter(const Model &model, const string &request, const CompileOptions &options) {
+//! Parses one entry of `filters` or `metric_filters` and resolves its names. What the entry may contain is judged by
+//! RequireRowFilters and RequireMetricFilter, once every name of the request has resolved.
+Filter ResolveFilter(const Model &model, const string &request, bool on_metrics, const CompileOptions &options) {
+	Filter result;
+	result.request = request;
+	result.on_metrics = on_metrics;
+	result.subject = StringUtil::Format("%s \"%s\"", on_metrics ? "metric filter" : "filter", request);
+	auto &subject = result.subject;
+
 	vector<unique_ptr<ParsedExpression>> parsed;
 	try {
 		parsed = Parser::GetBuiltinParser().ParseExpressionList(request);
 	} catch (const ParserException &ex) {
-		throw InvalidInputException("ossie: filter \"%s\" does not parse: %s", request, ErrorData(ex).RawMessage());
+		throw InvalidInputException("ossie: %s does not parse: %s", subject, ErrorData(ex).RawMessage());
 	}
 	if (parsed.size() != 1) {
-		throw InvalidInputException("ossie: filter \"%s\" must be a single predicate", request);
+		throw InvalidInputException("ossie: %s must be a single predicate", subject);
 	}
 
 	// Policy is checked before names are resolved, so the message names what the caller wrote.
-	CheckFilterTree(*parsed[0], request, options);
+	CheckFilterTree(*parsed[0], subject, options);
 
-	Filter result;
-	result.request = request;
 	result.expr = std::move(parsed[0]);
 	// A filter is written in the model's own expression language, so it is lowered the way an OSSIE_SQL_2026
 	// field is: NVL and DATEADD(day, ...) work, and CONCAT means what it means in a field. This comes after the
 	// policy check, which judges what the caller wrote, and before names are resolved, since the bare date part
 	// in DATEADD(day, ...) is not a name.
-	LowerOssieSql2026(result.expr, StringUtil::Format("ossie: filter \"%s\"", request));
+	LowerOssieSql2026(result.expr, "ossie: " + subject);
 	ResolveFilterNames(model, result.expr, result);
 	return result;
+}
+
+void RefuseWindow(const Filter &filter) {
+	auto window = FindWindow(*filter.expr);
+	if (window) {
+		throw InvalidInputException("ossie: %s contains the window function %s, which neither filters nor "
+		                            "metric_filters can evaluate",
+		                            filter.subject, StringUtil::Upper(window->FunctionName().GetIdentifierName()));
+	}
+}
+
+//! A filter is a condition on the rows of one dataset. The checks run in the order the Wide Table
+//! specification lists their errors, each over every filter before the next.
+void RequireRowFilters(const vector<Filter> &filters) {
+	for (auto &filter : filters) {
+		if (!filter.aggregate.empty()) {
+			throw InvalidInputException("ossie: %s %s, and a filter is applied to rows before they are aggregated. "
+			                            "Pass a condition on a metric in metric_filters",
+			                            filter.subject, filter.aggregate);
+		}
+	}
+	for (auto &filter : filters) {
+		RefuseWindow(filter);
+	}
+	for (auto &filter : filters) {
+		if (filter.datasets.size() > 1) {
+			throw InvalidInputException("ossie: %s reads fields of %s datasets (%s), and a filter reads one. Pass "
+			                            "the condition on each dataset as its own entry of filters",
+			                            filter.subject, to_string(filter.datasets.size()),
+			                            StringUtil::Join(SortedNames(filter.datasets), ", "));
+		}
+	}
+}
+
+void RequireMetricFilter(const Filter &filter) {
+	RefuseWindow(filter);
+	if (filter.aggregate.empty()) {
+		throw InvalidInputException("ossie: %s names no metric and contains no aggregate. Pass a condition on rows "
+		                            "in filters",
+		                            filter.subject);
+	}
 }
 
 struct PlannedJoin {
@@ -926,7 +988,7 @@ unique_ptr<SelectStatement> CompileMultiGrain(const Model &model, const vector<s
 
 	unique_ptr<ParsedExpression> outer_where;
 	for (auto &filter : filters) {
-		if (filter.is_aggregate) {
+		if (filter.on_metrics) {
 			HoistAggregates(model, filter.expr, filter.request, filter.homes, grain_queries, rows_may_be_missing);
 			AndInto(outer_where, std::move(filter.expr));
 			continue;
@@ -1032,7 +1094,8 @@ void RequireMetricGrain(const Model &model, const vector<string> &metrics, const
 }
 
 unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,
-                                    const vector<string> &filters, const CompileOptions &options) {
+                                    const vector<string> &filters, const vector<string> &metric_filters,
+                                    const CompileOptions &options) {
 	if (metrics.empty() && dimensions.empty()) {
 		throw InvalidInputException("ossie: at least one metric or dimension is required");
 	}
@@ -1080,30 +1143,27 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 		}
 		grains.insert(grain);
 	}
-	// A filter's aggregates count toward the grains, so a predicate on a metric at another grain is
-	// evaluated over that grain's rows rather than over whatever rows the metrics happen to group.
 	vector<Filter> resolved_filters;
 	for (auto &request : filters) {
-		resolved_filters.push_back(ResolveFilter(model, request, options));
+		resolved_filters.push_back(ResolveFilter(model, request, false, options));
+	}
+	RequireRowFilters(resolved_filters);
+	// A metric filter's aggregates count toward the grains, so a condition on a metric at another grain is
+	// evaluated over that grain's rows rather than over whatever rows the metrics happen to group.
+	for (auto &request : metric_filters) {
+		resolved_filters.push_back(ResolveFilter(model, request, true, options));
+		RequireMetricFilter(resolved_filters.back());
 		for (auto &grain : resolved_filters.back().grains) {
 			grains.insert(grain);
 		}
 	}
 
-	if (metrics.empty()) {
-		for (auto &filter : resolved_filters) {
-			if (filter.is_aggregate) {
-				throw InvalidInputException("ossie: filter \"%s\" contains an aggregate, which a query without "
-				                            "metrics cannot evaluate; request the metric it filters on",
-				                            filter.request);
-			}
-		}
+	// With no aggregate at all, in a metric or a metric filter, the dimensions say which rows are read.
+	if (metrics.empty() && grains.empty()) {
 		auto &anchor = Anchor(model, dimensions, options);
 		auto reachable = SafelyReachable(model, anchor.name);
 		for (auto &filter : resolved_filters) {
-			case_insensitive_set_t referenced;
-			CollectDatasets(*filter.expr, referenced);
-			for (auto &name : SortedNames(referenced)) {
+			for (auto &name : SortedNames(filter.datasets)) {
 				if (reachable.find(name) == reachable.end()) {
 					throw InvalidInputException("ossie: filter \"%s\" reads \"%s\", but a query without metrics takes "
 					                            "its rows from \"%s\", which has no join path to \"%s\" that keeps "
@@ -1172,7 +1232,7 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 			AddRequired(required, required_seen, name, root.name);
 		}
 
-		auto &target = filter.is_aggregate ? select->having : select->where_clause;
+		auto &target = filter.on_metrics ? select->having : select->where_clause;
 		AndInto(target, std::move(filter.expr));
 	}
 
@@ -1185,8 +1245,9 @@ unique_ptr<SelectStatement> Compile(const Model &model, const vector<string> &me
 }
 
 string CompileToSQL(const Model &model, const vector<string> &metrics, const vector<string> &dimensions,
-                    const vector<string> &filters, const CompileOptions &options) {
-	return Compile(model, metrics, dimensions, filters, options)->ToString();
+                    const vector<string> &filters, const vector<string> &metric_filters,
+                    const CompileOptions &options) {
+	return Compile(model, metrics, dimensions, filters, metric_filters, options)->ToString();
 }
 
 } // namespace ossie

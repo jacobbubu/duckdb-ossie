@@ -465,8 +465,8 @@ Model CoreModel(const FactProgram &p) {
 }
 //! user_id and the metrics, each fact reduced on its own and the reductions INNER joined on the
 //! User key, so the row set is the common User domain and no fact row is ever repeated.
-unique_ptr<SelectStatement> CoreUsers(const FactProgram &p, const vector<string> &metrics,
-                                      const vector<string> &filters, vector<unique_ptr<TableRef>> &sources) {
+unique_ptr<SelectStatement> CoreUsers(const FactProgram &p, const vector<string> &metrics, const vector<string> &having,
+                                      vector<unique_ptr<TableRef>> &sources) {
 	auto model = CoreModel(p);
 	CompileOptions options;
 	SharedKey user;
@@ -479,7 +479,7 @@ unique_ptr<SelectStatement> CoreUsers(const FactProgram &p, const vector<string>
 	}
 	options.shared_keys.push_back(std::move(user));
 	options.grain_join = JoinType::INNER;
-	return Compile(model, metrics, {"user_id"}, filters, options);
+	return Compile(model, metrics, {"user_id"}, {}, having, options);
 }
 } // namespace
 
@@ -626,13 +626,13 @@ unique_ptr<SelectStatement> CompileFactUsers(const FactProgram &p, const vector<
 	}
 	idx_t nodes = 0;
 	auto where = Cohort(p, cohort, 1, nodes);
-	vector<string> filters;
+	vector<string> having;
 	if (where != "TRUE") {
-		filters.push_back(where);
+		having.push_back(where);
 	}
 	auto result = SQL(projection + " FROM placeholder AS combined ORDER BY combined.user_id ASC NULLS LAST");
 	result->node->Cast<SelectNode>().from_table =
-	    make_uniq<SubqueryRef>(CoreUsers(p, metrics, filters, sources), "combined");
+	    make_uniq<SubqueryRef>(CoreUsers(p, metrics, having, sources), "combined");
 	return result;
 }
 

@@ -12,6 +12,16 @@ pins). The DuckDB version each release targets is noted separately.
 ## [Unreleased]
 
 ### Changed
+- **Breaking: `filters` take conditions on rows; a condition on a metric goes in `metric_filters`.**
+  Each entry of `filters` is a filter as the Wide Table specification defines one: applied before
+  aggregation, reading the fields of one dataset, with no metric, aggregate or window function.
+  `ossie_query` and `ossie_compile` gain the named parameter `metric_filters => [...]` for
+  conditions applied after aggregation, which is where `'total_sales > 100'` now goes; in `filters`
+  it is refused, and the message names the parameter. An entry reading two datasets
+  (`'orders.amount > 100 AND customers.region = ''EAST'''`) is refused as well. Pass each dataset's
+  condition as its own entry; entries are combined with AND, as before. A row condition joining two
+  datasets with OR can no longer be written. The MCP example's `semantic_query` tool takes
+  `metric_filters` beside `filters`.
 - **Breaking: output columns are named without the dataset.** `ossie_query` and `ossie_compile`
   name each column by the final part of its reference, as the Wide Table specification's output
   name: `customers.region` is the column `region`, `orders.total_revenue` is `total_revenue`, where
@@ -77,15 +87,16 @@ pins). The DuckDB version each release targets is noted separately.
   `compliance/wide_table` are vendored with their data, `scripts/wide_table_compliance.py` submits
   each through `ossie_query` and classifies the outcome, and
   `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 20 cases
-  pass; the rest are recorded as what they are (2 false acceptances, 19 refusals without the
-  specified error code, 5 the query function cannot express).
+  pass; the rest are recorded as what they are (21 refusals without the specified error code, 5 the
+  query function cannot express).
   `test/fixtures/conformance/README.md` lists the cases behind each number.
 - **A request can have dimensions and no metric.** `ossie_query([], ['customers.region'])` returns
   the distinct regions, where it used to be refused. The rows come from the one dimension dataset
   that joins every other without repeating its own rows, which the Wide Table specification calls
   the anchor; a request where no dataset or more than one qualifies is refused, as is a filter on a
-  dataset the anchor cannot reach that way, or a filter on a metric. A request with neither metrics
-  nor dimensions is still refused.
+  dataset the anchor cannot reach that way. A metric filter that names a metric takes the place of
+  the anchor: `ossie_query([], ['item.i_brand'], metric_filters => ['total_sales > 1000'])` reads
+  the rows `total_sales` aggregates. A request with neither metrics nor dimensions is still refused.
 - **Dataset-scoped metrics.** A dataset's `metrics` are loaded as `dataset.metric` and requested,
   filtered on and described under that name; their expressions are resolved against the dataset's
   fields and its `source.column` references. A model-scoped metric may evaluate one with

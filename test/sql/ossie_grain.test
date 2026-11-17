@@ -23,7 +23,7 @@ SELECT (store_sales.agg_0 / customer.agg_0) AS customer_lifetime_value FROM ((SE
 # An aggregate shared between metrics is computed once. Row filters go into every subquery, metric
 # filters apply to the joined result.
 query T
-SELECT ossie_compile(['total_sales', 'store_productivity'], ['store.s_state'], ['store.s_state <> ''ZZ''', 'total_sales > 100']);
+SELECT ossie_compile(['total_sales', 'store_productivity'], ['store.s_state'], ['store.s_state <> ''ZZ'''], metric_filters => ['total_sales > 100']);
 ----
 SELECT COALESCE(store.dim_0, store_sales.dim_0) AS s_state, store_sales.agg_0 AS total_sales, (store_sales.agg_0 / "nullif"(store.agg_0, 0)) AS store_productivity FROM ((SELECT store.s_state AS dim_0, sum(store.s_number_employees) AS agg_0 FROM tpcds.main.store AS store WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store FULL JOIN (SELECT store.s_state AS dim_0, sum(store_sales.ss_ext_sales_price) AS agg_0 FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk))) WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store_sales ON ((store.dim_0 IS NOT DISTINCT FROM store_sales.dim_0))) WHERE (store_sales.agg_0 > 100)
 

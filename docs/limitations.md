@@ -71,7 +71,7 @@ take the value they have over no rows: 0 for `COUNT`, `COUNT(*)`, `COUNT(DISTINC
   dataset without fanning out. `store_productivity` filtered by `date_dim.d_year = 2001` is refused:
   `store` cannot reach `date_dim` except through `store_sales`, and a filter that silently applied
   to one side of the ratio only would be a different metric. The same holds for dimensions.
-- A metric filter (`total_sales > 100`) applies to the joined result.
+- A metric filter (`metric_filters => ['total_sales > 100']`) applies to the joined result.
 - `COUNT(*)` alongside metrics at two grains is refused, as there is no single grain for it to
   inherit (see below).
 - Population requests are single-grain by construction and refuse multi-grain metrics.
@@ -124,10 +124,20 @@ ambiguous-path checks are unchanged, since a `LEFT JOIN` repeats rows exactly as
 
 ## Filters
 
-Filter predicates arrive per request rather than from the model, so their contents are
-allowlisted. Operators are always permitted, including arithmetic, `||` and `LIKE`. Named function
-calls are refused unless the model was loaded with `allow_filter_functions => true` — note that
-`SIMILAR TO` desugars to a `regexp_full_match` call and so falls under that flag, while `LIKE`
+**A filter reads the rows of one dataset.** Each entry of `filters` is applied before aggregation
+and may name the fields of one dataset only, which is the Wide Table specification's filter. An
+entry naming a metric, or containing an aggregate, is refused with a message pointing at
+`metric_filters`, the named parameter whose entries are applied after aggregation; an entry there
+that names no metric and contains no aggregate is refused the other way. A window function is
+refused in both. An entry reading two datasets is refused: pass each dataset's condition as its own
+entry, and the entries are combined with AND. A row condition that joins two datasets with OR has no
+spelling, since the specification has one filter over one dataset and entries only ever combine
+with AND.
+
+Filter predicates, of either kind, arrive per request rather than from the model, so their contents
+are allowlisted. Operators are always permitted, including arithmetic, `||` and `LIKE`. Named
+function calls are refused unless the model was loaded with `allow_filter_functions => true` — note
+that `SIMILAR TO` desugars to a `regexp_full_match` call and so falls under that flag, while `LIKE`
 does not. Subqueries are refused unconditionally and no option enables them, since they could read
 tables the model never declared.
 
