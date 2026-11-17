@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Run apache/ossie's wide-table compliance cases against the built extension.
 
-Each case is a query in the JSON binding of the Wide Table Query Interface plus the rows or the
-error it must produce. The query is handed to ossie_query(query) as the case wrote it, run in a
-fresh duckdb CLI, and classified:
+Each case is a query in the JSON binding of the Wide Table Query Interface (query.json) plus the
+rows or the error it must produce (expected.txt, as upstream's ost runner prints a result). The
+query is handed to ossie_query(query) as the case wrote it, run in a fresh duckdb CLI, and
+classified:
 
   pass              rows and output names match, or the refusal names the expected error code
   names             rows match, output names differ
@@ -17,6 +18,7 @@ Exit:  0, or 1 when --check finds a status that differs from the pinned one.
 """
 import argparse
 import json
+import re
 import subprocess
 import sys
 from decimal import Decimal
@@ -36,6 +38,38 @@ FIXTURES = {
 # The shell's JSON mode writes HUGEINT and DECIMAL as strings, so the described type says which strings are numbers.
 NUMERIC_TYPES = {"TINYINT", "SMALLINT", "INTEGER", "BIGINT", "HUGEINT", "UTINYINT", "USMALLINT", "UINTEGER"}
 NUMERIC_TYPES |= {"UBIGINT", "UHUGEINT", "DECIMAL", "FLOAT", "DOUBLE"}
+# The suite's README: a number is exact unless its column is a metric that returns an approximate numeric, and
+# among these cases only this one is.
+APPROXIMATE = {"revenue_per_customer"}
+NUMBER = re.compile(r"-?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?")
+
+
+def cell_value(text):
+    """One cell of an ost table: empty is NULL, "" is the empty string, a number is a number."""
+    if text == "":
+        return None
+    if text == '""':
+        return ""
+    if NUMBER.fullmatch(text):
+        return int(text) if text.lstrip("-").isdigit() else Decimal(text)
+    return text
+
+
+def read_expected(path):
+    """expected.txt: comment lines, one of which names the fixture, then `> error: CODE` or a table."""
+    expected = {}
+    table = []
+    for line in path.read_text().splitlines():
+        if line.startswith("# fixture:"):
+            expected["fixture"] = line.split(":", 1)[1].strip()
+        elif line.startswith("> error:"):
+            expected["error"] = line.split(":", 1)[1].strip()
+        elif line.startswith("|"):
+            table.append([cell.strip() for cell in line.strip().strip("|").split("|")])
+    if "error" not in expected:
+        expected["columns"] = table[0]
+        expected["rows"] = [[cell_value(cell) for cell in row] for row in table[1:]]
+    return expected
 
 
 def sql_string(text):
@@ -80,23 +114,24 @@ def is_number(value):
     return isinstance(value, (int, Decimal)) and not isinstance(value, bool)
 
 
-def same_value(actual, expected):
+def same_value(actual, expected, approximate):
     if actual is None or expected is None:
         return actual is None and expected is None
     if is_number(actual) and is_number(expected):
-        if isinstance(expected, int):
+        if not approximate:
             return Decimal(actual) == expected
         tolerance = Decimal("1e-9") * max(abs(Decimal(actual)), abs(expected), 1)
         return abs(Decimal(actual) - expected) <= tolerance
     return type(actual) is type(expected) and actual == expected
 
 
-def same_rows(actual, expected):
+def same_rows(actual, expected, approximate):
     """Rows match as multisets; within a row, values match by position."""
     left = list(actual)
     for row in expected:
         for index, candidate in enumerate(left):
-            if len(candidate) == len(row) and all(same_value(a, e) for a, e in zip(candidate, row)):
+            values = zip(candidate, row, approximate)
+            if len(candidate) == len(row) and all(same_value(a, e, loose) for a, e, loose in values):
                 del left[index]
                 break
         else:
@@ -109,14 +144,14 @@ def show(rows):
 
 
 def classify(shell, query, expected, joins):
-    columns, rows, error = run(shell, expected.get("fixture", "retail"), query, joins)
+    columns, rows, error = run(shell, expected["fixture"], query, joins)
     if "error" in expected:
         if error is None:
             return "false-acceptance", show(rows)
         return ("pass" if expected["error"] in error else "refused"), error
     if error is not None:
         return "false-refusal", error
-    if not same_rows(rows, expected["rows"]):
+    if not same_rows(rows, expected["rows"], [name in APPROXIMATE for name in expected["columns"]]):
         return "wrong", show(rows)
     if [name.lower() for name in columns] != [name.lower() for name in expected["columns"]]:
         return "names", ", ".join(columns)
@@ -133,9 +168,9 @@ def main():
     options = parser.parse_args()
 
     statuses = {}
-    for case in sorted((SUITE / "cases").iterdir()):
+    for case in sorted(path for path in (SUITE / "cases").iterdir() if path.is_dir()):
         query = (case / "query.json").read_text()
-        expected = json.loads((case / "expected.json").read_text(), parse_float=Decimal)
+        expected = read_expected(case / "expected.txt")
         status, detail = classify(options.duckdb, query, expected, options.joins)
         statuses[case.name] = status
         want = expected.get("error", "rows")

@@ -12,7 +12,7 @@ share the same assumptions. These files are the only ones that can.
 They are **copied in, not fetched at test time**: CI must not depend on the network, and upstream
 moves.
 
-All files are taken at apache/ossie commit `da73e0e1b5c5b1d17aa7ca763fe1fc5db9bc943c` and
+All files are taken at apache/ossie commit `e4f545a4fd6aef1a98a8438c22e550d67a992e06` and
 keep upstream's own paths under this directory, so where each came from is visible in its path. The
 per-converter fixtures the previous snapshot carried (databricks, gooddata, nvidia, omni, orionbelt)
 no longer exist upstream; the compliance models replace them.
@@ -50,13 +50,16 @@ table and `test/sql/ossie_conformance.test` in step when the number changes.
 ## Wide-table compliance cases
 
 `compliance/wide_table/` also carries upstream's 46 compliance cases for the Wide Table Query
-Interface (Layer 3), with the data they run on and upstream's own README: `cases/<case>/query.json`
-and `expected.json`, `retail/retail.sql`, `stores/stores.sql`. Each case is a query plus the rows or
-the Section 8 error code it must produce.
+Interface (Layer 3), with the data they run on and upstream's own READMEs: `cases/<case>/query.json`
+and `expected.txt`, `cases/README.md`, `retail/retail.sql`, `stores/stores.sql`. Each case is a query
+plus the rows or the Section 8 error code it must produce; `expected.txt` names the fixture to load
+and holds the result as upstream's `ost` runner prints it, and `cases/README.md` says what each case
+shows.
 
 `scripts/wide_table_compliance.py` runs them: it loads the fixture's SQL and model in a duckdb CLI,
 submits `query.json` as it stands through `ossie_query(query)`, and compares as upstream's README prescribes (rows as a
-multiset, values by position, exact numerics equal, approximate ones within 1e-9). Models are loaded
+multiset, values by position, exact numerics equal, the one approximate column within 1e-9; an empty
+cell is NULL). Models are loaded
 with `left_joins => true`, the join the specification requires. Every case gets one status:
 
 | status | cases | meaning |
