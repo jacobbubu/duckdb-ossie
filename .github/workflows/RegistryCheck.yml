@@ -1,8 +1,13 @@
 #
 # Is the PUBLISHED extension usable? Installs ossie from the community registry, exactly as a user does, and
 # runs the MCP round trip against it. Separate from MainDistributionPipeline on purpose: the registry only
-# ever serves code that has already merged, so this cannot gate a pull request. It runs daily and on demand,
-# and is the check to run after a registry PR deploys.
+# ever serves code that has already merged, so this cannot gate a pull request.
+#
+# It runs on demand only. The registry builds ossie from iqea-ai/duckdb-ossie and serves its 0.3.0, which this
+# repository is ahead of: examples/server.sql passes `metric_filters`, a named argument 0.3.0 does not have,
+# so against today's registry this check fails by construction and a daily run reports nothing new. Run it by
+# hand after a registry PR deploys a build that contains this repository's code, and restore the schedule
+# (cron: '17 6 * * *') then.
 #
 # The CLI is deliberately unpinned. The question here is whether a user installing today's DuckDB can use
 # ossie, so on a DuckDB release day this goes red until the registry rebuilds ossie for it -- which is the
@@ -10,8 +15,6 @@
 #
 name: Registry check
 on:
-  schedule:
-    - cron: '17 6 * * *'
   workflow_dispatch:
 
 permissions:

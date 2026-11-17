@@ -1,5 +1,7 @@
 -- Every-calendar-day User set demo; operator setup, separate from observation_server.sql.
 -- duckdb -bail -init examples/daily_user_server.sql
+-- The registry serves the 0.3.0 build, which has no ossie_bundle_load, so this script fails with it.
+-- To run it against this repository's build, see "Running this repository's build" in README.md.
 INSTALL ossie FROM community;
 LOAD ossie;
 INSTALL duckdb_mcp FROM community;

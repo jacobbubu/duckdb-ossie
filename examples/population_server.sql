@@ -1,6 +1,8 @@
 -- Bounded population demo; run from repository root:
 -- duckdb -bail -init examples/population_server.sql
 -- The operator owns this setup. Agents cannot import, reload or replace definitions.
+-- The registry serves the 0.3.0 build, which has no ossie_bundle_load, so this script fails with it.
+-- To run it against this repository's build, see "Running this repository's build" in README.md.
 INSTALL ossie FROM community;
 LOAD ossie;
 INSTALL duckdb_mcp FROM community;

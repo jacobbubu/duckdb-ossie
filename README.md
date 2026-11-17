@@ -11,6 +11,14 @@ semantic layer via MCP.
 
 **This extension works with DuckDB v2.0.0.** On DuckDB v1.5.6, `INSTALL ossie FROM community` gives the 0.2.0 build.
 
+> **This repository is ahead of the community registry.** On DuckDB v2.0.0,
+> `INSTALL ossie FROM community` gives the 0.3.0 build of
+> [iqea-ai/duckdb-ossie](https://github.com/iqea-ai/duckdb-ossie), which this repository was forked
+> from. What [CHANGELOG.md](CHANGELOG.md) lists under *Unreleased* is not in that build: it has seven
+> `ossie_*` functions where this repository has seventeen, and its `ossie_query` has no
+> `metric_filters` argument. To use what this README describes, build the extension and load the
+> file, as in [Running this repository's build](#running-this-repositorys-build).
+
 Ossie is a vendor-neutral file format for semantic models: `datasets` bound to physical tables,
 `fields`, declared `relationships`, and `metrics` written as aggregate expressions. It describes
 data in place and never transforms it. What the format deliberately leaves open is the *query*
@@ -151,6 +159,11 @@ served over MCP by [examples/population_server.sql](examples/population_server.s
 duckdb -init examples/server.sql
 ```
 
+As written, the script installs `ossie` from the registry, and with the 0.3.0 build there every
+`semantic_query` call fails, because the tool passes `metric_filters`. Until the registry carries this
+repository's code, serve the build from this tree instead:
+[Running this repository's build](#running-this-repositorys-build) has the two commands.
+
 Point Claude Desktop at it:
 
 ```json
@@ -188,6 +201,38 @@ build compiles DuckDB from source and takes a while; later builds are incrementa
 ```sh
 make test
 ```
+
+### Running this repository's build
+
+`make` leaves the extension at `build/release/extension/ossie/ossie.duckdb_extension`. Two things
+about that file differ from a registry build. It is not signed, so DuckDB has to be started with
+`-unsigned`. And a local build is stamped with DuckDB's commit rather than with the release name
+`v2.0.0`, so the released DuckDB v2.0.0 CLI refuses it until told to accept the mismatch. On macOS
+that CLI also refuses a relative path, so give the path in full:
+
+```sh
+duckdb -unsigned
+```
+
+```sql
+SET allow_extensions_metadata_mismatch = true;
+LOAD '/abs/path/to/duckdb-ossie/build/release/extension/ossie/ossie.duckdb_extension';
+```
+
+The shell the build produces, `./build/release/duckdb -unsigned`, was built from the same commit and
+loads the file without the `SET`.
+
+The scripts under `examples/` install `ossie` from the registry. To run one against the local build,
+swap those two lines for the two above. From the repository root:
+
+```sh
+EXT="$PWD/build/release/extension/ossie/ossie.duckdb_extension"
+sed -e "s|^INSTALL ossie FROM community;\$|SET allow_extensions_metadata_mismatch = true;|" \
+    -e "s|^LOAD ossie;\$|LOAD '$EXT';|" examples/server.sql > /tmp/server.sql
+duckdb -unsigned -init /tmp/server.sql
+```
+
+The same two substitutions work for every `examples/*_server.sql`.
 
 For the architecture and how to work on the compiler, see
 [docs/architecture.md](docs/architecture.md).

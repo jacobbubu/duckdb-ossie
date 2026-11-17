@@ -8,6 +8,10 @@
 -- Every extension this script uses must be loaded explicitly. Running it from a build tree hides
 -- that, because ossie and tpcds are statically linked there; a user installing from the registry
 -- gets neither unless it is spelled out.
+--
+-- The registry serves the 0.3.0 build, whose ossie_query has no metric_filters argument, so with it
+-- every call of the semantic_query tool below fails. To serve this repository's build instead, see
+-- "Running this repository's build" in README.md.
 INSTALL ossie FROM community;
 LOAD ossie;
 
