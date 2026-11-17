@@ -14,8 +14,9 @@ Before opening that PR:
 2. Check `extension.version` matches the tag and the top entry in `CHANGELOG.md`. This is the one
    field with no automated check, and it drifted on duckdb-snowflake (descriptor said 0.4.1 while
    the tags had reached 0.5.2).
-3. Confirm the claims are still true. The conformance paragraph states four of five upstream models
-   load; `test/sql/ossie_conformance.test` is what makes that checkable.
+3. Confirm the claims are still true. The conformance paragraph states that twelve of fifteen
+   upstream models load, which `test/sql/ossie_conformance.test` makes checkable, and that all 46
+   wide-table compliance cases pass, which `python3 scripts/wide_table_compliance.py --check` does.
 
 No `install_notes` are needed. The extension has no runtime dependencies -- which is deliberate, and
 is why the `yaml` community extension was rejected as a YAML parser in favour of a pinned submodule.
