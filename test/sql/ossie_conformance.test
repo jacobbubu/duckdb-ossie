@@ -104,8 +104,7 @@ SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['order
 ----
 SELECT sum(orders.amount) AS total_revenue FROM retail.orders AS orders HAVING (sum(orders.amount) > 10)
 
-# The model-scoped metrics the compliance cases expect to be refused. row_count, order_less_return and
-# running_revenue are; amount_less_order (a field outside every aggregate) is not refused yet.
+# The model-scoped metrics the compliance cases expect to be refused.
 statement error
 SELECT ossie_compile(['row_count'], [], []);
 ----
@@ -120,6 +119,11 @@ statement error
 SELECT ossie_compile(['running_revenue'], [], []);
 ----
 metric "running_revenue" uses the window function SUM
+
+statement error
+SELECT ossie_compile(['amount_less_order'], [], []);
+----
+metric "amount_less_order" reads "orders.amount" outside every aggregate
 
 # A query without metrics reads the rows of its anchor: the one dimension dataset that joins every
 # other without repeating its rows. The result is the distinct tuples of the dimensions.

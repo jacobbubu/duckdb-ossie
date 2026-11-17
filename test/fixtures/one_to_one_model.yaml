@@ -1,0 +1,34 @@
+version: "0.3.0.dev0"
+name: one_to_one
+description: Two datasets joined on the key of each, so either one keeps its rows when it joins the other
+datasets:
+  - name: customers
+    source: memory.main.customers
+    primary_key: [customer_id]
+    fields:
+      - name: customer_id
+        datatype: Integer
+        expression:
+          sql: customer_id
+      - name: region
+        datatype: String
+        expression:
+          sql: region
+  - name: profiles
+    source: memory.main.profiles
+    primary_key: [customer_id]
+    fields:
+      - name: customer_id
+        datatype: Integer
+        expression:
+          sql: customer_id
+      - name: tier
+        datatype: String
+        expression:
+          sql: tier
+relationships:
+  - name: profiles_to_customers
+    from: profiles
+    to: customers
+    from_columns: [customer_id]
+    to_columns: [customer_id]

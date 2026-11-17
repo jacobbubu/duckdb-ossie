@@ -138,7 +138,7 @@ eq "multi-grain ratio == hand-written ratio of two plain aggregates" "0.0" \
   "$LOAD_G SELECT (SELECT store_productivity FROM ossie_query(['store_productivity']))
                 - (SELECT (SELECT sum(ss_ext_sales_price) FROM tpcds.main.store_sales)
                          / NULLIF((SELECT sum(s_number_employees) FROM tpcds.main.store), 0));"
-has "multi-grain filter on an unreachable dataset refused, both named" "which \"store\" cannot join without repeating its rows" \
+has "multi-grain filter on an unreachable dataset refused, both named" "which metric \"store_productivity\" cannot reach from \"store\"" \
    "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['store_productivity'],[],['date_dim.d_year = 2001']);"
 has "COUNT(*) with two grains refused (no single grain to inherit)" "2 different grains" \
    "CALL ossie_load('$FIX/grain_model.json'); SELECT ossie_compile(['total_sales','store_productivity','transaction_count'],[],[]);"

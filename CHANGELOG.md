@@ -12,6 +12,28 @@ pins). The DuckDB version each release targets is noted separately.
 ## [Unreleased]
 
 ### Changed
+- **A refusal the Wide Table specification defines carries its error code, and a request with
+  several faults gets the one the specification lists first.** A message now reads
+  `ossie: E_NO_PATH: dimension "orders.order_id" is a field of "orders", which metric ...`: the
+  code from Section 8 of the specification, then the text. Code that matched a whole message, or
+  its start, must allow for the code; the text after it is unchanged except where noted here.
+  The checks run in the specification's order, so a request with an unknown name and a filter on
+  two datasets is refused for the name. What else changed with it:
+  - A dimension that names a metric is `E_METRIC_IN_DIMENSIONS` and a metric that names a field is
+    `E_FIELD_IN_METRICS`, each saying where the entry belongs. Both used to be reported as a name
+    the model does not declare.
+  - A model-scoped metric that reads a field outside every aggregate (`SUM(orders.amount) -
+    orders.order_id`) is refused, naming the field. `ossie_compile` used to return SQL for it,
+    which DuckDB then refused to bind.
+  - A dimension or filter on a dataset a metric cannot reach names that metric, the dataset it
+    aggregates and the relationship that stops it, and tells a dimension no requested metric
+    reaches (`E_NO_PATH`) from one only some reach (`E_PARTIAL_DIMENSION_REACHABILITY`). The old
+    texts (`joining "store" repeats each "store_sales" row ...` on its own, and `... which "store"
+    cannot join without repeating its rows`) are gone; the first survives as the reason at the end
+    of the new message.
+  - A request that cannot be read (a dimension that is not a name, a filter that does not parse or
+    uses what the filter policy forbids) is refused before any name in it is looked up.
+  Refusals the specification has no code for carry none. `docs/limitations.md` lists the codes.
 - **Breaking: `filters` take conditions on rows; a condition on a metric goes in `metric_filters`.**
   Each entry of `filters` is a filter as the Wide Table specification defines one: applied before
   aggregation, reading the fields of one dataset, with no metric, aggregate or window function.
@@ -86,9 +108,9 @@ pins). The DuckDB version each release targets is noted separately.
 - **apache/ossie's wide-table compliance cases run against the extension.** The 46 cases of
   `compliance/wide_table` are vendored with their data, `scripts/wide_table_compliance.py` submits
   each through `ossie_query` and classifies the outcome, and
-  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 20 cases
-  pass; the rest are recorded as what they are (21 refusals without the specified error code, 5 the
-  query function cannot express).
+  `scripts/full_functionality_check.sh` fails when a case leaves its pinned status. Today 41 cases
+  pass; the other 5 use a part of the query's JSON form `ossie_query` has no argument for, and are
+  recorded as that.
   `test/fixtures/conformance/README.md` lists the cases behind each number.
 - **A request can have dimensions and no metric.** `ossie_query([], ['customers.region'])` returns
   the distinct regions, where it used to be refused. The rows come from the one dimension dataset

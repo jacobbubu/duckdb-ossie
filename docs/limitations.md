@@ -97,9 +97,17 @@ metric containing a window function (`OVER`) is refused when queried, naming the
 function. The model still loads. Upstream's own `examples/tpcds_semantic_model.yaml` has three such
 metrics.
 
+**A field outside every aggregate.** A model-scoped metric such as `SUM(orders.amount) -
+orders.order_id` has no one value for a group of orders, so it is refused when queried, naming the
+field. A dataset-scoped metric is not checked this way; DuckDB's binder refuses a column that is
+neither grouped nor aggregated.
+
 **Fan-out joins.** If reaching a dataset repeats rows of the grain — a many-to-many relationship,
 or traversing a many-to-one edge backwards — every aggregate in the query would be inflated. Such
-a join is refused whether it was pulled in by a metric, a dimension, or a filter.
+a join is refused whether it was pulled in by a metric, a dimension, or a filter. For a dimension
+or a filter the message names the entry, a metric that cannot reach its dataset, the dataset that
+metric aggregates, and the relationship that would repeat rows. A metric over two grains must reach
+the dataset from both.
 
 ## Joins
 
@@ -140,6 +148,53 @@ function calls are refused unless the model was loaded with `allow_filter_functi
 that `SIMILAR TO` desugars to a `regexp_full_match` call and so falls under that flag, while `LIKE`
 does not. Subqueries are refused unconditionally and no option enables them, since they could read
 tables the model never declared.
+
+## Error codes
+
+**A refusal the Wide Table specification defines carries its code.** The message is `ossie: `, the
+code from Section 8 of the specification, then the text: `ossie: E_NO_PATH: dimension
+"orders.order_id" is a field of "orders", which metric "customers.customer_count" cannot reach from
+"customers": ...`. A request with several faults gets the code listed first below, which is the
+specification's order, so which fault is reported does not depend on how the compiler happens to be
+written.
+
+| | code | raised when |
+|---|---|---|
+| 1 | `E_INVALID_QUERY` | a dimension is not a name; a filter does not parse, is not one predicate, or uses a function, subquery or expression the filter policy refuses |
+| 2 | `E_EMPTY_AGGREGATION_QUERY` | the request has no metric and no dimension |
+| 3 | `E_NAME_NOT_FOUND` | a metric, dataset or field is not in the model, or a field is not written `dataset.field` |
+| 4 | `E_METRIC_IN_DIMENSIONS` | a dimension names a metric |
+| 5 | `E_FIELD_IN_METRICS` | a metric names a field |
+| 6 | `E_AGGREGATE_IN_WHERE` | a filter names a metric or contains an aggregate |
+| 7 | `E_WINDOW_IN_WHERE` | a filter contains a window function |
+| 8 | `E_CROSS_DATASET_FILTER` | a filter reads the fields of two datasets |
+| 9 | `E_NAME_COLLISION` | two output columns have one name |
+| 10 | `E_UNAGGREGATED_FINER_GRAIN_REFERENCE` | a model-scoped metric reads a field outside every aggregate |
+| 11 | `E_DEFERRED_WINDOWED_METRIC` | a metric contains a window function |
+| 12 | `E_AMBIGUOUS_MEASURE_GRAIN` | an aggregate reads datasets none of which determines the others, or reads none and has no single grain to inherit |
+| 13 | `E_NO_PATH` | no requested metric reaches a dimension's dataset |
+| 14 | `E_PARTIAL_DIMENSION_REACHABILITY` | some requested metrics reach a dimension's dataset and others do not |
+| 15 | `E_NO_ANCHOR` | a request without metrics has no dimension dataset that reaches all the others |
+| 16 | `E_UNSUPPORTED_FILTER_PATH` | a metric, or the anchor of a request without metrics, does not reach a filter's dataset |
+| 17 | `E_AMBIGUOUS_PATH` | two join paths lead to a dataset the request joins, or two datasets qualify as the anchor |
+
+**Refusals the specification does not define carry no code.** `metric_filters` is this extension's
+parameter, so a metric filter with no metric and no aggregate, or with a window function, is refused
+as `ossie: metric filter ...`. So are the refusals of the population surface and of `ossie_load`.
+
+**Three metric shapes the specification refuses are answered.** Each is one the grain rules above
+give a single answer for, and the specification defers them rather than calling them wrong:
+
+- An aggregate whose arguments read several datasets, when one of them determines the others:
+  `SUM(store_sales.ss_quantity * item.i_current_price)` is aggregated over `store_sales` rows. The
+  specification requires `E_AMBIGUOUS_MEASURE_GRAIN` whenever the arguments read more than one
+  dataset; here that code is raised only when no dataset determines the rest.
+- An aggregate whose `FILTER` reads a dataset its arguments do not, under the same condition.
+- A model-scoped `COUNT(*)` requested with metrics that share one grain, which counts that grain's
+  rows. The specification requires the code for any model-scoped aggregate that reads no dataset;
+  here it is raised when the request has no grain, or more than one, for the count to take.
+
+A model that must behave the same on every engine should not rely on these.
 
 ## Model conformance
 

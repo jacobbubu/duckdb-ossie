@@ -22,7 +22,7 @@ no longer exist upstream; the compliance models replace them.
 | `examples/tpcds_semantic_model.yaml` | `examples/` | yes (its three window-function metrics are refused when queried) |
 | `examples/renamed_fields.yaml` | `examples/` | yes (field names differ from source columns) |
 | `examples/flights.semantic_model.yaml` | `examples/` | yes |
-| `compliance/wide_table/retail/retail_model.ossie.yaml` | `compliance/wide_table/retail/` | yes (dataset-scoped metrics; `row_count`, `order_less_return` and `running_revenue` are refused when queried) |
+| `compliance/wide_table/retail/retail_model.ossie.yaml` | `compliance/wide_table/retail/` | yes (dataset-scoped metrics; `row_count`, `order_less_return`, `amount_less_order` and `running_revenue` are refused when queried) |
 | `compliance/wide_table/stores/stores_model.ossie.yaml` | `compliance/wide_table/stores/` | yes |
 | `compliance/wide_table/stores/stores_ambiguous_model.ossie.yaml` | `compliance/wide_table/stores/` | yes (its two paths to `date_dim` are refused as ambiguous when queried) |
 | `compliance/query/scott/scott_model.ossie.yaml` | `compliance/query/scott/` | yes |
@@ -61,12 +61,12 @@ with `left_joins => true`, the join the specification requires. Every case gets 
 
 | status | cases | meaning |
 |---|---|---|
-| `pass` | 20 | rows and output names match, or the refusal carries the expected error code |
+| `pass` | 41 | rows and output names match, or the refusal carries the expected error code |
 | `names` | 0 | rows match under different output names |
 | `wrong` | 0 | rows differ |
 | `false-refusal` | 0 | refused where rows were expected |
 | `false-acceptance` | 0 | answered where an error was expected |
-| `refused` | 21 | refused as required, but the message does not carry the `E_*` code |
+| `refused` | 0 | refused as required, but the message does not carry the `E_*` code |
 | `inexpressible` | 5 | the query uses a part of the JSON binding `ossie_query` has no argument for: an alias (`a09`, `e10`), an unknown key (`e01`, `e20`), a null filter (`e02`) |
 
 `wide_table_status.tsv` pins the status of every case, and `scripts/full_functionality_check.sh`

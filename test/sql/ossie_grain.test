@@ -27,17 +27,17 @@ SELECT ossie_compile(['total_sales', 'store_productivity'], ['store.s_state'], [
 ----
 SELECT COALESCE(store.dim_0, store_sales.dim_0) AS s_state, store_sales.agg_0 AS total_sales, (store_sales.agg_0 / "nullif"(store.agg_0, 0)) AS store_productivity FROM ((SELECT store.s_state AS dim_0, sum(store.s_number_employees) AS agg_0 FROM tpcds.main.store AS store WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store FULL JOIN (SELECT store.s_state AS dim_0, sum(store_sales.ss_ext_sales_price) AS agg_0 FROM (tpcds.main.store_sales AS store_sales INNER JOIN tpcds.main.store AS store ON ((store_sales.ss_store_sk = store.s_store_sk))) WHERE (store.s_state != 'ZZ') GROUP BY store.s_state) AS store_sales ON ((store.dim_0 IS NOT DISTINCT FROM store_sales.dim_0))) WHERE (store_sales.agg_0 > 100)
 
-# A filter or dimension must apply to every grain, so each grain has to reach its dataset without
-# repeating rows. store cannot reach date_dim except through store_sales.
+# A filter or dimension must apply to every metric, so each metric has to reach its dataset from every
+# dataset it aggregates without repeating rows. store cannot reach date_dim except through store_sales.
 statement error
 SELECT ossie_compile(['store_productivity'], [], ['date_dim.d_year = 2001']);
 ----
-filter "date_dim.d_year = 2001" names dataset "date_dim", which "store" cannot join without repeating its rows
+E_UNSUPPORTED_FILTER_PATH: filter "date_dim.d_year = 2001" reads "date_dim", which metric "store_productivity" cannot reach from "store", and a filter applies to every metric of the request: joining "store_sales" repeats each "store" row once per match
 
 statement error
 SELECT ossie_compile(['customer_lifetime_value'], ['item.i_brand'], []);
 ----
-dimension "item.i_brand" names dataset "item", which "customer" cannot join without repeating its rows
+E_NO_PATH: dimension "item.i_brand" is a field of "item", which metric "customer_lifetime_value" cannot reach from "customer": joining "store_sales" repeats each "customer" row once per match
 
 # COUNT(*) has no grain of its own, and with two grains there is no single one to inherit.
 statement error

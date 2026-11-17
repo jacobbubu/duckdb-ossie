@@ -1,0 +1,268 @@
+# name: test/sql/ossie_refusal_codes.test
+# description: the Wide Table error code each refusal carries, and which one a request with several faults gets
+# group: [sql]
+
+require ossie
+
+statement ok
+CALL ossie_load('test/fixtures/conformance/compliance/wide_table/retail/retail_model.ossie.yaml');
+
+# --- one request per code, in the specification's order ---------------------------------------------
+
+statement error
+SELECT ossie_compile([], ['customers.region + 1'], []);
+----
+ossie: E_INVALID_QUERY: dimension "customers.region + 1" must be a dataset.field name
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.amount >']);
+----
+ossie: E_INVALID_QUERY: filter "orders.amount >" does not parse
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['lower(customers.region) = ''east''']);
+----
+ossie: E_INVALID_QUERY: filter "lower(customers.region) = 'east'" calls function "lower"
+
+statement error
+SELECT ossie_compile([], [], []);
+----
+ossie: E_EMPTY_AGGREGATION_QUERY: at least one metric or dimension is required
+
+statement error
+SELECT ossie_compile(['no_such_metric'], [], []);
+----
+ossie: E_NAME_NOT_FOUND: model "retail" has no metric named "no_such_metric"
+
+statement error
+SELECT ossie_compile([], ['customers.no_such_field'], []);
+----
+ossie: E_NAME_NOT_FOUND: dataset "customers" has no field "no_such_field"
+
+statement error
+SELECT ossie_compile([], ['nowhere.region'], []);
+----
+ossie: E_NAME_NOT_FOUND: dimension "nowhere.region" names dataset "nowhere", which the model does not declare
+
+statement error
+SELECT ossie_compile([], ['customers.region'], ['customers.nope = 1']);
+----
+ossie: E_NAME_NOT_FOUND: filter "customers.nope = 1" references "customers.nope", which the model does not declare
+
+statement error
+SELECT ossie_compile([], ['orders.total_revenue'], []);
+----
+ossie: E_METRIC_IN_DIMENSIONS: dimension "orders.total_revenue" names a metric, and a query groups by fields. Request it in metrics
+
+statement error
+SELECT ossie_compile([], ['revenue_per_customer'], []);
+----
+ossie: E_METRIC_IN_DIMENSIONS: dimension "revenue_per_customer" names a metric
+
+statement error
+SELECT ossie_compile(['orders.amount'], [], []);
+----
+ossie: E_FIELD_IN_METRICS: metric "orders.amount" names a field, and a field has no value for a group of rows until a metric aggregates it. Request it in dimensions, or a metric the model declares over it
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.total_revenue > 1']);
+----
+ossie: E_AGGREGATE_IN_WHERE: filter "orders.total_revenue > 1" references metric "orders.total_revenue"
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['SUM(orders.amount) OVER () > 10']);
+----
+ossie: E_WINDOW_IN_WHERE: filter "SUM(orders.amount) OVER () > 10" contains the window function SUM
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.amount > 100 AND customers.region = ''EAST''']);
+----
+ossie: E_CROSS_DATASET_FILTER: filter "orders.amount > 100 AND customers.region = 'EAST'" reads fields of 2 datasets (customers, orders)
+
+statement error
+SELECT ossie_compile(['orders.total_revenue', 'ORDERS.Total_Revenue'], [], []);
+----
+ossie: E_NAME_COLLISION: "orders.total_revenue" and "ORDERS.Total_Revenue" have the same output name "total_revenue"
+
+statement error
+SELECT ossie_compile(['amount_less_order'], [], []);
+----
+ossie: E_UNAGGREGATED_FINER_GRAIN_REFERENCE: metric "amount_less_order" reads "orders.amount" outside every aggregate, so it has no one value for a group of rows. Aggregate it in the model
+
+statement error
+SELECT ossie_compile(['running_revenue'], [], []);
+----
+ossie: E_DEFERRED_WINDOWED_METRIC: metric "running_revenue" uses the window function SUM
+
+statement error
+SELECT ossie_compile(['order_less_return'], [], []);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: an aggregate in metric "order_less_return" spans datasets orders, returns
+
+statement error
+SELECT ossie_compile(['row_count'], [], []);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "row_count" has an aggregate with no column reference
+
+# No requested metric reaches the dimension's dataset: the message names the dimension, a metric that
+# does not reach it, the dataset the metric aggregates and why the join is refused.
+statement error
+SELECT ossie_compile(['customers.customer_count'], ['orders.order_id'], []);
+----
+ossie: E_NO_PATH: dimension "orders.order_id" is a field of "orders", which metric "customers.customer_count" cannot reach from "customers": joining "orders" repeats each "customers" row once per match, which would inflate every aggregate. Relationship "orders_to_customers" is many_to_one
+
+# One metric reaches it and another does not.
+statement error
+SELECT ossie_compile(['orders.total_revenue', 'tickets.ticket_count'], ['customers.region'], []);
+----
+ossie: E_PARTIAL_DIMENSION_REACHABILITY: dimension "customers.region" is a field of "customers", which metric "tickets.ticket_count" cannot reach from "tickets", though metric "orders.total_revenue" can: no relationship connects "tickets" to "customers"
+
+statement error
+SELECT ossie_compile([], ['orders.order_id', 'returns.return_id'], []);
+----
+ossie: E_NO_ANCHOR: a query without metrics reads the rows of the one dimension dataset that joins every other without repeating its rows, and none of [orders, returns] does
+
+# A filter applies to every metric of the request, and to the anchor's rows when there is none.
+statement error
+SELECT ossie_compile(['orders.total_revenue', 'returns.total_returns'], ['customers.region'], ['orders.amount > 100']);
+----
+ossie: E_UNSUPPORTED_FILTER_PATH: filter "orders.amount > 100" reads "orders", which metric "returns.total_returns" cannot reach from "returns", and a filter applies to every metric of the request
+
+statement error
+SELECT ossie_compile([], ['customers.region'], ['orders.amount > 100']);
+----
+ossie: E_UNSUPPORTED_FILTER_PATH: filter "orders.amount > 100" reads "orders", but a query without metrics takes its rows from "customers"
+
+# A metric filter is a source of aggregates like a requested metric, so dimensions and filters must
+# reach from the datasets it aggregates too.
+statement error
+SELECT ossie_compile([], ['orders.order_id'], [], metric_filters => ['customers.customer_count > 1']);
+----
+ossie: E_NO_PATH: dimension "orders.order_id" is a field of "orders", which metric filter "customers.customer_count > 1" cannot reach from "customers"
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.amount > 1'], metric_filters => ['returns.total_returns > 1']);
+----
+ossie: E_UNSUPPORTED_FILTER_PATH: filter "orders.amount > 1" reads "orders", which metric filter "returns.total_returns > 1" cannot reach from "returns"
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['order_less_return > 1']);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: an aggregate in metric filter "order_less_return > 1" spans datasets orders, returns
+
+# --- a request with several faults gets the code listed first ----------------------------------------
+# Each request below adds an earlier fault to the one before it.
+
+statement error
+SELECT ossie_compile(['orders.total_revenue', 'tickets.ticket_count'], ['customers.region'], ['returns.amount > 1']);
+----
+ossie: E_PARTIAL_DIMENSION_REACHABILITY: dimension "customers.region"
+
+statement error
+SELECT ossie_compile(['tickets.ticket_count', 'customers.customer_count'], ['customers.region', 'orders.order_id'], []);
+----
+ossie: E_NO_PATH: dimension "orders.order_id"
+
+statement error
+SELECT ossie_compile(['customers.customer_count', 'orders.total_revenue', 'row_count'], ['orders.order_id'], []);
+----
+ossie: E_AMBIGUOUS_MEASURE_GRAIN: metric "row_count"
+
+statement error
+SELECT ossie_compile(['order_less_return', 'running_revenue'], [], []);
+----
+ossie: E_DEFERRED_WINDOWED_METRIC: metric "running_revenue"
+
+statement error
+SELECT ossie_compile(['running_revenue', 'amount_less_order'], [], []);
+----
+ossie: E_UNAGGREGATED_FINER_GRAIN_REFERENCE: metric "amount_less_order"
+
+statement error
+SELECT ossie_compile(['orders.total_revenue', 'ORDERS.Total_Revenue', 'amount_less_order'], [], []);
+----
+ossie: E_NAME_COLLISION: "orders.total_revenue" and "ORDERS.Total_Revenue"
+
+statement error
+SELECT ossie_compile(['orders.total_revenue', 'ORDERS.Total_Revenue'], [], ['orders.amount > 100 AND customers.region = ''EAST''']);
+----
+ossie: E_CROSS_DATASET_FILTER: filter "orders.amount > 100 AND customers.region = 'EAST'"
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.amount > 100 AND customers.region = ''EAST''', 'SUM(orders.amount) OVER () > 10']);
+----
+ossie: E_WINDOW_IN_WHERE: filter "SUM(orders.amount) OVER () > 10"
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['SUM(orders.amount) OVER () > 10', 'orders.total_revenue > 1']);
+----
+ossie: E_AGGREGATE_IN_WHERE: filter "orders.total_revenue > 1"
+
+statement error
+SELECT ossie_compile(['orders.amount'], [], ['SUM(orders.amount) > 1']);
+----
+ossie: E_FIELD_IN_METRICS: metric "orders.amount"
+
+statement error
+SELECT ossie_compile(['orders.amount'], ['orders.total_revenue'], []);
+----
+ossie: E_METRIC_IN_DIMENSIONS: dimension "orders.total_revenue"
+
+statement error
+SELECT ossie_compile(['no_such_metric'], ['orders.total_revenue'], []);
+----
+ossie: E_NAME_NOT_FOUND: model "retail" has no metric named "no_such_metric"
+
+# A name in a filter is looked up with the others, before any filter is judged.
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], ['orders.total_revenue > 1', 'customers.nope = 1']);
+----
+ossie: E_NAME_NOT_FOUND: filter "customers.nope = 1"
+
+# A request that cannot be read is refused before any name in it is looked up.
+statement error
+SELECT ossie_compile(['no_such_metric'], ['customers.no_such_field'], ['orders.amount >']);
+----
+ossie: E_INVALID_QUERY: filter "orders.amount >" does not parse
+
+statement error
+SELECT ossie_compile([], [], ['orders.amount >']);
+----
+ossie: E_INVALID_QUERY: filter "orders.amount >" does not parse
+
+# --- conditions the specification has no code for carry none ----------------------------------------
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['orders.amount > 100']);
+----
+ossie: metric filter "orders.amount > 100" names no metric and contains no aggregate. Pass a condition on rows in filters
+
+statement error
+SELECT ossie_compile(['orders.total_revenue'], [], [], metric_filters => ['SUM(orders.amount) OVER () > 10']);
+----
+ossie: metric filter "SUM(orders.amount) OVER () > 10" contains the window function SUM
+
+# --- more than one way to answer ---------------------------------------------------------------------
+
+statement ok
+CALL ossie_load('test/fixtures/conformance/compliance/wide_table/stores/stores_ambiguous_model.ossie.yaml');
+
+statement error
+SELECT ossie_compile(['store_sales.total_sales'], ['date_dim.date_id'], []);
+----
+ossie: E_AMBIGUOUS_PATH: more than one join path connects "store_sales" to "date_dim"
+
+# Two datasets joined on the key of each: either could be the one whose rows a query without metrics
+# reads, and the two answers differ whenever one has a row the other lacks.
+statement ok
+CALL ossie_load('test/fixtures/one_to_one_model.yaml');
+
+statement error
+SELECT ossie_compile([], ['customers.region', 'profiles.tier'], []);
+----
+ossie: E_AMBIGUOUS_PATH: a query without metrics reads the rows of the one dimension dataset that joins every other without repeating its rows, and more than one of [customers, profiles] do
+
+query T
+SELECT ossie_compile([], ['customers.region'], []);
+----
+SELECT customers.region AS region FROM memory.main.customers AS customers GROUP BY customers.region

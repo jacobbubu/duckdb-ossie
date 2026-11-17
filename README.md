@@ -69,8 +69,10 @@ guess. Ask for `total_sales` grouped by `store.s_state` on a model where the sal
 relationship is declared many-to-many, and you get:
 
 ```
-ossie: joining "store" repeats each "store_sales" row once per match, which would
-inflate every aggregate. Relationship "store_sales_to_store" is many_to_many
+ossie: E_NO_PATH: dimension "store.s_state" is a field of "store", which metric
+"total_sales" cannot reach from "store_sales": joining "store" repeats each
+"store_sales" row once per match, which would inflate every aggregate.
+Relationship "store_sales_to_store" is many_to_many
 ```
 
 rather than a number inflated by the number of matches. Where the model *does* determine the

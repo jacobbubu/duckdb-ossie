@@ -241,12 +241,12 @@ SELECT * FROM ossie_query(['order_count'], [], ['DATEADD(day, 30, o.created_mont
 statement error
 SELECT * FROM ossie_query(['order_count'], [], ['REGEXP_LIKE(o.code, ''A.*'')']);
 ----
-ossie: filter "REGEXP_LIKE(o.code, 'A.*')" calls REGEXP_LIKE, whose result OSSIE_SQL_2026 does not define
+ossie: E_INVALID_QUERY: filter "REGEXP_LIKE(o.code, 'A.*')" calls REGEXP_LIKE, whose result OSSIE_SQL_2026 does not define
 
 statement error
 SELECT * FROM ossie_query(['order_count'], [], ['MD5(o.code) = ''x''']);
 ----
-ossie: filter "MD5(o.code) = 'x'" calls MD5, which OSSIE_SQL_2026 does not define
+ossie: E_INVALID_QUERY: filter "MD5(o.code) = 'x'" calls MD5, which OSSIE_SQL_2026 does not define
 
 # --- quoted identifiers match exactly ----------------------------------------------------------------------
 # The language makes a quoted identifier exact where DuckDB matches it regardless of case. The source

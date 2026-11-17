@@ -58,6 +58,13 @@ SQL you inspect is the SQL that runs.
 `Parser::ParseExpressionList` rather than split on `.`, so quoted identifiers behave and a request
 never becomes spliced SQL.
 
+**Check.** A request is refused in the order of the Wide Table specification's error table, and
+`Compile` is laid out in that order with the row numbers in its comments: read every entry before
+looking up any name, look up every name before judging any filter, judge the filters before the
+metrics, and the metrics before the join graph. A refusal the specification defines starts with its
+code (`ossie: E_NO_PATH: ...`). Keep a new check in its row's place; the order is what makes a
+request with two faults report the same one on every engine.
+
 **Grain.** Each aggregate's grain is the dataset that functionally determines the others it
 references — the one whose rows are counted once while the rest are replicated onto them. When
 every aggregate in a query agrees on one grain, that grain becomes the root of the join tree. When

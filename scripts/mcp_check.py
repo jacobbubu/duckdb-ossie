@@ -132,7 +132,8 @@ send({"jsonrpc":"2.0","id":5,"method":"tools/call","params":{
     "arguments":{"metrics":"store_productivity","filters":"date_dim.d_year = 2001"}}})
 r = read()
 body = json.dumps((r or {}).get("result", {})) + json.dumps((r or {}).get("error", {}))
-check("a refusal reaches the agent as a message", "repeating its rows" in body, body[:110])
+check("a refusal reaches the agent as a message, with its error code",
+      "E_UNSUPPORTED_FILTER_PATH" in body and "store_productivity" in body, body[:110])
 
 # A condition on a metric has its own parameter. No brand sells a negative amount, so the same
 # condition that returns rows one way round returns only the header the other.
