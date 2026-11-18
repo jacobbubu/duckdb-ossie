@@ -13,6 +13,7 @@ static void LoadInternal(ExtensionLoader &loader) {
 	ossie::RegisterDescribeFunctions(loader);
 	ossie::RegisterCompileFunction(loader);
 	ossie::RegisterQueryFunction(loader);
+	ossie::RegisterSqlFunction(loader);
 	ossie::RegisterDateFunctions(loader);
 	ossie::RegisterPopulationFunctions(loader);
 }

@@ -80,6 +80,9 @@ docs:
       applied after aggregation. `ossie_query(query)` takes the same request as one JSON object,
       which can also name its output columns
     - `ossie_compile(metrics, dimensions, filters)` -- the same SQL as text, without running it
+    - `ossie_sql(query)` -- run one `SELECT` written over the model's relations: a dataset is
+      `model.dataset`, its fields are its columns, and `AGG(measure)` evaluates a dataset-scoped
+      metric where the `FROM` clause of its query block is one model relation
     - `ossie_datasets()`, `ossie_fields()`, `ossie_metrics()`, `ossie_relationships()` -- the
       model's vocabulary, including `ai_context` synonyms and cardinality derived from declared keys
 

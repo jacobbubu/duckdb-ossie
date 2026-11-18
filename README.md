@@ -15,7 +15,7 @@ semantic layer via MCP.
 > `INSTALL ossie FROM community` gives the 0.3.0 build of
 > [iqea-ai/duckdb-ossie](https://github.com/iqea-ai/duckdb-ossie), which this repository was forked
 > from. What [CHANGELOG.md](CHANGELOG.md) lists under *Unreleased* is not in that build: it has seven
-> `ossie_*` functions where this repository has seventeen, and its `ossie_query` has no
+> `ossie_*` functions where this repository has eighteen, and its `ossie_query` has no
 > `metric_filters` argument. To use what this README describes, build the extension and load the
 > file, as in [Running this repository's build](#running-this-repositorys-build).
 
@@ -41,8 +41,10 @@ Claims about a file format should be checkable, so:
   forbids
 - Upstream's compliance cases are vendored with them and their status is pinned. All 46 Wide Table
   cases pass. The 32 query cases are written for the Relational Query Interface, SQL with `AGG()`
-  over a model's relations, which this extension does not have: none runs as written, 12 can be
-  asked as one `ossie_query` request and return the expected rows, 20 cannot. See
+  over a model's relations, which `ossie_sql` takes where a query block evaluates measures over one
+  relation: 11 run as written and return the expected rows, and 21 are refused, 20 for a measure
+  over a join and one for a measure passed through a CTE unevaluated. Asked instead as one
+  `ossie_query` request, 12 return the expected rows and 20 cannot be asked. See
   [test/fixtures/conformance/README.md](test/fixtures/conformance/README.md)
 - Generated SQL is diffed against hand-written TPC-DS equivalents with symmetric `EXCEPT` over
   `dsdgen(sf = 0.01)` data, so correctness is measured against the numbers rather than against our
@@ -109,6 +111,7 @@ every refusal and why it exists.
 | `ossie_query(query)` | The same, with the request written as one JSON object, which can also name its output columns |
 | `ossie_compile(metrics, dimensions, filters)` | Return the SQL without running it. Named arg: `metric_filters` |
 | `ossie_compile(query)` | The same, for a JSON query |
+| `ossie_sql(query)` | Run one `SELECT` written over the model's relations, where `AGG(measure)` evaluates a dataset-scoped metric |
 
 A request names metrics as `metric` or `dataset.metric` and dimensions as `dataset.field`; each
 output column takes the final part of its name (`item.i_brand` becomes `i_brand`), and two entries
@@ -139,6 +142,28 @@ define, or a `null`, is refused rather than ignored. `metric_filters` stays a na
 `ossie_compile` is a first-class output, not a debug aid — it is the useful surface wherever DuckDB
 is not the executor. It runs the identical compiler `ossie_query` does, so the SQL you inspect is
 the SQL that would run.
+
+`ossie_sql` takes the question as SQL instead, the Relational Query Interface of the Ossie
+specification. A dataset is the relation `model.dataset`, its fields are its columns, and
+`AGG(measure)` evaluates one of its dataset-scoped metrics over the rows of a group:
+
+```sql
+SELECT * FROM ossie_sql('
+  SELECT deptno, AGG(sum_sal) AS payroll
+  FROM scott_model.emp
+  WHERE job <> ''CLERK''
+  GROUP BY deptno
+  HAVING AGG(emp_count) > 2
+');
+```
+
+The rest of the query is DuckDB SQL: subqueries, CTEs, `ROLLUP`, a window function over a measure's
+value, other tables. For now a measure is evaluated only where the `FROM` clause of its query block
+is one model relation, and a measure cannot be passed through unevaluated, so `*` over a relation
+that has measures is refused;
+[docs/limitations.md](docs/limitations.md#the-relational-query-interface) has the rest. The query
+runs with the caller's rights and can read any table the caller can, which is why the MCP example
+below does not expose it.
 
 ## Population profiles
 

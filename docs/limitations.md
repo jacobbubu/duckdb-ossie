@@ -190,16 +190,54 @@ not a key of the object; pass it as the named argument in either form.
 
 ## The Relational Query Interface
 
-**There is none.** The Ossie specification defines a second way to query a model: SQL that reads the
-model's datasets as relations and evaluates a measure with `AGG()`, as in
-`SELECT deptno, AGG(sum_sal) FROM scott_model.emp GROUP BY deptno`. The extension does not accept
-such a query. A model is queried through `ossie_query` and `ossie_compile`, by naming metrics,
-dimensions and filters.
+**`ossie_sql(query)` takes one `SELECT` over the model's relations, and evaluates a measure only
+where the `FROM` clause of its query block is one model relation.** The Ossie specification defines
+a second way to query a model: SQL that reads the model's datasets as relations and evaluates a
+measure with `AGG()`, as in `SELECT deptno, AGG(sum_sal) FROM scott_model.emp GROUP BY deptno`. A
+dataset is the relation `model.dataset`. Its fields are its columns, read by name with the field's
+expression as their value, and `AGG(measure)` or `AGG(relation.measure)` evaluates one of its
+dataset-scoped metrics over the rows of a group, in `SELECT`, `HAVING` or `ORDER BY`. A model-scoped
+metric belongs to no relation, as the specification has it, so only `ossie_query` evaluates one.
 
-That leaves questions a request cannot ask: measures of both sides of a self-join, a join on anything
-but a declared relationship, a join type chosen per query, a filter that holds a subquery, a group
-that is an expression, `ROLLUP`. Upstream's 32 query compliance cases are the measure of it: 12 can
-be asked as one request and give the expected rows, 20 cannot. The
+Three parts of the interface are missing, and each is refused by a message that says so rather than
+answered some other way:
+
+- **A measure over a join.** `SELECT d.dname, AGG(e.sum_sal) FROM scott_model.emp e JOIN
+  scott_model.dept d ON e.deptno = d.deptno GROUP BY d.dname` is refused. The specification has each
+  measure aggregated over the rows of its own relation whatever the join repeats, and an aggregate
+  over the joined rows does not give that. Model relations do join as tables do while the query
+  block reads only their fields.
+- **A measure passed through unevaluated.** A measure has a value only inside `AGG`, in the query
+  block whose `FROM` names its relation. A bare measure column is refused, so a subquery or CTE
+  cannot hand a measure to the block around it, and `*` over a relation that has measures is refused
+  because the specification counts the measures among its columns. `*` over a relation without
+  measures is its fields.
+- **A window measure**, one whose expression holds a window function. `ossie_query` refuses it too.
+
+**An unaliased `AGG(measure)` in the `SELECT` list is named for the measure.** The specification
+gives no rule, and the name DuckDB would give is the measure's definition. Anything built on a
+measure, such as `AGG(sum_sal) * 2`, takes DuckDB's name for the expression; give it an alias.
+
+**The query is DuckDB SQL, not `OSSIE_SQL_2026`, and nothing in it is translated.** Only model
+relations and `AGG` calls are replaced, before DuckDB binds the statement. `model.dataset` names the
+dataset even where the database has a table of that name in a schema of the model's name; that table
+is still reached through its catalog, as `memory.model.dataset`. A column of a dataset's source that
+no field declares is not a column of the relation, though a measure may read it. A dataset that
+declares no field cannot be read, and `AT` and column aliases on a model relation are refused.
+
+**`ossie_sql` is not a sandbox.** It accepts one statement, a `SELECT` with no statement that writes
+inside it, but that `SELECT` runs with the caller's rights: it reads any table and calls any function
+the caller could. `allow_filter_functions` does not govern it. It is for a caller who could have
+typed the SQL, and the MCP example exposes `semantic_query` and not this.
+
+**There is no `ossie_compile` for it and no `DESCRIBE` of a relation.** The statement that runs
+cannot be printed, and `DESCRIBE scott_model.emp` looks for a table. `DESCRIBE SELECT * FROM
+ossie_sql('...')` does describe a query's result.
+
+Upstream's 32 query compliance cases are the measure of this: 11 run as written and give the expected
+rows, 20 are refused for a measure over a join, and one for a measure passed through a CTE.
+`ossie_query` asks a narrower set of questions, with the joins planned from the model's
+relationships: 12 of the 32 can be asked as one request, and all 12 give the expected rows. The
 [conformance fixtures](../test/fixtures/conformance/README.md#query-compliance-cases) list which and
 why.
 

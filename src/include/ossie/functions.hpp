@@ -22,6 +22,9 @@ void RegisterCompileFunction(ExtensionLoader &loader);
 //! Registers ossie_query(metrics, dimensions, filters) and ossie_query(query).
 void RegisterQueryFunction(ExtensionLoader &loader);
 
+//! Registers ossie_sql(query), a SELECT over the model's relations.
+void RegisterSqlFunction(ExtensionLoader &loader);
+
 //! Registers ossie_date_trunc and ossie_dateadd, the DATE-preserving forms the OSSIE_SQL_2026 lowering emits.
 void RegisterDateFunctions(ExtensionLoader &loader);
 

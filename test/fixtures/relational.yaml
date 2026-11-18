@@ -1,0 +1,100 @@
+version: "0.3.0.dev0"
+name: shop
+description: Datasets read as relations through ossie_sql
+datasets:
+  - name: orders
+    source: memory.main.orders
+    primary_key: [order_id]
+    fields:
+      - name: order_id
+        datatype: Integer
+        expression:
+          sql: order_id
+      - name: customer_id
+        datatype: Integer
+        expression:
+          sql: cust_id
+      - name: amount
+        datatype: Decimal
+        expression:
+          sql: amount_cents / 100.0
+    metrics:
+      - name: revenue
+        datatype: Decimal
+        expression:
+          sql: SUM(amount)
+      - name: row_count
+        datatype: Integer
+        expression:
+          sql: COUNT(*)
+      - name: shipped_count
+        datatype: Integer
+        expression:
+          sql: COUNT(source.shipped_at)
+      - name: shipped_revenue
+        datatype: Decimal
+        expression:
+          sql: SUM(amount) FILTER (WHERE source.shipped_at IS NOT NULL)
+      - name: average_amount
+        datatype: Decimal
+        expression:
+          sql: SUM(amount) / COUNT(*)
+      - name: running_revenue
+        datatype: Decimal
+        expression:
+          sql: SUM(SUM(amount)) OVER (ORDER BY MIN(order_id))
+      - name: doubled
+        datatype: Decimal
+        expression:
+          sql: amount * 2
+  - name: customers
+    source: memory.main.customers
+    primary_key: [customer_id]
+    fields:
+      - name: customer_id
+        datatype: Integer
+        expression:
+          sql: customer_id
+      - name: region
+        datatype: String
+        expression:
+          sql: region
+    metrics:
+      - name: row_count
+        datatype: Integer
+        expression:
+          sql: COUNT(*)
+  - name: regions
+    source: memory.main.regions
+    fields:
+      - name: region
+        datatype: String
+        expression:
+          sql: region
+  # A field may carry the name a measure's source column is read under.
+  - name: shipments
+    source: memory.main.orders
+    primary_key: [order_id]
+    fields:
+      - name: order_id
+        datatype: Integer
+        expression:
+          sql: order_id
+      - name: source.shipped_at
+        datatype: String
+        expression:
+          sql: CASE WHEN shipped_at IS NULL THEN 'pending' ELSE 'shipped' END
+    metrics:
+      - name: shipped_count
+        datatype: Integer
+        expression:
+          sql: COUNT(source.shipped_at)
+  - name: notes
+    source: memory.main.notes
+    fields: []
+relationships:
+  - name: orders_to_customers
+    from: orders
+    to: customers
+    from_columns: [customer_id]
+    to_columns: [customer_id]

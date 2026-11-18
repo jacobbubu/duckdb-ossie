@@ -28,13 +28,13 @@ WHERE starts_with(function_name, 'ossie_') AND (examples IS NULL OR len(examples
 ----
 0
 
-# Twenty-three registrations: seventeen names, with ossie_query contributing four overloads (three of lists,
+# Twenty-four registrations: eighteen names, with ossie_query contributing four overloads (three of lists,
 # one of a JSON query) and ossie_compile, ossie_date_trunc and ossie_dateadd two each.
 query II
 SELECT count(*), count(DISTINCT function_name) FROM duckdb_functions()
 WHERE starts_with(function_name, 'ossie_');
 ----
-23	17
+24	18
 
 # Each date overload resolves to its own description.
 query TTT
@@ -79,7 +79,7 @@ WHERE starts_with(function_name, 'ossie_') AND NOT list_contains(categories, 'os
 # The population surface is exactly the unified entries plus the native concept helpers.
 query TI
 SELECT function_name, len(parameters) FROM duckdb_functions()
-WHERE starts_with(function_name, 'ossie_') AND NOT starts_with(function_name, 'ossie_query') AND function_name NOT IN ('ossie_load','ossie_metadata','ossie_relationships','ossie_datasets','ossie_fields','ossie_metrics','ossie_compile','ossie_date_trunc','ossie_dateadd') ORDER BY function_name;
+WHERE starts_with(function_name, 'ossie_') AND NOT starts_with(function_name, 'ossie_query') AND function_name NOT IN ('ossie_load','ossie_metadata','ossie_relationships','ossie_datasets','ossie_fields','ossie_metrics','ossie_compile','ossie_sql','ossie_date_trunc','ossie_dateadd') ORDER BY function_name;
 ----
 ossie_bundle_load	1
 ossie_concept_query	5
@@ -118,3 +118,4 @@ ossie_query	[query, metric_filters]
 ossie_query	[metrics, dimensions, metric_filters]
 ossie_query	[metrics, dimensions, filters, metric_filters]
 ossie_relationships	[]
+ossie_sql	[query]

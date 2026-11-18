@@ -25,10 +25,12 @@ src/
                catalog.cpp    source name splitting, catalog lookup, quoted-column check
                dialect.cpp    OSSIE_SQL_2026 -> DuckDB trees; refuses what the language omits
   compile/     compile.cpp    resolve -> grain -> plan joins -> rewrite -> emit
+               relational.cpp model relations and AGG() in a SELECT the caller wrote
   functions/   load.cpp       ossie_load, plus OssieState
                describe.cpp   the four description table functions
                compile.cpp    ossie_compile (scalar)
                query.cpp      ossie_query (bind_replace)
+               sql.cpp        ossie_sql (bind_replace)
                dates.cpp      ossie_date_trunc / ossie_dateadd, DATE in, DATE out
 ```
 
@@ -115,6 +117,29 @@ reference the caller wrote.
 before binding — so DuckDB plans and optimizes the generated query as though it had been typed by
 hand. Join reordering, filter pushdown and projection pruning come free and are not reimplemented.
 
+## A relational query
+
+`ossie_sql` does not go through `Compile()`. `CompileRelational()` in `compile/relational.cpp`
+parses the caller's SQL with DuckDB's parser and changes two things in the tree, leaving the rest
+as written.
+
+**A model relation becomes a projection.** The table reference `model.dataset` is replaced by
+`(SELECT <field expression> AS <field>, ... FROM <source> AS <dataset>) AS <name the query uses>`.
+The fields are then columns DuckDB binds like any others, and a column of the source that the model
+does not declare is not there to read.
+
+**`AGG(measure)` becomes the measure's expression.** The metric's tree is copied with each
+`dataset.field` pointed at the projection's column of that name; a `source.column` the measure
+reads is added to the projection under a name no field has. That is sound only while the rows of
+the query block are the rows of the relation, so a block whose `FROM` is anything but one model
+relation gets a refusal instead.
+
+The walk keeps one scope for each query block, holding the relations of its own `FROM` and a link
+to the block around it: `AGG` resolves a measure in its own block, and a correlated subquery still
+sees the fields of an outer relation. The statement goes back from `bind_replace` as `ossie_query`'s
+does. Nothing here checks what the SQL reads. The query runs as the caller, which is why the MCP
+example keeps `ossie_sql` out of reach.
+
 ## Conventions worth knowing
 
 **Never splice SQL.** Everything is a `ParsedExpression` tree from load to emit. Identifier quoting
@@ -141,6 +166,7 @@ retries — so refusals are tested on their message, not just on the fact that t
 | Load and validation | `ossie_load`, `ossie_validate` | malformed models, structural errors |
 | Description | `ossie_describe`, `ossie_relationships` | vocabulary surface, cardinality |
 | Golden SQL | `ossie_compile`, `ossie_grain` | compiler output and refusals |
+| Relational queries | `ossie_relational` | what `ossie_sql` evaluates, and each refusal by its message |
 | Differential | `ossie_differential` | **grain bugs** |
 
 The differential tests run generated SQL and hand-written TPC-DS equivalents over `dsdgen` data and

@@ -1,11 +1,11 @@
 -- Written in this repository, not vendored.
 --
 -- apache/ossie's compliance/query cases are written for the Relational Query Interface: SQL that
--- reads a model's relations and evaluates a measure with AGG(). This extension has no such
--- interface, so no case can be submitted as its query.ossie.sql stands. What it has is the Wide Table
--- interface, ossie_query. This file gives, for each case whose question ONE ossie_query request can
--- ask, that request; scripts/query_compliance.py runs it against the SCOTT data and compares the
--- rows with the case's expected.sql.
+-- reads a model's relations and evaluates a measure with AGG(). ossie_sql takes a case's
+-- query.ossie.sql as it stands, and scripts/query_compliance.py measures that first. This file is
+-- for its second measure, against the Wide Table interface: it gives, for each case whose question
+-- ONE ossie_query request can ask, that request; the script runs it against the SCOTT data and
+-- compares the rows with the case's expected.sql.
 --
 -- A request here is one SELECT over one ossie_query call. Around the call it may order, limit,
 -- select and rename columns, and compute scalars from them: what the case does to the values of

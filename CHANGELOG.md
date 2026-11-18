@@ -125,6 +125,18 @@ pins). The DuckDB version each release targets is noted separately.
   and in a filter on the metric; other aggregates stay NULL, as they are over no rows.
 
 ### Added
+- **`ossie_sql(query)` runs a `SELECT` written over the model's relations, the Relational Query
+  Interface of the Ossie specification.** A dataset is the relation `model.dataset` and its fields
+  are its columns; `AGG(measure)` evaluates one of its dataset-scoped metrics over the rows of a
+  group, in `SELECT`, `HAVING` or `ORDER BY`:
+  `SELECT * FROM ossie_sql('SELECT deptno, AGG(sum_sal) FROM scott_model.emp GROUP BY deptno')`.
+  The rest of the query is DuckDB SQL, so it can ask what a request cannot: a filter that holds a
+  subquery, a group that is an expression, `ROLLUP`, an aggregate over measure values. This first
+  step evaluates a measure only where the `FROM` clause of its query block is one model relation.
+  A measure over a join, a measure passed through a subquery unevaluated (so also `*` over a
+  relation that has measures) and a window measure are refused, each by a message that says so.
+  The query runs with the caller's rights and reads any table the caller can, so the MCP example
+  does not expose it. See [docs/limitations.md](docs/limitations.md#the-relational-query-interface).
 - **apache/ossie's wide-table compliance cases run against the extension.** The 46 cases of
   `compliance/wide_table` are vendored with their data, `scripts/wide_table_compliance.py` submits
   each query as written through `ossie_query(query)` and classifies the outcome, and
@@ -134,10 +146,11 @@ pins). The DuckDB version each release targets is noted separately.
   (Appendix B.6, `store_productivity` over two grains) is a test here and gives the 30 it states.
 - **apache/ossie's query compliance cases are vendored and measured.** The 32 cases of
   `compliance/query` are written for the Relational Query Interface, SQL with `AGG()` over a
-  model's relations, which this extension does not have, so none can be submitted as written.
-  `scripts/query_compliance.py` measures what can be: for 12 cases one `ossie_query` request asks
-  the same question, and all 12 return the expected rows; 20 have no such request, each for a
-  stated reason. The statuses are pinned and `scripts/full_functionality_check.sh` checks them.
+  model's relations, and `scripts/query_compliance.py` measures each two ways. As written, through
+  `ossie_sql`: 11 return the expected rows and 21 are refused, 20 for a measure over a join and one
+  for a measure passed through a CTE. As one `ossie_query` request asking the same question: 12
+  have such a request, and all 12 return the expected rows; 20 have none, each for a stated
+  reason. Both statuses are pinned and `scripts/full_functionality_check.sh` checks them.
 - **A request can be written as the Wide Table specification's JSON query, and can name its output
   columns.** `ossie_query(query)` and `ossie_compile(query)` take one string holding an object with
   `metrics`, `dimensions` and `filter`. An entry is a reference, or an object that adds an alias:

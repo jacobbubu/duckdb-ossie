@@ -34,10 +34,12 @@ set(EXTENSION_SOURCES
     src/model/yaml.cpp
     src/compile/compile.cpp
     src/compile/request.cpp
+    src/compile/relational.cpp
     src/functions/load.cpp
     src/functions/compile.cpp
     src/functions/describe.cpp
     src/functions/query.cpp
+    src/functions/sql.cpp
     src/functions/dates.cpp
     src/population/population.cpp
     src/population/population_error.cpp
