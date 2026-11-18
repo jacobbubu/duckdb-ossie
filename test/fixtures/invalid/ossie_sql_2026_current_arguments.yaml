@@ -1,0 +1,10 @@
+version: "0.3.0.dev0"
+name: current_arguments
+datasets:
+  - name: o
+    source: memory.main.orders
+    fields:
+      - name: f
+        datatype: DateTime
+        expression:
+          sql: CURRENT_TIMESTAMP(3)

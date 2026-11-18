@@ -23,8 +23,10 @@
 // spelled the same in DuckDB, so the tree DuckDB's parser produces is already right. This file handles
 // the rest, in four kinds:
 //
-//   * a function DuckDB spells differently or lacks (NVL, IFF, CHARINDEX, DATEADD, ...) becomes the
-//     equivalent DuckDB tree;
+//   * a function DuckDB spells differently or lacks (NVL, IF, IFF, CHARINDEX, DATEADD, ...) becomes the
+//     equivalent DuckDB tree. CURRENT_DATE, CURRENT_TIMESTAMP and CURRENT_TIME are among them: the
+//     language writes each with or without parentheses and gives them the types DATE, TIMESTAMP and
+//     TIME, where DuckDB has one of the six spellings as a function and puts a time zone on two;
 //   * a function DuckDB has under the same name but with a different result is wrapped so the result
 //     matches: CONCAT, GREATEST and LEAST skip NULL arguments in DuckDB, while NULL in gives NULL out
 //     for the language's own `||` and in standard SQL; DATE_TRUNC and DATEADD on a DATE give a DATE,
@@ -144,9 +146,40 @@ bool IsSubDayPart(const string &part) {
 	return part == "hour" || part == "minute" || part == "second";
 }
 
+//! True for the three names the language writes with or without parentheses, in lower case.
+bool IsCurrentDateTimeName(const string &name) {
+	return name == "current_date" || name == "current_timestamp" || name == "current_time";
+}
+
+//! CURRENT_DATE, CURRENT_TIMESTAMP or CURRENT_TIME, as the DATE, TIMESTAMP or TIME the language says it is.
+//! All three are read off the one clock DuckDB has without an extension, get_current_timestamp(), which is
+//! a TIMESTAMP WITH TIME ZONE: its own current_date and the wall-clock functions come with ICU, which a
+//! build need not carry. The cast to TIMESTAMP is the wall clock of the session's time zone with ICU
+//! loaded, and of UTC without it. There is no cast from a TIMESTAMP WITH TIME ZONE to a TIME, so the date
+//! and the time are taken from that wall clock.
+unique_ptr<ParsedExpression> CurrentDateTime(const string &name) {
+	unique_ptr<ParsedExpression> wall_clock =
+	    make_uniq<CastExpression>(LogicalType::TIMESTAMP, Call("get_current_timestamp", Children()));
+	if (name == "current_timestamp") {
+		return wall_clock;
+	}
+	return make_uniq<CastExpression>(name == "current_date" ? LogicalType::DATE : LogicalType::TIME,
+	                                 std::move(wall_clock));
+}
+
+//! The name of a column reference that could be one of the language's keywords: a single part, not written
+//! in quotes. Lower-cased; empty otherwise.
+string BareName(const ColumnRefExpression &colref, const unordered_set<string> &quoted) {
+	auto names = ColumnNames(colref);
+	if (names.size() != 1 || quoted.count(names[0]) > 0) {
+		return string();
+	}
+	return StringUtil::Lower(names[0]);
+}
+
 //! Every function the language defines, spelled the way DuckDB's parser hands it over: COUNT(*) arrives
 //! as count_star, PERCENTILE_CONT(p) WITHIN GROUP (ORDER BY x) as quantile_cont, EXTRACT(part FROM d) as
-//! date_part. IF and IFNULL never reach here; the parser turns them into CASE and COALESCE itself.
+//! date_part. IFNULL never reaches here; the parser turns it into COALESCE itself.
 bool IsLanguageFunction(const string &name) {
 	static const unordered_set<string> NAMES = {
 	    // aggregates
@@ -164,7 +197,7 @@ bool IsLanguageFunction(const string &name) {
 	    "log", "log10", "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "radians", "degrees", "pi", "greatest",
 	    "least",
 	    // conditional
-	    "iff", "nullif", "coalesce", "nvl", "nvl2", "zeroifnull", "nullifzero",
+	    "if", "iff", "nullif", "coalesce", "nvl", "nvl2", "zeroifnull", "nullifzero",
 	    // AGG(dataset.metric), which the parser replaces with the dataset-scoped metric's expression
 	    "agg"};
 	return NAMES.count(name) > 0;
@@ -212,10 +245,15 @@ unique_ptr<ParsedExpression> LowerFunction(FunctionExpression &function, const s
 		// with DuckDB's own schema; the names are the language's, and DuckDB already spells them right.
 		return nullptr;
 	}
-	static const char *const LOWERED[] = {
-	    "nvl",      "iff",     "nvl2",         "zeroifnull", "nullifzero", "charindex",         "startswith",
-	    "endswith", "to_date", "to_timestamp", "dateadd",    "datediff",   "date_trunc",        "concat",
-	    "greatest", "least",   "regexp_like",  "to_char",    "truncate",   "approx_percentile", "regexp_count"};
+	static const char *const LOWERED[] = {"nvl",          "if",           "iff",
+	                                      "nvl2",         "zeroifnull",   "nullifzero",
+	                                      "charindex",    "startswith",   "endswith",
+	                                      "to_date",      "to_timestamp", "dateadd",
+	                                      "datediff",     "date_trunc",   "concat",
+	                                      "greatest",     "least",        "regexp_like",
+	                                      "to_char",      "truncate",     "approx_percentile",
+	                                      "regexp_count", "current_date", "current_timestamp",
+	                                      "current_time"};
 	bool lowered = false;
 	for (auto candidate : LOWERED) {
 		lowered = lowered || name == candidate;
@@ -239,10 +277,16 @@ unique_ptr<ParsedExpression> LowerFunction(FunctionExpression &function, const s
 		RequireArgumentCount(args, name, 2, 2, "NVL(expr, default)", context);
 		return Coalesce(std::move(args[0]), std::move(args[1]));
 	}
-	if (name == "iff") {
-		// DuckDB's parser turns IF into this CASE itself; IFF is the same function under another name.
-		RequireArgumentCount(args, name, 3, 3, "IFF(condition, true_result, false_result)", context);
+	if (name == "if" || name == "iff") {
+		// IFF is IF under another name. DuckDB has IF as a function and no IFF; both become the same CASE.
+		RequireArgumentCount(args, name, 3, 3, StringUtil::Upper(name) + "(condition, true_result, false_result)",
+		                     context);
 		return Case(std::move(args[0]), std::move(args[1]), std::move(args[2]));
+	}
+	if (IsCurrentDateTimeName(name)) {
+		RequireArgumentCount(args, name, 0, 0, StringUtil::Upper(name) + " or " + StringUtil::Upper(name) + "()",
+		                     context);
+		return CurrentDateTime(name);
 	}
 	if (name == "nvl2") {
 		RequireArgumentCount(args, name, 3, 3, "NVL2(expr, not_null_result, null_result)", context);
@@ -363,10 +407,20 @@ void LowerCast(CastExpression &cast) {
 	}
 }
 
-void Lower(unique_ptr<ParsedExpression> &expr, const string &context) {
-	ParsedExpressionIterator::EnumerateChildren(*expr,
-	                                            [&](unique_ptr<ParsedExpression> &child) { Lower(child, context); });
+void Lower(unique_ptr<ParsedExpression> &expr, const unordered_set<string> &quoted, const string &context) {
+	ParsedExpressionIterator::EnumerateChildren(
+	    *expr, [&](unique_ptr<ParsedExpression> &child) { Lower(child, quoted, context); });
 	switch (expr->GetExpressionClass()) {
+	case ExpressionClass::COLUMN_REF: {
+		// Without parentheses CURRENT_DATE, CURRENT_TIMESTAMP and CURRENT_TIME arrive as column references.
+		auto name = BareName(expr->Cast<ColumnRefExpression>(), quoted);
+		if (IsCurrentDateTimeName(name)) {
+			auto replacement = CurrentDateTime(name);
+			replacement->SetAlias(expr->GetAlias());
+			expr = std::move(replacement);
+		}
+		break;
+	}
 	case ExpressionClass::FUNCTION: {
 		auto replacement = LowerFunction(expr->Cast<FunctionExpression>(), context);
 		if (replacement) {
@@ -390,10 +444,80 @@ void Lower(unique_ptr<ParsedExpression> &expr, const string &context) {
 	}
 }
 
+void LowerAnsi(unique_ptr<ParsedExpression> &expr, const unordered_set<string> &quoted) {
+	if (expr->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
+		ParsedExpressionIterator::EnumerateChildren(
+		    *expr, [&](unique_ptr<ParsedExpression> &child) { LowerAnsi(child, quoted); });
+		return;
+	}
+	// The functions DuckDB's own binder calls for these names, so the types are DuckDB's.
+	auto name = BareName(expr->Cast<ColumnRefExpression>(), quoted);
+	const char *function = nullptr;
+	if (name == "current_date") {
+		function = "current_date";
+	} else if (name == "current_timestamp") {
+		function = "get_current_timestamp";
+	} else if (name == "current_time") {
+		function = "get_current_time";
+	}
+	if (function) {
+		auto replacement = Call(function, Children());
+		replacement->SetAlias(expr->GetAlias());
+		expr = std::move(replacement);
+	}
+}
+
 } // namespace
 
-void LowerOssieSql2026(unique_ptr<ParsedExpression> &expr, const string &context) {
-	Lower(expr, context);
+void LowerOssieSql2026(unique_ptr<ParsedExpression> &expr, const string &sql, const string &context) {
+	Lower(expr, QuotedIdentifiers(sql), context);
+}
+
+void LowerAnsiSql(unique_ptr<ParsedExpression> &expr, const string &sql) {
+	LowerAnsi(expr, QuotedIdentifiers(sql));
+}
+
+bool IsCurrentDateTime(const string &name) {
+	return IsCurrentDateTimeName(StringUtil::Lower(name));
+}
+
+unordered_set<string> QuotedIdentifiers(const string &sql) {
+	unordered_set<string> result;
+	for (idx_t i = 0; i < sql.size(); i++) {
+		auto c = sql[i];
+		if (c == '\'') {
+			for (i++; i < sql.size(); i++) {
+				if (sql[i] != '\'') {
+					continue;
+				}
+				if (i + 1 < sql.size() && sql[i + 1] == '\'') {
+					i++;
+					continue;
+				}
+				break;
+			}
+		} else if (c == '"') {
+			string name;
+			for (i++; i < sql.size(); i++) {
+				if (sql[i] != '"') {
+					name += sql[i];
+					continue;
+				}
+				if (i + 1 < sql.size() && sql[i + 1] == '"') {
+					name += '"';
+					i++;
+					continue;
+				}
+				break;
+			}
+			result.insert(name);
+		} else if (c == '-' && i + 1 < sql.size() && sql[i + 1] == '-') {
+			while (i < sql.size() && sql[i] != '\n') {
+				i++;
+			}
+		}
+	}
+	return result;
 }
 
 } // namespace ossie

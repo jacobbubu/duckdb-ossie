@@ -1,0 +1,87 @@
+# name: test/sql/ossie_field_source_columns.test
+# description: a name in a field expression is a column of the dataset's source, never another field
+# group: [sql]
+
+# Ossie 0.3 resolves every name in a field expression to a column of the source and has no field defined
+# over another field. Where a field and a column share a name, a field expression reads the column and
+# everything else reads the field. The loader used to put the other field's expression in place of the
+# name, which gave a number no engine following the specification gives whenever the two differed.
+
+require ossie
+
+# The sources are not in the catalog yet, so the names cannot be checked and stay as written.
+statement ok
+CALL ossie_load('test/fixtures/nested_field_model.json', rebind => MAP{'tpcds.public': 'memory.main'});
+
+query T
+SELECT ossie_compile(['total'], ['dim.mid'], []);
+----
+SELECT (dim."label" || 'M') AS mid, sum(sales.amt) AS total FROM (memory.main.sales AS sales INNER JOIN memory.main.dim AS dim ON ((sales.k = dim.k))) GROUP BY (dim."label" || 'M')
+
+# outer_f is `mid || 'O'`. The model has a field `mid`, and the name is still the source's column.
+query T
+SELECT ossie_compile(['total'], ['dim.outer_f'], []);
+----
+SELECT (dim.mid || 'O') AS outer_f, sum(sales.amt) AS total FROM (memory.main.sales AS sales INNER JOIN memory.main.dim AS dim ON ((sales.k = dim.k))) GROUP BY (dim.mid || 'O')
+
+statement ok
+CREATE TABLE sales(k INTEGER, amt DECIMAL(10,2));
+
+statement ok
+CREATE TABLE dim(k INTEGER, label VARCHAR, mid VARCHAR, outer_f VARCHAR);
+
+statement ok
+INSERT INTO sales VALUES (1, 10.00);
+
+statement ok
+INSERT INTO dim VALUES (1, 'REAL', 'MID_COLUMN', 'OUTER_COLUMN');
+
+statement ok
+CALL ossie_load('test/fixtures/nested_field_model.json', rebind => MAP{'tpcds.public': 'memory.main'});
+
+# The field mid is label || 'M'.
+query TT
+SELECT * FROM ossie_query(['total'], ['dim.mid']);
+----
+REALM	10.00
+
+# The field outer_f is mid || 'O' over the column mid, and deep is outer_f || 'D' over the column outer_f.
+query TT
+SELECT * FROM ossie_query(['total'], ['dim.outer_f']);
+----
+MID_COLUMNO	10.00
+
+query TT
+SELECT * FROM ossie_query(['total'], ['dim.deep']);
+----
+OUTER_COLUMND	10.00
+
+query TT
+SELECT * FROM ossie_query(['total'], ['dim.self_ref']);
+----
+REALREAL	10.00
+
+# Two fields named after each other's columns are no cycle: each reads the source. A metric reads the field.
+statement ok
+CREATE TABLE t(k VARCHAR, a VARCHAR, b VARCHAR);
+
+statement ok
+INSERT INTO t VALUES ('1', 'x', 'y');
+
+statement ok
+CALL ossie_load('test/fixtures/field_names_model.json', rebind => MAP{'tpcds.public': 'memory.main'});
+
+query TTT
+SELECT a, b, max_a FROM ossie_query(['max_a'], ['t.a', 't.b']);
+----
+yA	xB	yA
+
+# A source with no column of the name: the expression can only have meant the field, which the format
+# does not allow. With the source in the catalog this is refused at load, naming both.
+statement ok
+CREATE OR REPLACE TABLE dim(k INTEGER, label VARCHAR);
+
+statement error
+CALL ossie_load('test/fixtures/nested_field_model.json', rebind => MAP{'tpcds.public': 'memory.main'});
+----
+ossie_load: field "dim.outer_f" references "mid", which is a field of dataset "dim" and not a column of its source memory.main.dim. A field expression reads the columns of the source and cannot refer to another field; write out the expression of "mid" in its place

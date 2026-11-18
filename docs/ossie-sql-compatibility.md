@@ -55,7 +55,8 @@ catalog，compile 的 `sql_replayable=false` 不能被忽略。Prepare 成功只
 
 | 表达式 | 转换/边界 | 限制 |
 | --- | --- | --- |
-| NVL、IFF、NVL2、ZEROIFNULL、NULLIFZERO | 降为 COALESCE/CASE/NULLIF 等树 | 不覆盖任意 coercion 组合 |
+| NVL、IF、IFF、NVL2、ZEROIFNULL、NULLIFZERO | 降为 COALESCE/CASE/NULLIF 等树 | 不覆盖任意 coercion 组合 |
+| CURRENT_DATE、CURRENT_TIMESTAMP、CURRENT_TIME（带或不带括号） | 取 `get_current_timestamp()` 转为 TIMESTAMP，再得到 DATE/TIME，类型即语言规定的 DATE、TIMESTAMP、TIME | 加载了 ICU 时是会话时区的本地时间，否则是 UTC；与关键字同名的源列须加引号 |
 | CHARINDEX、STARTSWITH、ENDSWITH | 转为 DuckDB 对应函数 | |
 | CONCAT、GREATEST、LEAST | 显式传播任一参数 NULL，不采用 DuckDB 默认跳过 NULL 的行为 | 这是项目对固定语言的解释，见 limitations |
 | DATE_TRUNC、DATEADD、DATEDIFF、单参 TO_DATE、CAST | 明确日期部分/类型 lowering；year..day 部分的 DATE_TRUNC/DATEADD 降为扩展自带的 `ossie_date_trunc`/`ossie_dateadd`，DATE 输入得到 DATE，TIMESTAMP 得到 TIMESTAMP | hour/minute/second 部分走 DuckDB `date_add`，DATE 升为 TIMESTAMP；编译 SQL 引用这两个扩展函数，只能在已加载扩展处运行 |
