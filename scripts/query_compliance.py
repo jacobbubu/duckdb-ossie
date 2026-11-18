@@ -2,16 +2,20 @@
 """Measure the built extension against apache/ossie's query compliance cases.
 
 The cases are written for the Relational Query Interface: SQL over a model's relations, with AGG()
-evaluating a measure. The extension has no such interface, so no query.ossie.sql can be submitted as
-it stands. What can be measured is whether the question of a case can be asked as one ossie_query
-request, and whether that request returns the rows of the case's expected.sql. The requests are in
-test/fixtures/conformance/query_requests.sql, written here. Every case gets one status:
+evaluating a measure. Each case is measured twice, against the rows of its expected.sql.
 
-  pass        a request asks the question, and its rows and column names match
-  names       its rows match, its column names differ
-  wrong       its rows differ
-  refused     the request is refused
-  no-request  no single ossie_query request asks the question
+As written: its query.ossie.sql, unchanged, handed to ossie_sql.
+
+As a request: whether its question can be asked as one ossie_query request, the Wide Table interface.
+The requests are in test/fixtures/conformance/query_requests.sql, written here.
+
+Every case gets one status of each kind:
+
+  pass        the rows and the column names match
+  names       the rows match, the column names differ
+  wrong       the rows differ
+  refused     the query, or the request, is refused
+  no-request  no single ossie_query request asks the question (as a request only)
 
 Each case's reference.duckdb.sql is also run and compared with its expected.sql. A difference there
 means the vendored suite and this DuckDB disagree, which no status of ours describes: exit 2.
@@ -108,26 +112,33 @@ def show(rows):
     return json.dumps(rows, default=lambda number: float(number) if number % 1 else int(number))
 
 
+def judge(actual, expected, ordered):
+    """The status of a result against the expected one, and a detail to print."""
+    if not same_result(actual, expected, ordered):
+        return "wrong", show(actual[2])
+    if [name.lower() for name in actual[0]] != [name.lower() for name in expected[0]]:
+        return "names", ", ".join(actual[0])
+    return "pass", ""
+
+
 def classify(shell, case, request):
-    """Returns the status, a detail to print, and whether the suite's own reference query failed."""
+    """Returns (status, detail) as written and as a request, and whether the suite's own reference query failed."""
+    written = statement((case / "query.ossie.sql").read_text())
     # An ORDER BY inside a subquery (b03) never stands alone: every such case orders its result too.
-    ordered = "ORDER BY" in statement((case / "query.ossie.sql").read_text())
+    ordered = "ORDER BY" in written
     queries = [statement((case / "expected.sql").read_text()), statement((case / "reference.duckdb.sql").read_text())]
-    results, error = run(shell, queries + ([request] if request else []))
+    results, error = run(shell, queries + ["SELECT * FROM ossie_sql(%s)" % sql_string(written)])
     if len(results) < 2:
-        return "no-request", error or "the suite's own queries did not run", True
+        detail = error or "the suite's own queries did not run"
+        return ("refused", detail), ("no-request", detail), True
     expected, reference = results[0], results[1]
     broken = not same_result(reference, expected, ordered)
+    as_written = judge(results[2], expected, ordered) if len(results) > 2 else ("refused", error or "")
     if not request:
-        return "no-request", "", broken
-    if len(results) < 3:
-        return "refused", error or "", broken
-    actual = results[2]
-    if not same_result(actual, expected, ordered):
-        return "wrong", show(actual[2]), broken
-    if [name.lower() for name in actual[0]] != [name.lower() for name in expected[0]]:
-        return "names", ", ".join(actual[0]), broken
-    return "pass", "", broken
+        return as_written, ("no-request", ""), broken
+    results, error = run(shell, [request])
+    as_request = judge(results[0], expected, ordered) if results else ("refused", error or "")
+    return as_written, as_request, broken
 
 
 def main():
@@ -144,6 +155,7 @@ def main():
         print("query_requests.sql and the cases differ: %s" % sorted(set(requests) ^ set(case.name for case in cases)))
         return 2
 
+    written = {}
     statuses = {}
     broken = []
     for case in cases:
@@ -151,30 +163,36 @@ def main():
         if request and (request.count("ossie_query(") != 1 or "scott." in request):
             print("%s: a request is one ossie_query call and reads no table itself" % case.name)
             return 2
-        status, detail, failed = classify(options.duckdb, case, request)
-        statuses[case.name] = status
+        as_written, as_request, failed = classify(options.duckdb, case, request)
+        written[case.name] = as_written[0]
+        statuses[case.name] = as_request[0]
         if failed:
             broken.append(case.name)
-        print("%-11s %s" % (status, case.name))
-        if options.verbose and (detail or reason):
-            print("    " + (detail or reason))
+        print("%-8s %-11s %s" % (as_written[0], as_request[0], case.name))
+        if options.verbose and as_written[1]:
+            print("    as written: " + as_written[1])
+        if options.verbose and (as_request[1] or reason):
+            print("    as a request: " + (as_request[1] or reason))
 
-    counts = {}
-    for status in statuses.values():
-        counts[status] = counts.get(status, 0) + 1
-    print("\n%d cases: %s" % (len(statuses), ", ".join("%s %d" % item for item in sorted(counts.items()))))
+    print()
+    for label, column in (("as written", written), ("as requests", statuses)):
+        counts = {}
+        for status in column.values():
+            counts[status] = counts.get(status, 0) + 1
+        print("%d cases %s: %s" % (len(column), label, ", ".join("%s %d" % item for item in sorted(counts.items()))))
     print("%d of %d reference queries return their expected result" % (len(cases) - len(broken), len(cases)))
     if broken:
         print("BROKEN %s" % ", ".join(broken))
         return 2
 
     if options.update:
-        PINNED.write_text("".join("%s\t%s\n" % item for item in sorted(statuses.items())))
+        PINNED.write_text("".join("%s\t%s\t%s\n" % (case, written[case], statuses[case]) for case in sorted(statuses)))
     if options.check:
-        pinned = dict(line.split("\t") for line in PINNED.read_text().splitlines())
-        changed = sorted(case for case in set(pinned) | set(statuses) if pinned.get(case) != statuses.get(case))
+        now = {case: "%s\t%s" % (written[case], statuses[case]) for case in statuses}
+        pinned = dict(line.split("\t", 1) for line in PINNED.read_text().splitlines())
+        changed = sorted(case for case in set(pinned) | set(now) if pinned.get(case) != now.get(case))
         for case in changed:
-            print("CHANGED %s: pinned %s, now %s" % (case, pinned.get(case), statuses.get(case)))
+            print("CHANGED %s: pinned %s, now %s" % (case, pinned.get(case), now.get(case)))
         return 1 if changed else 0
     return 0
 

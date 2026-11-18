@@ -83,21 +83,37 @@ returned.
 (Layer 2), with the SCOTT data and upstream's README: `cases/<case>/query.ossie.sql`,
 `expected.sql` and `reference.duckdb.sql`, and `scott/scott.sql`.
 
-**None of the 32 can be submitted as written.** A case is SQL over the model's relations, with
-`AGG()` evaluating a measure: `SELECT deptno, AGG(sum_sal) FROM scott_model.emp GROUP BY deptno`.
-The extension has no interface that takes such a query. What it has is the Wide Table interface,
-`ossie_query`, so what is measured is narrower: can the question of a case be asked as **one**
-`ossie_query` request, and does that request return the rows of `expected.sql`?
+A case is SQL over the model's relations, with `AGG()` evaluating a measure:
+`SELECT deptno, AGG(sum_sal) FROM scott_model.emp GROUP BY deptno`. `scripts/query_compliance.py`
+measures every case two ways against the SCOTT data, model loaded with `left_joins => true`, and
+compares as upstream's README prescribes (columns by position, rows as a multiset or in order when
+the case has `ORDER BY`, exact numerics equal, approximate ones within 1e-9).
+
+**As written.** The statement of `query.ossie.sql` is handed to `ossie_sql` as it stands, which is
+what the specification asks of an implementation. Every case gets one status:
+
+| status | cases | meaning |
+|---|---|---|
+| `pass` | 11 | the query runs, and its rows and column names match |
+| `names` | 0 | its rows match under different column names |
+| `wrong` | 0 | its rows differ |
+| `refused` | 21 | `ossie_sql` refuses the query |
+
+What is refused:
+
+| cases | what the query does that `ossie_sql` does not do yet |
+|---|---|
+| `b01`–`b20` | evaluates a measure in a query block whose `FROM` joins relations, where each measure has to be aggregated at its own relation's grain |
+| `a10` | selects a measure in a CTE without evaluating it, for the block around it to evaluate |
+
+**As a request.** `ossie_query`, the Wide Table interface, is what an agent is given, so the
+narrower question is kept: can the question of a case be asked as **one** `ossie_query` request, and
+does that request return the rows of `expected.sql`?
 
 `query_requests.sql`, written here, holds that request for each case that has one, and for each
 that has none a line saying what stops it. A request is one `SELECT` over one `ossie_query` call.
 Around the call it may order, limit, select and rename columns and compute scalars from them, which
-is what the cases do to the values of `AGG()`; it reads no table itself.
-
-`scripts/query_compliance.py` runs the requests against the SCOTT data, model loaded with
-`left_joins => true`, and compares as upstream's README prescribes (columns by position, rows as a
-multiset or in order when the case has `ORDER BY`, exact numerics equal, approximate ones within
-1e-9). Every case gets one status:
+is what the cases do to the values of `AGG()`; it reads no table itself. Every case gets one status:
 
 | status | cases | meaning |
 |---|---|---|
@@ -123,9 +139,10 @@ The script also runs each case's `reference.duckdb.sql` and compares it with `ex
 no part of the extension involved; all 32 agree, so the vendored data and the comparison are sound.
 If one stops agreeing the script exits 2.
 
-`query_status.tsv` pins the status of every case, and `scripts/full_functionality_check.sh` fails
-when a run disagrees with it. Update the pin with `scripts/query_compliance.py --update` and these
-tables in the same change. Run with `-v` to see what a request returned, or why a case has none.
+`query_status.tsv` pins both statuses of every case, as written and then as a request, and
+`scripts/full_functionality_check.sh` fails when a run disagrees with it. Update the pin with
+`scripts/query_compliance.py --update` and these tables in the same change. Run with `-v` to see
+what a query or a request returned, why one was refused, or why a case has no request.
 
 The small `*.json` files beside the upstream copies are written here, not vendored: each exercises
 one malformed document shape against the loader.

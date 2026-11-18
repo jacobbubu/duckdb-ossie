@@ -1,32 +1,32 @@
-a01_grand_total	pass
-a02_measure_per_group	pass
-a03_where_before_measure	pass
-a04_having_on_unselected_measure	pass
-a05_scalar_ops_on_measure_values	pass
-a06_nulls_follow_aggregate	pass
-a07_empty_input_set	pass
-a08_group_by_all_skips_measures	no-request
-a09_rollup_not_average_of_averages	no-request
-a10_cte_passes_measures_through	pass
-a11_agg_in_where_subquery	no-request
-a12_aggregate_over_agg_values	no-request
-b01_many_to_one_no_fan_out	pass
-b02_filter_on_joined_relation	pass
-b03_top_n_join_as_filter	no-request
-b04_one_side_counted_once	no-request
-b05_manager_counted_once	no-request
-b06_range_join_fan_out	no-request
-b07_three_way_join_fan_out	no-request
-b08_many_to_many_chasm_trap	no-request
-b09_inner_join_matched_rows	no-request
-b10_left_join_null_padding	no-request
-b11_right_join_keeps_non_managers	no-request
-b12_full_join_each_row_once	no-request
-b13_cross_join_no_inflation	no-request
-b14_ratio_across_relations	no-request
-b15_left_join_changes_ratio	pass
-b16_on_filter_keeps_left_rows	no-request
-b17_left_join_empty_group	pass
-b18_filter_restricts_one_side_measure	no-request
-b19_nonunique_filter_no_fan_out	no-request
-b20_having_on_one_side_measure	no-request
+a01_grand_total	pass	pass
+a02_measure_per_group	pass	pass
+a03_where_before_measure	pass	pass
+a04_having_on_unselected_measure	pass	pass
+a05_scalar_ops_on_measure_values	pass	pass
+a06_nulls_follow_aggregate	pass	pass
+a07_empty_input_set	pass	pass
+a08_group_by_all_skips_measures	pass	no-request
+a09_rollup_not_average_of_averages	pass	no-request
+a10_cte_passes_measures_through	refused	pass
+a11_agg_in_where_subquery	pass	no-request
+a12_aggregate_over_agg_values	pass	no-request
+b01_many_to_one_no_fan_out	refused	pass
+b02_filter_on_joined_relation	refused	pass
+b03_top_n_join_as_filter	refused	no-request
+b04_one_side_counted_once	refused	no-request
+b05_manager_counted_once	refused	no-request
+b06_range_join_fan_out	refused	no-request
+b07_three_way_join_fan_out	refused	no-request
+b08_many_to_many_chasm_trap	refused	no-request
+b09_inner_join_matched_rows	refused	no-request
+b10_left_join_null_padding	refused	no-request
+b11_right_join_keeps_non_managers	refused	no-request
+b12_full_join_each_row_once	refused	no-request
+b13_cross_join_no_inflation	refused	no-request
+b14_ratio_across_relations	refused	no-request
+b15_left_join_changes_ratio	refused	pass
+b16_on_filter_keeps_left_rows	refused	no-request
+b17_left_join_empty_group	refused	pass
+b18_filter_restricts_one_side_measure	refused	no-request
+b19_nonunique_filter_no_fan_out	refused	no-request
+b20_having_on_one_side_measure	refused	no-request

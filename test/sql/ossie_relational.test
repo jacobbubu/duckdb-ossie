@@ -1,0 +1,466 @@
+# name: test/sql/ossie_relational.test
+# description: ossie_sql: one SELECT over the model's relations, AGG(measure) where the FROM clause is one of them
+# group: [sql]
+
+require ossie
+
+statement error
+SELECT * FROM ossie_sql('SELECT 1');
+----
+ossie_sql: no Ossie model is loaded -- call ossie_load('model.json') first
+
+statement ok
+CREATE TABLE orders(order_id INT, cust_id INT, amount_cents INT, shipped_at DATE);
+
+statement ok
+INSERT INTO orders VALUES (1, 1, 1000, '2024-01-01'), (2, 1, 2500, NULL), (3, 2, 400, '2024-02-01'), (4, 3, 1200, NULL);
+
+statement ok
+CREATE TABLE customers(customer_id INT, region VARCHAR);
+
+statement ok
+INSERT INTO customers VALUES (1, 'east'), (2, 'west'), (3, 'east'), (4, 'north');
+
+statement ok
+CREATE TABLE regions(region VARCHAR);
+
+statement ok
+INSERT INTO regions VALUES ('east'), ('north'), ('south'), ('west');
+
+statement ok
+CREATE TABLE notes(note VARCHAR);
+
+statement ok
+CALL ossie_load('test/fixtures/relational.yaml');
+
+# --- a dataset is the relation model.dataset, and its fields are its columns ---------------------------
+
+# A field is read by its name and has its expression's value: customer_id is the source's cust_id, amount is
+# amount_cents / 100.0.
+query IIR
+SELECT * FROM ossie_sql('SELECT order_id, customer_id, amount FROM shop.orders ORDER BY order_id');
+----
+1	1	10.0
+2	1	25.0
+3	2	4.0
+4	3	12.0
+
+# A column of the source that no field declares is not a column of the relation.
+statement error
+SELECT * FROM ossie_sql('SELECT shipped_at FROM shop.orders');
+----
+"shipped_at" not found
+
+statement error
+SELECT * FROM ossie_sql('SELECT cust_id FROM shop.orders');
+----
+"cust_id" not found
+
+# A relation without measures has only field columns, so * is those.
+query T
+SELECT * FROM ossie_sql('SELECT * FROM shop.regions ORDER BY region');
+----
+east
+north
+south
+west
+
+# Names are matched without regard to case, and the relation may be named in full before a column.
+query IR
+SELECT * FROM ossie_sql('SELECT SHOP.ORDERS.ORDER_ID, shop.orders.amount FROM Shop.Orders WHERE orders.customer_id = 1 ORDER BY 1');
+----
+1	10.0
+2	25.0
+
+# Ordinary aggregates run over the fields.
+query IRI
+SELECT * FROM ossie_sql('SELECT count(*), max(amount), count(DISTINCT customer_id) FROM shop.orders');
+----
+4	25.0	3
+
+# --- AGG(measure) evaluates a dataset-scoped metric over the rows of a group ---------------------------
+
+query RI
+SELECT * FROM ossie_sql('SELECT AGG(revenue), AGG(row_count) FROM shop.orders');
+----
+51.0	4
+
+# WHERE filters the rows first; HAVING and ORDER BY may evaluate a measure the SELECT list does not.
+query IR
+SELECT * FROM ossie_sql('SELECT customer_id, AGG(revenue) AS revenue FROM shop.orders WHERE amount > 5 GROUP BY customer_id HAVING AGG(row_count) > 0 ORDER BY AGG(average_amount) DESC');
+----
+1	35.0
+3	12.0
+
+# The measure may be qualified by the relation's alias, by its name, or by model.dataset.
+query R
+SELECT * FROM ossie_sql('SELECT AGG(o.revenue) FROM shop.orders AS o')
+UNION ALL
+SELECT * FROM ossie_sql('SELECT AGG(orders.revenue) FROM shop.orders')
+UNION ALL
+SELECT * FROM ossie_sql('SELECT AGG(shop.orders.REVENUE) FROM shop.orders');
+----
+51.0
+51.0
+51.0
+
+# A measure's value is an ordinary value: a ratio of two measures is the measure that declares the ratio.
+query RR
+SELECT * FROM ossie_sql('SELECT AGG(revenue) / AGG(row_count), AGG(average_amount) FROM shop.orders');
+----
+12.75	12.75
+
+# A measure evaluated on its own is named for the measure unless the query names it; anything built on one
+# takes the name DuckDB gives an expression.
+query T
+SELECT column_name FROM (DESCRIBE SELECT * FROM ossie_sql('SELECT AGG(revenue), AGG(o.row_count), AGG(revenue) AS total, AGG(revenue) * 2 AS twice FROM shop.orders AS o'));
+----
+revenue
+row_count
+total
+twice
+
+# A measure may read a column of the source that no field declares; the query still cannot.
+query IIR
+SELECT * FROM ossie_sql('SELECT customer_id, AGG(shipped_count), AGG(shipped_revenue) FROM shop.orders GROUP BY customer_id ORDER BY customer_id');
+----
+1	1	10.0
+2	1	4.0
+3	0	NULL
+
+statement error
+SELECT * FROM ossie_sql('SELECT customer_id, AGG(shipped_count) FROM shop.orders WHERE shipped_at IS NOT NULL GROUP BY customer_id');
+----
+"shipped_at" not found
+
+# ... also where a field carries the name such a column would be read under.
+query TI
+SELECT * FROM ossie_sql('SELECT "source.shipped_at", AGG(shipped_count) FROM shop.shipments GROUP BY ALL ORDER BY 1');
+----
+pending	0
+shipped	2
+
+# GROUP BY ALL groups by the fields; a ROLLUP re-evaluates the measure at each level instead of combining
+# the levels below it.
+query IR
+SELECT * FROM ossie_sql('SELECT customer_id, AGG(average_amount) FROM shop.orders GROUP BY ALL ORDER BY 1');
+----
+1	17.5
+2	4.0
+3	12.0
+
+query IR
+SELECT * FROM ossie_sql('SELECT customer_id, AGG(average_amount) FROM shop.orders GROUP BY ROLLUP (customer_id) ORDER BY 1 NULLS LAST');
+----
+1	17.5
+2	4.0
+3	12.0
+NULL	12.75
+
+# A window function or another aggregate applies to the measure's value.
+query IRR
+SELECT * FROM ossie_sql('SELECT customer_id, AGG(revenue) AS revenue, SUM(AGG(revenue)) OVER () AS total FROM shop.orders GROUP BY customer_id ORDER BY 1');
+----
+1	35.0	51.0
+2	4.0	51.0
+3	12.0	51.0
+
+# In ORDER BY a name is an output column before it is a column of FROM.
+query IR
+SELECT * FROM ossie_sql('SELECT customer_id, AGG(revenue) AS revenue FROM shop.orders GROUP BY customer_id ORDER BY revenue DESC LIMIT 1');
+----
+1	35.0
+
+# --- query blocks: each evaluates the measures of its own FROM clause --------------------------------
+
+query I
+SELECT * FROM ossie_sql('SELECT order_id FROM shop.orders WHERE amount > (SELECT AGG(average_amount) FROM shop.orders) ORDER BY 1');
+----
+2
+
+query TR
+SELECT * FROM ossie_sql('WITH per_customer AS (SELECT customer_id, AGG(revenue) AS revenue FROM shop.orders GROUP BY customer_id) SELECT c.region, sum(p.revenue) FROM per_customer AS p JOIN shop.customers AS c USING (customer_id) GROUP BY c.region ORDER BY 1');
+----
+east	47.0
+west	4.0
+
+query R
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM shop.orders UNION ALL SELECT AGG(row_count) FROM shop.customers ORDER BY 1');
+----
+4.0
+51.0
+
+# A correlated block evaluates its measure once for each row of the outer one.
+query TI
+SELECT * FROM ossie_sql('SELECT r.region, (SELECT AGG(row_count) FROM shop.customers AS c WHERE c.region = r.region) FROM shop.regions AS r ORDER BY 1');
+----
+east	2
+north	1
+south	0
+west	1
+
+# Model relations join as tables do while only their fields are read.
+query TIR
+SELECT * FROM ossie_sql('SELECT c.region, count(*), sum(o.amount) FROM shop.orders AS o JOIN shop.customers AS c ON o.customer_id = c.customer_id GROUP BY ALL ORDER BY 1');
+----
+east	3	47.0
+west	1	4.0
+
+# A relation with measures beside one without: the * of the one without is still its fields.
+query T
+SELECT * FROM ossie_sql('SELECT r.* FROM shop.regions AS r, shop.orders AS o WHERE o.order_id = 1 ORDER BY 1');
+----
+east
+north
+south
+west
+
+# --- the rest of the query is DuckDB SQL, with the caller's tables --------------------------------------
+
+query R
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM shop.orders WHERE customer_id IN (SELECT customer_id FROM customers WHERE region = ''east'')');
+----
+47.0
+
+# The result is a relation of the outer query.
+query R
+SELECT max(revenue) FROM ossie_sql('SELECT customer_id, AGG(revenue) AS revenue FROM shop.orders GROUP BY customer_id');
+----
+35.0
+
+# A schema of the database may carry the model's name. The model's dataset is then the relation, a table
+# the model does not name is still the table, and the table a dataset hides is reached through its catalog.
+statement ok
+CREATE SCHEMA shop;
+
+statement ok
+CREATE TABLE shop.audit AS SELECT 'first' AS entry;
+
+statement ok
+CREATE TABLE shop.orders AS SELECT 'not the dataset' AS entry;
+
+query R
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM shop.orders');
+----
+51.0
+
+query T
+SELECT * FROM ossie_sql('SELECT entry FROM shop.audit');
+----
+first
+
+query T
+SELECT * FROM ossie_sql('SELECT entry FROM memory.shop.orders');
+----
+not the dataset
+
+# --- one statement, and it only reads ------------------------------------------------------------------
+
+statement error
+SELECT * FROM ossie_sql(NULL);
+----
+ossie_sql: the query is NULL
+
+statement error
+SELECT * FROM ossie_sql('');
+----
+ossie_sql: the query must be one statement, got 0
+
+statement error
+SELECT * FROM ossie_sql('SELECT 1; SELECT 2');
+----
+ossie_sql: the query must be one statement, got 2
+
+statement error
+SELECT * FROM ossie_sql('CREATE TABLE made(i INT)');
+----
+ossie_sql: the query must be a SELECT; ossie_sql only reads
+
+statement error
+SELECT * FROM ossie_sql('DELETE FROM orders');
+----
+ossie_sql: the query must be a SELECT; ossie_sql only reads
+
+statement error
+SELECT * FROM ossie_sql('WITH added AS (INSERT INTO orders VALUES (9, 9, 9, NULL) RETURNING order_id) SELECT * FROM added');
+----
+ossie_sql: the query may only read. A statement that writes cannot be part of it, in a WITH clause or anywhere else
+
+query I
+SELECT count(*) FROM orders;
+----
+4
+
+# --- what names a model relation -----------------------------------------------------------------------
+
+statement error
+SELECT * FROM ossie_sql('SELECT * FROM shop.order');
+----
+ossie_sql: model "shop" has no dataset named "order".
+
+statement error
+SELECT * FROM ossie_sql('SELECT * FROM shop.order');
+----
+Did you mean: "orders"
+
+statement error
+SELECT * FROM ossie_sql('SELECT count(*) FROM shop.notes');
+----
+ossie_sql: dataset "notes" declares no field, so the relation shop.notes has no column to read
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM shop.orders AT (VERSION => 1)');
+----
+ossie_sql: AT on the model relation shop.orders is not supported; a dataset is read as its source stands
+
+statement error
+SELECT * FROM ossie_sql('SELECT a FROM shop.orders AS o(a, b, c)');
+----
+ossie_sql: column aliases on the model relation shop.orders are not supported; rename a column in the SELECT list
+
+# --- a measure has a value only where AGG evaluates it --------------------------------------------------
+
+statement error
+SELECT * FROM ossie_sql('SELECT revenue FROM shop.orders');
+----
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it: write AGG(revenue). Passing a measure through unevaluated is not supported yet
+
+statement error
+SELECT * FROM ossie_sql('SELECT customer_id FROM shop.orders AS o WHERE o.revenue > 10');
+----
+ossie_sql: "revenue" is a measure of shop.orders AS o, and a measure has a value only where AGG evaluates it
+
+# In HAVING, unlike ORDER BY, the name is the column of FROM, which is the measure.
+statement error
+SELECT * FROM ossie_sql('SELECT customer_id, AGG(revenue) AS revenue FROM shop.orders GROUP BY customer_id HAVING revenue > 10');
+----
+ossie_sql: "revenue" is a measure of shop.orders
+
+statement error
+SELECT * FROM ossie_sql('SELECT * FROM shop.orders');
+----
+ossie_sql: * over shop.orders would include its measures, and passing a measure through unevaluated is not supported yet. Name the fields, and evaluate a measure with AGG
+
+statement error
+SELECT * FROM ossie_sql('SELECT o.* FROM shop.orders AS o JOIN shop.regions AS r ON true');
+----
+ossie_sql: * over shop.orders AS o would include its measures
+
+statement error
+SELECT * FROM ossie_sql('SELECT COLUMNS(''.*_id'') FROM shop.orders');
+----
+ossie_sql: * over shop.orders would include its measures
+
+# --- what AGG takes -----------------------------------------------------------------------------------
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(amount) FROM shop.orders');
+----
+ossie_sql: AGG(amount): "amount" is a field of shop.orders, not a measure. A field takes an ordinary aggregate, such as SUM(amount)
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(profit) FROM shop.orders');
+----
+ossie_sql: AGG(profit): shop.orders has no measure named "profit". Its measures: revenue, row_count, shipped_count, shipped_revenue, average_amount, running_revenue, doubled
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(region_count) FROM shop.regions');
+----
+ossie_sql: AGG(region_count): shop.regions has no measure
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(DISTINCT revenue) FROM shop.orders');
+----
+ossie_sql: AGG takes one measure and nothing else, as AGG(measure) or AGG(relation.measure), got
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue, row_count) FROM shop.orders');
+----
+ossie_sql: AGG takes one measure and nothing else
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue + 1) FROM shop.orders');
+----
+ossie_sql: AGG takes one measure and nothing else
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FILTER (WHERE amount > 5) FROM shop.orders');
+----
+ossie_sql: AGG takes one measure and nothing else
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(memory.shop.orders.revenue) FROM shop.orders');
+----
+ossie_sql: AGG takes one measure, as AGG(measure) or AGG(relation.measure), got AGG(memory.shop.orders.revenue)
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) OVER () FROM shop.orders');
+----
+ossie_sql: AGG cannot take an OVER clause. It is an aggregate over the rows of a group; apply a window function to its value instead, as in SUM(AGG(measure)) OVER (...)
+
+# --- where AGG may stand ------------------------------------------------------------------------------
+
+statement error
+SELECT * FROM ossie_sql('SELECT customer_id FROM shop.orders WHERE AGG(revenue) > 10 GROUP BY customer_id');
+----
+ossie_sql: AGG(revenue) cannot appear in WHERE. AGG is an aggregate over the rows of a group, so a condition on a measure's value goes in HAVING
+
+statement error
+SELECT * FROM ossie_sql('SELECT count(*) FROM shop.orders GROUP BY AGG(revenue)');
+----
+ossie_sql: AGG(revenue) cannot appear in GROUP BY.
+
+statement error
+SELECT * FROM ossie_sql('SELECT count(*) FROM shop.orders AS o JOIN shop.regions AS r ON AGG(o.revenue) > 1');
+----
+ossie_sql: AGG(o.revenue) cannot appear in a join's ON.
+
+statement error
+SELECT * FROM ossie_sql('SELECT (SELECT AGG(o.revenue)) FROM shop.orders AS o');
+----
+ossie_sql: AGG(o.revenue): "o" is a relation of an outer query block. AGG evaluates a measure of a relation in its own block's FROM clause
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(x.revenue) FROM shop.orders AS o');
+----
+ossie_sql: AGG(x.revenue): the FROM clause of this query block has no model relation named "x"
+
+# An alias takes the relation's name with it.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(orders.revenue) FROM shop.orders AS o');
+----
+ossie_sql: AGG(orders.revenue): the FROM clause of this query block has no model relation named "orders"
+
+# The table behind a dataset is not the dataset: it has the source's columns and no measure.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM orders');
+----
+ossie_sql: AGG(revenue): the FROM clause of this query block names no model relation. A measure is a column of a model relation, such as shop.orders
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT order_id, amount FROM shop.orders) AS o');
+----
+ossie_sql: AGG(revenue): the FROM clause of this query block names no model relation.
+
+# --- measures this function does not evaluate yet ------------------------------------------------------
+
+# Over a join each measure has to be aggregated at its own relation's grain.
+statement error
+SELECT * FROM ossie_sql('SELECT c.region, AGG(o.revenue) FROM shop.orders AS o JOIN shop.customers AS c ON o.customer_id = c.customer_id GROUP BY c.region');
+----
+ossie_sql: AGG(o.revenue): evaluating a measure is supported only where the FROM clause of its query block is one model relation. Over a join, each measure has to be aggregated at its own relation's grain, which is not supported yet
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(row_count) FROM shop.orders AS o JOIN shop.customers AS c ON o.customer_id = c.customer_id');
+----
+ossie_sql: AGG(row_count) is ambiguous: shop.orders AS o and shop.customers AS c both have a measure of that name. Qualify it, as AGG(o.row_count)
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(running_revenue) FROM shop.orders');
+----
+ossie_sql: AGG(running_revenue): measure "orders.running_revenue" uses the window function SUM, whose partition and order are fixed in the model while the rows it runs over depend on the query. Window measures are not supported yet
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(doubled) FROM shop.orders');
+----
+ossie_sql: AGG(doubled): measure "orders.doubled" contains no aggregate, so it has no value over the rows of a group
