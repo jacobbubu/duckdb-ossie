@@ -94,16 +94,10 @@ what the specification asks of an implementation. Every case gets one status:
 
 | status | cases | meaning |
 |---|---|---|
-| `pass` | 31 | the query runs, and its rows and column names match |
+| `pass` | 32 | the query runs, and its rows and column names match |
 | `names` | 0 | its rows match under different column names |
 | `wrong` | 0 | its rows differ |
-| `refused` | 1 | `ossie_sql` refuses the query |
-
-What is refused:
-
-| cases | what the query does that `ossie_sql` does not do yet |
-|---|---|
-| `a10` | selects a measure in a CTE without evaluating it, for the block around it to evaluate |
+| `refused` | 0 | `ossie_sql` refuses the query |
 
 **As a request.** `ossie_query`, the Wide Table interface, is what an agent is given, so the
 narrower question is kept: can the question of a case be asked as **one** `ossie_query` request, and

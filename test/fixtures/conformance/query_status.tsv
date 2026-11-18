@@ -7,7 +7,7 @@ a06_nulls_follow_aggregate	pass	pass
 a07_empty_input_set	pass	pass
 a08_group_by_all_skips_measures	pass	no-request
 a09_rollup_not_average_of_averages	pass	no-request
-a10_cte_passes_measures_through	refused	pass
+a10_cte_passes_measures_through	pass	pass
 a11_agg_in_where_subquery	pass	no-request
 a12_aggregate_over_agg_values	pass	no-request
 b01_many_to_one_no_fan_out	pass	pass

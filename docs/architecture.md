@@ -128,11 +128,20 @@ as written.
 The fields are then columns DuckDB binds like any others, and a column of the source that the model
 does not declare is not there to read.
 
-**`AGG(measure)` becomes the measure's expression.** The metric's tree is copied with each
-`dataset.field` pointed at the projection's column of that name; a `source.column` the measure
-reads is added to the projection under a name no field has. That alone is sound only while the
-rows of the query block are the rows of the relation, which is a block whose `FROM` is one model
-relation and nothing else.
+**A measure the query reads becomes a column of the projection as well.** It is a struct named
+for the measure, `struct_pack(<primary key>, <columns the measure reads>) AS <measure>`: what a
+later block needs to evaluate the measure and to tell two rows of the dataset apart. A member is
+named for the field it holds, or `source.<column>` for a column of the source that no field
+declares. Being an ordinary column, it is passed on by a `SELECT` list, by name, renamed or within
+`*`, with nothing rewritten. The walk only records which measures each subquery and CTE returns,
+and whether a row of the dataset may have been repeated on the way, and refuses a measure wherever
+it is read as a value. A measure the query never reads is not projected.
+
+**`AGG(measure)` becomes the measure's expression.** The metric's tree is copied with each column
+it reads pointed at the relation: at the column of that name where it is a field of a model
+relation, at a member of the measure's struct otherwise. That alone is sound only while the rows of
+the query block are the rows of the dataset, which is a block whose `FROM` is one relation, reached
+through blocks of which the same is true.
 
 **Anywhere else the measure runs over the distinct rows of its relation.** A join may put one row
 of the relation in several rows of a group, and an outer join pads rows that are none of its own.
@@ -140,10 +149,11 @@ The measure's expression is then wrapped:
 
 ```sql
 (SELECT <measure, reading r.col>
- FROM (SELECT unnest(list(DISTINCT {key: r.key, col: r.col, ...}) FILTER (WHERE r.key IS NOT NULL)) AS r))
+ FROM (SELECT unnest(list(DISTINCT r.<measure>) FILTER (WHERE r.<measure>.<key> IS NOT NULL)) AS r))
 ```
 
-The struct holds the dataset's `primary_key` and the columns the measure reads. The `list` names
+`r.<measure>` is the measure's struct column: the dataset's `primary_key` and the columns the
+measure reads, as the row had them where the dataset was read. The `list` names
 only columns of the enclosing block, so DuckDB binds it as an aggregate of that block: it is
 computed once for each group, under whatever the block groups by, `ROLLUP` and `GROUP BY ALL`
 included, and no group key has to be found or repeated. Nothing else in the block is rewritten,
@@ -153,7 +163,8 @@ count is 0 and a sum is NULL.
 
 The walk keeps one scope for each query block, holding the relations of its own `FROM` and a link
 to the block around it: `AGG` resolves a measure in its own block, and a correlated subquery still
-sees the fields of an outer relation. The statement goes back from `bind_replace` as `ossie_query`'s
+sees the fields of an outer relation. A relation is a model relation, or a subquery or CTE with the
+measures its `SELECT` list passed on. The statement goes back from `bind_replace` as `ossie_query`'s
 does. Nothing here checks what the SQL reads. The query runs as the caller, which is why the MCP
 example keeps `ossie_sql` out of reach.
 

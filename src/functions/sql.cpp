@@ -42,15 +42,19 @@ void RegisterSqlFunction(ExtensionLoader &loader) {
 	             "metrics over the rows of a group, in SELECT, HAVING or ORDER BY. The rest of the query is "
 	             "DuckDB SQL and runs with the caller's rights, so it can read any table the caller can. "
 	             "Over a join a measure counts each row of its own dataset once, whatever the join repeats, "
-	             "which takes the dataset's primary_key. A measure passed through a subquery unevaluated is "
-	             "refused.",
+	             "which takes the dataset's primary_key. A subquery or CTE that does not aggregate passes a "
+	             "measure on unevaluated, by name, renamed or within *, for the block that reads it to "
+	             "evaluate; a query that would return a measure unevaluated is refused.",
 	             {"SELECT * FROM ossie_sql('SELECT deptno, AGG(sum_sal) AS payroll FROM scott_model.emp GROUP BY "
 	              "deptno')",
 	              "SELECT * FROM ossie_sql('SELECT e.job, AGG(d.dept_count) AS departments, AGG(e.emp_count) AS "
 	              "staff FROM scott_model.emp AS e JOIN scott_model.dept AS d ON e.deptno = d.deptno GROUP BY "
 	              "e.job')",
 	              "SELECT * FROM ossie_sql('SELECT job, AGG(emp_count) AS staff FROM scott_model.emp WHERE sal > "
-	              "1000 GROUP BY job HAVING AGG(emp_count) > 2')"},
+	              "1000 GROUP BY job HAVING AGG(emp_count) > 2')",
+	              "SELECT * FROM ossie_sql('WITH seniors AS (SELECT deptno, sum_sal AS payroll FROM "
+	              "scott_model.emp WHERE sal >= 2000) SELECT deptno, AGG(payroll) AS payroll FROM seniors GROUP BY "
+	              "deptno')"},
 	             {LogicalType::VARCHAR}));
 	loader.RegisterFunction(std::move(info));
 }

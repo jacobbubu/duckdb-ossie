@@ -190,10 +190,10 @@ not a key of the object; pass it as the named argument in either form.
 
 ## The Relational Query Interface
 
-**`ossie_sql(query)` takes one `SELECT` over the model's relations and evaluates a measure where
-`AGG` names it; a measure cannot yet be handed from one query block to another unevaluated.** The
-Ossie specification defines
-a second way to query a model: SQL that reads the model's datasets as relations and evaluates a
+**`ossie_sql(query)` takes one `SELECT` over the model's relations, evaluates a measure where
+`AGG` names it, and hands one from a query block to the block that reads it unevaluated.** The Ossie
+specification defines a second way to query a model: SQL that reads the model's datasets as
+relations and evaluates a
 measure with `AGG()`, as in `SELECT deptno, AGG(sum_sal) FROM scott_model.emp GROUP BY deptno`. A
 dataset is the relation `model.dataset`. Its fields are its columns, read by name with the field's
 expression as their value, and `AGG(measure)` or `AGG(relation.measure)` evaluates one of its
@@ -211,9 +211,12 @@ table or a subquery. Three things follow from how this is done:
 
 - **The dataset needs a `primary_key`.** The key is what tells two rows of the dataset apart once
   the join has repeated them, so `AGG` of a measure whose dataset declares none is refused wherever
-  the `FROM` clause is more than one model relation. A key may name fields or columns of the source.
-  Such a dataset can still be joined for the measures of the others, and alone in `FROM` it needs no
-  key.
+  a row of the dataset may stand in more than one row: where the `FROM` clause is more than one
+  relation, in the block that evaluates the measure or in one that passed it on, and where a block
+  that passed it on calls a function in its `SELECT` list that may return several rows, `unnest` or
+  one `ossie_sql` does not know to be a plain function. A key may name fields or columns of the
+  source. Such a dataset can still be joined for the measures of the others, and alone in `FROM` it
+  needs no key.
 - **The key is taken at its word.** Nothing checks that it is unique or filled in. Two rows that
   share a key count twice if they differ in a column the measure reads and once if they do not. A
   row whose key is NULL is in no measure over a join, because that is what a padded row looks like,
@@ -222,17 +225,61 @@ table or a subquery. Three things follow from how this is done:
   collected, their key and the columns the measure reads, before the measure is computed over them.
   Summing a 2-million-row dataset through a join of 10 million rows took about five times as long as
   the same question written by hand with `DISTINCT`. A join that repeats nothing is not recognised
-  and pays the same; only a block whose `FROM` is one model relation aggregates directly.
+  and pays the same; only a block whose `FROM` is one relation aggregates directly, and only while
+  no block the measure passed through had more.
 
-Two parts of the interface are missing, and each is refused by a message that says so rather than
-answered some other way:
+**A measure named on its own in a `SELECT` list that does not aggregate is passed on unevaluated.**
+In `SELECT deptno, AGG(payroll) FROM (SELECT deptno, sum_sal AS payroll FROM scott_model.emp WHERE
+sal >= 2000) GROUP BY deptno` the subquery evaluates nothing. `payroll` is a column of its result
+and still a measure, and the block around it evaluates it over the rows the subquery kept. A measure
+passes by name, renamed, or within `*` and `relation.*`, where `EXCLUDE` leaves it out, `RENAME`
+passes it on under another name and `REPLACE` puts a value in its place. It passes through a
+subquery in `FROM` and through a CTE, through as many blocks as there are, and it still counts each
+row of its dataset once, whether the join is in a block that passes it on or in the one that
+evaluates it. A measure nothing evaluates costs nothing. In each row a measure that is evaluated
+travels as the key of its dataset and the columns it reads.
 
-- **A measure passed through unevaluated.** A measure has a value only inside `AGG`, in the query
-  block whose `FROM` names its relation. A bare measure column is refused, so a subquery or CTE
-  cannot hand a measure to the block around it, and `*` over a relation that has measures is refused
-  because the specification counts the measures among its columns. `*` over a relation without
-  measures is its fields.
+Everywhere else a measure is refused, by a message that says what it is and where it stands:
+
+- **Anything but the measure on its own.** An operand, an argument, a condition of `WHERE` or of a
+  join, a `GROUP BY` key, a column `USING` or `NATURAL JOIN` would join on, and an `ORDER BY` of
+  rows are not places a measure has a value. Nor is a block that aggregates, `GROUP BY ALL`
+  included, which takes a bare measure as a key. The specification requires these refused.
+- **`DISTINCT`, a set operator, a recursive CTE.** Rows cannot be compared on a measure, so a block
+  that passes one on cannot be `DISTINCT`, an operand of `UNION`, `INTERSECT` or `EXCEPT`, or a
+  query of a recursive CTE. The specification requires the first two refused.
+- **The end of the query.** A query whose result would still hold an unevaluated measure is refused;
+  the specification leaves that open. `SELECT * FROM model.dataset` is therefore refused for a
+  dataset that has measures, because the specification counts them among its columns, and the
+  message lists them for `* EXCLUDE (...)`. `*` over a relation without measures is its fields.
+- **A scalar subquery, and a view.** The specification has a measure pass through both. Here a
+  subquery that stands for a value has to evaluate its measures, though `EXISTS` only asks for a row
+  and takes any, and a view is defined in DuckDB, where a model relation is not a table.
+- **A measure of an outer block.** A block passes on, as it evaluates, the measures of its own
+  `FROM` clause.
+
+Some DuckDB SQL is refused only where a measure is in reach of it:
+
+- **`COLUMNS(...)`** over a relation that has measures, since the columns it would match include
+  them. Name the columns.
+- **`PIVOT`** aggregates the rows it reads itself. It reads fields and values: `AGG` inside it, a
+  measure as its argument and a source that passes a measure on are refused. Evaluate the measure in
+  a subquery and pivot the value. A `PIVOT` without `IN (...)` is refused in any case, because
+  DuckDB runs it as several statements.
+- **`NATURAL JOIN`** where a measure the query reads has the name of a column on the other side, and
+  wherever the other side is a table of the caller, whose columns are not known here. A measure the
+  query does not read is no column of what the join sees, so a `NATURAL JOIN` of two model relations
+  is otherwise on their shared fields.
+- **A list of column aliases**, as in `(SELECT ...) AS t(a, b)`, on a subquery or CTE that passes a
+  measure on. Rename the column in the `SELECT` list.
+- **`ORDER BY ALL` and `ORDER BY 1`** in a block that passes a measure on. Name the columns.
+- **Two measures of one name** in one relation. Where a block passes on `o.row_count` and
+  `c.row_count`, rename one.
+
+One part of the interface is missing:
+
 - **A window measure**, one whose expression holds a window function. `ossie_query` refuses it too.
+  It passes through a block like any other measure and is refused where `AGG` names it.
 
 **An unaliased `AGG(measure)` in the `SELECT` list is named for the measure.** The specification
 gives no rule, and the name DuckDB would give is the measure's definition. Anything built on a
@@ -254,9 +301,8 @@ typed the SQL, and the MCP example exposes `semantic_query` and not this.
 cannot be printed, and `DESCRIBE scott_model.emp` looks for a table. `DESCRIBE SELECT * FROM
 ossie_sql('...')` does describe a query's result.
 
-Upstream's 32 query compliance cases are the measure of this: 31 run as written and give the expected
-rows, and one is refused, for a measure passed through a CTE.
-`ossie_query` asks a narrower set of questions, with the joins planned from the model's
+Upstream's 32 query compliance cases are the measure of this: all 32 run as written and give the
+expected rows. `ossie_query` asks a narrower set of questions, with the joins planned from the model's
 relationships: 12 of the 32 can be asked as one request, and all 12 give the expected rows. The
 [conformance fixtures](../test/fixtures/conformance/README.md#query-compliance-cases) list which and
 why.
