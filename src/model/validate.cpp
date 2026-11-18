@@ -36,8 +36,9 @@ string Render(const ColumnRefExpression &colref) {
 // at load prevents nothing and cannot be worked around. Note that keys were already treated this
 // way, because the reference model keys store_sales on a column it never exposes.
 
-// Key columns are deliberately not checked against declared fields. Keys only ever participate in the
-// cardinality comparison, never in emitted SQL, so an undeclared one is harmless.
+// Key columns are deliberately not checked against declared fields. A unique key only ever takes part in
+// the cardinality comparison. A primary key is also what ossie_sql tells a dataset's rows apart by over a
+// join, and there a name no field declares is read as a column of the source.
 void ValidateKeys(const Dataset &dataset) {
 	for (idx_t i = 0; i < dataset.unique_keys.size(); i++) {
 		if (dataset.unique_keys[i].empty()) {

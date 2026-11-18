@@ -4,7 +4,9 @@
 #include "duckdb/common/string_util.hpp"
 #include "duckdb/main/client_context.hpp"
 #include "duckdb/parser/expression/columnref_expression.hpp"
+#include "duckdb/parser/expression/conjunction_expression.hpp"
 #include "duckdb/parser/expression/function_expression.hpp"
+#include "duckdb/parser/expression/operator_expression.hpp"
 #include "duckdb/parser/expression/star_expression.hpp"
 #include "duckdb/parser/expression/subquery_expression.hpp"
 #include "duckdb/parser/expression/window_expression.hpp"
@@ -16,6 +18,7 @@
 #include "duckdb/parser/query_node/set_operation_node.hpp"
 #include "duckdb/parser/result_modifier.hpp"
 #include "duckdb/parser/tableref/basetableref.hpp"
+#include "duckdb/parser/tableref/emptytableref.hpp"
 #include "duckdb/parser/tableref/expressionlistref.hpp"
 #include "duckdb/parser/tableref/joinref.hpp"
 #include "duckdb/parser/tableref/pivotref.hpp"
@@ -51,7 +54,7 @@ struct Block {
 	//! Every name the FROM clause introduces, model relation or not, so that an outer relation of the same
 	//! name is known to be hidden.
 	case_insensitive_set_t names;
-	//! The FROM clause is one model relation and nothing else.
+	//! The FROM clause is one model relation and nothing else, so each of its rows stands in the block once.
 	bool single_relation = false;
 	case_insensitive_set_t output_names;
 	//! Expressions inside FROM, visited once every relation of the block is known.
@@ -565,13 +568,6 @@ private:
 				ThrowNotAMeasure(*block.relations[0], names[0]);
 			}
 		}
-		if (!block.single_relation) {
-			throw InvalidInputException("ossie_sql: AGG(%s): evaluating a measure is supported only where the FROM "
-			                            "clause of its query block is one model relation. Over a join, each "
-			                            "measure has to be aggregated at its own relation's grain, which is not "
-			                            "supported yet",
-			                            written);
-		}
 		auto window = FindWindow(*metric->expression.tree);
 		if (window) {
 			throw InvalidInputException("ossie_sql: AGG(%s): measure \"%s\" uses the window function %s, whose "
@@ -588,7 +584,11 @@ private:
 		}
 
 		auto value = metric->expression.tree->Copy();
-		ReadThroughProjection(value, *relation);
+		vector<string> columns;
+		ReadThroughProjection(value, *relation, columns);
+		if (!block.single_relation) {
+			value = OverDistinctRows(std::move(value), *relation, std::move(columns), written);
+		}
 		if (expr->HasAlias()) {
 			value->SetAlias(expr->GetAlias());
 		} else if (name_measure) {
@@ -600,10 +600,12 @@ private:
 
 	//! A measure names its dataset's fields as `dataset.field` and a column of the source as
 	//! `dataset.source.column`. The first is a column of the projection; the second is added to it.
-	void ReadThroughProjection(unique_ptr<ParsedExpression> &expr, Relation &relation) {
+	void ReadThroughProjection(unique_ptr<ParsedExpression> &expr, Relation &relation, vector<string> &columns) {
 		if (expr->GetExpressionClass() != ExpressionClass::COLUMN_REF) {
-			ParsedExpressionIterator::EnumerateChildren(
-			    *expr, [&](unique_ptr<ParsedExpression> &child) { ReadThroughProjection(child, relation); });
+			auto visit = [&](unique_ptr<ParsedExpression> &child) {
+				ReadThroughProjection(child, relation, columns);
+			};
+			ParsedExpressionIterator::EnumerateChildren(*expr, visit);
 			return;
 		}
 		auto names = ColumnNames(expr->Cast<ColumnRefExpression>());
@@ -611,7 +613,81 @@ private:
 		if (names.size() == 3) {
 			column = SourceColumn(relation, column);
 		}
+		AddColumn(columns, column);
 		expr = make_uniq<ColumnRefExpression>(Identifier(column), Identifier(relation.name));
+	}
+
+	static void AddColumn(vector<string> &columns, const string &column) {
+		for (auto &known : columns) {
+			if (StringUtil::CIEquals(known, column)) {
+				return;
+			}
+		}
+		columns.push_back(column);
+	}
+
+	//! Where the FROM clause is more than one relation, a row of the measure's relation may stand in several
+	//! rows of a group, or in none that is its own: an outer join pads a row that matched nothing. The measure
+	//! is then evaluated over the distinct rows of its relation in the group, told apart by the primary key:
+	//!
+	//!   (SELECT <measure> FROM (SELECT unnest(list(DISTINCT {<key>, <columns>}) FILTER (<key> IS NOT NULL))
+	//!                           AS <relation>))
+	//!
+	//! The list names only columns of the enclosing block, which makes it an aggregate of that block: it is
+	//! computed once for each of the block's groups, whatever the block groups by.
+	unique_ptr<ParsedExpression> OverDistinctRows(unique_ptr<ParsedExpression> value, Relation &relation,
+	                                              vector<string> columns, const string &written) {
+		auto &dataset = *relation.dataset;
+		if (dataset.primary_key.empty()) {
+			throw InvalidInputException("ossie_sql: AGG(%s): dataset \"%s\" declares no primary_key. Where the FROM "
+			                            "clause is more than one relation, a measure counts each row of its "
+			                            "dataset once, and the primary key is what tells the rows apart",
+			                            written, dataset.name);
+		}
+		vector<unique_ptr<ParsedExpression>> present;
+		for (auto &key : dataset.primary_key) {
+			auto field = dataset.FindField(key);
+			auto column = field ? field->name : SourceColumn(relation, key);
+			AddColumn(columns, column);
+			present.push_back(make_uniq<OperatorExpression>(
+			    ExpressionType::OPERATOR_IS_NOT_NULL,
+			    make_uniq<ColumnRefExpression>(Identifier(column), Identifier(relation.name))));
+		}
+		unique_ptr<ParsedExpression> filter;
+		if (present.size() == 1) {
+			filter = std::move(present[0]);
+		} else {
+			filter = make_uniq<ConjunctionExpression>(ExpressionType::CONJUNCTION_AND, std::move(present));
+		}
+		vector<FunctionArgument> members;
+		for (auto &column : columns) {
+			members.emplace_back(Identifier(column),
+			                     make_uniq<ColumnRefExpression>(Identifier(column), Identifier(relation.name)));
+		}
+		vector<unique_ptr<ParsedExpression>> row;
+		row.push_back(make_uniq<FunctionExpression>(Identifier("struct_pack"), std::move(members)));
+		vector<unique_ptr<ParsedExpression>> rows;
+		rows.push_back(
+		    make_uniq<FunctionExpression>(Identifier("list"), std::move(row), std::move(filter), nullptr, true));
+		auto unnest = make_uniq<FunctionExpression>(Identifier("unnest"), std::move(rows));
+		unnest->SetAlias(Identifier(relation.name));
+
+		auto distinct_rows = make_uniq<SelectNode>();
+		distinct_rows->select_list.push_back(std::move(unnest));
+		distinct_rows->from_table = make_uniq<EmptyTableRef>();
+		auto distinct_statement = make_uniq<SelectStatement>();
+		distinct_statement->node = std::move(distinct_rows);
+
+		auto evaluation = make_uniq<SelectNode>();
+		evaluation->select_list.push_back(std::move(value));
+		evaluation->from_table = make_uniq<SubqueryRef>(std::move(distinct_statement));
+		auto statement = make_uniq<SelectStatement>();
+		statement->node = std::move(evaluation);
+
+		auto result = make_uniq<SubqueryExpression>();
+		result->GetSubqueryTypeMutable() = SubqueryType::SCALAR;
+		result->SubqueryMutable() = std::move(statement);
+		return std::move(result);
 	}
 
 	string SourceColumn(Relation &relation, const string &column) {

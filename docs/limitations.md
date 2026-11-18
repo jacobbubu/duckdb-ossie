@@ -190,8 +190,9 @@ not a key of the object; pass it as the named argument in either form.
 
 ## The Relational Query Interface
 
-**`ossie_sql(query)` takes one `SELECT` over the model's relations, and evaluates a measure only
-where the `FROM` clause of its query block is one model relation.** The Ossie specification defines
+**`ossie_sql(query)` takes one `SELECT` over the model's relations and evaluates a measure where
+`AGG` names it; a measure cannot yet be handed from one query block to another unevaluated.** The
+Ossie specification defines
 a second way to query a model: SQL that reads the model's datasets as relations and evaluates a
 measure with `AGG()`, as in `SELECT deptno, AGG(sum_sal) FROM scott_model.emp GROUP BY deptno`. A
 dataset is the relation `model.dataset`. Its fields are its columns, read by name with the field's
@@ -199,14 +200,33 @@ expression as their value, and `AGG(measure)` or `AGG(relation.measure)` evaluat
 dataset-scoped metrics over the rows of a group, in `SELECT`, `HAVING` or `ORDER BY`. A model-scoped
 metric belongs to no relation, as the specification has it, so only `ossie_query` evaluates one.
 
-Three parts of the interface are missing, and each is refused by a message that says so rather than
+**Over a join, a measure is over the rows of its own dataset, each once.** In `SELECT e.job,
+AGG(d.dept_count), AGG(e.emp_count) FROM scott_model.emp e JOIN scott_model.dept d ON e.deptno =
+d.deptno GROUP BY e.job` the join repeats a department for each of its employees, and
+`AGG(d.dept_count)` still counts it once; a plain `count(d.deptno)` counts every joined row, as SQL
+does. The join's type and condition are the query's. Rows that the join or `WHERE` removes are out
+of every measure, a row an outer join pads adds nothing, and a group whose measure reaches no row of
+its dataset keeps its row, with a count of 0 and a sum of NULL. The other side of the join can be a
+table or a subquery. Three things follow from how this is done:
+
+- **The dataset needs a `primary_key`.** The key is what tells two rows of the dataset apart once
+  the join has repeated them, so `AGG` of a measure whose dataset declares none is refused wherever
+  the `FROM` clause is more than one model relation. A key may name fields or columns of the source.
+  Such a dataset can still be joined for the measures of the others, and alone in `FROM` it needs no
+  key.
+- **The key is taken at its word.** Nothing checks that it is unique or filled in. Two rows that
+  share a key count twice if they differ in a column the measure reads and once if they do not. A
+  row whose key is NULL is in no measure over a join, because that is what a padded row looks like,
+  though alone in `FROM` it counts.
+- **It costs memory and time.** For each group the distinct rows of the measure's dataset are
+  collected, their key and the columns the measure reads, before the measure is computed over them.
+  Summing a 2-million-row dataset through a join of 10 million rows took about five times as long as
+  the same question written by hand with `DISTINCT`. A join that repeats nothing is not recognised
+  and pays the same; only a block whose `FROM` is one model relation aggregates directly.
+
+Two parts of the interface are missing, and each is refused by a message that says so rather than
 answered some other way:
 
-- **A measure over a join.** `SELECT d.dname, AGG(e.sum_sal) FROM scott_model.emp e JOIN
-  scott_model.dept d ON e.deptno = d.deptno GROUP BY d.dname` is refused. The specification has each
-  measure aggregated over the rows of its own relation whatever the join repeats, and an aggregate
-  over the joined rows does not give that. Model relations do join as tables do while the query
-  block reads only their fields.
 - **A measure passed through unevaluated.** A measure has a value only inside `AGG`, in the query
   block whose `FROM` names its relation. A bare measure column is refused, so a subquery or CTE
   cannot hand a measure to the block around it, and `*` over a relation that has measures is refused
@@ -234,8 +254,8 @@ typed the SQL, and the MCP example exposes `semantic_query` and not this.
 cannot be printed, and `DESCRIBE scott_model.emp` looks for a table. `DESCRIBE SELECT * FROM
 ossie_sql('...')` does describe a query's result.
 
-Upstream's 32 query compliance cases are the measure of this: 11 run as written and give the expected
-rows, 20 are refused for a measure over a join, and one for a measure passed through a CTE.
+Upstream's 32 query compliance cases are the measure of this: 31 run as written and give the expected
+rows, and one is refused, for a measure passed through a CTE.
 `ossie_query` asks a narrower set of questions, with the joins planned from the model's
 relationships: 12 of the 32 can be asked as one request, and all 12 give the expected rows. The
 [conformance fixtures](../test/fixtures/conformance/README.md#query-compliance-cases) list which and

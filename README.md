@@ -41,9 +41,8 @@ Claims about a file format should be checkable, so:
   forbids
 - Upstream's compliance cases are vendored with them and their status is pinned. All 46 Wide Table
   cases pass. The 32 query cases are written for the Relational Query Interface, SQL with `AGG()`
-  over a model's relations, which `ossie_sql` takes where a query block evaluates measures over one
-  relation: 11 run as written and return the expected rows, and 21 are refused, 20 for a measure
-  over a join and one for a measure passed through a CTE unevaluated. Asked instead as one
+  over a model's relations, which `ossie_sql` takes: 31 run as written and return the expected
+  rows, and one is refused, for a measure passed through a CTE unevaluated. Asked instead as one
   `ossie_query` request, 12 return the expected rows and 20 cannot be asked. See
   [test/fixtures/conformance/README.md](test/fixtures/conformance/README.md)
 - Generated SQL is diffed against hand-written TPC-DS equivalents with symmetric `EXCEPT` over
@@ -157,10 +156,20 @@ SELECT * FROM ossie_sql('
 ');
 ```
 
-The rest of the query is DuckDB SQL: subqueries, CTEs, `ROLLUP`, a window function over a measure's
-value, other tables. For now a measure is evaluated only where the `FROM` clause of its query block
-is one model relation, and a measure cannot be passed through unevaluated, so `*` over a relation
-that has measures is refused;
+The rest of the query is DuckDB SQL: joins, subqueries, CTEs, `ROLLUP`, a window function over a
+measure's value, other tables. Over a join a measure still counts each row of its own dataset once,
+however often the join repeats it, so a department joined to its employees is one department:
+
+```sql
+SELECT * FROM ossie_sql('
+  SELECT e.job, AGG(d.dept_count) AS departments, AGG(e.emp_count) AS staff
+  FROM scott_model.emp AS e JOIN scott_model.dept AS d ON e.deptno = d.deptno
+  GROUP BY e.job
+');
+```
+
+That takes the dataset's `primary_key`, which tells its rows apart. For now a measure cannot be
+passed through unevaluated, so `*` over a relation that has measures is refused;
 [docs/limitations.md](docs/limitations.md#the-relational-query-interface) has the rest. The query
 runs with the caller's rights and can read any table the caller can, which is why the MCP example
 below does not expose it.

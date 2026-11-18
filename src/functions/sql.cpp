@@ -41,10 +41,14 @@ void RegisterSqlFunction(ExtensionLoader &loader) {
 	             "model.dataset: its fields are its columns, and AGG(measure) evaluates one of its dataset-scoped "
 	             "metrics over the rows of a group, in SELECT, HAVING or ORDER BY. The rest of the query is "
 	             "DuckDB SQL and runs with the caller's rights, so it can read any table the caller can. "
-	             "Evaluating a measure is supported where the FROM clause of its query block is one model "
-	             "relation; over a join, and for a measure passed through unevaluated, the query is refused.",
+	             "Over a join a measure counts each row of its own dataset once, whatever the join repeats, "
+	             "which takes the dataset's primary_key. A measure passed through a subquery unevaluated is "
+	             "refused.",
 	             {"SELECT * FROM ossie_sql('SELECT deptno, AGG(sum_sal) AS payroll FROM scott_model.emp GROUP BY "
 	              "deptno')",
+	              "SELECT * FROM ossie_sql('SELECT e.job, AGG(d.dept_count) AS departments, AGG(e.emp_count) AS "
+	              "staff FROM scott_model.emp AS e JOIN scott_model.dept AS d ON e.deptno = d.deptno GROUP BY "
+	              "e.job')",
 	              "SELECT * FROM ossie_sql('SELECT job, AGG(emp_count) AS staff FROM scott_model.emp WHERE sal > "
 	              "1000 GROUP BY job HAVING AGG(emp_count) > 2')"},
 	             {LogicalType::VARCHAR}));

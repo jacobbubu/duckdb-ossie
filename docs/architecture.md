@@ -130,9 +130,26 @@ does not declare is not there to read.
 
 **`AGG(measure)` becomes the measure's expression.** The metric's tree is copied with each
 `dataset.field` pointed at the projection's column of that name; a `source.column` the measure
-reads is added to the projection under a name no field has. That is sound only while the rows of
-the query block are the rows of the relation, so a block whose `FROM` is anything but one model
-relation gets a refusal instead.
+reads is added to the projection under a name no field has. That alone is sound only while the
+rows of the query block are the rows of the relation, which is a block whose `FROM` is one model
+relation and nothing else.
+
+**Anywhere else the measure runs over the distinct rows of its relation.** A join may put one row
+of the relation in several rows of a group, and an outer join pads rows that are none of its own.
+The measure's expression is then wrapped:
+
+```sql
+(SELECT <measure, reading r.col>
+ FROM (SELECT unnest(list(DISTINCT {key: r.key, col: r.col, ...}) FILTER (WHERE r.key IS NOT NULL)) AS r))
+```
+
+The struct holds the dataset's `primary_key` and the columns the measure reads. The `list` names
+only columns of the enclosing block, so DuckDB binds it as an aggregate of that block: it is
+computed once for each group, under whatever the block groups by, `ROLLUP` and `GROUP BY ALL`
+included, and no group key has to be found or repeated. Nothing else in the block is rewritten,
+which is why `HAVING`, `ORDER BY` and a window over the value work as they do for any aggregate. A
+padded row has a NULL key and falls to the `FILTER`; an empty list unnests to no rows, over which a
+count is 0 and a sum is NULL.
 
 The walk keeps one scope for each query block, holding the relations of its own `FROM` and a link
 to the block around it: `AGG` resolves a measure in its own block, and a correlated subquery still

@@ -92,6 +92,63 @@ datasets:
   - name: notes
     source: memory.main.notes
     fields: []
+  # A row is one line of an order, so it takes both columns to tell two rows apart.
+  - name: order_lines
+    source: memory.main.order_lines
+    primary_key: [order_id, line_no]
+    fields:
+      - name: order_id
+        datatype: Integer
+        expression:
+          sql: order_id
+      - name: line_no
+        datatype: Integer
+        expression:
+          sql: line_no
+      - name: quantity
+        datatype: Integer
+        expression:
+          sql: quantity
+    metrics:
+      - name: units
+        datatype: Integer
+        expression:
+          sql: SUM(quantity)
+      - name: line_count
+        datatype: Integer
+        expression:
+          sql: COUNT(*)
+  # The key is a column of the source that no field declares.
+  - name: payments
+    source: memory.main.payments
+    primary_key: [payment_id]
+    fields:
+      - name: order_id
+        datatype: Integer
+        expression:
+          sql: order_id
+      - name: paid
+        datatype: Decimal
+        expression:
+          sql: paid_cents / 100.0
+    metrics:
+      - name: paid_total
+        datatype: Decimal
+        expression:
+          sql: SUM(paid)
+  # Measures, and no key to tell the rows apart.
+  - name: visits
+    source: memory.main.visits
+    fields:
+      - name: customer_id
+        datatype: Integer
+        expression:
+          sql: customer_id
+    metrics:
+      - name: visit_count
+        datatype: Integer
+        expression:
+          sql: COUNT(*)
 relationships:
   - name: orders_to_customers
     from: orders

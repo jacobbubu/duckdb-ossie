@@ -1,5 +1,5 @@
 # name: test/sql/ossie_relational.test
-# description: ossie_sql: one SELECT over the model's relations, AGG(measure) where the FROM clause is one of them
+# description: ossie_sql: one SELECT over the model's relations, AGG(measure) over one of them or over a join
 # group: [sql]
 
 require ossie
@@ -29,6 +29,24 @@ INSERT INTO regions VALUES ('east'), ('north'), ('south'), ('west');
 
 statement ok
 CREATE TABLE notes(note VARCHAR);
+
+statement ok
+CREATE TABLE order_lines(order_id INT, line_no INT, quantity INT);
+
+statement ok
+INSERT INTO order_lines VALUES (1, 1, 2), (1, 2, 3), (2, 1, 1), (3, 1, 5), (3, 2, 5), (3, 3, 1);
+
+statement ok
+CREATE TABLE payments(payment_id INT, order_id INT, paid_cents INT);
+
+statement ok
+INSERT INTO payments VALUES (10, 1, 600), (11, 1, 400), (12, 2, 2500), (13, 3, 400);
+
+statement ok
+CREATE TABLE visits(customer_id INT);
+
+statement ok
+INSERT INTO visits VALUES (1), (1), (2);
 
 statement ok
 CALL ossie_load('test/fixtures/relational.yaml');
@@ -442,18 +460,200 @@ SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT order_id, amount FROM 
 ----
 ossie_sql: AGG(revenue): the FROM clause of this query block names no model relation.
 
-# --- measures this function does not evaluate yet ------------------------------------------------------
-
-# Over a join each measure has to be aggregated at its own relation's grain.
+# An aggregate does not take an aggregate, and a measure is one. A window over its value is another matter.
 statement error
-SELECT * FROM ossie_sql('SELECT c.region, AGG(o.revenue) FROM shop.orders AS o JOIN shop.customers AS c ON o.customer_id = c.customer_id GROUP BY c.region');
+SELECT * FROM ossie_sql('SELECT sum(AGG(revenue)) FROM shop.orders');
 ----
-ossie_sql: AGG(o.revenue): evaluating a measure is supported only where the FROM clause of its query block is one model relation. Over a join, each measure has to be aggregated at its own relation's grain, which is not supported yet
+aggregate function calls cannot be nested
+
+# --- over a join, a measure counts each row of its dataset once -----------------------------------------
+
+# Many orders to one customer. Nothing repeats, and each measure is over the rows of its own dataset.
+query TRIII
+SELECT * FROM ossie_sql('SELECT c.region, AGG(o.revenue), AGG(o.row_count), AGG(c.row_count), count(*) FROM shop.orders AS o JOIN shop.customers AS c ON o.customer_id = c.customer_id GROUP BY c.region ORDER BY 1');
+----
+east	47.0	3	2	3
+west	4.0	1	1	1
+
+# An order stands in the join once for each of its lines. sum(o.amount) adds it that many times; the measure
+# adds it once. Order 4 has no line, so the join leaves it out of both.
+query RIIIIR
+SELECT * FROM ossie_sql('SELECT AGG(o.revenue), AGG(o.row_count), AGG(l.units), AGG(l.line_count), count(*), sum(o.amount) FROM shop.orders AS o JOIN shop.order_lines AS l ON o.order_id = l.order_id');
+----
+39.0	3	17	6	6	57.0
+
+# Lines and payments repeat each other as well as the order. A line is told apart by order_id and line_no
+# together, a payment by payment_id, which is a column of the source and not a field.
+query RIRI
+SELECT * FROM ossie_sql('SELECT AGG(o.revenue), AGG(l.units), AGG(p.paid_total), count(*) FROM shop.orders AS o JOIN shop.order_lines AS l ON o.order_id = l.order_id JOIN shop.payments AS p ON p.order_id = o.order_id');
+----
+39.0	17	39.0	8
+
+# The rows a WHERE removes are out of every measure: only the lines of 3 or more remain, and the orders that
+# have one.
+query RI
+SELECT * FROM ossie_sql('SELECT AGG(o.revenue), AGG(l.units) FROM shop.orders AS o JOIN shop.order_lines AS l ON o.order_id = l.order_id WHERE l.quantity >= 3');
+----
+14.0	13
+
+# A measure keeps its own conditions and its own shape: a FILTER, a CASE, an average.
+query IRR
+SELECT * FROM ossie_sql('SELECT AGG(o.shipped_count), AGG(o.shipped_revenue), AGG(o.average_amount) FROM shop.orders AS o JOIN shop.order_lines AS l ON o.order_id = l.order_id');
+----
+2	14.0	13.0
+
+# So does one that reads a column of the source no field declares.
+query II
+SELECT * FROM ossie_sql('SELECT AGG(s.shipped_count), count(*) FROM shop.shipments AS s JOIN shop.order_lines AS l ON s.order_id = l.order_id');
+----
+2	6
+
+# The same dataset twice is two relations, each with its own rows.
+query RII
+SELECT * FROM ossie_sql('SELECT AGG(o.revenue), AGG(p.row_count), count(*) FROM shop.orders AS o JOIN shop.orders AS p ON o.customer_id = p.customer_id');
+----
+51.0	4	6
+
+# Unqualified where one relation has the measure, and under the relation's full name where it has no alias.
+query RII
+SELECT * FROM ossie_sql('SELECT AGG(revenue), AGG(shop.orders.shipped_count), AGG(units) FROM shop.orders JOIN shop.order_lines USING (order_id)');
+----
+39.0	2	17
 
 statement error
 SELECT * FROM ossie_sql('SELECT AGG(row_count) FROM shop.orders AS o JOIN shop.customers AS c ON o.customer_id = c.customer_id');
 ----
 ossie_sql: AGG(row_count) is ambiguous: shop.orders AS o and shop.customers AS c both have a measure of that name. Qualify it, as AGG(o.row_count)
+
+# --- over a join, a group is never lost and a padded row adds nothing -----------------------------------
+
+# The customer without orders keeps its group. No order row reaches it, so a count is 0 and a sum is NULL.
+query TRII
+SELECT * FROM ossie_sql('SELECT c.region, AGG(o.revenue), AGG(o.row_count), AGG(c.row_count) FROM shop.customers AS c LEFT JOIN shop.orders AS o ON o.customer_id = c.customer_id GROUP BY c.region ORDER BY 1');
+----
+east	47.0	3	2
+north	NULL	0	1
+west	4.0	1	1
+
+# FULL JOIN keeps every row of both sides: 3 matched pairs, 2 orders and 3 lines without a partner.
+query III
+SELECT * FROM ossie_sql('SELECT AGG(o.row_count), AGG(l.line_count), count(*) FROM shop.orders AS o FULL JOIN shop.order_lines AS l ON o.order_id = l.order_id AND l.quantity > 2');
+----
+4	6	8
+
+# Without a condition every order meets every customer, and is still one order.
+query RII
+SELECT * FROM ossie_sql('SELECT AGG(o.revenue), AGG(c.row_count), count(*) FROM shop.orders AS o, shop.customers AS c');
+----
+51.0	4	16
+
+# --- over a join, the rest of the block is as it was ---------------------------------------------------
+
+# The other side need not be a model relation.
+query RI
+SELECT * FROM ossie_sql('SELECT AGG(o.revenue), sum(l.quantity) FROM shop.orders AS o JOIN order_lines AS l ON o.order_id = l.order_id');
+----
+39.0	17
+
+query RI
+SELECT * FROM ossie_sql('SELECT AGG(o.revenue), count(*) FROM shop.orders AS o, (SELECT 1 UNION ALL SELECT 2) AS t');
+----
+51.0	8
+
+# Each grouping set has its own rows: the total is the orders once, not the sum of the lines.
+query TR
+SELECT * FROM ossie_sql('SELECT c.region, AGG(o.revenue) FROM shop.orders AS o JOIN shop.order_lines AS l ON o.order_id = l.order_id JOIN shop.customers AS c ON c.customer_id = o.customer_id GROUP BY ROLLUP (c.region) ORDER BY 1');
+----
+east	35.0
+west	4.0
+NULL	39.0
+
+# HAVING, ORDER BY and a window over the measure's value, with the group keys left to GROUP BY ALL.
+query TRR
+SELECT * FROM ossie_sql('SELECT c.region, AGG(o.revenue) AS r, sum(AGG(o.revenue)) OVER () AS total FROM shop.orders AS o JOIN shop.order_lines AS l ON o.order_id = l.order_id JOIN shop.customers AS c ON c.customer_id = o.customer_id GROUP BY ALL HAVING AGG(l.line_count) > 1 ORDER BY AGG(l.units) DESC');
+----
+west	4.0	39.0
+east	35.0	39.0
+
+# A group key may be an expression.
+query TR
+SELECT * FROM ossie_sql('SELECT upper(c.region) AS r, AGG(o.revenue) FROM shop.orders AS o JOIN shop.order_lines AS l ON o.order_id = l.order_id JOIN shop.customers AS c ON c.customer_id = o.customer_id GROUP BY upper(c.region) ORDER BY AGG(o.revenue) DESC');
+----
+EAST	35.0
+WEST	4.0
+
+query T
+SELECT * FROM ossie_sql('SELECT c.region FROM shop.orders AS o JOIN shop.customers AS c ON c.customer_id = o.customer_id GROUP BY c.region QUALIFY rank() OVER (ORDER BY AGG(o.revenue) DESC) = 1');
+----
+east
+
+# A correlated block evaluates its measures over its own join, once for each row of the outer one.
+query TR
+SELECT * FROM ossie_sql('SELECT r.region, (SELECT AGG(o.revenue) FROM shop.orders AS o JOIN shop.order_lines AS l ON o.order_id = l.order_id JOIN shop.customers AS c ON c.customer_id = o.customer_id WHERE c.region = r.region) AS revenue FROM shop.regions AS r ORDER BY 1');
+----
+east	35.0
+north	NULL
+south	NULL
+west	4.0
+
+query IRI
+SELECT * FROM ossie_sql('SELECT c.customer_id, x.r, x.u FROM shop.customers AS c, LATERAL (SELECT AGG(o.revenue) AS r, AGG(l.units) AS u FROM shop.orders AS o JOIN shop.order_lines AS l ON l.order_id = o.order_id WHERE o.customer_id = c.customer_id) AS x ORDER BY 1');
+----
+1	35.0	6
+2	4.0	11
+3	NULL	NULL
+4	NULL	NULL
+
+query TR
+SELECT * FROM ossie_sql('WITH t AS (SELECT c.region AS region, AGG(o.revenue) AS r FROM shop.orders AS o JOIN shop.order_lines AS l ON l.order_id = o.order_id JOIN shop.customers AS c ON c.customer_id = o.customer_id GROUP BY c.region) SELECT * FROM t ORDER BY 1');
+----
+east	35.0
+west	4.0
+
+statement error
+SELECT * FROM ossie_sql('SELECT sum(AGG(o.revenue)) FROM shop.orders AS o JOIN shop.order_lines AS l ON o.order_id = l.order_id');
+----
+aggregate function calls cannot be nested
+
+# --- over a join, the primary key is what tells a dataset's rows apart ----------------------------------
+
+# A dataset that declares none has no measure there.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(v.visit_count) FROM shop.visits AS v JOIN shop.customers AS c ON v.customer_id = c.customer_id');
+----
+ossie_sql: AGG(v.visit_count): dataset "visits" declares no primary_key. Where the FROM clause is more than one relation, a measure counts each row of its dataset once, and the primary key is what tells the rows apart
+
+# It can still be joined, for the measures of the others.
+query I
+SELECT * FROM ossie_sql('SELECT AGG(c.row_count) FROM shop.visits AS v JOIN shop.customers AS c ON v.customer_id = c.customer_id');
+----
+2
+
+# And alone its rows are what the table holds, so nothing has to tell them apart.
+query I
+SELECT * FROM ossie_sql('SELECT AGG(visit_count) FROM shop.visits');
+----
+3
+
+# A row whose key is NULL cannot be told from the padding of an outer join, so over a join it is in no measure.
+# A primary key is not meant to be NULL; alone, where there is no padding, the row counts.
+statement ok
+INSERT INTO payments VALUES (NULL, 4, 1200);
+
+query R
+SELECT * FROM ossie_sql('SELECT AGG(paid_total) FROM shop.payments');
+----
+51.0
+
+query RI
+SELECT * FROM ossie_sql('SELECT AGG(p.paid_total), count(*) FROM shop.payments AS p JOIN shop.orders AS o ON o.order_id = p.order_id');
+----
+39.0	5
+
+statement ok
+DELETE FROM payments WHERE payment_id IS NULL;
+
+# --- measures this function does not evaluate yet ------------------------------------------------------
 
 statement error
 SELECT * FROM ossie_sql('SELECT AGG(running_revenue) FROM shop.orders');
