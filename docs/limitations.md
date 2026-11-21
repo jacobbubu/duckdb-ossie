@@ -100,7 +100,14 @@ write it.
 `AGG(dataset.metric)` inlines the dataset metric's expression into the model-scoped metric, and the
 inlined aggregates are then read by the rule above rather than kept with the dataset that declared
 them. A dataset metric whose aggregate has no column in its arguments therefore cannot be named in
-`AGG` and is refused at load; request it directly.
+`AGG` and is refused at load; request it directly. **This too departs from the specification**:
+Layer 3 makes `AGG(D.m)` one component whose home dataset is `D`, whatever `m`'s expression is, and
+states that a dataset-scoped metric may be `COUNT(*)`, with or without a `FILTER`. So a
+model-scoped metric over `AGG(orders.completed_count)`, where the dataset metric is a `COUNT(*)
+FILTER`, is defined there and refused here, because inlining leaves the count with no rows of its
+own and the rule above cannot tell whose rows it counted. (In `ossie_sql`, where `AGG` evaluates the
+dataset metric over its own relation rather than inlining it, the same measure works.) Declaring the
+count as a field and writing `COUNT(orders.order_sk)` is the spelling that works in both.
 
 Population requests check each metric against the grain the bundle designates instead: there an
 aggregate over the fact rows may read a dataset those rows determine, as in `SUM(CASE WHEN
@@ -113,7 +120,11 @@ TPC-DS data, that running total ran across categories, and 10,047 of 10,049 rows
 per-category running total; ties on date also leave the order, and so the value, arbitrary. Any
 metric containing a window function (`OVER`) is refused when queried, naming the metric and the
 function. The model still loads. Upstream's own `examples/tpcds_semantic_model.yaml` has three such
-metrics.
+metrics. The language's ranking, offset and window-aggregate sections are `REQUIRED`
+(`expression_language.md`), so **this is a departure the specification records as unimplemented**:
+nothing here evaluates a window function, in a metric or anywhere else. A window function in a
+*field* expression is not caught at all: the field is lowered as written and DuckDB's binder
+refuses the query (`GROUP BY clause cannot contain window functions`), which names no field.
 
 **A field outside every aggregate.** A model-scoped metric such as `SUM(orders.amount) -
 orders.order_id` has no one value for a group of orders, so it is refused when queried, naming the
@@ -136,16 +147,25 @@ rather than resolved to the shorter one or to whichever was found first. Only th
 request joins are checked, and a route that would fan out is not a path: `store_returns` reaches
 `date_dim` one way even where `store_sales` reaches it too and both facts share `item`.
 
-**Join type is not declared.** Ossie describes a relationship's endpoints and columns but not
-whether it is inner or outer. By default joins are emitted as `INNER`, which matches hand-written
-SQL but means a fact row whose foreign key is `NULL` or matches no dimension row is dropped once
-that dimension is joined, so a metric can return a smaller total once a dimension or filter is
-added. Loading with `left_joins => true` emits `LEFT JOIN` from the grain to every dimension
-instead: such rows survive, grouped under `NULL` dimension values, and the grouped total equals
+**Join type is not declared, and the default is a departure.** Ossie 0.2 described a
+relationship's endpoints and columns but not whether it is inner or outer. Ossie 0.3 does say: the
+Wide Table lowering puts a `LEFT JOIN` on every path from the home dataset, and its first normative
+rule (S1, *preserve home rows*) is that every home row reaches a group unless a filter removes it,
+which the `LEFT JOIN` is what realizes. The default here is still `INNER`, so **a Layer 3 query
+against a model with an unmatched foreign key is not the query the 0.3 specification defines**: a
+fact row whose key is `NULL` or matches no dimension row is dropped once that dimension is joined,
+and a metric can return a smaller total once a dimension or filter is added. By default the
+lowering matches hand-written SQL instead, which is what most models in the wild were written
+against. Loading with `left_joins => true` emits `LEFT JOIN` from the grain to every dimension:
+such rows survive, grouped under `NULL` dimension values, and the grouped total equals
 the ungrouped one. The policy applies to the whole model for that load, like
 `allow_filter_functions`; there is no per-relationship declaration, because the model format has
-nowhere to put one. A filter on a dimension column still excludes the unmatched rows, as it does in
-plain SQL (`WHERE store.s_state = 'TN'` is false for a `NULL` state), and the fan-out and
+nowhere to put one. It is the specification's answer: load this way for Layer 3 results, which is
+what the reference suites do -- `scripts/query_compliance.py` loads every model with
+`left_joins => true`, and `scripts/wide_table_compliance.py` does so for each case its reference
+marks `joins: left` (see [conformance](../test/fixtures/conformance/README.md)). A filter on a
+dimension column still excludes the unmatched rows, as it does in plain SQL (`WHERE
+store.s_state = 'TN'` is false for a `NULL` state), and the fan-out and
 ambiguous-path checks are unchanged, since a `LEFT JOIN` repeats rows exactly as an `INNER` one does.
 
 ## Filters
@@ -165,7 +185,15 @@ are allowlisted. Operators are always permitted, including arithmetic, `||` and 
 function calls are refused unless the model was loaded with `allow_filter_functions => true` — note
 that `SIMILAR TO` desugars to a `regexp_full_match` call and so falls under that flag, while `LIKE`
 does not. Subqueries are refused unconditionally and no option enables them, since they could read
-tables the model never declared.
+tables the model never declared. **The limit on which functions a filter may call is ours.** Layer 3
+bounds a filter's *shape* -- one dataset's fields, no aggregate, no metric, no window function --
+and says nothing about which functions it may call, so `UPPER(c) = 'X'` is a filter the
+specification expects lowered. Refusing it is a departure, reported under `E_INVALID_QUERY` because
+Section 8 has no code for a filter whose function the engine will not run. The flag exists because a
+filter arrives per request, from a caller the model's author may never have seen, and an unrestricted
+expression there is a way to read past the model. The zero-argument `CURRENT_DATE()`,
+`CURRENT_TIMESTAMP()` and `CURRENT_TIME()` are exempt: they are keywords of the language rather than
+a call to a function the caller chose, and `CURRENT_DATE(1)` is refused.
 
 ## The JSON query form
 
@@ -276,10 +304,25 @@ Some DuckDB SQL is refused only where a measure is in reach of it:
 - **Two measures of one name** in one relation. Where a block passes on `o.row_count` and
   `c.row_count`, rename one.
 
-One part of the interface is missing:
+Parts of the interface are missing:
 
 - **A window measure**, one whose expression holds a window function. `ossie_query` refuses it too.
   It passes through a block like any other measure and is refused where `AGG` names it.
+- **A measure defined in the query.** Layer 2 gives measures a column type and a spelling of their
+  own, `SELECT sal * 12 TO MEASURE AS annual_sal FROM model.emp`, and lets a later `AGG` evaluate
+  that query-defined measure, including one built from other measures (`AGG(a) + AGG(b)`). DuckDB's
+  parser has no `TO MEASURE` and this extension adds no other way to define a measure in a query, so
+  the statement is refused as a syntax error before anything of ours runs. Define the measure in the
+  model, as a dataset-scoped metric, and `AGG(dataset.metric)` it.
+- **Measure discovery (C6).** The specification requires a measure relation to be discoverable
+  through ordinary metadata -- `DESCRIBE`, `information_schema`, a projection of no rows -- with the
+  measure columns marked, say by a `MEASURE` suffix on the reported type. None of that works here:
+  `DESCRIBE SELECT * FROM model.dataset` asks the catalog for a table named `dataset` and reports
+  that the schema does not exist, the relation appears in `information_schema` not at all, and a
+  zero-row projection is refused outright, because `SELECT *` over a relation that has measures
+  would return a measure unevaluated. The measures of the loaded model are discoverable through
+  `ossie_metrics()` and the fields through `ossie_fields()` instead, which is what the MCP resources
+  publish; a tool that expects SQL metadata sees neither the columns nor the marker.
 
 **An unaliased `AGG(measure)` in the `SELECT` list is named for the measure.** The specification
 gives no rule, and the name DuckDB would give is the measure's definition. Anything built on a
@@ -364,13 +407,19 @@ undefined and engines disagree, the expression is refused at load, naming the fi
 
 - `REGEXP_LIKE`: Snowflake requires the pattern to match the whole string, Databricks and
   BigQuery any part of it, and the language does not say. Use `LIKE`, or give the expression an
-  `ANSI_SQL` variant that says which is meant (for example `regexp_full_match`).
+  `ANSI_SQL` variant that says which is meant (for example `regexp_full_match`). It is listed under
+  `REQUIRED` Pattern Matching, so this refusal is a departure the specification counts as
+  unimplemented; DuckDB has both `regexp_matches` and `regexp_full_match`, and choosing between
+  them is the engine's choice the language was supposed to make.
 - `TO_DATE` or `TO_TIMESTAMP` with a format argument, and `TO_CHAR`: format models differ between
   engines, and both forms are `EXPERIMENTAL` in the language. The one-argument ISO-8601 forms of
   `TO_DATE` and `TO_TIMESTAMP` are supported; for `TO_CHAR`, give the expression an `ANSI_SQL`
   variant that uses `strftime`.
-- A date part outside year, quarter, month, week, day, hour, minute and second, or a function called
-  with a different number of arguments than the language defines.
+- A date part outside year, quarter, month, week, day, hour, minute and second in `DATE_TRUNC`,
+  `DATEADD` or `DATEDIFF`, or a function called with a different number of arguments than the
+  language defines. `EXTRACT` and `DATE_PART` are not held to that part list: the language gives them
+  their own, wider one (`DAYOFWEEK`, `MICROSECOND` and the rest), and they lower to DuckDB's
+  `date_part` as named.
 - A function the language does not list, including `INTERVAL` literals (which DuckDB parses as a
   call to `to_days` and the like) and window functions outside its ranking, offset and aggregate
   set. DuckDB has `MD5`, `STRING_AGG` and hundreds more, but an `OSSIE_SQL_2026` expression that
@@ -410,7 +459,11 @@ suggesting the unquoted form. A dataset whose source is absent at load (the usua
 `ossie_compile` against a remote engine) is not checked, and DuckDB's own matching applies at query
 time. The check reads the expression text, so a name written both quoted and unquoted in one
 expression counts as quoted. Model-level names (datasets, fields, metrics) are case-insensitive as
-before, whether or not they are quoted.
+before, whether or not they are quoted -- in a *dimension* reference. A quoted *metric* reference is
+not split into `dataset.metric` at all: a request for `"T"."TOTAL"` is refused `E_NAME_NOT_FOUND`,
+naming the whole quoted text, while the same spelling as a dimension resolves. The exact-match rule
+binds column names, not model names, so this is an asymmetry in the reference parser rather than a
+match rule; write model names in a request without quotes.
 
 **A field expression reads the source, not other fields.** Every name in a field expression is a
 column of the dataset's `source`, and the format does not let a field refer to another field. A name
@@ -420,6 +473,32 @@ in the catalog at load and has no such column, the expression can only have mean
 model is refused naming both. When the source is absent at load nothing can be checked, and DuckDB's
 binder reports the missing column once a query reads the field.
 
+**A model that is not legal can still load.** The loader checks what it can decide from the
+document and the catalog: names, shapes, dialects, argument counts, quoted spelling. What the
+specification makes a condition of the *query* is reported when a query asks, and a model holding
+one of these loads and reports `spec_version` as if it were fine:
+
+- A model-scoped metric that reads a dataset-scoped metric outside `AGG` (`t.total * 2`) loads, and
+  any query naming it is refused with `E_UNAGGREGATED_FINER_GRAIN_REFERENCE`. This one is right:
+  Layer 3 lists it as an error an engine raises for the query, and the code it asks for is the code
+  used.
+- A dataset-scoped metric with no aggregate in it (`a * 2`) loads, and a request that asks only for
+  it is refused -- `ossie: no requested metric contains an aggregate, so the query has no grain to
+  group by`, which carries no code because Layer 3 has none for it.
+- Nested aggregates (`SUM(SUM(a))`) and a window function in a *field* load and fail inside DuckDB's
+  binder at query time, naming the expression rather than the field, so the message is worse than
+  ours would be.
+- An identifier longer than the 128 characters the language allows (`expression_language.md`) loads
+  and queries normally; DuckDB's own limit is larger, so nothing truncates.
+
+**Two constructs the language does not define are accepted in expressions.** The expression
+language's grammar is not enforced: only function *calls* are checked against the language's list,
+and date parts and argument counts are checked inside those calls. A scalar subquery
+(`(SELECT MAX(a) FROM t)`) and the PostgreSQL cast (`a::VARCHAR`) are not calls, so both load and
+run. The subquery is the worse of the two: it reads a table the model never declared, past the
+model's own datasets, and `ossie_query` will happily execute it. A request filter refuses subqueries
+(above) but a model expression does not.
+
 **Table sources only.** `source` may name a query rather than a table under the spec. Such a
 source can neither be prefix-rebound nor bound as a table reference, so it is refused at load.
 
@@ -427,6 +506,18 @@ source can neither be prefix-rebound nor bound as a table reference, so it is re
 than `ss_ext_sales_price`. A bare column cannot say which dataset it belongs to, and a metric's
 dataset is its grain. Note this is a requirement about *qualification*, not about declaration: the
 column itself need not appear in the dataset's `fields`.
+
+**Names in keys and relationship columns are not resolved the way 0.3 resolves them.** The 0.3
+Name Resolution makes a relationship's `from_columns`/`to_columns` and a dataset's `primary_key` and
+`unique_keys` name the dataset's *fields*, falling back to a source column only where no field has
+the name. This extension resolves them as physical columns of the source, always: a
+`from_columns: [not_a_field]` compiles to `t.not_a_field`, and a `primary_key` naming nothing at
+all still loads. Likewise a model-scoped metric may read a source column its dataset never
+declares as a field: `SUM(t.b)` compiles whether or not `b` is a field. That is 0.2's looser
+reading, kept
+because real third-party models rely on it, and it is a departure: a model written against the 0.3
+rule can load here and read a different column than it names there, whenever a field and a source
+column share a name and differ.
 
 **Columns that are not declared fields are passed through, not refused.** The format requires
 neither that a relationship's columns be declared fields nor that a field or metric expression

@@ -246,6 +246,19 @@ pins). The DuckDB version each release targets is noted separately.
   refused at load with the column's real spelling, as the language requires. A source that is not
   present at load is not checked
 
+### Docs
+- `docs/limitations.md` now labels each place where the extension departs from Ossie 0.3 rather
+  than describing it as though the specification left the point open: the `INNER` default against
+  Layer 3's `LEFT JOIN`, name resolution for keys and relationship columns, `AGG()` of a
+  `COUNT(*)` measure, `REGEXP_LIKE`, window functions, the filter function policy, and Layer 2's
+  query-defined measures and C6 measure discovery. Added: what the loader does not check --
+  identifiers over 128 characters, subqueries and `::` casts in expressions, model legality
+  reported only when a query asks -- and the asymmetry of a quoted metric reference in a request.
+- `docs/ossie-sql-compatibility.md` is re-baselined from the 0.2 snapshot to the 0.3 spec, with the
+  behaviours that change re-verified here (true division, `ROUND` ties away from zero,
+  `FILTER (WHERE ...)`, `source.column`), and the dialect-name sentence corrected to the open
+  vocabulary the loader actually uses.
+
 ## [0.3.0] - 2026-10-21
 
 Targets DuckDB **v2.0.0**. DuckDB v1.5.6 keeps the 0.2.0 build.
