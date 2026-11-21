@@ -41,9 +41,9 @@ Claims about a file format should be checkable, so:
   forbids
 - Upstream's compliance cases are vendored with them and their status is pinned. All 46 Wide Table
   cases pass. The 32 query cases are written for the Relational Query Interface, SQL with `AGG()`
-  over a model's relations, which `ossie_sql` takes: 31 run as written and return the expected
-  rows, and one is refused, for a measure passed through a CTE unevaluated. Asked instead as one
-  `ossie_query` request, 12 return the expected rows and 20 cannot be asked. See
+  over a model's relations, which `ossie_sql` takes: all 32 run as written and return the expected
+  rows. Asked instead as one `ossie_query` request, 12 return the expected rows and 20 cannot be
+  asked. See
   [test/fixtures/conformance/README.md](test/fixtures/conformance/README.md)
 - Generated SQL is diffed against hand-written TPC-DS equivalents with symmetric `EXCEPT` over
   `dsdgen(sf = 0.01)` data, so correctness is measured against the numbers rather than against our
@@ -168,8 +168,19 @@ SELECT * FROM ossie_sql('
 ');
 ```
 
-That takes the dataset's `primary_key`, which tells its rows apart. For now a measure cannot be
-passed through unevaluated, so `*` over a relation that has measures is refused;
+That takes the dataset's `primary_key`, which tells its rows apart. A subquery or a CTE that does
+not aggregate can pass a measure on unevaluated, by name, renamed or within `*`, and the block that
+reads it evaluates it over the rows that came through:
+
+```sql
+SELECT * FROM ossie_sql('
+  WITH seniors AS (SELECT deptno, sum_sal AS payroll FROM scott_model.emp WHERE sal >= 2000)
+  SELECT deptno, AGG(payroll) AS payroll FROM seniors GROUP BY deptno
+');
+```
+
+A measure has a value only where `AGG` evaluates it, so a query that would return one unevaluated
+is refused, `SELECT *` over a relation that has measures included;
 [docs/limitations.md](docs/limitations.md#the-relational-query-interface) has the rest. The query
 runs with the caller's rights and can read any table the caller can, which is why the MCP example
 below does not expose it.

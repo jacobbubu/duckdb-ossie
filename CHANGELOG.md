@@ -134,9 +134,16 @@ pins). The DuckDB version each release targets is noted separately.
   subquery, a group that is an expression, `ROLLUP`, an aggregate over measure values, a join the
   model has no relationship for. Over a join a measure counts each row of its own dataset once,
   whatever the join repeats or pads, with the rows told apart by the dataset's `primary_key`; a
-  dataset that declares none has no measure there. A measure passed through a subquery unevaluated
-  (so also `*` over a relation that has measures) and a window measure are refused, each by a
-  message that says so.
+  dataset that declares none has no measure there. A block that does not aggregate passes a measure
+  on unevaluated, by name, renamed or within `*`, through a subquery in `FROM` or a CTE, and the
+  block that reads it evaluates it over the rows that came through:
+  `SELECT deptno, AGG(payroll) FROM (SELECT deptno, sum_sal AS payroll FROM scott_model.emp WHERE
+  sal >= 2000) GROUP BY deptno`. Anywhere else a bare measure is refused, as the specification
+  requires: as an operand or an argument, in `WHERE`, as a key to group by or join on, in a block
+  that aggregates, under `DISTINCT` or a set operator. A query that would return a measure
+  unevaluated is refused too, so `SELECT *` over a relation that has measures is, and a window
+  measure is refused where `AGG` names it. Each refusal says what the measure is and where it
+  stands.
   The query runs with the caller's rights and reads any table the caller can, so the MCP example
   does not expose it. See [docs/limitations.md](docs/limitations.md#the-relational-query-interface).
 - **apache/ossie's wide-table compliance cases run against the extension.** The 46 cases of
@@ -149,9 +156,9 @@ pins). The DuckDB version each release targets is noted separately.
 - **apache/ossie's query compliance cases are vendored and measured.** The 32 cases of
   `compliance/query` are written for the Relational Query Interface, SQL with `AGG()` over a
   model's relations, and `scripts/query_compliance.py` measures each two ways. As written, through
-  `ossie_sql`: 31 return the expected rows and one is refused, for a measure passed through a CTE.
-  As one `ossie_query` request asking the same question: 12
-  have such a request, and all 12 return the expected rows; 20 have none, each for a stated
+  `ossie_sql`: all 32 return the expected rows. As one `ossie_query` request asking the same
+  question: 12 have such a request, and all 12 return the expected rows; 20 have none, each for a
+  stated
   reason. Both statuses are pinned and `scripts/full_functionality_check.sh` checks them.
 - **A request can be written as the Wide Table specification's JSON query, and can name its output
   columns.** `ossie_query(query)` and `ossie_compile(query)` take one string holding an object with

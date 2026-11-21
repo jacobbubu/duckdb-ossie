@@ -1,5 +1,5 @@
 # name: test/sql/ossie_relational.test
-# description: ossie_sql: one SELECT over the model's relations, AGG(measure) over one of them or over a join
+# description: ossie_sql: one SELECT over the model's relations, AGG(measure) where it is evaluated, a measure passed on where it is not
 # group: [sql]
 
 require ossie
@@ -338,36 +338,83 @@ ossie_sql: column aliases on the model relation shop.orders are not supported; r
 
 # --- a measure has a value only where AGG evaluates it --------------------------------------------------
 
-statement error
-SELECT * FROM ossie_sql('SELECT revenue FROM shop.orders');
-----
-ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it: write AGG(revenue). Passing a measure through unevaluated is not supported yet
-
+# A measure is a column of its relation, but a row has no value for it.
 statement error
 SELECT * FROM ossie_sql('SELECT customer_id FROM shop.orders AS o WHERE o.revenue > 10');
 ----
-ossie_sql: "revenue" is a measure of shop.orders AS o, and a measure has a value only where AGG evaluates it
+ossie_sql: "revenue" is a measure of shop.orders AS o, and a measure has a value only where AGG evaluates it. WHERE reads the rows before they are grouped; a condition on the measure's value goes in HAVING, as AGG(revenue)
 
 # In HAVING, unlike ORDER BY, the name is the column of FROM, which is the measure.
 statement error
 SELECT * FROM ossie_sql('SELECT customer_id, AGG(revenue) AS revenue FROM shop.orders GROUP BY customer_id HAVING revenue > 10');
 ----
-ossie_sql: "revenue" is a measure of shop.orders
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it: write AGG(revenue)
 
+# It is not an operand, and not an argument.
+statement error
+SELECT * FROM ossie_sql('SELECT revenue + 1 FROM shop.orders');
+----
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it, so it cannot be an operand or an argument: write AGG(revenue). Only on its own, as a column of a SELECT list that does not aggregate, is a measure passed on unevaluated
+
+statement error
+SELECT * FROM ossie_sql('SELECT coalesce(revenue, 0) FROM shop.orders');
+----
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it, so it cannot be an operand or an argument
+
+statement error
+SELECT * FROM ossie_sql('SELECT row_number() OVER (PARTITION BY revenue) FROM shop.orders');
+----
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it, so it cannot be an operand or an argument
+
+# It is not a key: not to group by, and not to join on.
+statement error
+SELECT * FROM ossie_sql('SELECT customer_id FROM shop.orders GROUP BY customer_id, revenue');
+----
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it, so it cannot be a GROUP BY key
+
+statement error
+SELECT * FROM ossie_sql('SELECT count(*) FROM shop.orders AS o JOIN shop.customers AS c ON o.revenue = c.customer_id');
+----
+ossie_sql: "revenue" is a measure of shop.orders AS o, and a measure has a value only where AGG evaluates it, so it cannot be joined on
+
+statement error
+SELECT * FROM ossie_sql('SELECT count(*) FROM shop.orders AS o JOIN (SELECT order_id AS revenue FROM shop.orders) AS s USING (revenue)');
+----
+ossie_sql: "revenue" is a measure of shop.orders AS o, and a measure has a value only where AGG evaluates it, so it cannot be joined on
+
+# Rows are not ordered by it; groups are, by its value.
+statement error
+SELECT * FROM ossie_sql('SELECT customer_id FROM shop.orders ORDER BY revenue');
+----
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it. This query block does not aggregate, so its rows cannot be ordered by the measure
+
+statement error
+SELECT * FROM ossie_sql('SELECT customer_id, count(*) FROM shop.orders GROUP BY customer_id ORDER BY orders.revenue');
+----
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it: write AGG(revenue)
+
+# A query that ends with a measure still unevaluated has no value to return for it.
+statement error
+SELECT * FROM ossie_sql('SELECT revenue FROM shop.orders');
+----
+ossie_sql: the query returns the measure "revenue" unevaluated. A measure has a value only where AGG evaluates it: write AGG(revenue), or leave the measure out of the SELECT list
+
+# * is every column of the relation, the measures with the fields.
 statement error
 SELECT * FROM ossie_sql('SELECT * FROM shop.orders');
 ----
-ossie_sql: * over shop.orders would include its measures, and passing a measure through unevaluated is not supported yet. Name the fields, and evaluate a measure with AGG
+ossie_sql: the query returns the measures "revenue", "row_count", "shipped_count", "shipped_revenue", "average_amount", "running_revenue", "doubled" unevaluated. A measure has a value only where AGG evaluates it: write AGG(revenue), or leave the measure out of the SELECT list (out of *, with * EXCLUDE (revenue, row_count, shipped_count, shipped_revenue, average_amount, running_revenue, doubled))
 
 statement error
 SELECT * FROM ossie_sql('SELECT o.* FROM shop.orders AS o JOIN shop.regions AS r ON true');
 ----
-ossie_sql: * over shop.orders AS o would include its measures
+ossie_sql: the query returns the measures "revenue", "row_count"
 
-statement error
-SELECT * FROM ossie_sql('SELECT COLUMNS(''.*_id'') FROM shop.orders');
+query IIR
+SELECT * FROM ossie_sql('SELECT * EXCLUDE (revenue, row_count, shipped_count, shipped_revenue, average_amount, running_revenue, doubled) FROM shop.orders ORDER BY order_id LIMIT 2');
 ----
-ossie_sql: * over shop.orders would include its measures
+1	1	10.0
+2	1	25.0
 
 # --- what AGG takes -----------------------------------------------------------------------------------
 
@@ -441,24 +488,30 @@ ossie_sql: AGG(o.revenue): "o" is a relation of an outer query block. AGG evalua
 statement error
 SELECT * FROM ossie_sql('SELECT AGG(x.revenue) FROM shop.orders AS o');
 ----
-ossie_sql: AGG(x.revenue): the FROM clause of this query block has no model relation named "x"
+ossie_sql: AGG(x.revenue): the FROM clause of this query block has no relation named "x"
 
 # An alias takes the relation's name with it.
 statement error
 SELECT * FROM ossie_sql('SELECT AGG(orders.revenue) FROM shop.orders AS o');
 ----
-ossie_sql: AGG(orders.revenue): the FROM clause of this query block has no model relation named "orders"
+ossie_sql: AGG(orders.revenue): the FROM clause of this query block has no relation named "orders"
 
 # The table behind a dataset is not the dataset: it has the source's columns and no measure.
 statement error
 SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM orders');
 ----
-ossie_sql: AGG(revenue): the FROM clause of this query block names no model relation. A measure is a column of a model relation, such as shop.orders
+ossie_sql: AGG(revenue): no relation in the FROM clause of this query block has a measure. A measure is a column of a model relation, such as shop.orders, and of a subquery or a CTE that passes one on
 
+# Nor has a subquery that passes none on.
 statement error
 SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT order_id, amount FROM shop.orders) AS o');
 ----
-ossie_sql: AGG(revenue): the FROM clause of this query block names no model relation.
+ossie_sql: AGG(revenue): no relation in the FROM clause of this query block has a measure.
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(s.revenue) FROM (SELECT amount FROM shop.orders) AS s, shop.orders AS o');
+----
+ossie_sql: AGG(s.revenue): "s" has no measure. A measure is a column of a model relation, such as shop.orders, and of a subquery or a CTE that passes one on
 
 # An aggregate does not take an aggregate, and a measure is one. A window over its value is another matter.
 statement error
@@ -621,7 +674,7 @@ aggregate function calls cannot be nested
 statement error
 SELECT * FROM ossie_sql('SELECT AGG(v.visit_count) FROM shop.visits AS v JOIN shop.customers AS c ON v.customer_id = c.customer_id');
 ----
-ossie_sql: AGG(v.visit_count): dataset "visits" declares no primary_key. Where the FROM clause is more than one relation, a measure counts each row of its dataset once, and the primary key is what tells the rows apart
+ossie_sql: AGG(v.visit_count): dataset "visits" declares no primary_key. Where a row of the dataset may stand in more than one row, as over a join, a measure counts each row of its dataset once, and the primary key is what tells the rows apart
 
 # It can still be joined, for the measures of the others.
 query I
@@ -653,6 +706,372 @@ SELECT * FROM ossie_sql('SELECT AGG(p.paid_total), count(*) FROM shop.payments A
 statement ok
 DELETE FROM payments WHERE payment_id IS NULL;
 
+# --- a measure passes through a query block that does not aggregate -------------------------------------
+
+# Named on its own in the SELECT list, a measure is a column of the result, still unevaluated. The block
+# that reads the result evaluates it, over the rows that block has.
+query IR
+SELECT * FROM ossie_sql('SELECT customer_id, AGG(revenue) FROM (SELECT customer_id, revenue FROM shop.orders) GROUP BY customer_id ORDER BY 1');
+----
+1	35.0
+2	4.0
+3	12.0
+
+# Through a CTE, under another name. The rows its WHERE removes are out of the measure.
+query IRR
+SELECT * FROM ossie_sql('WITH big AS (SELECT customer_id, revenue AS rev FROM shop.orders WHERE amount > 5) SELECT customer_id, AGG(rev), AGG(big.rev) AS again FROM big GROUP BY customer_id ORDER BY 1');
+----
+1	35.0	35.0
+3	12.0	12.0
+
+# The measure has the name it was passed on under.
+query T
+SELECT column_name FROM (DESCRIBE SELECT * FROM ossie_sql('SELECT AGG(rev), AGG(s.row_count) FROM (SELECT revenue AS rev, row_count FROM shop.orders) AS s'));
+----
+rev
+row_count
+
+# * passes on every measure of the relation, with its fields.
+query RIIR
+SELECT * FROM ossie_sql('SELECT AGG(revenue), AGG(row_count), AGG(shipped_count), AGG(average_amount) FROM (SELECT * FROM shop.orders) AS o');
+----
+51.0	4	2	12.75
+
+# A measure nothing evaluates is no part of the query, also one this function could not evaluate.
+query IR
+SELECT * FROM ossie_sql('SELECT order_id, amount FROM (SELECT * FROM shop.orders) ORDER BY 1 LIMIT 1');
+----
+1	10.0
+
+# EXCLUDE leaves a measure out, RENAME passes it on under another name, and REPLACE puts a value in its
+# place, which is then an ordinary column.
+query R
+SELECT * FROM ossie_sql('SELECT AGG(rev) FROM (SELECT o.* EXCLUDE (row_count) RENAME (revenue AS rev) FROM shop.orders AS o)');
+----
+51.0
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(row_count) FROM (SELECT o.* EXCLUDE (row_count) FROM shop.orders AS o)');
+----
+ossie_sql: AGG(row_count): unnamed_subquery has no measure named "row_count". Its measures: revenue, shipped_count, shipped_revenue, average_amount, running_revenue, doubled
+
+query R
+SELECT * FROM ossie_sql('SELECT sum(revenue) FROM (SELECT * REPLACE (amount * 2 AS revenue) FROM shop.orders)');
+----
+102.0
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT * REPLACE (amount * 2 AS revenue) FROM shop.orders) AS s');
+----
+ossie_sql: AGG(revenue): s has no measure named "revenue". Its measures: row_count, shipped_count, shipped_revenue, average_amount, running_revenue, doubled
+
+# Through as many blocks as there are.
+query IR
+SELECT * FROM ossie_sql('WITH a AS (SELECT * FROM shop.orders), b AS (SELECT customer_id, revenue AS rev FROM a WHERE amount > 5), c AS (SELECT * FROM b) SELECT customer_id, AGG(rev) FROM c GROUP BY 1 ORDER BY 1');
+----
+1	35.0
+3	12.0
+
+# A CTE read twice is two relations.
+query RRI
+SELECT * FROM ossie_sql('WITH s AS (SELECT customer_id, revenue FROM shop.orders) SELECT AGG(a.revenue), AGG(b.revenue), count(*) FROM s AS a JOIN s AS b USING (customer_id)');
+----
+51.0	51.0	6
+
+# The block that evaluates it may be correlated.
+query IR
+SELECT * FROM ossie_sql('SELECT c.customer_id, (SELECT AGG(s.revenue) FROM (SELECT customer_id, revenue FROM shop.orders) AS s WHERE s.customer_id = c.customer_id) AS revenue FROM shop.customers AS c ORDER BY 1');
+----
+1	35.0
+2	4.0
+3	12.0
+4	NULL
+
+query R
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (VALUES (1)) AS v(x), LATERAL (SELECT revenue FROM shop.orders WHERE order_id = v.x)');
+----
+10.0
+
+# The rows that reach the measure are the ones the passing block keeps: a LIMIT, a QUALIFY.
+query R
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT customer_id, revenue FROM shop.orders ORDER BY amount DESC LIMIT 2)');
+----
+37.0
+
+query R
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT revenue FROM shop.orders QUALIFY row_number() OVER (ORDER BY amount DESC) <= 2)');
+----
+37.0
+
+# The result of the passing block is a relation like another: it joins, on its fields.
+query TRI
+SELECT * FROM ossie_sql('SELECT c.region, AGG(s.revenue), count(*) FROM (SELECT customer_id, revenue FROM shop.orders WHERE amount > 5) AS s JOIN shop.customers AS c USING (customer_id) GROUP BY 1 ORDER BY 1');
+----
+east	47.0	3
+
+query TRI
+SELECT * FROM ossie_sql('SELECT c.region, AGG(s.revenue), AGG(s.row_count) FROM shop.customers AS c LEFT JOIN (SELECT customer_id, revenue, row_count FROM shop.orders WHERE amount > 10) AS s USING (customer_id) GROUP BY 1 ORDER BY 1');
+----
+east	37.0	2
+north	NULL	0
+west	NULL	0
+
+# EXISTS asks only whether there is a row.
+query I
+SELECT * FROM ossie_sql('SELECT count(*) FROM shop.customers AS c WHERE EXISTS (SELECT o.revenue FROM shop.orders AS o WHERE o.customer_id = c.customer_id)');
+----
+3
+
+# --- a measure passed on still counts each row of its dataset once --------------------------------------
+
+# The join may be in the block that passes the measure on ...
+query RII
+SELECT * FROM ossie_sql('SELECT AGG(revenue), AGG(units), count(*) FROM (SELECT o.revenue, l.units FROM shop.orders AS o JOIN shop.order_lines AS l ON o.order_id = l.order_id)');
+----
+39.0	17	6
+
+# ... or in the block that evaluates it.
+query RII
+SELECT * FROM ossie_sql('SELECT AGG(s.revenue), AGG(l.units), count(*) FROM (SELECT order_id, revenue FROM shop.orders) AS s JOIN shop.order_lines AS l USING (order_id)');
+----
+39.0	17	6
+
+# A row repeated by the SELECT list is one row of the dataset too.
+query RI
+SELECT * FROM ossie_sql('SELECT AGG(revenue), count(*) FROM (SELECT revenue, unnest([1, 2]) AS n FROM shop.orders)');
+----
+51.0	8
+
+# A measure keeps its own conditions and its own shape, and what it reads of the source travels with it.
+query IRR
+SELECT * FROM ossie_sql('SELECT AGG(shipped_count), AGG(shipped_revenue), AGG(average_amount) FROM (SELECT order_id, shipped_count, shipped_revenue, average_amount FROM shop.orders) AS s JOIN shop.order_lines AS l USING (order_id)');
+----
+2	14.0	13.0
+
+query II
+SELECT * FROM ossie_sql('SELECT AGG(shipped_count), count(*) FROM (SELECT shipped_count, order_id FROM shop.shipments) AS s JOIN shop.order_lines AS l USING (order_id)');
+----
+2	6
+
+# The key that tells the rows apart may be two columns, or a column of the source that no field declares.
+query I
+SELECT * FROM ossie_sql('SELECT AGG(units) FROM (SELECT l.units FROM shop.order_lines AS l JOIN shop.payments AS p USING (order_id))');
+----
+17
+
+query RI
+SELECT * FROM ossie_sql('SELECT AGG(paid_total), count(*) FROM (SELECT order_id, paid_total FROM shop.payments) AS p JOIN shop.order_lines AS l USING (order_id)');
+----
+39.0	8
+
+# Two measures of one name are told apart by the names they are passed on under.
+query III
+SELECT * FROM ossie_sql('SELECT AGG(n), AGG(m), count(*) FROM (SELECT o.row_count AS n, c.row_count AS m FROM shop.orders AS o, shop.customers AS c)');
+----
+4	4	16
+
+# A dataset without a primary key passes its measures on where its rows stay as they are, and no further.
+query I
+SELECT * FROM ossie_sql('SELECT AGG(visit_count) FROM (SELECT visit_count FROM shop.visits)');
+----
+3
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(visit_count) FROM (SELECT v.visit_count FROM shop.visits AS v JOIN shop.customers AS c USING (customer_id))');
+----
+ossie_sql: AGG(visit_count): dataset "visits" declares no primary_key. Where a row of the dataset may stand in more than one row, as over a join, a measure counts each row of its dataset once, and the primary key is what tells the rows apart
+
+# --- where a measure cannot pass ------------------------------------------------------------------------
+
+# A block that aggregates has groups for rows, and no row of the dataset left to evaluate the measure over.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT customer_id, revenue, count(*) FROM shop.orders GROUP BY customer_id)');
+----
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it. This query block aggregates, so the measure cannot pass through it unevaluated: write AGG(revenue)
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT customer_id, revenue FROM shop.orders GROUP BY ALL)');
+----
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it. GROUP BY ALL takes every column of the SELECT list that is not an aggregate as a key, and a measure cannot be a key: write AGG(revenue)
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT *, count(*) FROM shop.orders GROUP BY ALL)');
+----
+ossie_sql: * would take in the measures "revenue", "row_count", "shipped_count", "shipped_revenue", "average_amount", "running_revenue", "doubled" of shop.orders, and a measure has a value only where AGG evaluates it. This query block aggregates, so a measure cannot pass through it unevaluated: leave the measures out, as in * EXCLUDE (revenue, row_count, shipped_count, shipped_revenue, average_amount, running_revenue, doubled), and evaluate them with AGG
+
+# Rows are not compared on a measure: not by DISTINCT, and not by a set operator.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT DISTINCT customer_id, revenue FROM shop.orders)');
+----
+ossie_sql: DISTINCT over the measure "revenue", which the SELECT list passes on unevaluated, is not supported: a measure has a value only where AGG evaluates it, so rows cannot be compared on it. Write AGG(revenue), or leave the measure out of the SELECT list
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT revenue FROM shop.orders UNION ALL SELECT revenue FROM shop.orders)');
+----
+ossie_sql: a query under a set operator, such as UNION, returns the measure "revenue" unevaluated. A measure has a value only where AGG evaluates it: write AGG(revenue), or leave the measure out of the SELECT list
+
+statement error
+SELECT * FROM ossie_sql('WITH RECURSIVE r AS (SELECT order_id, revenue FROM shop.orders UNION ALL SELECT order_id, revenue FROM r) SELECT AGG(revenue) FROM r');
+----
+ossie_sql: a query of a recursive CTE returns the measure "revenue" unevaluated.
+
+# A subquery that stands for a value has to have one.
+statement error
+SELECT * FROM ossie_sql('SELECT (SELECT revenue FROM shop.orders LIMIT 1)');
+----
+ossie_sql: a subquery used as a value returns the measure "revenue" unevaluated.
+
+statement error
+SELECT * FROM ossie_sql('SELECT order_id FROM shop.orders WHERE customer_id IN (SELECT row_count FROM shop.customers)');
+----
+ossie_sql: a subquery used as a value returns the measure "row_count" unevaluated.
+
+# A block passes on the measures of its own FROM clause.
+statement error
+SELECT * FROM ossie_sql('SELECT (SELECT o.revenue) FROM shop.orders AS o');
+----
+ossie_sql: "revenue" is a measure of shop.orders AS o, a relation of an outer query block. A measure has a value only where AGG evaluates it, and AGG evaluates a measure of a relation in its own block's FROM clause
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(n) FROM (SELECT row_count AS n FROM shop.orders AS o, shop.customers AS c)');
+----
+ossie_sql: "row_count" is ambiguous: shop.orders AS o and shop.customers AS c both have a measure of that name. Qualify it, as o.row_count
+
+# A relation has one measure of a name.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT o.revenue, c.row_count AS revenue FROM shop.orders AS o, shop.customers AS c)');
+----
+ossie_sql: "unnamed_subquery" would have two measures named "revenue". Rename one of them where the query passes them on, so that AGG can tell them apart
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT revenue FROM shop.orders), (SELECT revenue FROM shop.orders)');
+----
+ossie_sql: AGG(revenue) is ambiguous: unnamed_subquery and unnamed_subquery2 both have a measure of that name. Qualify it, as AGG(unnamed_subquery.revenue)
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT revenue FROM shop.orders) AS t(x)');
+----
+ossie_sql: a list of column aliases on "t" is not supported, because the relation carries the measure "revenue" unevaluated. Rename a column in the SELECT list
+
+# Passed on, it is as much a measure as before.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT customer_id, revenue FROM shop.orders) AS s WHERE revenue > 1');
+----
+ossie_sql: "revenue" is a measure of s, and a measure has a value only where AGG evaluates it. WHERE reads the rows before they are grouped
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT customer_id, revenue FROM shop.orders) AS s JOIN shop.customers AS c ON s.revenue = c.customer_id');
+----
+ossie_sql: "revenue" is a measure of s, and a measure has a value only where AGG evaluates it, so it cannot be joined on
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(amount) FROM (SELECT amount, revenue FROM shop.orders) AS s');
+----
+ossie_sql: AGG(amount): s has no measure named "amount". Its measures: revenue
+
+# --- ORDER BY in a block that passes a measure on -------------------------------------------------------
+
+# The rows are ordered by their fields.
+query R
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT o.customer_id, o.revenue FROM shop.orders AS o ORDER BY o.customer_id, amount)');
+----
+51.0
+
+# A name of the SELECT list is the measure passed on under it.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(r) FROM (SELECT customer_id, revenue AS r FROM shop.orders ORDER BY r)');
+----
+ossie_sql: "r" is a measure the SELECT list passes on unevaluated, and a measure has a value only where AGG evaluates it, so ORDER BY cannot read it
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT customer_id, revenue FROM shop.orders ORDER BY 1)');
+----
+ossie_sql: ORDER BY 1: ordering by a position in the SELECT list is not supported where the list passes the measure "revenue" on unevaluated. Name the column
+
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM (SELECT customer_id, revenue FROM shop.orders ORDER BY ALL)');
+----
+ossie_sql: ORDER BY ALL would order by the measure "revenue", which the SELECT list passes on unevaluated. Name the columns to order by
+
+# ORDER BY ALL over fields is as it was.
+query IR
+SELECT * FROM ossie_sql('SELECT customer_id, amount FROM shop.orders ORDER BY ALL');
+----
+1	10.0
+1	25.0
+2	4.0
+3	12.0
+
+# --- NATURAL JOIN, COLUMNS and PIVOT read the columns there are -----------------------------------------
+
+# NATURAL JOIN is on the column names two relations share. A measure the query does not read is no column
+# of what the join sees, so the join is on the fields.
+query I
+SELECT * FROM ossie_sql('SELECT count(*) FROM shop.orders NATURAL JOIN shop.customers');
+----
+4
+
+query R
+SELECT * FROM ossie_sql('SELECT AGG(s.revenue) FROM (SELECT customer_id, revenue FROM shop.orders) AS s NATURAL JOIN shop.customers');
+----
+51.0
+
+# A measure it does read is one, and where the other side has a column of its name the join would be on it.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(o.row_count), AGG(c.row_count) FROM shop.orders AS o NATURAL JOIN shop.customers AS c');
+----
+ossie_sql: NATURAL JOIN would join on "row_count", a measure of shop.orders AS o: shop.customers AS c has a column of that name. A measure has a value only where AGG evaluates it, so it cannot be joined on. Write the join's columns, with USING or ON
+
+# What columns a table of the caller has is not known here.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(revenue) FROM shop.orders NATURAL JOIN customers');
+----
+ossie_sql: NATURAL JOIN would join on "revenue", a measure of shop.orders: the other side of the join may have a column of that name.
+
+# COLUMNS over a relation without measures is its fields.
+query T
+SELECT * FROM ossie_sql('SELECT COLUMNS(*) FROM shop.regions ORDER BY ALL LIMIT 1');
+----
+east
+
+statement error
+SELECT * FROM ossie_sql('SELECT COLUMNS(*) FROM shop.orders');
+----
+ossie_sql: COLUMNS(...) over shop.orders is not supported: the relation has measures, and a measure has a value only where AGG evaluates it. Name the columns
+
+# PIVOT aggregates the rows it reads itself, so it reads fields, and values.
+query IRRR
+SELECT * FROM ossie_sql('SELECT * FROM (PIVOT shop.orders ON customer_id IN (1, 2, 3) USING sum(amount)) ORDER BY 1 LIMIT 2');
+----
+1	10.0	NULL	NULL
+2	25.0	NULL	NULL
+
+query RRR
+SELECT * FROM ossie_sql('SELECT * FROM (PIVOT (SELECT customer_id, AGG(revenue) AS revenue FROM shop.orders GROUP BY ALL) ON customer_id IN (1, 2, 3) USING sum(revenue))');
+----
+35.0	4.0	12.0
+
+statement error
+SELECT * FROM ossie_sql('SELECT * FROM (PIVOT shop.orders ON customer_id IN (1, 2, 3) USING AGG(revenue))');
+----
+ossie_sql: AGG(revenue) cannot appear in PIVOT, which aggregates the rows it reads itself. Evaluate the measure in a subquery, and pivot its value
+
+statement error
+SELECT * FROM ossie_sql('SELECT * FROM (PIVOT shop.orders ON customer_id IN (1, 2, 3) USING sum(revenue))');
+----
+ossie_sql: "revenue" is a measure of shop.orders, and a measure has a value only where AGG evaluates it, so PIVOT cannot read it. Evaluate it with AGG in a subquery, and pivot the value
+
+statement error
+SELECT * FROM ossie_sql('SELECT * FROM (PIVOT (SELECT customer_id, revenue FROM shop.orders) ON customer_id IN (1, 2, 3) USING count(*))');
+----
+ossie_sql: the source of a PIVOT or UNPIVOT returns the measure "revenue" unevaluated.
+
+# A PIVOT that has to find the values to pivot on first is more than one statement.
+statement error
+SELECT * FROM ossie_sql('SELECT * FROM (PIVOT shop.orders ON customer_id USING sum(amount))');
+----
+ossie_sql: the query must be one statement, and a PIVOT that does not list the values to pivot on is several. List them, as in ON column IN (...)
+
 # --- measures this function does not evaluate yet ------------------------------------------------------
 
 statement error
@@ -664,3 +1083,9 @@ statement error
 SELECT * FROM ossie_sql('SELECT AGG(doubled) FROM shop.orders');
 ----
 ossie_sql: AGG(doubled): measure "orders.doubled" contains no aggregate, so it has no value over the rows of a group
+
+# Passed on, they are the same measures.
+statement error
+SELECT * FROM ossie_sql('SELECT AGG(running_revenue) FROM (SELECT * FROM shop.orders)');
+----
+ossie_sql: AGG(running_revenue): measure "orders.running_revenue" uses the window function SUM
