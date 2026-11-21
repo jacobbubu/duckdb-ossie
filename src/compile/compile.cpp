@@ -402,6 +402,12 @@ void CheckFilterNode(const ParsedExpression &expr, const string &subject, const 
 		if (function.IsOperator() || IsAggregateName(name) || options.allow_filter_functions) {
 			return;
 		}
+		// CURRENT_DATE() is CURRENT_DATE, which is no call at all; the parentheses change nothing it can reach.
+		auto &qualified = function.GetQualifiedName();
+		if (IsCurrentDateTime(name) && function.GetArguments().empty() && qualified.Schema().empty() &&
+		    qualified.Catalog().empty()) {
+			return;
+		}
 		throw InvalidInputException("ossie: E_INVALID_QUERY: %s calls function \"%s\". Load the model with "
 		                            "allow_filter_functions => true to permit function calls in filters",
 		                            subject, name);
@@ -770,7 +776,7 @@ Filter ParseFilter(const string &request, bool on_metrics, const CompileOptions 
 	// field is: NVL and DATEADD(day, ...) work, and CONCAT means what it means in a field. This comes after the
 	// policy check, which judges what the caller wrote, and before names are resolved, since the bare date part
 	// in DATEADD(day, ...) is not a name.
-	LowerOssieSql2026(result.expr, "ossie: E_INVALID_QUERY: " + subject);
+	LowerOssieSql2026(result.expr, request, "ossie: E_INVALID_QUERY: " + subject);
 	return result;
 }
 

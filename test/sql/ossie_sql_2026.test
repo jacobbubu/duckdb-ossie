@@ -297,3 +297,99 @@ statement error
 CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_quoted_field.json');
 ----
 the column of memory.main.quoted is spelled "Region"
+
+# --- CURRENT_DATE, CURRENT_TIMESTAMP and CURRENT_TIME, with and without parentheses; IF -------------------
+# Without parentheses each arrives as a column reference, which the compiler would qualify with the
+# dataset for DuckDB to look up in the source. With them DuckDB has CURRENT_DATE() alone, and that one in
+# its ICU extension, which this test runs without: all six are read off get_current_timestamp().
+
+query TTIIII
+CALL ossie_load('test/fixtures/ossie_sql_2026_current.yaml');
+----
+current	0.3.0.dev0	1	13	0	2
+
+# The types are the ones the language names. DuckDB's own CURRENT_TIMESTAMP and CURRENT_TIME carry a time zone.
+query TTTTTTT
+SELECT DISTINCT typeof(today), typeof(today_call), typeof(now_ts), typeof(now_ts_call), typeof(now_time),
+       typeof(now_time_call), typeof(next_week)
+FROM ossie_query([], ['o.today', 'o.today_call', 'o.now_ts', 'o.now_ts_call', 'o.now_time', 'o.now_time_call',
+                      'o.next_week']);
+----
+DATE	DATE	TIMESTAMP	TIMESTAMP	TIME	TIME	DATE
+
+# One clock: the date and the time are those of the timestamp, and the two spellings agree.
+query TTTTTT
+SELECT DISTINCT today = CAST(now_ts AS DATE), today = today_call, now_ts = now_ts_call,
+       now_time = CAST(now_ts AS TIME), now_time = now_time_call, next_week = today + 7
+FROM ossie_query([], ['o.today', 'o.today_call', 'o.now_ts', 'o.now_ts_call', 'o.now_time', 'o.now_time_call',
+                      'o.next_week']);
+----
+true	true	true	true	true	true
+
+query T
+SELECT DISTINCT now_ts BETWEEN CAST(now() AS TIMESTAMP) - INTERVAL 1 DAY AND CAST(now() AS TIMESTAMP) + INTERVAL 1 DAY
+FROM ossie_query([], ['o.now_ts']);
+----
+true
+
+# IF is IFF. In an ANSI_SQL expression the bare names are the same functions, as DuckDB reads them.
+query ITTT
+SELECT id, is_past, size, ansi_past FROM ossie_query([], ['o.id', 'o.is_past', 'o.size', 'o.ansi_past']) ORDER BY 1;
+----
+1	true	large	true
+2	true	small	true
+3	true	small	true
+
+# In a dataset-scoped metric a bare name is a field of the dataset, and in a model-scoped one every column
+# is qualified. Neither rule is for a keyword.
+query RI
+SELECT * FROM ossie_query(['o.past_amount', 'past_orders']);
+----
+150.00	3
+
+query T
+SELECT ossie_compile([], ['o.now_ts', 'o.now_time', 'o.size'], []);
+----
+SELECT CAST(get_current_timestamp() AS TIMESTAMP_US) AS now_ts, CAST(CAST(get_current_timestamp() AS TIMESTAMP_US) AS TIME) AS now_time, CASE  WHEN ((o.amount > 60)) THEN ('large') ELSE 'small' END AS size FROM memory.main.orders AS o GROUP BY CAST(get_current_timestamp() AS TIMESTAMP_US), CAST(CAST(get_current_timestamp() AS TIMESTAMP_US) AS TIME), CASE  WHEN ((o.amount > 60)) THEN ('large') ELSE 'small' END
+
+# A filter may use them without allow_filter_functions, in either spelling: the parentheses add nothing a
+# caller could reach. With an argument it is a call like any other.
+query R
+SELECT * FROM ossie_query(['o.past_amount'], [], ['o.created < CURRENT_DATE', 'o.created < CURRENT_TIMESTAMP()']);
+----
+150.00
+
+query R
+SELECT * FROM ossie_query(['o.past_amount'], [], ['o.created > current_date()']);
+----
+NULL
+
+statement error
+SELECT * FROM ossie_query(['o.past_amount'], [], ['o.created < CURRENT_DATE(1)']);
+----
+filter "o.created < CURRENT_DATE(1)" calls function "current_date". Load the model with allow_filter_functions => true
+
+statement error
+CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_current_arguments.yaml');
+----
+field "o.f" calls CURRENT_TIMESTAMP with 1 argument(s); OSSIE_SQL_2026 defines it as CURRENT_TIMESTAMP or CURRENT_TIMESTAMP()
+
+statement error
+CALL ossie_load('test/fixtures/invalid/ossie_sql_2026_if_arity.yaml');
+----
+field "o.f" calls IF with 2 argument(s); OSSIE_SQL_2026 defines it as IF(condition, true_result, false_result)
+
+# A column that has the keyword's name is written in quotes, and stays a column.
+statement ok
+CREATE TABLE stamped(id INT, "current_date" DATE);
+
+statement ok
+INSERT INTO stamped VALUES (1, DATE '2020-02-29');
+
+statement ok
+CALL ossie_load('test/fixtures/ossie_sql_2026_current_quoted.yaml');
+
+query ITTT
+SELECT id, stamp, is_old, ansi_stamp FROM ossie_query([], ['s.id', 's.stamp', 's.is_old', 's.ansi_stamp']);
+----
+1	2020-02-29	true	2020-02-29

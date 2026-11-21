@@ -285,7 +285,9 @@ ModelExpression ParseModelExpression(yyjson_val *parent, const string &context) 
 		}
 		result.tree = std::move(parsed[0]);
 		if (result.dialect == OSSIE_SQL_2026) {
-			LowerOssieSql2026(result.tree, "ossie_load: " + context);
+			LowerOssieSql2026(result.tree, result.sql, "ossie_load: " + context);
+		} else {
+			LowerAnsiSql(result.tree, result.sql);
 		}
 	} catch (const ParserException &ex) {
 		throw InvalidInputException("ossie_load: %s has an unparseable expression '%s': %s", context, result.sql,
@@ -400,74 +402,6 @@ void ValidateSourceShape(const string &source, const string &context) {
 	}
 }
 
-//! A field expression may name another field of the same dataset. Expand those references at load
-//! so that by the time the compiler substitutes a field, its tree contains only physical columns.
-//!
-//! This has to happen here rather than in the compiler. The compiler substitutes a field and then
-//! qualifies the result, which rewrites every column reference into a two-part name -- at which
-//! point a model-level field name and a physical column name are the same object, and there is no
-//! way left to tell whether more expansion is needed. Expanding once at load also turns a reference
-//! cycle into an ossie_load error instead of unbounded recursion at query time.
-enum class ExpandState : uint8_t { PENDING, ACTIVE, DONE };
-
-void ExpandField(Dataset &dataset, idx_t index, vector<ExpandState> &state, vector<string> &stack,
-                 const string &context);
-
-//! Replaces references to *other computed* fields with their (already expanded) expressions.
-//! Three cases are deliberately left alone, because in each the reference already names a physical
-//! column: a name that is not a declared field at all, a non-computed field (whose name IS its
-//! column), and a field referring to itself -- `revenue` defined as `revenue * 2` means the column
-//! times two, not a cycle.
-void SubstituteFieldRefs(Dataset &dataset, unique_ptr<ParsedExpression> &expr, idx_t self, vector<ExpandState> &state,
-                         vector<string> &stack, const string &context) {
-	if (expr->GetExpressionClass() == ExpressionClass::COLUMN_REF) {
-		auto &colref = expr->Cast<ColumnRefExpression>();
-		auto entry = dataset.field_index.find(ColumnNames(colref).back());
-		if (entry == dataset.field_index.end()) {
-			return;
-		}
-		auto referenced = entry->second;
-		if (referenced == self || !dataset.fields[referenced].is_computed) {
-			return;
-		}
-		ExpandField(dataset, referenced, state, stack, context);
-		expr = dataset.fields[referenced].expression.tree->Copy();
-		return;
-	}
-	ParsedExpressionIterator::EnumerateChildren(*expr, [&](unique_ptr<ParsedExpression> &child) {
-		SubstituteFieldRefs(dataset, child, self, state, stack, context);
-	});
-}
-
-void ExpandField(Dataset &dataset, idx_t index, vector<ExpandState> &state, vector<string> &stack,
-                 const string &context) {
-	if (state[index] == ExpandState::DONE) {
-		return;
-	}
-	if (state[index] == ExpandState::ACTIVE) {
-		auto cycle = stack;
-		cycle.push_back(dataset.fields[index].name);
-		throw InvalidInputException("ossie_load: %s has a cycle in its field definitions: %s. A field may "
-		                            "not be defined, directly or indirectly, in terms of itself",
-		                            context, StringUtil::Join(cycle, " -> "));
-	}
-	state[index] = ExpandState::ACTIVE;
-	stack.push_back(dataset.fields[index].name);
-	if (dataset.fields[index].expression.tree) {
-		SubstituteFieldRefs(dataset, dataset.fields[index].expression.tree, index, state, stack, context);
-	}
-	stack.pop_back();
-	state[index] = ExpandState::DONE;
-}
-
-void ExpandFieldReferences(Dataset &dataset, const string &context) {
-	vector<ExpandState> state(dataset.fields.size(), ExpandState::PENDING);
-	vector<string> stack;
-	for (idx_t i = 0; i < dataset.fields.size(); i++) {
-		ExpandField(dataset, i, state, stack, context);
-	}
-}
-
 Dataset ParseDataset(yyjson_val *dataset_obj, const RebindMap &rebind) {
 	ValidateKnownFields(dataset_obj,
 	                    {"name", "source", "primary_key", "unique_keys", "description", "ai_context", "fields",
@@ -503,8 +437,9 @@ Dataset ParseDataset(yyjson_val *dataset_obj, const RebindMap &rebind) {
 			result.fields.push_back(std::move(field));
 		}
 	}
-	// Only safe once every field is present, since expansion resolves references between them.
-	ExpandFieldReferences(result, context);
+	// A name in a field expression is a column of the source, also where another field has that name: the
+	// format has no field defined over a field. So the trees stay as written, and catalog.cpp refuses at
+	// load a name that only a field answers to, when the source is there to look at.
 	return result;
 }
 

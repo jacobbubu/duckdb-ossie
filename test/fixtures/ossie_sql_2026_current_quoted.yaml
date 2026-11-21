@@ -1,0 +1,26 @@
+version: "0.3.0.dev0"
+name: current_quoted
+description: A column that has the name of a keyword is written in quotes
+datasets:
+  - name: s
+    source: memory.main.stamped
+    primary_key: [id]
+    fields:
+      - name: id
+        datatype: Integer
+        expression:
+          sql: id
+      - name: stamp
+        datatype: Date
+        expression:
+          sql: '"current_date"'
+      - name: is_old
+        datatype: Boolean
+        expression:
+          sql: '"current_date" < CURRENT_DATE'
+      - name: ansi_stamp
+        datatype: Date
+        expression:
+          dialects:
+            - dialect: ANSI_SQL
+              expression: '"current_date"'

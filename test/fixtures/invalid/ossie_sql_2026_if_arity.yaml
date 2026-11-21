@@ -1,0 +1,10 @@
+version: "0.3.0.dev0"
+name: if_arity
+datasets:
+  - name: o
+    source: memory.main.orders
+    fields:
+      - name: f
+        datatype: String
+        expression:
+          sql: IF(amount > 60, 'large')

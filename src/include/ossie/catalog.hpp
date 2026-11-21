@@ -23,5 +23,12 @@ bool SourceColumns(ClientContext &context, const string &source, vector<string> 
 //! that matches a column only when case is ignored. Sources that are not in the catalog are not checked.
 void CheckQuotedIdentifiers(ClientContext &context, const Model &model);
 
+//! A name in a field expression is a column of the dataset's source, and the format does not let a field
+//! refer to another field. For each dataset whose source is in the catalog, refuses a field expression
+//! naming a computed field of the dataset where the source has no column of that name, rather than leave
+//! the query to fail on a column the model appears to declare. Sources that are not in the catalog are
+//! not checked.
+void CheckFieldReferences(ClientContext &context, const Model &model);
+
 } // namespace ossie
 } // namespace duckdb

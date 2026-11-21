@@ -387,6 +387,15 @@ year, quarter, month, week or day part are lowered to this extension's `ossie_da
 that `ossie_compile` prints therefore names those two functions, and runs only where the extension
 is loaded. An hour, minute or second part cannot keep a `DATE`, and uses DuckDB's `date_add`.
 
+`CURRENT_DATE`, `CURRENT_TIMESTAMP` and `CURRENT_TIME`, each with or without parentheses, are the
+`DATE`, `TIMESTAMP` and `TIME` the language names. DuckDB's own `CURRENT_TIMESTAMP` and `CURRENT_TIME`
+carry a time zone, so all three are taken from `get_current_timestamp()` cast to `TIMESTAMP`: the wall
+clock of the session's `TimeZone` when DuckDB's ICU extension is loaded, and of UTC when it is not. The
+language does not say whose clock it is, so the date can differ by a day from another engine's around
+midnight. An `ANSI_SQL` expression that writes these names gets DuckDB's own functions and types, and
+its `CURRENT_DATE` and `CURRENT_TIME` need ICU. Because the bare names are keywords, a source column
+called `current_date` has to be written `"current_date"` in an expression.
+
 Request filters are read in the same language, whatever dialect the model's own expressions use: a filter
 is lowered exactly as an `OSSIE_SQL_2026` field is, after `allow_filter_functions` has judged the filter
 as written. So `NVL` and `DATEADD(day, 30, d)` work in a filter, and `CONCAT(a, b) IS NULL` is true when
@@ -402,6 +411,14 @@ suggesting the unquoted form. A dataset whose source is absent at load (the usua
 time. The check reads the expression text, so a name written both quoted and unquoted in one
 expression counts as quoted. Model-level names (datasets, fields, metrics) are case-insensitive as
 before, whether or not they are quoted.
+
+**A field expression reads the source, not other fields.** Every name in a field expression is a
+column of the dataset's `source`, and the format does not let a field refer to another field. A name
+that a field of the dataset also has is therefore still the column: with `amount` defined as
+`amount_cents / 100.0`, a field `amount * 2` doubles the source's `amount` column. When the source is
+in the catalog at load and has no such column, the expression can only have meant the field, and the
+model is refused naming both. When the source is absent at load nothing can be checked, and DuckDB's
+binder reports the missing column once a query reads the field.
 
 **Table sources only.** `source` may name a query rather than a table under the spec. Such a
 source can neither be prefix-rebound nor bound as a table reference, so it is refused at load.

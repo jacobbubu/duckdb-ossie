@@ -124,6 +124,17 @@ pins). The DuckDB version each release targets is noted separately.
   `COUNT(*)`, `COUNT(DISTINCT ...)` and `APPROX_COUNT_DISTINCT` NULL. They are 0 now, in the result
   and in a filter on the metric; other aggregates stay NULL, as they are over no rows.
 
+- **Breaking: a name in a field expression is a column of the source, also where another field has
+  that name.** Ossie 0.3 resolves every name in a field expression to a column of the dataset's
+  `source` and has no field defined over another field. `ossie_load` used to put the other field's
+  expression in place of the name, so with a field `amount` defined as `amount_cents / 100.0` and a
+  field `doubled` defined as `amount * 2`, `doubled` read the field. It reads the source's `amount`
+  column now, as the specification says, and the two give different numbers wherever the field is
+  not simply its column. A model that relied on the old reading has to write the expression out.
+  Where the source is in the catalog at load and has no column of that name, the model is refused,
+  naming the field and the name; where it is not, DuckDB's binder reports the missing column when a
+  query reads the field. Two fields named after each other's columns are no longer a cycle.
+
 ### Added
 - **`ossie_sql(query)` runs a `SELECT` written over the model's relations, the Relational Query
   Interface of the Ossie specification.** A dataset is the relation `model.dataset` and its fields
@@ -208,6 +219,16 @@ pins). The DuckDB version each release targets is noted separately.
   refusals are unchanged
 
 ### Fixed
+- **`CURRENT_DATE`, `CURRENT_TIMESTAMP` and `CURRENT_TIME` work, with and without parentheses.** The
+  language writes each both ways; only `CURRENT_DATE()` ran. Without parentheses the name was taken
+  for a column: a field failed in DuckDB's binder when queried, a metric was refused at load for an
+  undeclared or unqualified name, and a filter got `E_NAME_NOT_FOUND`. `CURRENT_TIMESTAMP()` and
+  `CURRENT_TIME()` loaded and then failed as functions DuckDB does not have. All six now give the
+  `DATE`, `TIMESTAMP` and `TIME` the language names, read off `get_current_timestamp()`, and a
+  filter may use them without `allow_filter_functions`. An `ANSI_SQL` expression may write the bare
+  names too, with DuckDB's own types. A column that has one of these names is written in quotes.
+- **`IF(condition, true_result, false_result)` loads.** It was refused as a function the language
+  does not define; it is `IFF` under its other name and becomes the same `CASE`.
 - **`DATE_TRUNC` and `DATEADD` keep a `DATE` a `DATE`.** DuckDB's `date_trunc` and `date_add`
   return a `TIMESTAMP` at midnight for a `DATE` input; the language keeps the input type. Year,
   quarter, month, week and day parts now lower to the extension's own `ossie_date_trunc` and

@@ -1,6 +1,6 @@
 {
   "version": "0.3.0.dev0",
-  "name": "field_cycle",
+  "name": "field_names",
   "datasets": [
     {
       "name": "t",
@@ -54,6 +54,17 @@
           {
             "dialect": "ANSI_SQL",
             "expression": "COUNT(t.k)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "max_a",
+      "expression": {
+        "dialects": [
+          {
+            "dialect": "ANSI_SQL",
+            "expression": "MAX(t.a)"
           }
         ]
       }

@@ -1,4 +1,5 @@
 #include "ossie/catalog.hpp"
+#include "ossie/dialect.hpp"
 #include "ossie/names.hpp"
 
 #include "duckdb/catalog/catalog.hpp"
@@ -59,47 +60,6 @@ optional_ptr<CatalogEntry> SourceEntry(ClientContext &context, const string &sou
 		// An unattached database throws rather than returning null.
 		return nullptr;
 	}
-}
-
-//! The double-quoted identifiers in `sql`, as written between the quotes. DuckDB's parser drops the quotes
-//! on its way to the tree, so the text is the only record of which names the author meant exactly.
-unordered_set<string> QuotedIdentifiers(const string &sql) {
-	unordered_set<string> result;
-	for (idx_t i = 0; i < sql.size(); i++) {
-		auto c = sql[i];
-		if (c == '\'') {
-			for (i++; i < sql.size(); i++) {
-				if (sql[i] != '\'') {
-					continue;
-				}
-				if (i + 1 < sql.size() && sql[i + 1] == '\'') {
-					i++;
-					continue;
-				}
-				break;
-			}
-		} else if (c == '"') {
-			string name;
-			for (i++; i < sql.size(); i++) {
-				if (sql[i] != '"') {
-					name += sql[i];
-					continue;
-				}
-				if (i + 1 < sql.size() && sql[i + 1] == '"') {
-					name += '"';
-					i++;
-					continue;
-				}
-				break;
-			}
-			result.insert(name);
-		} else if (c == '-' && i + 1 < sql.size() && sql[i + 1] == '-') {
-			while (i < sql.size() && sql[i] != '\n') {
-				i++;
-			}
-		}
-	}
-	return result;
 }
 
 //! Refuses `column` if it was written in quotes and matches a column of `source` only when case is ignored.
@@ -215,6 +175,36 @@ void CheckQuotedIdentifiers(ClientContext &context, const Model &model) {
 					continue;
 				}
 				CheckQuotedColumn(names[1], quoted, columns, dataset.source_bound, context_name);
+			}
+		}
+	}
+}
+
+void CheckFieldReferences(ClientContext &context, const Model &model) {
+	for (auto &dataset : model.datasets) {
+		vector<string> columns;
+		if (!SourceColumns(context, dataset.source_bound, columns)) {
+			continue;
+		}
+		case_insensitive_set_t source_columns(columns.begin(), columns.end());
+		for (auto &field : dataset.fields) {
+			if (!field.expression.tree) {
+				continue;
+			}
+			for (auto &ref : ColumnRefs(*field.expression.tree)) {
+				auto name = ColumnNames(ref.get()).back();
+				auto other = dataset.FindField(name);
+				// A field that is its own column by name says the source has that column. Where it does not,
+				// the model is over the wrong table, which is DuckDB's to report.
+				if (!other || other == &field || !other->is_computed ||
+				    source_columns.find(name) != source_columns.end()) {
+					continue;
+				}
+				throw InvalidInputException(
+				    "ossie_load: field \"%s.%s\" references \"%s\", which is a field of dataset \"%s\" and not a "
+				    "column of its source %s. A field expression reads the columns of the source and cannot "
+				    "refer to another field; write out the expression of \"%s\" in its place",
+				    dataset.name, field.name, name, dataset.name, dataset.source_bound, other->name);
 			}
 		}
 	}

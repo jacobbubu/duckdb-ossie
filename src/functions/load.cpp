@@ -102,6 +102,7 @@ void LoadFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk 
 	}
 
 	CheckQuotedIdentifiers(context, *model);
+	CheckFieldReferences(context, *model);
 
 	idx_t field_count = 0;
 	for (auto &dataset : model->datasets) {

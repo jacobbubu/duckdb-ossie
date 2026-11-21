@@ -1,0 +1,72 @@
+version: "0.3.0.dev0"
+name: current
+description: CURRENT_DATE, CURRENT_TIMESTAMP and CURRENT_TIME with and without parentheses, and IF
+datasets:
+  - name: o
+    source: memory.main.orders
+    primary_key: [id]
+    fields:
+      - name: id
+        datatype: Integer
+        expression:
+          sql: id
+      - name: created
+        datatype: Date
+        expression:
+          sql: created
+      - name: amount
+        datatype: Decimal
+        expression:
+          sql: amount
+      - name: today
+        datatype: Date
+        expression:
+          sql: CURRENT_DATE
+      - name: today_call
+        datatype: Date
+        expression:
+          sql: CURRENT_DATE()
+      - name: now_ts
+        datatype: DateTime
+        expression:
+          sql: current_timestamp
+      - name: now_ts_call
+        datatype: DateTime
+        expression:
+          sql: CURRENT_TIMESTAMP()
+      - name: now_time
+        datatype: Time
+        expression:
+          sql: CURRENT_TIME
+      - name: now_time_call
+        datatype: Time
+        expression:
+          sql: CURRENT_TIME()
+      - name: next_week
+        datatype: Date
+        expression:
+          sql: DATEADD(day, 7, CURRENT_DATE)
+      - name: is_past
+        datatype: Boolean
+        expression:
+          sql: created < CURRENT_DATE AND created < CURRENT_TIMESTAMP
+      - name: size
+        datatype: String
+        expression:
+          sql: IF(amount > 60, 'large', 'small')
+      - name: ansi_past
+        datatype: Boolean
+        expression:
+          dialects:
+            - dialect: ANSI_SQL
+              expression: created < CURRENT_TIMESTAMP
+    metrics:
+      - name: past_amount
+        datatype: Decimal
+        expression:
+          sql: SUM(IF(created < CURRENT_DATE, amount, 0))
+metrics:
+  - name: past_orders
+    datatype: Integer
+    expression:
+      sql: COUNT(CASE WHEN o.created < CURRENT_TIMESTAMP THEN o.id END)
