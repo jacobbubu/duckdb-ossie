@@ -1,13 +1,21 @@
 # 函数与窗口兼容矩阵
 
-本项目支持固定 OSSIE 0.2 快照中的有限表达式子集；不宣称完整符合
+本项目支持 OSSIE 0.3 表达式语言的一个有限子集；不宣称完整符合
 OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckDB SQL 能解析
 或执行一个函数，不证明模型、正式规则或人口请求允许使用它。
 
-规范基准为提交 `8dd6732da354f22ca71f16d82626a46039ecdcd9` 的
-原始表达式文档。
+规范基准为 `apache/ossie` 提交 `e4f545a`（0.3 系列）的
+`core-spec/expression_language.md`、`spec.md`、`wide_table_semantics.md` 与
+`relational_semantics.md`。此前本页固定在 0.2 快照 `8dd6732`，落后 144 个提交；
+现已按 0.3 重述，并逐条复验受影响的行为：整数 `/` 为 true division
+（`5 / 2` 得 2.5），`ROUND` 平局远离零（`ROUND(2.5, 0)` 为 3、`ROUND(-2.5, 0)`
+为 -3、`ROUND(0.125, 2)` 为 0.13），`FILTER (WHERE ...)` 聚合修饰、`AGG()` 保留字
+与指标里的 `source.column` 形式均已实现。0.3 改动的窗口 `ORDER BY` NULL 位置
+默认值无从复验，因为本项目不执行任何窗口函数。
 其聚合、条件、类型转换、排名/偏移/聚合窗口章节包含 REQUIRED 项；本矩阵
-只覆盖各 profile 实际需要的函数，并继续公开未支持项。
+只覆盖各 profile 实际需要的函数，并继续公开未支持项。规范要求的 REQUIRED 项
+中仍未实现的是窗口函数与 `REGEXP_LIKE`，以及 Layer 2 的查询内度量定义与
+C6 度量发现，理由见 limitations。
 
 固定文档定义语言；解析/绑定门禁决定允许的 AST 和位置。声明或解析成功不代表
 某个 profile 允许在对应位置使用该函数。
@@ -39,7 +47,7 @@ OSSIE_SQL_2026。本页按表达式所在接口区分支持范围。普通 DuckD
 | `NULLIF`、`COALESCE`、CASE、CAST；规范条件/转换章节 | 标量人口严格 AST 内的受限表达式；除法分母必须直接 NULLIF(expr,数值0)；类型与相位另经绑定 | 不能由标量支持推断多事实支持。多事实 CAST 和 COALESCE 包装拒绝 |
 | `LAG`；规范偏移窗口 REQUIRED | 多事实仅 `LAG(amount,1,NULL) OVER(PARTITION BY same_source.User ORDER BY same_source.DATE ASC)`，来源必须 User/date；返回上一观察行，包括其 NULL | 不一定上一自然日，不跳 NULL；缺 offset/default、offset2、非 NULL 默认、IGNORE NULLS、无分区、错误排序字段及不同来源粒度拒绝 |
 | `SUM ... OVER`；规范窗口聚合 REQUIRED | 同源 User/date，明确 `ROWS BETWEEN n PRECEDING AND CURRENT ROW`，n为0..366字面整数 | n367、RANGE、UNBOUNDED、FOLLOWING、倒序、产品粒度来源拒绝。先全部捕获计算窗口，后过滤显示日期 |
-| `LEAD`、`FIRST_VALUE`、排名及其他窗口；规范 REQUIRED | 没有新增允许位置 | LEAD/FIRST_VALUE/ROW_NUMBER/AVG 窗口拒绝；其余排名与 NTH/LAST 等走同一拒绝分支 |
+| `LEAD`、`FIRST_VALUE`、排名及其他窗口；规范 REQUIRED | 没有新增允许位置 | LEAD/FIRST_VALUE/ROW_NUMBER/AVG 窗口拒绝；其余排名与 NTH/LAST 等走同一拒绝分支；这是规范 REQUIRED 项中本项目的未实现缺口 |
 | 日期/类型、自然日集合 | daily 请求为真实公历0001..9999、首尾包含、最多366自然日；fact/relation为完整有限 DuckDB DATE canonical文本、支持 BC/宽年份 | DATE 身份不截 TIMESTAMP、不猜时区；fact显示范围不补日。daily缺见证不能证明真实不合格；两个接口日期域有意不同 |
 | 历史有效期、每日三值状态变化 | 每日三值归约与相邻自然日比较；历史半开区间匹配、重叠拒绝、缺口与完整 links，见各自文档 | 已有 LAG/ROWS 不替代这些算子 |
 
@@ -60,7 +68,7 @@ catalog，compile 的 `sql_replayable=false` 不能被忽略。Prepare 成功只
 | CHARINDEX、STARTSWITH、ENDSWITH | 转为 DuckDB 对应函数 | |
 | CONCAT、GREATEST、LEAST | 显式传播任一参数 NULL，不采用 DuckDB 默认跳过 NULL 的行为 | 这是项目对固定语言的解释，见 limitations |
 | DATE_TRUNC、DATEADD、DATEDIFF、单参 TO_DATE、CAST | 明确日期部分/类型 lowering；year..day 部分的 DATE_TRUNC/DATEADD 降为扩展自带的 `ossie_date_trunc`/`ossie_dateadd`，DATE 输入得到 DATE，TIMESTAMP 得到 TIMESTAMP | hour/minute/second 部分走 DuckDB `date_add`，DATE 升为 TIMESTAMP；编译 SQL 引用这两个扩展函数，只能在已加载扩展处运行 |
-| REGEXP_LIKE、格式参数 TO_DATE/TO_TIMESTAMP、TO_CHAR、非法参数数或日期部分 | 语义未定义/实验性或参数不匹配，加载时拒绝 | 可以提供定义明确的 ANSI_SQL variant，不能猜引擎语义 |
+| REGEXP_LIKE、格式参数 TO_DATE/TO_TIMESTAMP、TO_CHAR、非法参数数或日期部分 | 语义未定义/实验性或参数不匹配，加载时拒绝 | REGEXP_LIKE 属规范 REQUIRED Pattern Matching，拒绝即偏离；其余可提供定义明确的 ANSI_SQL variant，不能猜引擎语义 |
 | REGEXP_COUNT、TRUNCATE、APPROX_PERCENTILE、EXTRACT、POSITION、PERCENTILE_CONT/DISC | 降为 DuckDB 对应函数（`len(regexp_extract_all)`、`trunc`、`approx_quantile`、`date_part`、`strpos`、`quantile_cont/disc`） | |
 | 30天与1个月同时投影 | 固定 DuckDB 的 common_subexpressions 优化错误可能合并不同 interval，只影响 ANSI_SQL；OSSIE_SQL_2026 的 DATEADD 以字符串传日期部分，不受影响 | limitations 记录禁用该优化器的办法；不宣称本项目修复了引擎 |
 | 语言外函数、INTERVAL 字面量、语言外窗口函数 | 通用 core 加载时拒绝，过滤器同样拒绝；严格人口 profile 独立拒绝 | 拒绝信息建议改写为 ANSI_SQL variant；白名单是规范列出的函数，不扩大完整语言符合性 |
@@ -68,5 +76,6 @@ catalog，compile 的 `sql_replayable=false` 不能被忽略。Prepare 成功只
 通用 core 带引号标识符：来源表或视图在 catalog 中时，加载时按规范 exact identifier
 核对列名，仅大小写不同的引号引用拒绝并给出真实拼写；来源不在 catalog 时不核对，
 查询时随 DuckDB 大小写不敏感。模型级名称（数据集、字段、指标）仍大小写不敏感。
-固定11个方言名称严格校验；两个可执行 variant 中 OSSIE_SQL_2026 优先。
+方言名称是开放词汇，按精确大小写匹配，不限于固定列表；spec.md 第 55 行
+本就规定 `dialect` 是自由字符串。两个可执行 variant 中 OSSIE_SQL_2026 优先。
 其他合法方言仅保留描述，单独出现不支持执行。
